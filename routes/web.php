@@ -21,4 +21,14 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');
 
+Route::group(['middleware' => ['auth']], function () {
+
+	/********           VISIT         **********/
+	Route::resource('visitas', 'VisitController')->except(['destroy', 'index']);
+	Route::get('mis-visitas/{status?}', 'VisitController@myVisits')->name('mis_visitas');
+	Route::put('visita/{id}/anular', 'VisitController@denyVisit')->name('visitas.denyVisit');
+	Route::put('visita/{id}/confirmar', 'VisitController@confirmVisit')->name('visitas.confirmVisit');
+	Route::post('/visitas-por-confirmar', 'VisitController@getVisitsByConfirm');
+});
+
 require __DIR__.'/auth.php';
