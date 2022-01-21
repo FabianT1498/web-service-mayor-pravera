@@ -7,8 +7,8 @@ var btn     = document.getElementById('sliderBtn'),
     btn.addEventListener('click' , function(){    
         if (sideBar.classList.contains('md:-ml-64')) {
             sideBar.classList.replace('md:-ml-64' , 'md:ml-0');
-            sideBar.classList.remove('md:slideOutLeft');
-            sideBar.classList.add('md:slideInLeft');
+            sideBar.classList.remove('md:animate__slideOutLeft');
+            sideBar.classList.add('md:animate__slideInLeft');
         };
     });
 
