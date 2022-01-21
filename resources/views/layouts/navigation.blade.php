@@ -22,10 +22,10 @@
     <div id="navbar" class="animate__animated md:hidden md:fixed md:top-0 md:w-full md:left-0 md:mt-16 md:border-t md:border-b md:border-gray-200 md:p-10 md:bg-white flex-1 pl-3 flex flex-row flex-wrap justify-between items-center md:flex-col md:items-center">
       <!-- left -->
       <div class="text-gray-600 md:w-full md:flex md:flex-row md:justify-evenly md:pb-10 md:mb-10 md:border-b md:border-gray-200">
-        <a class="mr-2 transition duration-500 ease-in-out hover:text-gray-900" href="#" title="email"><i class="text-xl fad fa-envelope-open-text"></i></a>        
-        <a class="mr-2 transition duration-500 ease-in-out hover:text-gray-900" href="#" title="email"><i class="text-xl fad fa-comments-alt"></i></a>        
-        <a class="mr-2 transition duration-500 ease-in-out hover:text-gray-900" href="#" title="email"><i class="text-xl fad fa-check-circle"></i></a>        
-        <a class="mr-2 transition duration-500 ease-in-out hover:text-gray-900" href="#" title="email"><i class="text-xl fad fa-calendar-exclamation"></i></a>        
+        <a class="mr-2 transition duration-500 ease-in-out hover:text-gray-900" href="#" title="email"><i class="lg:text-md text-xl fad fa-envelope-open-text"></i></a>        
+        <a class="mr-2 transition duration-500 ease-in-out hover:text-gray-900" href="#" title="email"><i class="lg:text-md text-xl fad fa-comments-alt"></i></a>        
+        <a class="mr-2 transition duration-500 ease-in-out hover:text-gray-900" href="#" title="email"><i class="lg:text-md text-xl fad fa-check-circle"></i></a>        
+        <a class="mr-2 transition duration-500 ease-in-out hover:text-gray-900" href="#" title="email"><i class="lg:text-md text-xl fad fa-calendar-exclamation"></i></a>        
       </div>
       <!-- end left -->      
 
@@ -95,7 +95,7 @@
         <div class="dropdown relative mr-5 md:static">
 
           <button class="text-gray-500 menu-btn p-0 m-0 hover:text-gray-900 focus:text-gray-900 focus:outline-none transition-all ease-in-out duration-300">
-            <i class="text-xl fad fa-bells"></i>               
+            <i class="lg:text-md text-xl fad fa-bells"></i>               
           </button>
 
           <button class="hidden fixed top-0 left-0 z-10 w-full h-full menu-overflow"></button>
@@ -215,7 +215,7 @@
         <div class="dropdown relative mr-5 md:static">
 
           <button class="text-gray-500 menu-btn p-0 m-0 hover:text-gray-900 focus:text-gray-900 focus:outline-none transition-all ease-in-out duration-300">
-            <i class="text-xl fad fa-comments"></i>               
+            <i class="text-xl lg:text-md fad fa-comments"></i>               
           </button>
 
           <button class="hidden fixed top-0 left-0 z-10 w-full h-full menu-overflow"></button>

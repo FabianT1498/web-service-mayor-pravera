@@ -1479,6 +1479,10 @@ div.code-toolbar .toolbar button:hover {
   max-width: 72rem;
 }
 
+.max-w-lg{
+  max-width: 32rem;
+}
+
 .flex-1{
   flex: 1 1 0%;
 }
@@ -1585,6 +1589,10 @@ div.code-toolbar .toolbar button:hover {
 
 .rounded-full{
   border-radius: 9999px;
+}
+
+.rounded-lg{
+  border-radius: 0.5rem;
 }
 
 .rounded-l-md{
@@ -1778,6 +1786,10 @@ div.code-toolbar .toolbar button:hover {
   padding-top: 0.25rem;
 }
 
+.pt-0{
+  padding-top: 0px;
+}
+
 .text-center{
   text-align: center;
 }
@@ -1795,14 +1807,14 @@ div.code-toolbar .toolbar button:hover {
   line-height: 1.25rem;
 }
 
-.text-xs{
-  font-size: 0.75rem;
-  line-height: 1rem;
-}
-
 .text-xl{
   font-size: 1.25rem;
   line-height: 1.75rem;
+}
+
+.text-xs{
+  font-size: 0.75rem;
+  line-height: 1rem;
 }
 
 .text-lg{
@@ -2042,11 +2054,6 @@ div.code-toolbar .toolbar button:hover {
           animation-duration: 1000ms;
   -webkit-animation-fill-mode: both;
           animation-fill-mode: both;
-}
-
-.animate__faster{
-  -webkit-animation-duration: 500ms;
-          animation-duration: 500ms;
 }
 
 @-webkit-keyframes bounce{
@@ -5000,12 +5007,18 @@ div.code-toolbar .toolbar button:hover {
   .sm\:rounded-lg{
     border-radius: 0.5rem;
   }
+  .sm\:rounded-none{
+    border-radius: 0px;
+  }
   .sm\:px-6{
     padding-left: 1.5rem;
     padding-right: 1.5rem;
   }
   .sm\:pt-0{
     padding-top: 0px;
+  }
+  .sm\:pt-6{
+    padding-top: 1.5rem;
   }
   .sm\:text-left{
     text-align: left;
@@ -5105,6 +5118,14 @@ div.code-toolbar .toolbar button:hover {
   .lg\:px-8{
     padding-left: 2rem;
     padding-right: 2rem;
+  }
+  .lg\:text-lg{
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+  }
+  .lg\:text-sm{
+    font-size: 0.875rem;
+    line-height: 1.25rem;
   }
 }
 
