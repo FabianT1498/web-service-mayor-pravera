@@ -1479,6 +1479,14 @@ div.code-toolbar .toolbar button:hover {
   width: 16rem;
 }
 
+.w-10\/12{
+  width: 83.333333%;
+}
+
+.w-1\/4{
+  width: 25%;
+}
+
 .max-w-lg{
   max-width: 32rem;
 }

@@ -25,13 +25,13 @@
         <!-- strat wrapper -->
         <div class="h-screen flex flex-row flex-wrap">
             @include('layouts.sidebar')
+            
+            <!-- strat content -->
+            <div class="bg-gray-100 flex-1 p-6 md:mt-16 md:mb-16">     
+                @yield('main')
+            </div>
+            <!-- end content -->
         </div>
-
-        <!-- strat content -->
-        <div class="bg-gray-100 flex-1 p-6 md:mt-16">     
-            @yield
-        </div>
-    	<!-- end content -->
 
     </body>
 </html>

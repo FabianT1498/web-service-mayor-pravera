@@ -25,7 +25,7 @@
       <p class="uppercase text-xs text-gray-600 mb-4 mt-4 tracking-wider">Arqueo de caja</p>
 
       <!-- link -->
-      <a href="./email.html" class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500">
+      <a href="{{ route('cash_register.create') }}" class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500">
         <i class="fad fa-money-bill-wave text-xs mr-2"></i>
         Registrar arqueo de caja
       </a>
