@@ -7,14 +7,14 @@ var btn     = document.getElementById('sliderBtn'),
     btn.addEventListener('click' , function(){    
         if (sideBar.classList.contains('md:-ml-64')) {
             sideBar.classList.replace('md:-ml-64' , 'md:ml-0');
-            sideBar.classList.remove('md:animate__slideOutLeft');
-            sideBar.classList.add('md:animate__slideInLeft');
+            sideBar.classList.remove('md:slideOutLeft');
+            sideBar.classList.add('md:slideInLeft');
         };
     });
 
     // hide sideBar    
     sideBarHideBtn.addEventListener('click' , function(){            
-        if (sideBar.classList.contains('md:ml-0' , 'slideInLeft')) {      
+        if (sideBar.classList.contains('md:ml-0' , 'animate__slideInLeft')) {      
             var _class = function(){
                 sideBar.classList.remove('md:slideInLeft');
                 sideBar.classList.add('md:slideOutLeft');

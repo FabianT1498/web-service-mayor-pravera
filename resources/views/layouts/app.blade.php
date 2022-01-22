@@ -29,21 +29,7 @@
 
         <!-- strat content -->
         <div class="bg-gray-100 flex-1 p-6 md:mt-16">     
-            <!-- General Report -->
-            
-            <!-- End General Report -->
-
-            <!-- strat Analytics -->
-            <!-- end Analytics -->
-
-            <!-- Sales Overview -->
-            <!-- end Sales Overview -->
-
-            <!-- start numbers -->
-            <!-- end nmbers -->
-
-            <!-- start quick Info -->
-            <!-- end quick Info -->
+            @yield
         </div>
     	<!-- end content -->
 
