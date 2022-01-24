@@ -5497,6 +5497,10 @@ __webpack_require__(/*! ./external */ "./resources/js/external/index.js");
 
 window.Alpine = alpinejs__WEBPACK_IMPORTED_MODULE_0__["default"];
 alpinejs__WEBPACK_IMPORTED_MODULE_0__["default"].start();
+__webpack_require__.e(/*! import() | ../../js/cash_register_create */ "/js/cash_register_create").then(__webpack_require__.bind(__webpack_require__, /*! ./pages/cash-register/create.js */ "./resources/js/pages/cash-register/create.js")).then(function (_ref) {
+  var defaultCreate = _ref["default"];
+  defaultCreate();
+});
 
 /***/ }),
 
@@ -5871,250 +5875,15 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 /***/ }),
 
-/***/ "./resources/js/charts/analytics_1.js":
-/*!********************************************!*\
-  !*** ./resources/js/charts/analytics_1.js ***!
-  \********************************************/
-/***/ (() => {
-
-var options = function options(type, height, numbers, color) {
-  return {
-    chart: {
-      height: height,
-      width: '100%',
-      type: type,
-      sparkline: {
-        enabled: true
-      },
-      toolbar: {
-        show: false
-      }
-    },
-    grid: {
-      show: false,
-      padding: {
-        top: 0,
-        right: 0,
-        bottom: 0,
-        left: 0
-      }
-    },
-    dataLabels: {
-      enabled: false
-    },
-    legend: {
-      show: false
-    },
-    series: [{
-      name: "serie1",
-      data: numbers
-    }],
-    fill: {
-      colors: [color]
-    },
-    stroke: {
-      colors: [color],
-      width: 3
-    },
-    yaxis: {
-      show: false
-    },
-    xaxis: {
-      show: false,
-      labels: {
-        show: false
-      },
-      axisBorder: {
-        show: false
-      },
-      tooltip: {
-        enabled: false
-      }
-    }
-  };
-};
-
-var analytics_1 = document.getElementsByClassName("analytics_1");
-
-if (analytics_1 != null && typeof analytics_1 != 'undefined') {
-  var chart = new ApexCharts(analytics_1[0], options("area", '51px', numArr(10, 99), '#4fd1c5'));
-  var chart_1 = new ApexCharts(analytics_1[1], options("area", '51px', numArr(10, 99), '#4c51bf'));
-  chart.render();
-  chart_1.render();
-}
-
-/***/ }),
-
 /***/ "./resources/js/charts/index.js":
 /*!**************************************!*\
   !*** ./resources/js/charts/index.js ***!
   \**************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-exports.analytics_1 = __webpack_require__(/*! ./analytics_1.js */ "./resources/js/charts/analytics_1.js");
-exports.salesOverview = __webpack_require__(/*! ./salesOverview.js */ "./resources/js/charts/salesOverview.js");
-exports.summary = __webpack_require__(/*! ./summary.js */ "./resources/js/charts/summary.js");
-
-/***/ }),
-
-/***/ "./resources/js/charts/salesOverview.js":
-/*!**********************************************!*\
-  !*** ./resources/js/charts/salesOverview.js ***!
-  \**********************************************/
 /***/ (() => {
 
-var sealsOptions = {
-  chart: {
-    height: 350,
-    type: "line",
-    stacked: false
-  },
-  dataLabels: {
-    enabled: false
-  },
-  colors: ['#99C2A2', '#C5EDAC', '#66C7F4'],
-  series: [{
-    name: 'Column A',
-    type: 'column',
-    data: [21.1, 23, 33.1, 34, 44.1, 44.9, 56.5, 58.5]
-  }, {
-    name: "Column B",
-    type: 'column',
-    data: [10, 19, 27, 26, 34, 35, 40, 38]
-  }, {
-    name: "Line C",
-    type: 'column',
-    data: [1.4, 2, 2.5, 1.5, 2.5, 2.8, 3.8, 4.6]
-  }],
-  stroke: {
-    width: [4, 4, 4]
-  },
-  plotOptions: {
-    bar: {
-      columnWidth: "20%"
-    }
-  },
-  xaxis: {
-    categories: [2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016]
-  },
-  yaxis: [{
-    seriesName: 'Column A',
-    axisTicks: {
-      show: true
-    },
-    axisBorder: {
-      show: true
-    },
-    title: {
-      text: "Columns"
-    }
-  }, {
-    seriesName: 'Column A',
-    show: false
-  }, {
-    opposite: true,
-    seriesName: 'Line C',
-    axisTicks: {
-      show: true
-    },
-    axisBorder: {
-      show: true
-    },
-    title: {
-      text: "Line"
-    }
-  }],
-  tooltip: {
-    shared: false,
-    intersect: true,
-    x: {
-      show: false
-    }
-  },
-  legend: {
-    horizontalAlign: "left",
-    offsetX: 40
-  }
-};
-var sealsOverview = document.getElementById('sealsOverview');
-var sealsOverviewChart = new ApexCharts(sealsOverview, options('bar', '100%', numArr(20, 999), '#30aba0'));
-sealsOverviewChart.render();
-
-/***/ }),
-
-/***/ "./resources/js/charts/summary.js":
-/*!****************************************!*\
-  !*** ./resources/js/charts/summary.js ***!
-  \****************************************/
-/***/ (() => {
-
-var options = {
-  chart: {
-    //   height: 280,
-    width: '100%',
-    type: "area",
-    toolbar: {
-      show: false
-    }
-  },
-  grid: {
-    show: false,
-    padding: {
-      top: 0,
-      right: 0,
-      bottom: 0,
-      left: 0
-    }
-  },
-  dataLabels: {
-    enabled: false
-  },
-  legend: {
-    show: false
-  },
-  series: [{
-    name: "serie1",
-    data: [44, 55, 41, 67, 22, 43, 21, 41, 56, 27, 43]
-  }, {
-    name: "serie2",
-    data: [54, 45, 51, 57, 32, 33, 31, 31, 46, 37, 33]
-  }],
-  fill: {
-    type: "gradient",
-    gradient: {
-      shadeIntensity: 1,
-      opacityFrom: 0.9,
-      opacityTo: 0.7,
-      stops: [0, 90, 100]
-    },
-    colors: ['#4fd1c5']
-  },
-  stroke: {
-    colors: ['#4fd1c5'],
-    width: 3
-  },
-  yaxis: {
-    show: false
-  },
-  xaxis: {
-    categories: [1, 2, 3, 4, 5, 6, 6, 7, 8, 9, 10],
-    labels: {
-      show: false
-    },
-    axisBorder: {
-      show: false
-    },
-    tooltip: {
-      enabled: false
-    }
-  }
-};
-var SummaryChart = document.getElementById("SummaryChart");
-
-if (SummaryChart != null && typeof SummaryChart != 'undefined') {
-  var chart = new ApexCharts(document.querySelector("#SummaryChart"), options);
-  chart.render();
-}
+// exports.analytics_1 = require("./analytics_1.js");
+// exports.salesOverview = require("./salesOverview.js");
+// exports.summary = require("./summary.js");
 
 /***/ }),
 
@@ -26626,6 +26395,39 @@ module.exports = JSON.parse('{"_from":"axios@^0.21","_id":"axios@0.21.4","_inBun
 /******/ 		};
 /******/ 	})();
 /******/ 	
+/******/ 	/* webpack/runtime/ensure chunk */
+/******/ 	(() => {
+/******/ 		__webpack_require__.f = {};
+/******/ 		// This file contains only the entry chunk.
+/******/ 		// The chunk loading function for additional chunks
+/******/ 		__webpack_require__.e = (chunkId) => {
+/******/ 			return Promise.all(Object.keys(__webpack_require__.f).reduce((promises, key) => {
+/******/ 				__webpack_require__.f[key](chunkId, promises);
+/******/ 				return promises;
+/******/ 			}, []));
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/get javascript chunk filename */
+/******/ 	(() => {
+/******/ 		// This function allow to reference async chunks
+/******/ 		__webpack_require__.u = (chunkId) => {
+/******/ 			// return url for filenames not based on template
+/******/ 			if (chunkId === "/js/cash_register_create") return "" + chunkId + ".js";
+/******/ 			// return url for filenames based on template
+/******/ 			return undefined;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/get mini-css chunk filename */
+/******/ 	(() => {
+/******/ 		// This function allow to reference all chunks
+/******/ 		__webpack_require__.miniCssF = (chunkId) => {
+/******/ 			// return url for filenames based on template
+/******/ 			return "" + chunkId + ".css";
+/******/ 		};
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/global */
 /******/ 	(() => {
 /******/ 		__webpack_require__.g = (function() {
@@ -26641,6 +26443,52 @@ module.exports = JSON.parse('{"_from":"axios@^0.21","_id":"axios@0.21.4","_inBun
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	(() => {
 /******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/load script */
+/******/ 	(() => {
+/******/ 		var inProgress = {};
+/******/ 		// data-webpack is not used as build has no uniqueName
+/******/ 		// loadScript function to load a script via script tag
+/******/ 		__webpack_require__.l = (url, done, key, chunkId) => {
+/******/ 			if(inProgress[url]) { inProgress[url].push(done); return; }
+/******/ 			var script, needAttach;
+/******/ 			if(key !== undefined) {
+/******/ 				var scripts = document.getElementsByTagName("script");
+/******/ 				for(var i = 0; i < scripts.length; i++) {
+/******/ 					var s = scripts[i];
+/******/ 					if(s.getAttribute("src") == url) { script = s; break; }
+/******/ 				}
+/******/ 			}
+/******/ 			if(!script) {
+/******/ 				needAttach = true;
+/******/ 				script = document.createElement('script');
+/******/ 		
+/******/ 				script.charset = 'utf-8';
+/******/ 				script.timeout = 120;
+/******/ 				if (__webpack_require__.nc) {
+/******/ 					script.setAttribute("nonce", __webpack_require__.nc);
+/******/ 				}
+/******/ 		
+/******/ 				script.src = url;
+/******/ 			}
+/******/ 			inProgress[url] = [done];
+/******/ 			var onScriptComplete = (prev, event) => {
+/******/ 				// avoid mem leaks in IE.
+/******/ 				script.onerror = script.onload = null;
+/******/ 				clearTimeout(timeout);
+/******/ 				var doneFns = inProgress[url];
+/******/ 				delete inProgress[url];
+/******/ 				script.parentNode && script.parentNode.removeChild(script);
+/******/ 				doneFns && doneFns.forEach((fn) => (fn(event)));
+/******/ 				if(prev) return prev(event);
+/******/ 			}
+/******/ 			;
+/******/ 			var timeout = setTimeout(onScriptComplete.bind(null, undefined, { type: 'timeout', target: script }), 120000);
+/******/ 			script.onerror = onScriptComplete.bind(null, script.onerror);
+/******/ 			script.onload = onScriptComplete.bind(null, script.onload);
+/******/ 			needAttach && document.head.appendChild(script);
+/******/ 		};
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/make namespace object */
@@ -26663,6 +26511,11 @@ module.exports = JSON.parse('{"_from":"axios@^0.21","_id":"axios@0.21.4","_inBun
 /******/ 		};
 /******/ 	})();
 /******/ 	
+/******/ 	/* webpack/runtime/publicPath */
+/******/ 	(() => {
+/******/ 		__webpack_require__.p = "/";
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/jsonp chunk loading */
 /******/ 	(() => {
 /******/ 		// no baseURI
@@ -26675,7 +26528,44 @@ module.exports = JSON.parse('{"_from":"axios@^0.21","_id":"axios@0.21.4","_inBun
 /******/ 			"css/app": 0
 /******/ 		};
 /******/ 		
-/******/ 		// no chunk on demand loading
+/******/ 		__webpack_require__.f.j = (chunkId, promises) => {
+/******/ 				// JSONP chunk loading for javascript
+/******/ 				var installedChunkData = __webpack_require__.o(installedChunks, chunkId) ? installedChunks[chunkId] : undefined;
+/******/ 				if(installedChunkData !== 0) { // 0 means "already installed".
+/******/ 		
+/******/ 					// a Promise means "currently loading".
+/******/ 					if(installedChunkData) {
+/******/ 						promises.push(installedChunkData[2]);
+/******/ 					} else {
+/******/ 						if("css/app" != chunkId) {
+/******/ 							// setup Promise in chunk cache
+/******/ 							var promise = new Promise((resolve, reject) => (installedChunkData = installedChunks[chunkId] = [resolve, reject]));
+/******/ 							promises.push(installedChunkData[2] = promise);
+/******/ 		
+/******/ 							// start chunk loading
+/******/ 							var url = __webpack_require__.p + __webpack_require__.u(chunkId);
+/******/ 							// create error before stack unwound to get useful stacktrace later
+/******/ 							var error = new Error();
+/******/ 							var loadingEnded = (event) => {
+/******/ 								if(__webpack_require__.o(installedChunks, chunkId)) {
+/******/ 									installedChunkData = installedChunks[chunkId];
+/******/ 									if(installedChunkData !== 0) installedChunks[chunkId] = undefined;
+/******/ 									if(installedChunkData) {
+/******/ 										var errorType = event && (event.type === 'load' ? 'missing' : event.type);
+/******/ 										var realSrc = event && event.target && event.target.src;
+/******/ 										error.message = 'Loading chunk ' + chunkId + ' failed.\n(' + errorType + ': ' + realSrc + ')';
+/******/ 										error.name = 'ChunkLoadError';
+/******/ 										error.type = errorType;
+/******/ 										error.request = realSrc;
+/******/ 										installedChunkData[1](error);
+/******/ 									}
+/******/ 								}
+/******/ 							};
+/******/ 							__webpack_require__.l(url, loadingEnded, "chunk-" + chunkId, chunkId);
+/******/ 						} else installedChunks[chunkId] = 0;
+/******/ 					}
+/******/ 				}
+/******/ 		};
 /******/ 		
 /******/ 		// no prefetching
 /******/ 		

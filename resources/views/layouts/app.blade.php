@@ -18,6 +18,8 @@
 
         <!-- Scripts -->
         <script src="{{ asset('js/app.js') }}" defer></script>
+
+        @yield('js')
     </head>
     <body class="font-sans antialiased bg-gray-100">
         @include('layouts.navigation')
