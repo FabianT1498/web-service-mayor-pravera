@@ -24,8 +24,14 @@ Route::get('/dashboard', function () {
 
 Route::group(['middleware' => ['auth']], function () {
 
-	Route::get('arqueo-caja', [CashRegisterController::class, 'create'])
-                ->name('cash_register.create');
+    Route::get('cash_register/create-step-one', [CashRegisterController::class, 'createStepOne'])->name('cash_register_step_one.create');
+    Route::post('cash_register/post--step-one', [CashRegisterController::class, 'postCreateStepOne'])->name('cash_register_step_one.post');
+        
+    // Route::get('products/create-step-two', [CashRegisterController::class, 'createStepOne'])->name('cash_register_step_one.create');
+    // Route::post('products/create-step-two', [CashRegisterController::class, 'createStepOne'])->name('cash_register_step_one.post');
+        
+    // Route::get('products/create-step-three', [CashRegisterController::class, 'createStepOne'])->name('cash_register_step_one.create');
+    // Route::post('products/create-step-three', [CashRegisterController::class, 'createStepOne'])->name('cash_register_step_one.post');
 });
 
 require __DIR__.'/auth.php';

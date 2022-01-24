@@ -5,7 +5,7 @@
 @endsection
 
 @section('main')
-    <form method="POST" action="">
+    <form method="POST" action="{{ route('cash_register_step_one.create') }}">
         @csrf
         <div class="w-10/12 flex justify-between mb-4 mx-auto">
             <!-- Cash register date -->
@@ -25,7 +25,7 @@
             <!-- Cash register owner -->
             <div class="flex basis-1/4 items-center">
                     <x-label for="cash_register_owner" :value="__('Nombre del cajero/a:')" />
-                    <x-input id="cash_register_owner" class="block ml-4" type="text" name="cash_register_owner" :value="old('cash_register_owner')" required autofocus />
+                    <x-input id="cash_register_owner" class="block ml-4" type="text" name="cash_register_worker" :value="old('cash_register_owner')" required autofocus />
             </div>
         </div>
 
