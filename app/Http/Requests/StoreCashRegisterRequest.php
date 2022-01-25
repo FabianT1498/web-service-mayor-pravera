@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 use Illuminate\Support\Facades\Date;
-use Illuminate\Validation\Rule;
+
 
 class StoreCashRegisterStepOne extends FormRequest
 {

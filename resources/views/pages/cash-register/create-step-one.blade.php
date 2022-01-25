@@ -5,14 +5,14 @@
 @endsection
 
 @section('main')
-    <form method="POST" action="{{ route('cash_register_step_one.create') }}">
+    <form method="POST" action="{{ route('cash_register_step_one.post') }}">
         @csrf
         <div class="w-10/12 flex justify-between mb-4 mx-auto">
             <!-- Cash register date -->
             <div class="flex basis-1/4 justify-evenly items-center">
                 <x-label for="date" :value="__('Fecha')" />
 
-                <x-input id="date" class="disabled ml-4" type="date" name="date" :value="old('date') ? old('date') : $date" required autofocus/>
+                <x-input id="date" class="ml-4" type="text" :value="__($date)" :disabled="true" name="date"  required autofocus/>
             </div>
             
             <!-- Cash register number-->

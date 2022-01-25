@@ -25,13 +25,14 @@ Route::get('/dashboard', function () {
 Route::group(['middleware' => ['auth']], function () {
 
     Route::get('cash_register/create-step-one', [CashRegisterController::class, 'createStepOne'])->name('cash_register_step_one.create');
-    Route::post('cash_register/post--step-one', [CashRegisterController::class, 'postCreateStepOne'])->name('cash_register_step_one.post');
+    Route::post('cash_register/post-step-one', [CashRegisterController::class, 'postCreateStepOne'])->name('cash_register_step_one.post');
         
-    // Route::get('products/create-step-two', [CashRegisterController::class, 'createStepOne'])->name('cash_register_step_one.create');
-    // Route::post('products/create-step-two', [CashRegisterController::class, 'createStepOne'])->name('cash_register_step_one.post');
-        
-    // Route::get('products/create-step-three', [CashRegisterController::class, 'createStepOne'])->name('cash_register_step_one.create');
-    // Route::post('products/create-step-three', [CashRegisterController::class, 'createStepOne'])->name('cash_register_step_one.post');
+    Route::get('cash_register/create-step-two', [CashRegisterController::class, 'createStepTwo'])->name('cash_register_step_two.create');
+    Route::get('cash_register/create-step-three', [CashRegisterController::class, 'createStepThree'])->name('cash_register_step_three.create');
+    Route::get('cash_register/create-step-four', [CashRegisterController::class, 'createStepFour'])->name('cash_register_step_four.create');
+    Route::get('cash_register/create-step-five', [CashRegisterController::class, 'createStepFive'])->name('cash_register_step_five.create');
+    Route::get('cash_register/create-step-six', [CashRegisterController::class, 'createStepSix'])->name('cash_register_step_six.create');  
+    Route::post('cash_register/store', [CashRegisterController::class, 'store'])->name('cash_register.store');
 });
 
 require __DIR__.'/auth.php';
