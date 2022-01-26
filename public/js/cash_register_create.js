@@ -16,20 +16,42 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__() {
   var inputs = document.querySelectorAll('[data-currency^="amount"]');
+  var maskedInputs = [];
+  var form = document.querySelector('#form');
+
+  var submit = function submit(event) {
+    var allIsNull = true;
+    maskedInputs.forEach(function (el) {
+      console.log(el.unmaskedvalue());
+
+      if (el.unmaskedvalue()) {
+        allIsNull = false;
+      }
+    });
+
+    if (allIsNull) {
+      event.preventDefault();
+      alert('Epa, no se ha ingresado ningun ingreso');
+      return;
+    }
+  };
+
+  form.addEventListener('submit', submit);
   var moneyFormat = new (inputmask__WEBPACK_IMPORTED_MODULE_0___default())("(.999){+|1},00", {
     positionCaretOnClick: "radixFocus",
     radixPoint: ",",
     _radixDance: true,
     numericInput: true,
     placeholder: "0",
+    removeMaskOnSubmit: true,
     definitions: {
       "0": {
         validator: "[0-9\uFF11-\uFF19]"
       }
     }
   });
-  inputs.forEach(function (e) {
-    return moneyFormat.mask(e);
+  inputs.forEach(function (el) {
+    return maskedInputs.push(moneyFormat.mask(el));
   });
 }
 

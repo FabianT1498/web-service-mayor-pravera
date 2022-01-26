@@ -3,11 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-
 use Illuminate\Support\Facades\Date;
 
-
-class StoreCashRegisterStepOne extends FormRequest
+class StoreCashRegisterStepOneRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -16,7 +14,7 @@ class StoreCashRegisterStepOne extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -38,9 +36,9 @@ class StoreCashRegisterStepOne extends FormRequest
             ],
             'cash_register_id' => [
                 'required',
-                'exists:cash_register,id'
+                'exists:cash_register,id',
             ],
-            'cash_register_owner' => [
+            'cash_register_worker' => [
                 'required',
                 'exists:cash_register_worker,id',
             ],
@@ -50,19 +48,19 @@ class StoreCashRegisterStepOne extends FormRequest
             ],
             'liquid_money_bs' => [
                 'required',
-                'min:0'
+                'min:0',
             ],
             'payment_zelle' => [
                 'required',
-                'min:0'
+                'min:0',
             ],
             'debit_card_payment_bs' => [
                 'required',
-                'min:0'
+                'min:0',
             ],
             'debit_card_payment_dollar' => [
                 'required',
-                'min:0'
+                'min:0',
             ]
         ];
 
@@ -76,15 +74,17 @@ class StoreCashRegisterStepOne extends FormRequest
      */
     protected function prepareForValidation()
     {
-
+       
         $inputs = [
             'date' => Date::createFromFormat('d-m-Y', $this->date),
-            'liquid_money_dollars' => (float) $this->liquid_money_dollars,
-            'liquid_money_bs' => (float) $this->liquid_money_bs,
-            'payment_zelle' => (float) $this->payment_zelle,
-            'debit_card_payment_bs' => (float) $this->debit_card_payment_bs,
-            'debit_card_payment_dollar' => (float) $this->debit_card_payment_dollar,
+            'liquid_money_dollars' => ((float) $this->liquid_money_dollars * 100),
+            'liquid_money_bs' => ((float) $this->liquid_money_bs),
+            'payment_zelle' => ((float) $this->payment_zelle),
+            'debit_card_payment_bs' => ((float) $this->debit_card_payment_bs),
+            'debit_card_payment_dollar' => ((float) $this->debit_card_payment_dollar),
         ];
+
+        var_dump($inputs);
 
         $this->merge($inputs);
     }

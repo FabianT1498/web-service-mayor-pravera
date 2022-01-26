@@ -4,12 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
-use App\Http\Requests\StoreCashRegisterStepOne;
 use App\Models\CashRegister;
+
+use App\Http\Requests\StoreCashRegisterStepOneRequest;
 
 class CashRegisterController extends Controller
 {
-    
+   
     private function getTableSummaryView($stepViewName, $objects){
         return view($stepViewName, $objects);
     }
@@ -42,7 +43,7 @@ class CashRegisterController extends Controller
         return $this->getTableSummaryView('pages.cash-register.create-step-one', $data);
     }
 
-    public function postCreateStepOne(StoreCashRegisterStepOne $request)
+    public function postCreateStepOne(StoreCashRegisterStepOneRequest $request)
     {
         $validated = $request->validated();
 
