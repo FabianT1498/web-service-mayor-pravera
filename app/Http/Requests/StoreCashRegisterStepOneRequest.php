@@ -27,44 +27,58 @@ class StoreCashRegisterStepOneRequest extends FormRequest
         $date_format = 'd-m-Y';
         $today_date = Date::now()->format('d-m-Y');
 
-
         $rules = [
-            'date' => [
-                'required',
-                'date_format:'.$date_format,
-                'date_equals:'.$today_date,
-            ],
             'cash_register_id' => [
                 'required',
-                'exists:cash_register,id',
+                // 'exists:cash_register,id',
             ],
             'cash_register_worker' => [
                 'required',
-                'exists:cash_register_worker,id',
+                // 'exists:cash_register_worker,id',
             ],
             'liquid_money_dollars' => [
                 'required',
-                'min:0',
+                'gte:0',
             ],
             'liquid_money_bs' => [
                 'required',
-                'min:0',
+                'gte:0',
             ],
             'payment_zelle' => [
                 'required',
-                'min:0',
+                'gte:0',
             ],
             'debit_card_payment_bs' => [
                 'required',
-                'min:0',
+                'gte:0',
             ],
             'debit_card_payment_dollar' => [
                 'required',
-                'min:0',
+                'gte:0',
             ]
         ];
 
         return $rules;
+    }
+
+    private function formatAmount($amount){
+
+        if (is_null($amount)){
+            return 0;
+        }
+
+        $arr = explode(',', $amount, 2);
+        $integer = $arr["0"] ?? null;
+        $decimal = $arr["1"] ?? null;
+        
+        $formated_integer = implode(explode(".", $integer));
+        
+        $number_string = $formated_integer . '.' . $decimal . 'El';
+        $float_number = floatval($number_string);
+
+        var_dump($float_number);
+
+        return $float_number;
     }
 
     /**
@@ -74,18 +88,16 @@ class StoreCashRegisterStepOneRequest extends FormRequest
      */
     protected function prepareForValidation()
     {
-       
+        var_dump($this->date);
+
         $inputs = [
-            'date' => Date::createFromFormat('d-m-Y', $this->date),
-            'liquid_money_dollars' => ((float) $this->liquid_money_dollars * 100),
-            'liquid_money_bs' => ((float) $this->liquid_money_bs),
-            'payment_zelle' => ((float) $this->payment_zelle),
-            'debit_card_payment_bs' => ((float) $this->debit_card_payment_bs),
-            'debit_card_payment_dollar' => ((float) $this->debit_card_payment_dollar),
+            'liquid_money_dollars' => $this->formatAmount($this->liquid_money_dollars),
+            'liquid_money_bs' => $this->formatAmount($this->liquid_money_bs),
+            'payment_zelle' => $this->formatAmount($this->payment_zelle),
+            'debit_card_payment_bs' => $this->formatAmount($this->debit_card_payment_bs),
+            'debit_card_payment_dollar' => $this->formatAmount($this->debit_card_payment_dollar),
         ];
-
-        var_dump($inputs);
-
+        
         $this->merge($inputs);
     }
 }

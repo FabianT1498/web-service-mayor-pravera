@@ -5,6 +5,11 @@
 @endsection
 
 @section('main')
+    @foreach ($errors->all() as $error)
+        <li>
+            {{ $error }}
+        </li>
+    @endforeach
     <form id="form" method="POST" action="{{ route('cash_register_step_one.post') }}">
         @csrf
         <div class="w-10/12 flex justify-between mb-4 mx-auto">
@@ -12,7 +17,7 @@
             <div class="flex basis-1/4 justify-evenly items-center">
                 <x-label for="date" :value="__('Fecha')" />
 
-                <x-input id="date" class="ml-4" type="text" :value="__($date)" readonly name="date"  required autofocus/>
+                <x-input id="date" class="ml-4" type="text" :value="__($date)" readonly />
             </div>
             
             <!-- Cash register number-->

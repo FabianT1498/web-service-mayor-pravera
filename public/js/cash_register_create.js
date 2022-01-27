@@ -13,21 +13,28 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var inputmask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! inputmask */ "./node_modules/inputmask/dist/inputmask.js");
 /* harmony import */ var inputmask__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(inputmask__WEBPACK_IMPORTED_MODULE_0__);
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 /* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__() {
+  var _Inputmask;
+
   var inputs = document.querySelectorAll('[data-currency^="amount"]');
   var maskedInputs = [];
   var form = document.querySelector('#form');
 
   var submit = function submit(event) {
     var allIsNull = true;
-    maskedInputs.forEach(function (el) {
-      console.log(el.unmaskedvalue());
 
-      if (el.unmaskedvalue()) {
+    for (var i = 0; i < inputs.length; i++) {
+      var el = inputs[i];
+      console.log(el.value);
+
+      if (el.value) {
         allIsNull = false;
+        break;
       }
-    });
+    }
 
     if (allIsNull) {
       event.preventDefault();
@@ -37,19 +44,17 @@ __webpack_require__.r(__webpack_exports__);
   };
 
   form.addEventListener('submit', submit);
-  var moneyFormat = new (inputmask__WEBPACK_IMPORTED_MODULE_0___default())("(.999){+|1},00", {
+  var moneyFormat = new (inputmask__WEBPACK_IMPORTED_MODULE_0___default())("(.999){+|1},00", (_Inputmask = {
     positionCaretOnClick: "radixFocus",
     radixPoint: ",",
     _radixDance: true,
     numericInput: true,
-    placeholder: "0",
-    removeMaskOnSubmit: true,
-    definitions: {
-      "0": {
-        validator: "[0-9\uFF11-\uFF19]"
-      }
+    placeholder: "0"
+  }, _defineProperty(_Inputmask, "numericInput", true), _defineProperty(_Inputmask, "definitions", {
+    "0": {
+      validator: "[0-9\uFF11-\uFF19]"
     }
-  });
+  }), _Inputmask));
   inputs.forEach(function (el) {
     return maskedInputs.push(moneyFormat.mask(el));
   });

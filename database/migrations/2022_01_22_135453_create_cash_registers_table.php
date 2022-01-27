@@ -15,7 +15,17 @@ class CreateCashRegistersTable extends Migration
     {
         Schema::create('cash_registers', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->unsignedBigInteger('user_id')->unsigned();
+            $table->date('date');
+            $table->string('cash_register_id');
+            $table->integer('cash_register_worker');
+            $table->float('liquid_money_dollars');
+            $table->float('liquid_money_bs');
+            $table->float('payment_zelle');
+            $table->float('debit_card_payment_bs');
+            $table->float('debit_card_payment_dollar');
+
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

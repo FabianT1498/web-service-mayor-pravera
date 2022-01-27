@@ -1,4 +1,5 @@
 const defaultTheme = require('tailwindcss/defaultTheme');
+const plugin = require('tailwindcss/plugin')
 
 module.exports = {
     content: [
@@ -30,6 +31,9 @@ module.exports = {
     },
 
     plugins: [
+      require('tailwindcss-tables')({
+        tableHoverBackgroundColor: 'rgba(0,0,0,.075)',  // default: rgba(0,0,0,.075)
+      }),
       require('@tailwindcss/forms'),
       require('tailwindcss-animatecss')({
         settings: {
@@ -42,5 +46,12 @@ module.exports = {
         },
         variants: ['responsive'],
       }),
+      plugin(function({ addBase, theme }) {
+        addBase({
+          'h1': { fontSize: theme('fontSize.2xl') },
+          'h2': { fontSize: theme('fontSize.xl') },
+          'h3': { fontSize: theme('fontSize.lg') },
+        })
+      })
     ],
 };

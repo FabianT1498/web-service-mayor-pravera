@@ -10,14 +10,16 @@ export default function(){
     const submit = (event) => {
         let allIsNull = true;
         
-        
-        maskedInputs.forEach(el => {
-            console.log(el.unmaskedvalue());
-            if (el.unmaskedvalue()){
+        for(let i = 0; i < inputs.length; i++){
+            let el = inputs[i];
+            console.log(el.value);
+            
+            if (el.value){
                 allIsNull = false;
+                break;
             }
-        })
-
+        }
+       
         if (allIsNull){
             event.preventDefault();
             alert('Epa, no se ha ingresado ningun ingreso')
@@ -33,12 +35,12 @@ export default function(){
         _radixDance: true,
         numericInput: true,
         placeholder: "0",
-        removeMaskOnSubmit: true,
+        numericInput: true,
         definitions: {
             "0": {
                 validator: "[0-9\uFF11-\uFF19]"
             }
-        }
+        },
    })
 
    inputs.forEach((el) => maskedInputs.push(moneyFormat.mask(el)))
