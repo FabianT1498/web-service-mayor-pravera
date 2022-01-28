@@ -37,7 +37,7 @@
         Consultar arqueo de cajas
       </a>
       <!-- end link -->
-      
+ 
     </div>
     <!-- end sidebar content -->
 

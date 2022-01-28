@@ -1,7 +1,9 @@
 <?php
 
-use App\Http\Controllers\CashRegisterController;
 use Illuminate\Support\Facades\Route;
+
+use App\Http\Controllers\CashRegisterController;
+use App\Http\Controllers\CashRegisterWorkerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,6 +26,11 @@ Route::get('/dashboard', function () {
 
 Route::group(['middleware' => ['auth']], function () {
 
+    // Cash register worker routes
+    Route::get('cash_register_worker/create', [CashRegisterWorkerController::class, 'create'])->name('cash_register_worker.create');
+    Route::post('cash_register_worker/store', [CashRegisterWorkerController::class, 'store'])->name('cash_register_worker.store');
+
+    // Cash register routes
     Route::get('cash_register/create-step-one', [CashRegisterController::class, 'createStepOne'])->name('cash_register_step_one.create');
     Route::post('cash_register/post-step-one', [CashRegisterController::class, 'postCreateStepOne'])->name('cash_register_step_one.post');
         

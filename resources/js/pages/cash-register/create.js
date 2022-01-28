@@ -1,4 +1,5 @@
 import Inputmask from "inputmask";
+import { reduce } from "lodash";
 
 export default function(){
     let inputs = document.querySelectorAll('[data-currency^="amount"]');
@@ -9,10 +10,10 @@ export default function(){
     
     const submit = (event) => {
         let allIsNull = true;
+      
         
         for(let i = 0; i < inputs.length; i++){
             let el = inputs[i];
-            console.log(el.value);
             
             if (el.value){
                 allIsNull = false;
@@ -20,6 +21,7 @@ export default function(){
             }
         }
        
+        // Check if there's at least one input filled
         if (allIsNull){
             event.preventDefault();
             alert('Epa, no se ha ingresado ningun ingreso')

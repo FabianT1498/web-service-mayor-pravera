@@ -5,6 +5,9 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Date;
 
+use App\Rules\NonZeroTotalSum;
+
+
 class StoreCashRegisterStepOneRequest extends FormRequest
 {
     /**
@@ -30,15 +33,17 @@ class StoreCashRegisterStepOneRequest extends FormRequest
         $rules = [
             'cash_register_id' => [
                 'required',
-                // 'exists:cash_register,id',
+                'exists:saint_db.SSUSRS,CodUsua',
             ],
             'cash_register_worker' => [
                 'required',
-                // 'exists:cash_register_worker,id',
+                'exists:caja_mayorista.workers,id',
             ],
             'liquid_money_dollars' => [
+                'bail',
                 'required',
                 'gte:0',
+                new NonZeroTotalSum,
             ],
             'liquid_money_bs' => [
                 'required',
@@ -88,7 +93,6 @@ class StoreCashRegisterStepOneRequest extends FormRequest
      */
     protected function prepareForValidation()
     {
-        var_dump($this->date);
 
         $inputs = [
             'liquid_money_dollars' => $this->formatAmount($this->liquid_money_dollars),
@@ -97,6 +101,8 @@ class StoreCashRegisterStepOneRequest extends FormRequest
             'debit_card_payment_bs' => $this->formatAmount($this->debit_card_payment_bs),
             'debit_card_payment_dollar' => $this->formatAmount($this->debit_card_payment_dollar),
         ];
+
+        var_dump($inputs);
         
         $this->merge($inputs);
     }

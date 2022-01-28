@@ -12,7 +12,8 @@
     @endforeach
     <form id="form" method="POST" action="{{ route('cash_register_step_one.post') }}">
         @csrf
-        <div class="w-10/12 flex justify-between mb-4 mx-auto">
+        <div class="w-10/12"><h3 class="h3 text-center mb-4">Datos de la caja</h3></div>
+        <div class="w-10/12 flex justify-start mb-8 mx-auto">
             <!-- Cash register date -->
             <div class="flex basis-1/4 justify-evenly items-center">
                 <x-label for="date" :value="__('Fecha')" />
@@ -21,20 +22,25 @@
             </div>
             
             <!-- Cash register number-->
-            <div class="flex basis-1/4 items-center">
+            <div class="flex basis-1/4 items-center ml-8">
                 <x-label for="cash_register" :value="__('Caja')" />
 
-                <x-select-input :options="$cash_registers_id" id="cash_register" class="block ml-4" name="cash_register_id" :value="old('cash_register_id')" required autofocus />
+                <x-select-input :options="$cash_registers_id_arr" id="cash_register" class="block ml-4" name="cash_register_id" :value="old('cash_register_id')" required autofocus />
             </div>
             
-            <!-- Cash register owner -->
-            <div class="flex basis-1/4 items-center">
+        </div>
+        
+        <div class="w-10/12 flex justify-between mb-12 mx-auto">
+            <!-- Cash register worker -->
+            <div class="flex basis-2/5 items-center">
                     <x-label for="cash_register_owner" :value="__('Nombre del cajero/a:')" />
-                    <x-input id="cash_register_owner" class="block ml-4" type="text" name="cash_register_worker" :value="old('cash_register_worker')" required autofocus />
+                    <x-select-input :options="$cash_registers_workers_id_arr" id="cash_register" class="block ml-4" name="cash_register_worker" :value="old('cash_register_worker')" required autofocus />
             </div>
         </div>
 
-        <div class="w-10/12 flex justify-center mb-4 mx-auto">
+        <div class="w-10/12"><h3 class="h3 text-center mb-8">Datos de ingresos</h3></div>
+
+        <div class="w-10/12 flex justify-center mb-8 mx-auto">
             <!-- Cash on liquid input (dollars) -->
             <div class="flex basis-1/4 items-center">
                     <x-label for="liquid_money_dollars" :value="__('Total de $ en efectivo:')" />

@@ -13,7 +13,7 @@ class CreateCashRegistersTable extends Migration
      */
     public function up()
     {
-        Schema::create('cash_registers', function (Blueprint $table) {
+        Schema::connection('caja_mayorista')->create('cash_registers', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id')->unsigned();
             $table->date('date');
@@ -36,6 +36,6 @@ class CreateCashRegistersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('cash_registers');
+        Schema::connection('caja_mayorista')->dropIfExists('cash_registers');
     }
 }

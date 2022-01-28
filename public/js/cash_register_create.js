@@ -13,7 +13,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var inputmask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! inputmask */ "./node_modules/inputmask/dist/inputmask.js");
 /* harmony import */ var inputmask__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(inputmask__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_1__);
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 
 /* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__() {
@@ -28,13 +31,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
     for (var i = 0; i < inputs.length; i++) {
       var el = inputs[i];
-      console.log(el.value);
 
       if (el.value) {
         allIsNull = false;
         break;
       }
-    }
+    } // Check if there's at least one input filled
+
 
     if (allIsNull) {
       event.preventDefault();
