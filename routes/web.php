@@ -39,6 +39,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('cash_register/create-step-four', [CashRegisterController::class, 'createStepFour'])->name('cash_register_step_four.create');
     Route::get('cash_register/create-step-five', [CashRegisterController::class, 'createStepFive'])->name('cash_register_step_five.create');
     Route::get('cash_register/create-step-six', [CashRegisterController::class, 'createStepSix'])->name('cash_register_step_six.create');  
+    Route::get('cash_register/create-step-seven', [CashRegisterController::class, 'createStepSeven'])->name('cash_register_step_seven.create');  
+
     Route::post('cash_register/store', [CashRegisterController::class, 'store'])->name('cash_register.store');
 });
 

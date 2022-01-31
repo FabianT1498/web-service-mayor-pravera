@@ -10,7 +10,7 @@
             {{ $error }}
         </li>
     @endforeach
-    <form id="form" method="POST" action="{{ route('cash_register_step_one.post') }}">
+    <form id="form" autocomplete="off" method="POST" action="{{ route('cash_register_step_one.post') }}">
         @csrf
         <div class="w-10/12"><h3 class="h3 text-center mb-4">Datos de la caja</h3></div>
         <div class="w-10/12 flex justify-start mb-8 mx-auto">
@@ -25,7 +25,15 @@
             <div class="flex basis-1/4 items-center ml-8">
                 <x-label for="cash_register" :value="__('Caja')" />
 
-                <x-select-input :options="$cash_registers_id_arr" id="cash_register" class="block ml-4" name="cash_register_id" :value="old('cash_register_id')" required autofocus />
+                <x-select-input 
+                    :options="$cash_registers_id_arr" 
+                    :defaultOptTitle="__('Seleccione la caja')"
+                    id="cash_register" 
+                    class="block ml-4" 
+                    :name="__('cash_register_id')" 
+                    :value="old('cash_register_id')" 
+                    required  
+                />
             </div>
             
         </div>
@@ -33,8 +41,28 @@
         <div class="w-10/12 flex justify-between mb-12 mx-auto">
             <!-- Cash register worker -->
             <div class="flex basis-2/5 items-center">
-                    <x-label for="cash_register_owner" :value="__('Nombre del cajero/a:')" />
-                    <x-select-input :options="$cash_registers_workers_id_arr" id="cash_register" class="block ml-4" name="cash_register_worker" :value="old('cash_register_worker')" required autofocus />
+                    <x-label for="cash_register_worker" :value="__('Cajero/a:')" />
+                    <x-select-input 
+                        :options="$cash_registers_workers_id_arr"
+                        :defaultOptTitle="__('Seleccione el cajero/a')"
+                        id="cash_register_worker" 
+                        class="block ml-4" 
+                        :name="__('cash_register_worker')" 
+                        :value="old('cash_register_worker')" 
+                        required 
+                    />
+            </div>
+
+             <!-- Exist cash register worker -->
+             <div class="flex basis-2/5 items-center">
+                    <x-label for="exist_cash_register_worker" :value="__('No esta registrado el cajero/a ?')" />
+                    <input id="exist_cash_register_worker" type="checkbox" class="block ml-4" name="exist_cash_register_worker" value="{{ old('exist_cash_register_worker') ? old('exist_cash_register_worker') : 0 }}" />
+            </div>
+
+            <!-- new cash register worker input -->
+            <div id="hidden-new-cash-register-worker-container" class="flex basis-2/5 items-center hidden">
+                    <x-label for="new_cash_register_worker" :value="__('Nombre del cajero/a ?')" />
+                    <x-input id="new_cash_register_worker" class="block ml-4" type="text" name="new_cash_register_worker" :value="old('new_cash_register_worker') ? old('new_cash_register_worker') : ''" />
             </div>
         </div>
 

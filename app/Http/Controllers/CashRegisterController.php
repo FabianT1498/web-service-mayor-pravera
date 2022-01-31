@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 
 use App\Models\CashRegister;
+use App\Models\Worker;
 use App\Http\Requests\StoreCashRegisterStepOneRequest;
 
 
@@ -22,14 +23,20 @@ class CashRegisterController extends Controller
     }
 
     private function getBillsAmounts($bills){
-        return array_map(function($bill){
-            return $bill->amount;
-        }, $bills);
+        return $bills->map(function($bill){
+            return floatval($bill->amount . 'El');
+        });
     }
 
     public static function getSumAmount($amounts) {
-        return array_reduce($amounts, function($carry, $item){
+        return $amounts->reduce(function($carry, $item){
             return ($carry + $item);
+        });
+    }
+
+    private function format_amount(& $bills, $amounts_float){
+        $bills->each(function($bill, $key) use ($amounts_float){
+            $bill->amount = number_format($amounts_float[$key], 2, '.', ',');
         });
     }
 
@@ -67,6 +74,17 @@ class CashRegisterController extends Controller
 
         $validated += ["date" => $date];
 
+        if (array_key_exists('new_cash_register_worker', $validated)){
+            $worker = new Worker(array(
+                'name' => $validated['new_cash_register_worker']
+            ));
+            
+            $worker->save();
+
+            unset($validated['new_cash_register_worker']);
+            array_merge($validated, array('cash_register_worker' => $worker->id));
+        }
+
         if(empty($request->session()->get('cash_register'))){
             $cash_register = new CashRegister();
             $cash_register->fill($validated);
@@ -87,22 +105,28 @@ class CashRegisterController extends Controller
         $title = "Facturas de dolares en efectivo";
         $columns = ["id", "Monto"];
 
-        $cash_dollar_bills = DB::connection('saint_db')->table('SAFACT')
-            ->select(['TipoFac', 'NumeroD', 'Moneda', 'Monto', 'FechaE'])
-            ->limit(1)
+        // ( TipoFac = B )En esta categoria esta tanto pagos en dolares en efectivo, zelle y punto internacional
+        $bills = DB::connection('saint_db')->table('SAFACT')
+            ->select(['NumeroD as id', 'Monto as amount', 'FechaE'])
+            ->where('CodUsua', '=', $cash_register->cash_register_id)
+            ->where('TipoFac', '=', 'B')
+            ->limit(20)
+            ->whereDate('FechaE', '=', Date::now()->format('d-m-Y'))
             ->orderBy('FechaE', 'desc')
             ->get();
 
-        redirect()->route('dashboard');
+        var_dump($bills);
 
-        // $amounts = $this->getBillsAmounts($bills);
-        // $sum_amount = $this::getSumAmount($amounts);
+        $amounts = $this->getBillsAmounts($bills);
+       
+        $sum_amount = $this::getSumAmount($amounts);
+
+        $this->format_amount($bills, $amounts);
         
-
         /** Here should be handle the queries to the database */
-        // $data = compact('cash_register', 'columns', 'bills', 'sum_amount', 'title');
+        $data = compact('cash_register', 'columns', 'bills', 'sum_amount', 'title');
 
-        // return $this->getTableSummaryView('pages.cash-register.create-step-two', $data);
+        return $this->getTableSummaryView('pages.cash-register.create-step-two', $data);
     }
 
     public function createStepThree(Request $request)
@@ -111,20 +135,24 @@ class CashRegisterController extends Controller
 
         $title = "Facturas de Bs en efectivo";
         $columns = ["id", "Monto"];
-        $bills = [
-            (object) array("id" => "12243", "amount" => 2500.34),
-            (object) array("id" => "232", "amount" => 25800.34),
-            (object) array("id" => "12234343", "amount" => 2980.34),
-            (object) array("id" => "5454", "amount" => 23212.34),
-        ];
+
+        $bills = DB::connection('saint_db')->table('SAFACT')
+            ->select(['NumeroD as id', 'Monto as amount'])
+            ->where('CodUsua', '=', $cash_register->cash_register_id)
+            ->where('TipoFac', '=', 'A')
+            ->whereDate('FechaE', '=', Date::now()->format('d-m-Y'))
+            ->orderBy('FechaE', 'desc')
+            ->get();
 
         $amounts = $this->getBillsAmounts($bills);
+       
         $sum_amount = $this::getSumAmount($amounts);
-        
 
+        $this->format_amount($bills, $amounts);
+        
         /** Here should be handle the queries to the database */
         $data = compact('cash_register', 'columns', 'bills', 'sum_amount', 'title');
-
+       
         return $this->getTableSummaryView('pages.cash-register.create-step-three', $data);
     }
 
@@ -135,16 +163,20 @@ class CashRegisterController extends Controller
 
         $title = "Facturas de pagos en Zelle";
         $columns = ["id", "Monto"];
-        $bills = [
-            (object) array("id" => "12243", "amount" => 2500.34),
-            (object) array("id" => "232", "amount" => 25800.34),
-            (object) array("id" => "12234343", "amount" => 2980.34),
-            (object) array("id" => "5454", "amount" => 23212.34),
-        ];
+        
+        $bills = DB::connection('saint_db')->table('SAFACT')
+        ->select(['NumeroD as id', 'Monto as amount'])
+        ->where('CodUsua', '=', $cash_register->cash_register_id)
+        ->where('TipoFac', '=', 'B')
+        ->whereDate('FechaE', '=', Date::now()->format('d-m-Y'))
+        ->orderBy('FechaE', 'desc')
+        ->get();
 
         $amounts = $this->getBillsAmounts($bills);
+    
         $sum_amount = $this::getSumAmount($amounts);
-        
+
+        $this->format_amount($bills, $amounts);
 
         /** Here should be handle the queries to the database */
         $data = compact('cash_register', 'columns', 'bills', 'sum_amount', 'title');
@@ -158,12 +190,13 @@ class CashRegisterController extends Controller
 
         $title = "Facturas de pagos en Punto de venta Bs";
         $columns = ["id", "Monto"];
-        $bills = [
-            (object) array("id" => "12243", "amount" => 2500.34),
-            (object) array("id" => "232", "amount" => 25800.34),
-            (object) array("id" => "12234343", "amount" => 2980.34),
-            (object) array("id" => "5454", "amount" => 23212.34),
-        ];
+        
+        $bills = DB::connection('saint_db')->table('SAIPAVTA')
+            ->select(['NumeroD as id', 'Monto as amount'])
+            ->orWhereIn('CodPago', ['01', '02', '03'])
+            ->whereDate('FechaE', '=', Date::now()->format('Y-m-d'))
+            ->orderBy('FechaE', 'desc')
+            ->get();
 
         $amounts = $this->getBillsAmounts($bills);
         $sum_amount = $this::getSumAmount($amounts);
@@ -181,21 +214,59 @@ class CashRegisterController extends Controller
 
         $title = "Facturas de pagos en Punto de venta internacional ($)";
         $columns = ["id", "Monto"];
-        $bills = [
-            (object) array("id" => "12243", "amount" => 2500.34),
-            (object) array("id" => "232", "amount" => 25800.34),
-            (object) array("id" => "12234343", "amount" => 2980.34),
-            (object) array("id" => "5454", "amount" => 23212.34),
-        ];
+
+        
+        $bills = DB::connection('saint_db')->table('SAFACT')
+        ->select(['NumeroD as id', 'Monto as amount'])
+        ->where('CodUsua', '=', $cash_register->cash_register_id)
+        ->where('TipoFac', '=', 'B')
+        ->whereDate('FechaE', '=', Date::now()->format('d-m-Y'))
+        ->orderBy('FechaE', 'desc')
+        ->get();
 
         $amounts = $this->getBillsAmounts($bills);
+    
         $sum_amount = $this::getSumAmount($amounts);
+
+        $this->format_amount($bills, $amounts);
         
 
         /** Here should be handle the queries to the database */
         $data = compact('cash_register', 'columns', 'bills', 'sum_amount', 'title');
 
         return $this->getTableSummaryView('pages.cash-register.create-step-six', $data);
+    }
+
+    public function createStepSeven(Request $request)
+    {
+        $cash_register = $this->getSessionCashRegisterData($request);
+
+        $title = "Pagos en transferencia y pago movil";
+        $columns = ["id", "Monto"];
+
+        $bills_builder = DB::connection('saint_db')->table('SAFACT')
+            ->select(['SAFACT.NumeroD as id', 'SAFACT.Monto as amount'])
+            ->join('SAIPAVTA', function($join){
+                $join
+                    ->on('SAFACT.NumeroD', '=', 'SAIPAVTA.NumeroD')
+                    ->where('SAIPAVTA.CodPago', '=', '05');
+            })
+            ->whereDate('SAFACT.FechaE', '=', Date::now()->format('Y-m-d'))
+            ->where('SAFACT.CodUsua', '=', $cash_register->cash_register_id)
+            ->orderBy('SAFACT.FechaE', 'desc');
+
+        $bills = $bills_builder->get();
+
+        $amounts = $this->getBillsAmounts($bills);
+    
+        $sum_amount = $this::getSumAmount($amounts);
+
+        $this->format_amount($bills, $amounts);
+        
+        /** Here should be handle the queries to the database */
+        $data = compact('cash_register', 'columns', 'bills', 'sum_amount', 'title');
+
+        return $this->getTableSummaryView('pages.cash-register.create-step-seven', $data);
     }
 
     public function store(Request $request)

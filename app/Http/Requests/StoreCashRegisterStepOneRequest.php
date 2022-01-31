@@ -28,16 +28,11 @@ class StoreCashRegisterStepOneRequest extends FormRequest
     public function rules()
     {
         $date_format = 'd-m-Y';
-        $today_date = Date::now()->format('d-m-Y');
 
         $rules = [
             'cash_register_id' => [
                 'required',
                 'exists:saint_db.SSUSRS,CodUsua',
-            ],
-            'cash_register_worker' => [
-                'required',
-                'exists:caja_mayorista.workers,id',
             ],
             'liquid_money_dollars' => [
                 'bail',
@@ -62,6 +57,18 @@ class StoreCashRegisterStepOneRequest extends FormRequest
                 'gte:0',
             ]
         ];
+
+        // if (!isset($this->cash_register_worker)){
+        //     $rules += ["new_cash_register_worker" => array(
+        //         'required',
+        //         'unique:caja_mayorista.workers,name'
+        //     )];
+        // } else {
+        //     $rules += ['cash_register_worker' => array(
+        //         'required',
+        //         'exists:caja_mayorista.workers,id',
+        //     )];
+        // }
 
         return $rules;
     }
@@ -93,6 +100,7 @@ class StoreCashRegisterStepOneRequest extends FormRequest
      */
     protected function prepareForValidation()
     {
+        var_dump($this->all());
 
         $inputs = [
             'liquid_money_dollars' => $this->formatAmount($this->liquid_money_dollars),
@@ -102,7 +110,9 @@ class StoreCashRegisterStepOneRequest extends FormRequest
             'debit_card_payment_dollar' => $this->formatAmount($this->debit_card_payment_dollar),
         ];
 
-        var_dump($inputs);
+        // if (isset($this->new_cash_register_worker)){
+        //     $inputs += ['new_cash_register_worker' => ucwords($this->new_cash_register_worker)];
+        // }
         
         $this->merge($inputs);
     }

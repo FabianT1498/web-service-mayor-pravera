@@ -24,7 +24,7 @@
         <tfoot>
             <tr class="bg-blue-300">
                 <th scope="row">Total</th>
-                <td>{{ $total }}</td>
+                <td>{{ number_format($total, 2, '.', ',') }}</td>
             </tr>
             <tr>
                 <th class="bg-blue-300" scope="row">Diferencia</th>

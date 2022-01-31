@@ -23,6 +23,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   var _Inputmask;
 
   var inputs = document.querySelectorAll('[data-currency^="amount"]');
+  var existCashRegisterWorker = document.getElementById('exist_cash_register_worker');
+  var cashRegisterWorkerSelect = document.getElementById('cash_register_worker');
+  var newCashRegisterWorkerContainer = document.getElementById('hidden-new-cash-register-worker-container');
   var maskedInputs = [];
   var form = document.querySelector('#form');
 
@@ -46,7 +49,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   };
 
+  var handleChangeExistWorker = function handleChangeExistWorker(event) {
+    newCashRegisterWorkerContainer.classList.toggle('hidden');
+    cashRegisterWorkerSelect.disabled = !cashRegisterWorkerSelect.disabled;
+    newCashRegisterWorkerContainer.lastElementChild.toggleAttribute('required');
+
+    if (cashRegisterWorkerSelect.disabled) {
+      cashRegisterWorkerSelect.selectedIndex = "0";
+    }
+  };
+
   form.addEventListener('submit', submit);
+  existCashRegisterWorker.addEventListener('change', handleChangeExistWorker);
   var moneyFormat = new (inputmask__WEBPACK_IMPORTED_MODULE_0___default())("(.999){+|1},00", (_Inputmask = {
     positionCaretOnClick: "radixFocus",
     radixPoint: ",",
