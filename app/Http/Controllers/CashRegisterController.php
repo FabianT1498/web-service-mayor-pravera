@@ -125,8 +125,8 @@ class CashRegisterController extends Controller
             ->where('TipoFac', '=', 'B')
             ->whereDate('FechaE', '=', Date::now()->format('d-m-Y'))
             ->orderBy('FechaE', 'desc')
-            ->get();
-
+            ->paginate(10);
+       
         $amounts = $this->getBillsAmounts($bills);
        
         $sum_amount = $this::getSumAmount($amounts);
@@ -163,7 +163,8 @@ class CashRegisterController extends Controller
             ->where('SAFACT.TipoFac', '=', 'A')
             ->whereDate('SAFACT.FechaE', '=', Date::now()->format('Y-m-d'))
             ->orderBy('SAFACT.FechaE', 'desc')
-            ->get();
+            ->paginate(10);
+
             
         $amounts = $this->getBillsAmounts($bills);
        
@@ -196,7 +197,7 @@ class CashRegisterController extends Controller
         ->where('TipoFac', '=', 'B')
         ->whereDate('FechaE', '=', Date::now()->format('d-m-Y'))
         ->orderBy('FechaE', 'desc')
-        ->get();
+        ->paginate(10);
 
         $amounts = $this->getBillsAmounts($bills);
     
@@ -223,7 +224,7 @@ class CashRegisterController extends Controller
         $title = "Facturas de pagos en Punto de venta Bs (Debito)";
         $columns = ["id", "Monto"];
         
-        $bills_builder = DB::connection('saint_db')->table('SAFACT')
+        $bills = DB::connection('saint_db')->table('SAFACT')
             ->select(['SAFACT.NumeroD as id', 'SAFACT.Monto as amount'])
             ->join('SAIPAVTA', function($join){
                 $join
@@ -232,10 +233,9 @@ class CashRegisterController extends Controller
             })
             ->whereDate('SAFACT.FechaE', '=', Date::now()->format('Y-m-d'))
             ->where('SAFACT.CodUsua', '=', $cash_register->cash_register_id)
-            ->orderBy('SAFACT.FechaE', 'desc');
-        
-        $bills = $bills_builder->get();
-
+            ->orderBy('SAFACT.FechaE', 'desc')
+            ->paginate(10);
+    
         $amounts = $this->getBillsAmounts($bills);
         $sum_amount = $this::getSumAmount($amounts);
         
@@ -259,7 +259,7 @@ class CashRegisterController extends Controller
         $title = "Facturas de pagos en Punto de venta Bs (Credito)";
         $columns = ["id", "Monto"];
         
-        $bills_builder = DB::connection('saint_db')->table('SAFACT')
+        $bills = DB::connection('saint_db')->table('SAFACT')
             ->select(['SAFACT.NumeroD as id', 'SAFACT.Monto as amount'])
             ->join('SAIPAVTA', function($join){
                 $join
@@ -268,10 +268,9 @@ class CashRegisterController extends Controller
             })
             ->whereDate('SAFACT.FechaE', '=', Date::now()->format('Y-m-d'))
             ->where('SAFACT.CodUsua', '=', $cash_register->cash_register_id)
-            ->orderBy('SAFACT.FechaE', 'desc');
+            ->orderBy('SAFACT.FechaE', 'desc')
+            ->paginate(10);;
         
-        $bills = $bills_builder->get();
-
         $amounts = $this->getBillsAmounts($bills);
         $sum_amount = $this::getSumAmount($amounts);
         
@@ -295,7 +294,7 @@ class CashRegisterController extends Controller
         $title = "Facturas de pagos en Punto de venta Bs (Todo Ticket)";
         $columns = ["id", "Monto"];
         
-        $bills_builder = DB::connection('saint_db')->table('SAFACT')
+        $bills = DB::connection('saint_db')->table('SAFACT')
             ->select(['SAFACT.NumeroD as id', 'SAFACT.Monto as amount'])
             ->join('SAIPAVTA', function($join){
                 $join
@@ -304,14 +303,12 @@ class CashRegisterController extends Controller
             })
             ->whereDate('SAFACT.FechaE', '=', Date::now()->format('Y-m-d'))
             ->where('SAFACT.CodUsua', '=', $cash_register->cash_register_id)
-            ->orderBy('SAFACT.FechaE', 'desc');
-        
-        $bills = $bills_builder->get();
-
+            ->orderBy('SAFACT.FechaE', 'desc')
+            ->paginate(10);
+      
         $amounts = $this->getBillsAmounts($bills);
         $sum_amount = $this::getSumAmount($amounts);
         
-
         /** Here should be handle the queries to the database */
         $data = compact('cash_register', 'columns', 'bills', 'sum_amount', 'title');
 
@@ -331,7 +328,7 @@ class CashRegisterController extends Controller
         $title = "Facturas de pagos en transferencia y pago movil";
         $columns = ["id", "Monto"];
 
-        $bills_builder = DB::connection('saint_db')->table('SAFACT')
+        $bills = DB::connection('saint_db')->table('SAFACT')
             ->select(['SAFACT.NumeroD as id', 'SAFACT.Monto as amount'])
             ->join('SAIPAVTA', function($join){
                 $join
@@ -340,9 +337,8 @@ class CashRegisterController extends Controller
             })
             ->whereDate('SAFACT.FechaE', '=', Date::now()->format('Y-m-d'))
             ->where('SAFACT.CodUsua', '=', $cash_register->cash_register_id)
-            ->orderBy('SAFACT.FechaE', 'desc');
-
-        $bills = $bills_builder->get();
+            ->orderBy('SAFACT.FechaE', 'desc')
+            ->paginate(10);
 
         $amounts = $this->getBillsAmounts($bills);
     
@@ -375,7 +371,7 @@ class CashRegisterController extends Controller
         ->where('TipoFac', '=', 'B')
         ->whereDate('FechaE', '=', Date::now()->format('d-m-Y'))
         ->orderBy('FechaE', 'desc')
-        ->get();
+        ->paginate(10);
 
         $amounts = $this->getBillsAmounts($bills);
     
@@ -383,7 +379,6 @@ class CashRegisterController extends Controller
 
         $this->format_amount($bills, $amounts);
         
-
         /** Here should be handle the queries to the database */
         $data = compact('cash_register', 'columns', 'bills', 'sum_amount', 'title');
 
