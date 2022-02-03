@@ -25,7 +25,19 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   var inputs = document.querySelectorAll('[data-currency^="amount"]');
   var existCashRegisterWorker = document.getElementById('exist_cash_register_worker');
   var cashRegisterWorkerSelect = document.getElementById('cash_register_worker');
-  var newCashRegisterWorkerContainer = document.getElementById('hidden-new-cash-register-worker-container');
+  var newCashRegisterWorkerContainer = document.getElementById('hidden-new-cash-register-worker-container'); // Modal containers
+
+  var exampleModal = document.getElementById('authentication-modal');
+  exampleModal.addEventListener("keyup", function (event) {
+    var key = event.key;
+
+    if (key === "Enter") {
+      event.preventDefault();
+      console.log('esto se disparo');
+      var newRow = "\n                <tr class=\"hover:bg-gray-100 dark:hover:bg-gray-700\">\n                    <td class=\"py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white\">1</td>\n                    <td class=\"py-4 px-6 text-sm font-medium text-gray-500 whitespace-nowrap dark:text-white\">\n                        <x-input \n                            id=\"new_cash_register_worker\" \n                            placeholder=\"Nombre del cajero\"\n                            class=\"w-full\"\n                            type=\"text\" \n                            name=\"new_cash_register_worker\" \n                            :value=\"old('new_cash_register_worker') ? old('new_cash_register_worker') : ''\" \n                        />\n                    </td>\n                    <td class=\"py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white\">\n                        12,000 Bs.F\n                    </td>\n                    <td class=\"py-4 px-6 text-sm font-medium text-right whitespace-nowrap\">\n                        <button  disabled class=\"bg-stone-300 flex justify-center w-8 h-8 items-center transition-colors duration-150 rounded-full shadow-lg\">\n                            <i class=\"fas fa-times text-md text-red-600\"></i>                        \n                        </button>\n                    </td>\n                </tr>\n            ";
+      console.log(this);
+    }
+  });
   var maskedInputs = [];
   var form = document.querySelector('#form');
 
