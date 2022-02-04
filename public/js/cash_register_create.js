@@ -13,35 +13,102 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var inputmask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! inputmask */ "./node_modules/inputmask/dist/inputmask.js");
 /* harmony import */ var inputmask__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(inputmask__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
-/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_1__);
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 /* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__() {
   var _Inputmask;
 
-  var inputs = document.querySelectorAll('[data-currency^="amount"]');
-  var existCashRegisterWorker = document.getElementById('exist_cash_register_worker');
-  var cashRegisterWorkerSelect = document.getElementById('cash_register_worker');
-  var newCashRegisterWorkerContainer = document.getElementById('hidden-new-cash-register-worker-container'); // Modal containers
+  // --- HANDLING MODAL TO MONEY ENTRANCE ---
+  var liquidMoneyDollarsModal = document.getElementById('liquid_money_dollars');
+  var inputsID = {
+    'liquid_money_dollars': [0],
+    'liquid_money_dollars_count': 1
+  };
 
-  var exampleModal = document.getElementById('authentication-modal');
-  exampleModal.addEventListener("keyup", function (event) {
-    var key = event.key;
+  var getNewInputID = function getNewInputID(name) {
+    return inputsID[name].length === 0 ? 0 : inputsID[name][inputsID[name].length - 1] + 1;
+  };
 
-    if (key === "Enter") {
+  var saveNewInputID = function saveNewInputID(name) {
+    inputsID[name].push(getNewInputID(name));
+  };
+
+  var removeInputID = function removeInputID(name, id) {
+    var index = inputsID[name].findIndex(function (val) {
+      return val == id;
+    });
+    return index !== -1 ? inputsID[name].slice(index, 1) : -1;
+  };
+
+  var updateTableIDColumn = function updateTableIDColumn(name) {
+    var colsID = document.querySelectorAll("#".concat(name, " td[data-table=\"num-col\"]"));
+
+    for (var i = 0; i < inputsID["".concat(name, "_count")]; i++) {
+      colsID[i].innerHTML = i + 1;
+    }
+  };
+
+  var inputTemplate = function inputTemplate(name) {
+    return "\n        <input type=\"text\" id=\"".concat(name, "_").concat(getNewInputID(name), "\" name=\"").concat(name, "[]\" class=\"w-36 rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50\">\n    ");
+  };
+
+  var tableRowTemplate = function tableRowTemplate(name) {
+    return "\n        <tr class=\"hover:bg-gray-100 dark:hover:bg-gray-700\" data-id=".concat(getNewInputID(name), ">\n            <td data-table=\"num-col\" class=\"py-4 pl-6 pr-3 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white\">").concat(inputsID["".concat(name, "_count")] + 1, "</td>\n            <td class=\"py-4 pl-3 text-sm font-medium text-gray-500 whitespace-nowrap dark:text-white\">\n                ").concat(inputTemplate(name), "\n            </td>\n            <td data-table=\"convertion-col\" class=\"py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white\">\n                0.00 bs.s\n            </td>\n            <td class=\"py-4 pr-6 text-sm font-medium text-right whitespace-nowrap\">\n                <button data-del-row=\"").concat(getNewInputID(name), "\" type=\"button\" class=\"bg-red-600 flex justify-center w-6 h-6 items-center transition-colors duration-150 rounded-full shadow-lg hover:bg-red-500\">\n                    <i class=\"fas fa-times font-bold text-md text-white\"></i>                        \n                </button>\n            </td>\n        </tr>\n    ");
+  };
+
+  liquidMoneyDollarsModal.addEventListener("keypress", function (event) {
+    var key = event.key || event.keyCode;
+
+    if (key === 13 || key === 'Enter') {
       event.preventDefault();
-      console.log('esto se disparo');
-      var newRow = "\n                <tr class=\"hover:bg-gray-100 dark:hover:bg-gray-700\">\n                    <td class=\"py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white\">1</td>\n                    <td class=\"py-4 px-6 text-sm font-medium text-gray-500 whitespace-nowrap dark:text-white\">\n                        <x-input \n                            id=\"new_cash_register_worker\" \n                            placeholder=\"Nombre del cajero\"\n                            class=\"w-full\"\n                            type=\"text\" \n                            name=\"new_cash_register_worker\" \n                            :value=\"old('new_cash_register_worker') ? old('new_cash_register_worker') : ''\" \n                        />\n                    </td>\n                    <td class=\"py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white\">\n                        12,000 Bs.F\n                    </td>\n                    <td class=\"py-4 px-6 text-sm font-medium text-right whitespace-nowrap\">\n                        <button  disabled class=\"bg-stone-300 flex justify-center w-8 h-8 items-center transition-colors duration-150 rounded-full shadow-lg\">\n                            <i class=\"fas fa-times text-md text-red-600\"></i>                        \n                        </button>\n                    </td>\n                </tr>\n            ";
-      console.log(this);
+      var tBody = document.querySelector("#".concat(this.id, " tbody"));
+      tBody.insertAdjacentHTML('beforeend', tableRowTemplate(this.id));
+      var input = document.querySelector("#".concat(this.id, "_").concat(getNewInputID(this.id)));
+      moneyFormat.mask(input);
+      inputsID["".concat(this.id, "_count")]++;
+      saveNewInputID(this.id);
     }
   });
-  var maskedInputs = [];
+  liquidMoneyDollarsModal.addEventListener("click", function (event) {
+    var closest = event.target.closest('button');
+
+    if (closest && closest.tagName === 'BUTTON') {
+      var id = closest.getAttribute('data-del-row');
+      var parent = document.querySelector("#".concat(this.id, " tbody"));
+
+      if (parent.children.length === 1) {
+        document.getElementById("".concat(this.id, "_").concat(id)).value = 0;
+      } else {
+        var child = document.querySelector("#".concat(this.id, " tr[data-id=\"").concat(id, "\"]"));
+        parent.removeChild(child);
+        inputsID["".concat(this.id, "_count")]--;
+        removeInputID(this.id, id);
+        updateTableIDColumn(this.id);
+      }
+    }
+  }); // --- HANDLING INPUTS TO CREATE A NEW CASH REGISTER WORKER ---
+
+  var existCashRegisterWorker = document.getElementById('exist_cash_register_worker');
+  var cashRegisterWorkerSelect = document.getElementById('cash_register_worker');
+  var newCashRegisterWorkerContainer = document.getElementById('hidden-new-cash-register-worker-container');
+
+  var handleChangeExistWorker = function handleChangeExistWorker(event) {
+    newCashRegisterWorkerContainer.classList.toggle('hidden');
+    cashRegisterWorkerSelect.disabled = !cashRegisterWorkerSelect.disabled;
+    newCashRegisterWorkerContainer.lastElementChild.toggleAttribute('required');
+
+    if (cashRegisterWorkerSelect.disabled) {
+      cashRegisterWorkerSelect.selectedIndex = "0";
+    }
+  };
+
+  existCashRegisterWorker.addEventListener('change', handleChangeExistWorker); // --- HANDLING FORM SUBMIT ---
+
   var form = document.querySelector('#form');
 
   var submit = function submit(event) {
+    console.log(event);
     var allIsNull = true;
 
     for (var i = 0; i < inputs.length; i++) {
@@ -61,18 +128,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   };
 
-  var handleChangeExistWorker = function handleChangeExistWorker(event) {
-    newCashRegisterWorkerContainer.classList.toggle('hidden');
-    cashRegisterWorkerSelect.disabled = !cashRegisterWorkerSelect.disabled;
-    newCashRegisterWorkerContainer.lastElementChild.toggleAttribute('required');
+  form.addEventListener('submit', submit); // --- HANDLING INPUT MASKS ---
 
-    if (cashRegisterWorkerSelect.disabled) {
-      cashRegisterWorkerSelect.selectedIndex = "0";
-    }
-  };
-
-  form.addEventListener('submit', submit);
-  existCashRegisterWorker.addEventListener('change', handleChangeExistWorker);
+  var inputs = document.querySelectorAll('[data-currency^="amount"]');
   var moneyFormat = new (inputmask__WEBPACK_IMPORTED_MODULE_0___default())("(.999){+|1},00", (_Inputmask = {
     positionCaretOnClick: "radixFocus",
     radixPoint: ",",
@@ -84,9 +142,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       validator: "[0-9\uFF11-\uFF19]"
     }
   }), _Inputmask));
-  inputs.forEach(function (el) {
-    return maskedInputs.push(moneyFormat.mask(el));
-  });
 }
 
 /***/ }),

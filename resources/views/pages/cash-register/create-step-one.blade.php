@@ -60,12 +60,12 @@
 
         <div class="w-10/12 grid gap-4 grid-cols-[150px_auto_auto_auto] grid-rows-4 mb-8 mx-auto">
             <!-- Cash on liquid input (dollars) -->
-            <x-label for="liquid_money_dollars" :value="__('Total de $ en efectivo:')" />
+            <x-label for="liquid_money_dollars_total" :value="__('Total de $ en efectivo:')" />
             <x-input-with-button 
                 id="total_liquid_money_dollar" 
-                name="liquid_money_dollars"
+                name="liquid_money_dollars_total"
                 type="text"
-                :modalID="__('authentication-modal')"
+                :modalID="__('liquid_money_dollars')"
             />
 
             <!-- Cash on liquid input (bs) -->
@@ -107,6 +107,6 @@
             </x-button>
         </div>
         
-        <x-modal-input-list :modalID="__('authentication-modal')"/>
+        <x-modal-input-list :modalID="__('liquid_money_dollars')"/>
     </form>
 @endsection
