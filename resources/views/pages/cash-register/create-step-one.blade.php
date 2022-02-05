@@ -62,27 +62,17 @@
             <!-- Cash on liquid input (dollars) -->
             <x-label for="liquid_money_dollars_total" :value="__('Total de $ en efectivo:')" />
             <x-input-with-button 
-                id="total_liquid_money_dollar" 
-                name="liquid_money_dollars_total"
-                type="text"
+                :inputID="__('total_liquid_money_dollars')"
                 :modalID="__('liquid_money_dollars')"
+                name="total_liquid_money_dollars"
+                type="text"
             />
-
-            <!-- Cash on liquid input (bs) -->
-            <div class="flex basis-1/4 items-center">
-                    <x-label for="liquid_money_bs" :value="__('Total de Bs.s en efectivo:')" />
-
-                    <x-input data-currency="amount-bs" placeholder="0.00" id="liquid_money_bs" class="block ml-4" type="text" name="liquid_money_bs" :value="old('liquid_money_bs')" autofocus />
-
-                    <!-- <x-input data-currency="amount-bs" placeholder="0.00" id="liquid_money_bs" class="block ml-4" type="text" name="liquid_money_bs" :value="old('liquid_money_bs')" autofocus /> -->
-            </div>
-
-            <!-- Cash on zelle -->
-            <div class="flex basis-1/4 items-center">
-                    <x-label for="payment_zelle" :value="__('Total de $ en Zelle:')" />
-
-                    <x-input data-currency="amount-$" placeholder="0.00" id="payment_zelle" class="block ml-4" type="text" name="payment_zelle" :value="old('payment_zelle')" autofocus />
-            </div>
+            <x-input-with-button 
+                :inputID="__('total_liquid_money_dollars_denominations')"
+                :modalID="__('liquid_money_dollars_denominations')"
+                name="total_liquid_money_dollars_denominations"
+                type="text"
+            />
         </div>
 
         <div class="w-10/12 flex mx-auto">
@@ -108,5 +98,6 @@
         </div>
         
         <x-modal-input-list :modalID="__('liquid_money_dollars')"/>
+        <x-modal-input-dollar-denominations :modalID="__('liquid_money_dollars_denominations')"/>
     </form>
 @endsection

@@ -1917,8 +1917,8 @@ div.code-toolbar .toolbar button:hover {
   height: 4rem;
 }
 
-.h-96{
-  height: 24rem;
+.h-108{
+  height: 27rem;
 }
 
 .h-6{
@@ -1927,10 +1927,6 @@ div.code-toolbar .toolbar button:hover {
 
 .h-9{
   height: 2.25rem;
-}
-
-.h-108{
-  height: 27rem;
 }
 
 .min-h-screen{
