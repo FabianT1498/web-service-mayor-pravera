@@ -18,24 +18,113 @@ export default function(){
         },
     });
 
-    // --- HANDLING MODAL TO MONEY ENTRANCE ---
-    const liquidMoneyDollarsModal = document.getElementById('liquid_money_dollars');
-
     const modalsID = {
         'liquid_money_dollars': [0],
-        'liquid_money_dollars_count': 1
+        'liquid_money_dollars_count': 1,
+        'liquid_money_bolivares': [0],
+        'liquid_money_bolivares_count': 1,
     };
 
-    (function(modalState){  
+    const denominationModalsID = [
+        'liquid_money_dollars_denominations',
+        'liquid_money_bolivares_denominations'
+    ];
 
-        // Get the modals ID
-        const modalsID = Object.keys(modalState).reduce((arr, val) => {
+    const getModalsID = (obj) => {
+        return Object.keys(obj).reduce((arr, val) => {
             if (!val.includes('_count')){
                 arr.push(`${val}`)
             }
             return arr;
         }, [])
+    };
+
+    const keypressEventHandler = function(event){
         
+        let key = event.key || event.keyCode;
+
+        if (key === 13 || key === 'Enter'){
+            event.preventDefault()
+            const tBody = document.querySelector(`#${this.id} tbody`);
+            tBody.insertAdjacentHTML('beforeend', tableRowTemplate(this.id));
+            const input = document.querySelector(`#${this.id}_${getNewInputID(this.id)}`);
+            moneyFormat.mask(input);
+            modalsID[`${this.id}_count`]++;
+            saveNewInputID(this.id);
+        }
+    };
+
+    const clickEventHandler = function(event){
+        const closest = event.target.closest('button');
+
+        if(closest && closest.tagName === 'BUTTON'){
+
+            const idRow = closest.getAttribute('data-del-row');
+            const modaToggleID = closest.getAttribute('data-modal-toggle');
+            
+            if (idRow){ // Checking if it's Deleting a row
+                let parent = document.querySelector(`#${this.id} tbody`)
+
+                if(parent.children.length === 1){
+                    const input = document.getElementById(`${this.id}_${idRow}`);
+                    if (input?.inputmask){
+                        input.value = 0;
+                        input.inputmask.remove();
+                        moneyFormat.mask(input)
+                    }
+                } else {
+                    let child = document.querySelector(`#${this.id} tr[data-id="${idRow}"]`)
+                    parent.removeChild(child);
+                    modalsID[`${this.id}_count`]--;
+                    removeInputID(this.id, idRow)
+                    updateTableIDColumn(this.id);
+                }
+
+            } else if (modaToggleID){ // Checking if it's closing the modal
+
+                // get all inputs of the modal
+                let inputs = document.querySelectorAll(`#${this.id} input`)
+                const total = Array.from(inputs).reduce((acc, el) => {
+                    let num = formatAmount(el.value)
+                    return acc + num;
+                }, 0);
+
+                console.log(total);
+
+                document.getElementById(`total_${this.id}`).value = total > 0 ? total : 0;
+            }
+        }
+    };
+
+    // --- HANDLING MODAL TO LIQUID MONEY DENOMINATIONS --- //
+    const handleClickEventDenominationsModal = function(event){
+        const closest = event.target.closest('button');
+
+        if(closest && closest.tagName === 'BUTTON'){
+
+            const idRow = closest.getAttribute('data-del-row');
+            const modaToggleID = closest.getAttribute('data-modal-toggle');
+            
+            if (modaToggleID){ // Checking if it's closing the modal
+
+                // get all inputs of the modal
+                let inputs = document.querySelectorAll(`#${this.id} input`)
+                const total = Array.from(inputs).reduce((acc, el) => {
+                    let denomination = parseFloat(el.getAttribute('data-denomination'));
+                    let num = formatAmount(el.value)
+                    return acc + (num * denomination);
+                }, 0);
+
+                document.getElementById(`total_${this.id}`).value = total > 0 ? total : 0;
+            }
+        }
+    };
+
+    (function(modalState, denominationModalsID){  
+
+        // Get the modals ID
+        const modalsID = getModalsID(modalState);
+
         // Get the total input IDs
         const totalInputsID = modalsID.map(el => `#total_${el}`);
 
@@ -45,15 +134,39 @@ export default function(){
         // Apply the mask to total inputs
         totalInputs.forEach(el => moneyFormat.mask(el))
 
-        // Get the default input IDs
+        // Get the default input IDs in modals
         const defaultInputsID = modalsID.map(el => `#${el}_0`);
 
-        // Get the default Input Elements
+        // Get the default Input Elements in modals
         const defaultInputs = document.querySelectorAll(defaultInputsID.join(','))
 
         // Apply the mask to default inputs
         defaultInputs.forEach(el => moneyFormat.mask(el))
-    })(modalsID)
+
+        // Apply mask to default total denominations input
+        const totalInputDollarDenominations = document.querySelector('#total_liquid_money_dollars_denominations')
+        moneyFormat.mask(totalInputDollarDenominations);
+
+        // Attach event handlers to liquid money details modals
+        const modals = document.querySelectorAll(modalsID.map(el => `#${el}`).join(','))
+
+        modals.forEach(el => {
+            el.addEventListener("keypress", keypressEventHandler);
+            el.addEventListener("click", clickEventHandler);  
+        });
+
+        // Attach event handlers to denominations money modals
+        const denominationModals = document
+            .querySelectorAll(denominationModalsID
+                .map(el => `#${el}`)
+                .join(',')
+            );
+        
+        denominationModals.forEach(el => {
+            el.addEventListener("click", handleClickEventDenominationsModal);  
+        });
+
+    })(modalsID, denominationModalsID);
 
     const getNewInputID = (name) => modalsID[name].length === 0 ? 0 : (modalsID[name][modalsID[name].length - 1] + 1);
 
@@ -95,18 +208,19 @@ export default function(){
     `;
 
     const formatAmount = (amount, defaultValue = '0.00') => {
-
-        
+  
         if (!amount){
             return 0;
         }
 
         let index = amount.indexOf(" ");
 
+        // Remove suffix if exists
         if (index !== -1){
             amount = amount.slice(0, index);
         }
         
+        // Check if value is zero
         if (amount === defaultValue){
             return 0;
         }
@@ -117,67 +231,15 @@ export default function(){
         
         let integerStr = integer.split(".").join();
         
-        let numberString = integerStr  + '.' + decimal;
+        // Check if it is an integer number
+        if (!decimal){
+            return parseInt(integerStr);
+        }
+
+        let numberString = integerStr + '.' + decimal;
 
         return (Math.round((parseFloat(numberString) + Number.EPSILON) * 100) / 100)
     }
-
-    liquidMoneyDollarsModal.addEventListener("keypress", function(event){
-        
-        let key = event.key || event.keyCode;
-
-        if (key === 13 || key === 'Enter'){
-            event.preventDefault()
-            const tBody = document.querySelector(`#${this.id} tbody`);
-            tBody.insertAdjacentHTML('beforeend', tableRowTemplate(this.id));
-            const input = document.querySelector(`#${this.id}_${getNewInputID(this.id)}`);
-            moneyFormat.mask(input);
-            modalsID[`${this.id}_count`]++;
-            saveNewInputID(this.id);
-        }
-    })
-
-    liquidMoneyDollarsModal.addEventListener("click", function(event){
-        const closest = event.target.closest('button');
-
-        if(closest && closest.tagName === 'BUTTON'){
-
-            const idRow = closest.getAttribute('data-del-row');
-            const modaToggleID = closest.getAttribute('data-modal-toggle');
-            
-            if (idRow){ // Checking if it's Deleting a row
-                let parent = document.querySelector(`#${this.id} tbody`)
-
-                if(parent.children.length === 1){
-                    const input = document.getElementById(`${this.id}_${idRow}`);
-                    if (input?.inputmask){
-                        input.value = 0;
-                        input.inputmask.remove();
-                        moneyFormat.mask(input)
-                    }
-                } else {
-                    let child = document.querySelector(`#${this.id} tr[data-id="${idRow}"]`)
-                    parent.removeChild(child);
-                    modalsID[`${this.id}_count`]--;
-                    removeInputID(this.id, idRow)
-                    updateTableIDColumn(this.id);
-                }
-
-            } else if (modaToggleID){ // Checking if it's closing the modal
-
-                // get all inputs of the modal
-                let inputs = document.querySelectorAll(`#${this.id} input`)
-                const total = Array.from(inputs).reduce((acc, el) => {
-                    let num = formatAmount(el.value)
-                    return acc + num;
-                }, 0);
-
-                console.log(total);
-
-                document.getElementById(`total_${this.id}`).value = total > 0 ? total : 0;
-            }
-        }
-    })
 
     // --- HANDLING INPUTS TO CREATE A NEW CASH REGISTER WORKER ---
     

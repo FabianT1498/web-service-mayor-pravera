@@ -58,19 +58,36 @@
         
         <div class="w-10/12"><h3 class="h3 text-center mb-8">Datos de ingresos</h3></div>
 
-        <div class="w-10/12 grid gap-4 grid-cols-[150px_auto_auto_auto] grid-rows-4 mb-8 mx-auto">
+        <div class="w-10/12 grid gap-4 grid-cols-[150px_auto_auto_auto] grid-rows-4 mb-8 mx-auto items-center">
             <!-- Cash on liquid input (dollars) -->
-            <x-label for="liquid_money_dollars_total" :value="__('Total de $ en efectivo:')" />
+            <x-label :value="__('Total de $ en efectivo:')" />
             <x-input-with-button 
                 :inputID="__('total_liquid_money_dollars')"
                 :modalID="__('liquid_money_dollars')"
                 name="total_liquid_money_dollars"
                 type="text"
             />
+            <x-label for="liquid_money_dollars_total" :value="__('Total de billetes($) :')" />
             <x-input-with-button 
                 :inputID="__('total_liquid_money_dollars_denominations')"
                 :modalID="__('liquid_money_dollars_denominations')"
                 name="total_liquid_money_dollars_denominations"
+                type="text"
+            />
+
+            <!-- Cash on liquid input (bolivares) -->
+            <x-label :value="__('Total de Bs.S en efectivo:')" />
+            <x-input-with-button 
+                :inputID="__('total_liquid_money_bolivares')"
+                :modalID="__('liquid_money_bolivares')"
+                name="total_liquid_money_bolivares"
+                type="text"
+            />
+            <x-label  :value="__('Total de billetes(Bs.S) :')" />
+            <x-input-with-button 
+                :inputID="__('total_liquid_money_bolivares_denominations')"
+                :modalID="__('liquid_money_bolivares_denominations')"
+                name="total_liquid_money_bolivares_denominations"
                 type="text"
             />
         </div>
@@ -98,6 +115,15 @@
         </div>
         
         <x-modal-input-list :modalID="__('liquid_money_dollars')"/>
-        <x-modal-input-dollar-denominations :modalID="__('liquid_money_dollars_denominations')"/>
+        <x-modal-input-denominations 
+            :modalID="__('liquid_money_dollars_denominations')"
+            :denominations="['0.50', '1', '2', '5', '10', '20','50', '100']"
+        />
+
+        <x-modal-input-list :modalID="__('liquid_money_bolivares')"/>
+        <x-modal-input-denominations 
+            :modalID="__('liquid_money_bolivares_denominations')"
+            :denominations="['0.50', '1', '2', '5', '10', '20', '50','100', '200', '500']"
+        />
     </form>
 @endsection
