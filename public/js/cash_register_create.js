@@ -15,9 +15,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var inputmask__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(inputmask__WEBPACK_IMPORTED_MODULE_0__);
 
 /* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__() {
-  var moneyFormat = new (inputmask__WEBPACK_IMPORTED_MODULE_0___default())({
+  var decimalMaskOptions = {
     alias: 'decimal',
-    suffix: ' $',
+    suffix: '$',
     positionCaretOnClick: "radixFocus",
     digits: 2,
     radixPoint: ",",
@@ -29,7 +29,7 @@ __webpack_require__.r(__webpack_exports__);
         validator: "[0-9\uFF11-\uFF19]"
       }
     }
-  });
+  };
   var modalsID = {
     'liquid_money_dollars': [0],
     'liquid_money_dollars_count': 1,
@@ -53,10 +53,13 @@ __webpack_require__.r(__webpack_exports__);
 
     if (key === 13 || key === 'Enter') {
       event.preventDefault();
+      var currency = this.getAttribute('data-currency');
       var tBody = document.querySelector("#".concat(this.id, " tbody"));
-      tBody.insertAdjacentHTML('beforeend', tableRowTemplate(this.id));
+      tBody.insertAdjacentHTML('beforeend', tableRowTemplate(this.id, currency));
       var input = document.querySelector("#".concat(this.id, "_").concat(getNewInputID(this.id)));
-      moneyFormat.mask(input);
+      console.log(this.getAttribute('data-currency'));
+      decimalMaskOptions.suffix = currency;
+      new (inputmask__WEBPACK_IMPORTED_MODULE_0___default())(decimalMaskOptions).mask(input);
       modalsID["".concat(this.id, "_count")]++;
       saveNewInputID(this.id);
     }
@@ -79,7 +82,8 @@ __webpack_require__.r(__webpack_exports__);
           if (input !== null && input !== void 0 && input.inputmask) {
             input.value = 0;
             input.inputmask.remove();
-            moneyFormat.mask(input);
+            decimalMaskOptions.suffix = this.getAttribute('data-currency');
+            new (inputmask__WEBPACK_IMPORTED_MODULE_0___default())(decimalMaskOptions).mask(input);
           }
         } else {
           var child = document.querySelector("#".concat(this.id, " tr[data-id=\"").concat(idRow, "\"]"));
@@ -137,7 +141,20 @@ __webpack_require__.r(__webpack_exports__);
     var totalInputs = document.querySelectorAll(totalInputsID.join(',')); // Apply the mask to total inputs
 
     totalInputs.forEach(function (el) {
-      return moneyFormat.mask(el);
+      // Setting up currency suffix for each input
+      decimalMaskOptions.suffix = el.getAttribute('data-currency');
+      new (inputmask__WEBPACK_IMPORTED_MODULE_0___default())(decimalMaskOptions).mask(el);
+    }); // Get Modal Elements
+
+    var modals = document.querySelectorAll(modalsID.map(function (el) {
+      return "#".concat(el);
+    }).join(','));
+    var currencies = []; // Attach events to modals
+
+    modals.forEach(function (el) {
+      el.addEventListener("keypress", keypressEventHandler);
+      el.addEventListener("click", clickEventHandler);
+      currencies.push(el.getAttribute('data-currency'));
     }); // Get the default input IDs in modals
 
     var defaultInputsID = modalsID.map(function (el) {
@@ -146,19 +163,22 @@ __webpack_require__.r(__webpack_exports__);
 
     var defaultInputs = document.querySelectorAll(defaultInputsID.join(',')); // Apply the mask to default inputs
 
-    defaultInputs.forEach(function (el) {
-      return moneyFormat.mask(el);
+    defaultInputs.forEach(function (el, key) {
+      console.log(key);
+      console.log(currencies);
+      decimalMaskOptions.suffix = currencies[key];
+      new (inputmask__WEBPACK_IMPORTED_MODULE_0___default())(decimalMaskOptions).mask(el);
     }); // Apply mask to default total denominations input
 
-    var totalInputDollarDenominations = document.querySelector('#total_liquid_money_dollars_denominations');
-    moneyFormat.mask(totalInputDollarDenominations); // Attach event handlers to liquid money details modals
+    var totalInputsDenominationsID = modalsID.map(function (el) {
+      return "#total_".concat(el, "_denominations");
+    });
+    var totalInputDenominations = document.querySelectorAll(totalInputsDenominationsID.join(',')); // Apply the mask to total denominations inputs
 
-    var modals = document.querySelectorAll(modalsID.map(function (el) {
-      return "#".concat(el);
-    }).join(','));
-    modals.forEach(function (el) {
-      el.addEventListener("keypress", keypressEventHandler);
-      el.addEventListener("click", clickEventHandler);
+    totalInputDenominations.forEach(function (el) {
+      // Setting up currency suffix for each input
+      decimalMaskOptions.suffix = el.getAttribute('data-currency');
+      new (inputmask__WEBPACK_IMPORTED_MODULE_0___default())(decimalMaskOptions).mask(el);
     }); // Attach event handlers to denominations money modals
 
     var denominationModals = document.querySelectorAll(denominationModalsID.map(function (el) {
@@ -192,12 +212,12 @@ __webpack_require__.r(__webpack_exports__);
     }
   };
 
-  var inputTemplate = function inputTemplate(name) {
-    return "\n        <input type=\"text\" placeholder=\"0.00 $\" id=\"".concat(name, "_").concat(getNewInputID(name), "\" name=\"").concat(name, "[]\" class=\"w-36 rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50\">\n    ");
+  var inputTemplate = function inputTemplate(name, currency) {
+    return "\n        <input type=\"text\" placeholder=\"0.00 ".concat(currency, "\" id=\"").concat(name, "_").concat(getNewInputID(name), "\" name=\"").concat(name, "[]\" class=\"w-36 rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50\">\n    ");
   };
 
-  var tableRowTemplate = function tableRowTemplate(name) {
-    return "\n        <tr class=\"hover:bg-gray-100 dark:hover:bg-gray-700\" data-id=".concat(getNewInputID(name), ">\n            <td data-table=\"num-col\" class=\"py-4 pl-6 pr-3 text-sm font-medium text-center text-gray-900 whitespace-nowrap dark:text-white\">").concat(modalsID["".concat(name, "_count")] + 1, "</td>\n            <td class=\"py-4 pl-3 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white\">\n                ").concat(inputTemplate(name), "\n            </td>\n            <td data-table=\"convertion-col\" class=\"py-4 px-6 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white\">\n                0.00 bs.s\n            </td>\n            <td class=\"py-4 pr-6 text-sm text-center font-medium whitespace-nowrap\">\n                <button data-del-row=\"").concat(getNewInputID(name), "\" type=\"button\" class=\"bg-red-600 flex justify-center w-6 h-6 items-center transition-colors duration-150 rounded-full shadow-lg hover:bg-red-500\">\n                    <i class=\"fas fa-times  text-white\"></i>                        \n                </button>\n            </td>\n        </tr>\n    ");
+  var tableRowTemplate = function tableRowTemplate(name, currency) {
+    return "\n        <tr class=\"hover:bg-gray-100 dark:hover:bg-gray-700\" data-id=".concat(getNewInputID(name), ">\n            <td data-table=\"num-col\" class=\"py-4 pl-6 pr-3 text-sm font-medium text-center text-gray-900 whitespace-nowrap dark:text-white\">").concat(modalsID["".concat(name, "_count")] + 1, "</td>\n            <td class=\"py-4 pl-3 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white\">\n                ").concat(inputTemplate(name, currency), "\n            </td>\n            <td data-table=\"convertion-col\" class=\"py-4 px-6 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white\">\n                0.00 bs.s\n            </td>\n            <td class=\"py-4 pr-6 text-sm text-center font-medium whitespace-nowrap\">\n                <button data-del-row=\"").concat(getNewInputID(name), "\" type=\"button\" class=\"bg-red-600 flex justify-center w-6 h-6 items-center transition-colors duration-150 rounded-full shadow-lg hover:bg-red-500\">\n                    <i class=\"fas fa-times  text-white\"></i>                        \n                </button>\n            </td>\n        </tr>\n    ");
   };
 
   var formatAmount = function formatAmount(amount) {

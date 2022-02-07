@@ -32,6 +32,13 @@
       <!-- end link -->
 
       <!-- link -->
+      <a data-modal-toggle="dollar-exchange-modal" href="#" class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500">
+        <i class="fad fa-money-bill-wave text-xs mr-2"></i>
+        Actualizar tasa del dolar
+      </a>
+      <!-- end link -->
+
+      <!-- link -->
       <a href="#" class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500">
         <i class="fad fa-book text-xs mr-2"></i>
         Consultar arqueo de cajas
@@ -41,5 +48,7 @@
     </div>
     <!-- end sidebar content -->
 
-  </div>
+    <x-setup-modal />
+    
+    </div>
   <!-- end sidbar -->

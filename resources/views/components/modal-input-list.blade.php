@@ -1,7 +1,7 @@
-@props(['modalID' => ''])
+@props(['modalID' => '', 'currency' => '$', 'isBolivar' => false])
 
 <!-- Main modal -->
-<div id={{ $modalID }} aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed h-108 right-0 left-0 top-4 z-50 justify-center items-center md:h-full md:inset-0">
+<div id={{ $modalID }} data-currency={{ $currency }} aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed h-108 right-0 left-0 top-4 z-50 justify-center items-center md:h-full md:inset-0">
     <div class="flex flex-col relative px-4 w-full max-w-md h-full">
          <!-- Modal header -->
          <div class="sticky top-0 flex justify-between items-start p-5 rounded-t border-b dark:border-gray-600 bg-gray-200">
@@ -24,11 +24,13 @@
                                         Nro
                                     </th>
                                     <th scope="col" class="py-3 pl-3 text-xs tracking-wider text-center text-gray-700 uppercase dark:text-gray-400">
-                                        Dolares($)
+                                        {{ 'Entradas (' . $currency . ')' }}
                                     </th>
-                                    <th scope="col" class="py-3 px-6 text-xs tracking-wider text-center text-gray-700 uppercase dark:text-gray-400">
-                                        Bolivares (Bs.s)
-                                    </th>
+                                    @if(!$isBolivar)
+                                        <th scope="col" class="py-3 px-6 text-xs tracking-wider text-center text-gray-700 uppercase dark:text-gray-400">
+                                            Bolivares (Bs.s)
+                                        </th>
+                                    @endif
                                     <th scope="col" class="pr-6 text-center">
                                         &nbsp;
                                     </th>
@@ -40,9 +42,11 @@
                                     <td class="py-4 pl-3 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white">
                                         <input type="text" id={{ $modalID . "_0" }} name={{ $modalID . "[]" }} class="w-36 rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                     </td>
-                                    <td data-table="convertion-col" class="py-4 px-6 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        0.00 bs.s
-                                    </td>
+                                    @if(!$isBolivar)
+                                        <td data-table="convertion-col" class="py-4 px-6 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                            0.00 bs.s
+                                        </td>
+                                    @endif
                                     <td class="py-4 pr-6 text-sm font-medium text-center whitespace-nowrap">
                                         <button data-del-row="0" type="button" class="bg-red-600 flex justify-center w-6 h-6 items-center transition-colors duration-150 rounded-full shadow-lg hover:bg-red-500">
                                             <i class="fas fa-times  text-white"></i>                        

@@ -6,6 +6,8 @@ require('./charts')
 
 require('./external')
 
+require('./component/dollar-exchange-modal')
+
 import Alpine from 'alpinejs';
 
 window.Alpine = Alpine;

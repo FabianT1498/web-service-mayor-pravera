@@ -31,7 +31,7 @@
                             <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
                                 @foreach($denominations as $denomination)
                                     <tr class="hover:bg-gray-100 dark:hover:bg-gray-700" data-id="0">
-                                        <th data-table="num-col" class="py-4 pl-6 pr-3 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ $denomination . $currency }}</th>
+                                        <th data-table="num-col" class="py-4 pl-6 pr-3 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ $denomination . ' ' . $currency }}</th>
                                         <td class="py-4 pl-3 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white">
                                             <input 
                                                 data-denomination={{ $denomination }}

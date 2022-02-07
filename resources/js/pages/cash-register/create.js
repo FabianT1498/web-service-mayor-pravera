@@ -2,9 +2,9 @@ import Inputmask from "inputmask";
 
 export default function(){
 
-    let moneyFormat = new Inputmask({
+    let decimalMaskOptions = {
         alias:'decimal',
-        suffix:' $',
+        suffix:'$',
         positionCaretOnClick: "radixFocus",
         digits: 2,
         radixPoint: ",",
@@ -16,7 +16,7 @@ export default function(){
                 validator: "[0-9\uFF11-\uFF19]"
             },
         },
-    });
+    }
 
     const modalsID = {
         'liquid_money_dollars': [0],
@@ -45,10 +45,13 @@ export default function(){
 
         if (key === 13 || key === 'Enter'){
             event.preventDefault()
+            const currency = this.getAttribute('data-currency');
             const tBody = document.querySelector(`#${this.id} tbody`);
-            tBody.insertAdjacentHTML('beforeend', tableRowTemplate(this.id));
+            tBody.insertAdjacentHTML('beforeend', tableRowTemplate(this.id, currency));
             const input = document.querySelector(`#${this.id}_${getNewInputID(this.id)}`);
-            moneyFormat.mask(input);
+            console.log(this.getAttribute('data-currency'));
+            decimalMaskOptions.suffix = currency;
+            (new Inputmask(decimalMaskOptions)).mask(input)
             modalsID[`${this.id}_count`]++;
             saveNewInputID(this.id);
         }
@@ -70,7 +73,8 @@ export default function(){
                     if (input?.inputmask){
                         input.value = 0;
                         input.inputmask.remove();
-                        moneyFormat.mask(input)
+                        decimalMaskOptions.suffix = this.getAttribute('data-currency');
+                        (new Inputmask(decimalMaskOptions)).mask(input);
                     }
                 } else {
                     let child = document.querySelector(`#${this.id} tr[data-id="${idRow}"]`)
@@ -132,7 +136,22 @@ export default function(){
         const totalInputs = document.querySelectorAll(totalInputsID.join(','))
 
         // Apply the mask to total inputs
-        totalInputs.forEach(el => moneyFormat.mask(el))
+        totalInputs.forEach(el => { 
+            // Setting up currency suffix for each input
+            decimalMaskOptions.suffix = el.getAttribute('data-currency');
+            (new Inputmask(decimalMaskOptions)).mask(el)
+        })
+
+        // Get Modal Elements
+        const modals = document.querySelectorAll(modalsID.map(el => `#${el}`).join(','));
+        let currencies = [];
+
+        // Attach events to modals
+        modals.forEach(el => {
+            el.addEventListener("keypress", keypressEventHandler);
+            el.addEventListener("click", clickEventHandler);
+            currencies.push(el.getAttribute('data-currency'));
+        });
 
         // Get the default input IDs in modals
         const defaultInputsID = modalsID.map(el => `#${el}_0`);
@@ -141,19 +160,24 @@ export default function(){
         const defaultInputs = document.querySelectorAll(defaultInputsID.join(','))
 
         // Apply the mask to default inputs
-        defaultInputs.forEach(el => moneyFormat.mask(el))
+        defaultInputs.forEach((el, key) => {
+            console.log(key);
+            console.log(currencies)
+            decimalMaskOptions.suffix = currencies[key];
+            (new Inputmask(decimalMaskOptions)).mask(el)
+        })
 
         // Apply mask to default total denominations input
-        const totalInputDollarDenominations = document.querySelector('#total_liquid_money_dollars_denominations')
-        moneyFormat.mask(totalInputDollarDenominations);
+        const totalInputsDenominationsID = modalsID.map(el => `#total_${el}_denominations`);
+        const totalInputDenominations = document.querySelectorAll(totalInputsDenominationsID.join(','))
 
-        // Attach event handlers to liquid money details modals
-        const modals = document.querySelectorAll(modalsID.map(el => `#${el}`).join(','))
+        // Apply the mask to total denominations inputs
 
-        modals.forEach(el => {
-            el.addEventListener("keypress", keypressEventHandler);
-            el.addEventListener("click", clickEventHandler);  
-        });
+        totalInputDenominations.forEach(el => { 
+            // Setting up currency suffix for each input
+            decimalMaskOptions.suffix = el.getAttribute('data-currency');
+            (new Inputmask(decimalMaskOptions)).mask(el)
+        })
 
         // Attach event handlers to denominations money modals
         const denominationModals = document
@@ -187,14 +211,14 @@ export default function(){
         }
     }
 
-    const inputTemplate = (name) => `
-        <input type="text" placeholder="0.00 $" id="${name}_${getNewInputID(name)}" name="${name}[]" class="w-36 rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+    const inputTemplate = (name, currency) => `
+        <input type="text" placeholder="0.00 ${currency}" id="${name}_${getNewInputID(name)}" name="${name}[]" class="w-36 rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
     `
-    const tableRowTemplate = (name) => `
+    const tableRowTemplate = (name, currency) => `
         <tr class="hover:bg-gray-100 dark:hover:bg-gray-700" data-id=${getNewInputID(name)}>
             <td data-table="num-col" class="py-4 pl-6 pr-3 text-sm font-medium text-center text-gray-900 whitespace-nowrap dark:text-white">${modalsID[`${name}_count`] + 1}</td>
             <td class="py-4 pl-3 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                ${ inputTemplate(name) }
+                ${ inputTemplate(name, currency) }
             </td>
             <td data-table="convertion-col" class="py-4 px-6 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">
                 0.00 bs.s

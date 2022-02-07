@@ -58,7 +58,12 @@
         
         <div class="w-10/12"><h3 class="h3 text-center mb-8">Datos de ingresos</h3></div>
 
-        <div class="w-10/12 grid gap-4 grid-cols-[150px_auto_auto_auto] grid-rows-4 mb-8 mx-auto items-center">
+        <div class="w-10/12 grid gap-4 grid-cols-[150px_auto_150px_auto] grid-rows-4 mb-8 mx-auto items-center">
+            <x-label :value="__('Fecha de registro de la última tasa: ')" />
+            <x-input id="date" type="text" class="w-56" :value="__($date)" readonly />
+            <x-label class="w-56" :value="__('Cotización del $:')" />
+            <x-input id="date" type="text" :value="__($date)" readonly />
+
             <!-- Cash on liquid input (dollars) -->
             <x-label :value="__('Total de $ en efectivo:')" />
             <x-input-with-button 
@@ -80,6 +85,7 @@
             <x-input-with-button 
                 :inputID="__('total_liquid_money_bolivares')"
                 :modalID="__('liquid_money_bolivares')"
+                :currency="__('Bs.S')"
                 name="total_liquid_money_bolivares"
                 type="text"
             />
@@ -87,6 +93,7 @@
             <x-input-with-button 
                 :inputID="__('total_liquid_money_bolivares_denominations')"
                 :modalID="__('liquid_money_bolivares_denominations')"
+                :currency="__('Bs.S')"
                 name="total_liquid_money_bolivares_denominations"
                 type="text"
             />
@@ -120,10 +127,15 @@
             :denominations="['0.50', '1', '2', '5', '10', '20','50', '100']"
         />
 
-        <x-modal-input-list :modalID="__('liquid_money_bolivares')"/>
+        <x-modal-input-list 
+            :modalID="__('liquid_money_bolivares')"
+            :currency="__('Bs.S')"
+            :isBolivar="true"
+        />
         <x-modal-input-denominations 
             :modalID="__('liquid_money_bolivares_denominations')"
             :denominations="['0.50', '1', '2', '5', '10', '20', '50','100', '200', '500']"
+            :currency="__('Bs.S')"
         />
     </form>
 @endsection

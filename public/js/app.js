@@ -5494,6 +5494,8 @@ __webpack_require__(/*! ./charts */ "./resources/js/charts/index.js");
 
 __webpack_require__(/*! ./external */ "./resources/js/external/index.js");
 
+__webpack_require__(/*! ./component/dollar-exchange-modal */ "./resources/js/component/dollar-exchange-modal/index.js");
+
 
 window.Alpine = alpinejs__WEBPACK_IMPORTED_MODULE_0__["default"];
 alpinejs__WEBPACK_IMPORTED_MODULE_0__["default"].start();
@@ -5854,6 +5856,7 @@ sideBarHideBtn.addEventListener('click', function () {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var flowbite__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! flowbite */ "./node_modules/flowbite/dist/flowbite.js");
 /* harmony import */ var flowbite__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(flowbite__WEBPACK_IMPORTED_MODULE_0__);
+/* provided dependency */ var process = __webpack_require__(/*! process/browser.js */ "./node_modules/process/browser.js");
 window._ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests
@@ -5863,6 +5866,10 @@ window._ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
 
 window.axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+window.axios.defaults.baseUrl = process.env.API_DOMAIN;
+window.axios.defaults.withCredentials = true;
+window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+window.axios.defaults.headers.common['Accept'] = 'Application/json';
 
 /**
  * Echo exposes an expressive API for subscribing to channels and listening
@@ -5889,6 +5896,26 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 // exports.analytics_1 = require("./analytics_1.js");
 // exports.salesOverview = require("./salesOverview.js");
 // exports.summary = require("./summary.js");
+
+/***/ }),
+
+/***/ "./resources/js/component/dollar-exchange-modal/index.js":
+/*!***************************************************************!*\
+  !*** ./resources/js/component/dollar-exchange-modal/index.js ***!
+  \***************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _services_dollar_exchange__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../../services/dollar-exchange */ "./resources/js/services/dollar-exchange/index.js");
+
+document.getElementById('update-dolar-exchange-rate').addEventListener('click', function (event) {
+  var dollarExchangeInput = document.getElementById('dollar_exchange_bs');
+  var result = (0,_services_dollar_exchange__WEBPACK_IMPORTED_MODULE_0__.storeDollarExchange)({
+    'bs_exchange': dollarExchangeInput.value
+  });
+  console.log(result);
+});
 
 /***/ }),
 
@@ -7156,6 +7183,59 @@ Prism.languages.scss = Prism.languages.extend("css", {
     });
   } else console.warn("Copy to Clipboard plugin loaded before Toolbar plugin.");
 }();
+
+/***/ }),
+
+/***/ "./resources/js/services/dollar-exchange/index.js":
+/*!********************************************************!*\
+  !*** ./resources/js/services/dollar-exchange/index.js ***!
+  \********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "storeDollarExchange": () => (/* binding */ storeDollarExchange)
+/* harmony export */ });
+/* harmony import */ var _utilities_axiosClient__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utilities/axiosClient */ "./resources/js/utilities/axiosClient.js");
+
+
+var storeDollarExchange = function storeDollarExchange(obj) {
+  try {
+    var result = _utilities_axiosClient__WEBPACK_IMPORTED_MODULE_0__["default"].post('/api/dolar_exchange', obj);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+
+
+/***/ }),
+
+/***/ "./resources/js/utilities/axiosClient.js":
+/*!***********************************************!*\
+  !*** ./resources/js/utilities/axiosClient.js ***!
+  \***********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
+/* provided dependency */ var process = __webpack_require__(/*! process/browser.js */ "./node_modules/process/browser.js");
+
+var axiosClient = axios__WEBPACK_IMPORTED_MODULE_0___default().create({
+  baseURL: process.env.API_DOMAIN,
+  withCredentials: true,
+  headers: {
+    'X-Requested-With': 'XMLHttpRequest',
+    'Accept': 'Application/json'
+  }
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (axiosClient);
 
 /***/ }),
 
