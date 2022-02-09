@@ -17,7 +17,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__() {
   var decimalMaskOptions = {
     alias: 'decimal',
-    suffix: '$',
+    suffix: ' $',
     positionCaretOnClick: "radixFocus",
     digits: 2,
     radixPoint: ",",
@@ -57,7 +57,6 @@ __webpack_require__.r(__webpack_exports__);
       var tBody = document.querySelector("#".concat(this.id, " tbody"));
       tBody.insertAdjacentHTML('beforeend', tableRowTemplate(this.id, currency));
       var input = document.querySelector("#".concat(this.id, "_").concat(getNewInputID(this.id)));
-      console.log(this.getAttribute('data-currency'));
       decimalMaskOptions.suffix = currency;
       new (inputmask__WEBPACK_IMPORTED_MODULE_0___default())(decimalMaskOptions).mask(input);
       modalsID["".concat(this.id, "_count")]++;
@@ -101,7 +100,6 @@ __webpack_require__.r(__webpack_exports__);
           var num = formatAmount(el.value);
           return acc + num;
         }, 0);
-        console.log(total);
         document.getElementById("total_".concat(this.id)).value = total > 0 ? total : 0;
       }
     }
@@ -154,7 +152,7 @@ __webpack_require__.r(__webpack_exports__);
     modals.forEach(function (el) {
       el.addEventListener("keypress", keypressEventHandler);
       el.addEventListener("click", clickEventHandler);
-      currencies.push(el.getAttribute('data-currency'));
+      currencies.push(" ".concat(el.getAttribute('data-currency')));
     }); // Get the default input IDs in modals
 
     var defaultInputsID = modalsID.map(function (el) {
@@ -164,8 +162,6 @@ __webpack_require__.r(__webpack_exports__);
     var defaultInputs = document.querySelectorAll(defaultInputsID.join(',')); // Apply the mask to default inputs
 
     defaultInputs.forEach(function (el, key) {
-      console.log(key);
-      console.log(currencies);
       decimalMaskOptions.suffix = currencies[key];
       new (inputmask__WEBPACK_IMPORTED_MODULE_0___default())(decimalMaskOptions).mask(el);
     }); // Apply mask to default total denominations input
@@ -273,7 +269,6 @@ __webpack_require__.r(__webpack_exports__);
   var form = document.querySelector('#form');
 
   var submit = function submit(event) {
-    console.log(event);
     var allIsNull = true;
 
     for (var i = 0; i < inputs.length; i++) {

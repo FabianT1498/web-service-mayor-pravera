@@ -1,7 +1,7 @@
 import { storeDollarExchange } from './../../services/dollar-exchange';
 import Inputmask from "inputmask";
 
-const dollarExchangeInput = document.getElementById('dollar_exchange_bs');
+const dollarExchangeInput = document.getElementById('dollar-exchange-bs-input');
     
 (function(input){
 
@@ -29,15 +29,16 @@ const updateDollarExchangeBsHandler = async function(event){
     
 
     try {
-        const result = await storeDollarExchange({
+        const response = await storeDollarExchange({
             'bs_exchange': dollarExchangeInput.value
         });
-    
-        console.log(result)
+        
+        console.log(response.data);
+     
     }
     catch(e){
         console.log(e);
     }
 }
 
-document.getElementById('update-dolar-exchange-rate').addEventListener('click', updateDollarExchangeBsHandler);
+document.getElementById('update-dollar-exchange-btn').addEventListener('click', updateDollarExchangeBsHandler);

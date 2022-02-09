@@ -4,7 +4,7 @@ export default function(){
 
     let decimalMaskOptions = {
         alias:'decimal',
-        suffix:'$',
+        suffix:' $',
         positionCaretOnClick: "radixFocus",
         digits: 2,
         radixPoint: ",",
@@ -49,7 +49,6 @@ export default function(){
             const tBody = document.querySelector(`#${this.id} tbody`);
             tBody.insertAdjacentHTML('beforeend', tableRowTemplate(this.id, currency));
             const input = document.querySelector(`#${this.id}_${getNewInputID(this.id)}`);
-            console.log(this.getAttribute('data-currency'));
             decimalMaskOptions.suffix = currency;
             (new Inputmask(decimalMaskOptions)).mask(input)
             modalsID[`${this.id}_count`]++;
@@ -92,8 +91,6 @@ export default function(){
                     let num = formatAmount(el.value)
                     return acc + num;
                 }, 0);
-
-                console.log(total);
 
                 document.getElementById(`total_${this.id}`).value = total > 0 ? total : 0;
             }
@@ -150,7 +147,7 @@ export default function(){
         modals.forEach(el => {
             el.addEventListener("keypress", keypressEventHandler);
             el.addEventListener("click", clickEventHandler);
-            currencies.push(el.getAttribute('data-currency'));
+            currencies.push(` ${el.getAttribute('data-currency')}`);
         });
 
         // Get the default input IDs in modals
@@ -161,8 +158,6 @@ export default function(){
 
         // Apply the mask to default inputs
         defaultInputs.forEach((el, key) => {
-            console.log(key);
-            console.log(currencies)
             decimalMaskOptions.suffix = currencies[key];
             (new Inputmask(decimalMaskOptions)).mask(el)
         })
@@ -287,9 +282,6 @@ export default function(){
     const form = document.querySelector('#form');
 
     const submit = (event) => {
-
-        console.log(event)
-       
         let allIsNull = true;
       
         for(let i = 0; i < inputs.length; i++){

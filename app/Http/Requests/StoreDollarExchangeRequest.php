@@ -16,6 +16,13 @@ class StoreDollarExchangeRequest extends FormRequest
         return true;
     }
 
+    public function wantsJson()
+    {
+        return true;
+    }
+
+    protected $validated = [];
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -41,7 +48,9 @@ class StoreDollarExchangeRequest extends FormRequest
             return 0;
         }
 
-        $arr = explode(',', $amount, 2);
+        $number = explode(' ', $amount)[0];
+        $arr = explode(',', $number);
+        
         $integer = $arr["0"] ?? null;
         $decimal = $arr["1"] ?? null;
         
@@ -62,7 +71,6 @@ class StoreDollarExchangeRequest extends FormRequest
      */
     protected function prepareForValidation()
     {
-        var_dump($this->bs_exchange);
         $inputs = [
             'bs_exchange' => $this->formatAmount($this->bs_exchange),
         ];

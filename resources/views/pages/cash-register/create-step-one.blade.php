@@ -12,6 +12,8 @@
     @endforeach
     <form id="form" autocomplete="off" method="POST" action="{{ route('cash_register_step_one.post') }}">
         @csrf
+        <input id="dollar-exchange-bs-last-value" type="hidden" value={{ $dollar_exchange?->bs_exchange ?? 0 }}>
+
         <div class="w-10/12"><h3 class="h3 text-center mb-4">Datos de la caja</h3></div>
         <div class="w-10/12 grid gap-4 grid-cols-[200px_250px] grid-rows-4 mb-8 mx-auto">
             <!-- Cash register date -->
