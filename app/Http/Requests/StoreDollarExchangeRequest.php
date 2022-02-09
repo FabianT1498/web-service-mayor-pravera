@@ -23,8 +23,7 @@ class StoreDollarExchangeRequest extends FormRequest
      */
     public function rules()
     {
-        $date_format = 'd-m-Y';
-
+    
         $rules = [
             'bs_exchange' => [
                 'bail',
@@ -63,7 +62,7 @@ class StoreDollarExchangeRequest extends FormRequest
      */
     protected function prepareForValidation()
     {
-
+        var_dump($this->bs_exchange);
         $inputs = [
             'bs_exchange' => $this->formatAmount($this->bs_exchange),
         ];

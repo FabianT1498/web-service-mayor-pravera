@@ -60,9 +60,11 @@
 
         <div class="w-10/12 grid gap-4 grid-cols-[150px_auto_150px_auto] grid-rows-4 mb-8 mx-auto items-center">
             <x-label :value="__('Fecha de registro de la última tasa: ')" />
-            <x-input id="date" type="text" class="w-56" :value="__($date)" readonly />
+            <p>{{ $dollar_exchange->created_at }}</p>
+
             <x-label class="w-56" :value="__('Cotización del $:')" />
-            <x-input id="date" type="text" :value="__($date)" readonly />
+            <p>{{ $dollar_exchange->bs_exchange }} Bs.S</p>
+                            
 
             <!-- Cash on liquid input (dollars) -->
             <x-label :value="__('Total de $ en efectivo:')" />

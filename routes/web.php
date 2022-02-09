@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\CashRegisterController;
 use App\Http\Controllers\CashRegisterWorkerController;
+use App\Http\Controllers\DollarExchangeController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -44,6 +46,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('cash_register/create-step-nine', [CashRegisterController::class, 'createStepNine'])->name('cash_register_step_nine.create');  
 
     Route::post('cash_register/store', [CashRegisterController::class, 'store'])->name('cash_register.store');
+
+    Route::post('dolar_exchange', [DollarExchangeController::class, 'store']);
 });
 
 require __DIR__.'/auth.php';

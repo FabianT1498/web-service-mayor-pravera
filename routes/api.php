@@ -3,7 +3,6 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\DollarExchangeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,6 +15,6 @@ use App\Http\Controllers\DollarExchangeController;
 |
 */
 
-Route::group(['middleware' => ['auth:sanctum']], function () {
-    Route::post('dolar_exchange', [DollarExchangeController::class, 'store']);
+Route::group(['middleware' => ['auth']], function () {
+    
 });

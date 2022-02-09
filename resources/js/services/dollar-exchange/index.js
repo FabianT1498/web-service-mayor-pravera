@@ -1,8 +1,9 @@
 import axiosClient from '../../utilities/axiosClient';
 
-const storeDollarExchange = function(obj){
+const storeDollarExchange = async function(obj){
     try {
-        const result = axiosClient.post('/api/dolar_exchange', obj);
+        const result = await axiosClient.post('/dolar_exchange', obj);
+        return result;
     } catch(e) {
         console.log(e);
     }
