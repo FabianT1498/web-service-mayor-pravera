@@ -51,7 +51,17 @@ __webpack_require__.r(__webpack_exports__);
   var keypressEventHandler = function keypressEventHandler(event) {
     var key = event.key || event.keyCode;
 
-    if (key === 13 || key === 'Enter') {
+    if (isFinite(key)) {
+      // Handle case to convert dollar to bs.S
+      var dollarExchangeBs = parseFloat(document.querySelector("#last-dollar-exchange-bs-val").value);
+      var value = formatAmount(event.target.value);
+      var convertionCol = event.target.closest('tr').children[2];
+      var dataConvertionCol = convertionCol.getAttribute('data-table');
+
+      if (dataConvertionCol && dataConvertionCol === 'convertion-col') {
+        convertionCol.innerHTML = "".concat(Math.round((dollarExchangeBs * value + Number.EPSILON) * 100) / 100, " Bs.s");
+      }
+    } else if (key === 13 || key === 'Enter') {
       event.preventDefault();
       var currency = this.getAttribute('data-currency');
       var tBody = document.querySelector("#".concat(this.id, " tbody"));
@@ -238,14 +248,13 @@ __webpack_require__.r(__webpack_exports__);
 
     var arr = amount.split(',', 2);
     var integer = (_arr$ = arr[0]) !== null && _arr$ !== void 0 ? _arr$ : null;
-    var decimal = (_arr$2 = arr[1]) !== null && _arr$2 !== void 0 ? _arr$2 : null;
-    var integerStr = integer.split(".").join(); // Check if it is an integer number
+    var decimal = (_arr$2 = arr[1]) !== null && _arr$2 !== void 0 ? _arr$2 : null; // Check if it is an integer number
 
     if (!decimal) {
-      return parseInt(integerStr);
+      return parseInt(integer);
     }
 
-    var numberString = integerStr + '.' + decimal;
+    var numberString = integer + '.' + decimal;
     return Math.round((parseFloat(numberString) + Number.EPSILON) * 100) / 100;
   }; // --- HANDLING INPUTS TO CREATE A NEW CASH REGISTER WORKER ---
 

@@ -3,13 +3,15 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Date;
+use App\Http\Traits\AmountCurrencyTrait;
 
 use App\Rules\NonZeroTotalSum;
 
 
 class StoreCashRegisterStepOneRequest extends FormRequest
 {
+    use AmountCurrencyTrait;
+    
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -71,26 +73,6 @@ class StoreCashRegisterStepOneRequest extends FormRequest
         // }
 
         return $rules;
-    }
-
-    private function formatAmount($amount){
-
-        if (is_null($amount)){
-            return 0;
-        }
-
-        $arr = explode(',', $amount, 2);
-        $integer = $arr["0"] ?? null;
-        $decimal = $arr["1"] ?? null;
-        
-        $formated_integer = implode(explode(".", $integer));
-        
-        $number_string = $formated_integer . '.' . $decimal . 'El';
-        $float_number = floatval($number_string);
-
-        var_dump($float_number);
-
-        return $float_number;
     }
 
     /**

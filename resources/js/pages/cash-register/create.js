@@ -43,7 +43,19 @@ export default function(){
         
         let key = event.key || event.keyCode;
 
-        if (key === 13 || key === 'Enter'){
+        if (isFinite(key)){
+            // Handle case to convert dollar to bs.S
+            const dollarExchangeBs = parseFloat(document.querySelector(`#last-dollar-exchange-bs-val`).value);
+            const value = formatAmount(event.target.value);
+
+            const convertionCol = event.target.closest('tr').children[2];
+
+            const dataConvertionCol = convertionCol.getAttribute('data-table')
+            if (dataConvertionCol && dataConvertionCol === 'convertion-col'){
+                convertionCol.innerHTML = `${ (Math.round(((dollarExchangeBs * value) + Number.EPSILON) * 100) / 100) } Bs.s`;
+            }
+        }
+        else if (key === 13 || key === 'Enter'){
             event.preventDefault()
             const currency = this.getAttribute('data-currency');
             const tBody = document.querySelector(`#${this.id} tbody`);
@@ -247,15 +259,13 @@ export default function(){
         let arr = amount.split(',', 2);
         let integer = arr[0] ?? null;
         let decimal = arr[1] ?? null;
-        
-        let integerStr = integer.split(".").join();
-        
+                
         // Check if it is an integer number
         if (!decimal){
-            return parseInt(integerStr);
+            return parseInt(integer);
         }
 
-        let numberString = integerStr + '.' + decimal;
+        let numberString = integer + '.' + decimal;
 
         return (Math.round((parseFloat(numberString) + Number.EPSILON) * 100) / 100)
     }

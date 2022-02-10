@@ -49,7 +49,7 @@ Route::group(['middleware' => ['auth']], function () {
 
 });
 
-Route::group(['middleware' => ['jsonify']], function() {
+Route::group(['middleware' => ['auth', 'jsonify']], function() {
     Route::post('dolar_exchange', [DollarExchangeController::class, 'store']);
 });
 

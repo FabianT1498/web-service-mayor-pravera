@@ -12,7 +12,7 @@
     @endforeach
     <form id="form" autocomplete="off" method="POST" action="{{ route('cash_register_step_one.post') }}">
         @csrf
-        <input id="dollar-exchange-bs-last-value" type="hidden" value={{ $dollar_exchange?->bs_exchange ?? 0 }}>
+        <input id="last-dollar-exchange-bs-val" type="hidden" value={{ $dollar_exchange?->bs_exchange ?? 0 }}>
 
         <div class="w-10/12"><h3 class="h3 text-center mb-4">Datos de la caja</h3></div>
         <div class="w-10/12 grid gap-4 grid-cols-[200px_250px] grid-rows-4 mb-8 mx-auto">
@@ -62,10 +62,10 @@
 
         <div class="w-10/12 grid gap-4 grid-cols-[150px_auto_150px_auto] grid-rows-4 mb-8 mx-auto items-center">
             <x-label :value="__('Fecha de registro de la última tasa: ')" />
-            <p>{{ $dollar_exchange->created_at }}</p>
+            <p id="last-dollar-exchange-bs-date">{{ $dollar_exchange->created_at }}</p>
 
             <x-label class="w-56" :value="__('Cotización del $:')" />
-            <p>{{ $dollar_exchange->bs_exchange }} Bs.S</p>
+            <p id="last-dollar-exchange-bs-label">{{ $dollar_exchange->bs_exchange }} Bs.S</p>
                             
 
             <!-- Cash on liquid input (dollars) -->
