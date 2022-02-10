@@ -33,7 +33,7 @@ const updateDollarExchangeBsHandler = async function(event){
             'bs_exchange': dollarExchangeInput.value
         });
         
-        console.log(response.data);
+        console.log(response);
      
     }
     catch(e){

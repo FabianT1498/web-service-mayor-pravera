@@ -19,6 +19,8 @@ class DollarExchange extends Model
     public function __construct(array $attributes = array())
     {
         parent::__construct($attributes);
+
+        
     
         $this->bs_exchange = key_exists('bs_exchange', $attributes) ? $attributes['bs_exchange'] : 0;
     }

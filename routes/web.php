@@ -47,9 +47,10 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::post('cash_register/store', [CashRegisterController::class, 'store'])->name('cash_register.store');
 
-    Route::group(['middleware' => ['jsonify']], function() {
-        Route::post('dolar_exchange', [DollarExchangeController::class, 'store']);
-    });
+});
+
+Route::group(['middleware' => ['jsonify']], function() {
+    Route::post('dolar_exchange', [DollarExchangeController::class, 'store']);
 });
 
 require __DIR__.'/auth.php';

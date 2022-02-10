@@ -5956,7 +5956,7 @@ var updateDollarExchangeBsHandler = /*#__PURE__*/function () {
 
           case 3:
             response = _context.sent;
-            console.log(response.data);
+            console.log(response);
             _context.next = 10;
             break;
 
