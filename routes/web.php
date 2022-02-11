@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CashRegisterController;
 use App\Http\Controllers\CashRegisterWorkerController;
 use App\Http\Controllers\DollarExchangeController;
-
+use App\Http\Controllers\BankController;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,6 +51,8 @@ Route::group(['middleware' => ['auth']], function () {
 
 Route::group(['middleware' => ['auth', 'jsonify']], function() {
     Route::post('dolar_exchange', [DollarExchangeController::class, 'store']);
+
+    Route::get('banks', [BankController::class, 'getAll']);
 });
 
 require __DIR__.'/auth.php';

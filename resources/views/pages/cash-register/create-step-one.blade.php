@@ -58,9 +58,9 @@
             </div>
         </div>
         
-        <div class="w-10/12"><h3 class="h3 text-center mb-8">Datos de ingresos</h3></div>
+        <div class="w-10/12"><h3 class="h3 text-center mb-8">Ingresos en fisico</h3></div>
 
-        <div class="w-10/12 grid gap-4 grid-cols-[150px_auto_150px_auto] grid-rows-4 mb-8 mx-auto items-center">
+        <div class="w-10/12 grid gap-4 grid-cols-[150px_auto_150px_auto] mb-8 mx-auto items-center">
             <x-label :value="__('Fecha de registro de la última tasa: ')" />
             <p id="last-dollar-exchange-bs-date">{{ $dollar_exchange->created_at }}</p>
 
@@ -103,20 +103,22 @@
             />
         </div>
 
-        <div class="w-10/12 flex mx-auto">
+        <div class="w-10/12"><h3 class="h3 text-center mb-8">Ingresos en punto de venta</h3></div>
+
+        <div class="w-10/12 grid gap-4 grid-cols-[150px_50px_150px_auto] mb-8 mx-auto items-center">
              <!-- Cash on punto de venta (bs) -->
-             <div class="flex basis-1/4 items-center">
-                    <x-label for="debit_card_payment_bs" :value="__('Total de Bs en Punto:')" />
-
-                    <x-input data-currency="amount-bs" placeholder="0.00" id="debit_card_payment_bs" class="block ml-4" type="text" name="debit_card_payment_bs" :value="old('debit_card_payment_bs')" autofocus />
-            </div>
-
-            <!-- Cash on punto de venta internacional (dollars) -->
-            <div class="flex basis-1/4 items-center ml-4">
-                    <x-label for="debit_card_payment_dollar" :value="__('Total de $ en Punto:')" />
-
-                    <x-input data-currency="amount-$" placeholder="0.00" id="debit_card_payment_dollar" class="block ml-4" type="text" name="debit_card_payment_dollar" :value="old('debit_card_payment_dollar')" autofocus />
-            </div>
+            <x-label for="debit_card_payment_bs" :value="__('Registros del punto de venta:')" />
+            <x-button 
+                class="flex justify-center rounded-full h-8 w-8"
+                type="button"
+                :modalID="__('point_sale_bs')"
+            >
+                <i class="fas fa-plus text-white"></i>
+            </x-button>
+            
+            <!-- Cash on punto de venta ($) -->
+            <x-label for="debit_card_payment_dollar" :value="__('Total de $ en Punto:')" />
+            <x-input data-currency="amount-$" placeholder="0.00" id="debit_card_payment_dollar" class="block ml-4" type="text" name="debit_card_payment_dollar" :value="old('debit_card_payment_dollar')" autofocus />
         </div>
 
         <div class="w-10/12 flex mx-auto justify-end pt-8">
@@ -140,6 +142,10 @@
             :modalID="__('liquid_money_bolivares_denominations')"
             :denominations="['0.50', '1', '2', '5', '10', '20', '50','100', '200', '500']"
             :currency="__('Bs.S')"
+        />
+
+        <x-modal-point-sale-list
+            :modalID="__('point_sale_bs')"
         />
     </form>
 @endsection

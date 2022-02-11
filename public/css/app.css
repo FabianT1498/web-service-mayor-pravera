@@ -1993,6 +1993,10 @@ div.code-toolbar .toolbar button:hover {
   width: auto;
 }
 
+.w-6{
+  width: 1.5rem;
+}
+
 .w-40{
   width: 10rem;
 }
@@ -2003,10 +2007,6 @@ div.code-toolbar .toolbar button:hover {
 
 .w-48{
   width: 12rem;
-}
-
-.w-6{
-  width: 1.5rem;
 }
 
 .w-1\/2{
@@ -2147,6 +2147,10 @@ div.code-toolbar .toolbar button:hover {
 
 .grid-cols-\[150px_auto_150px_auto\]{
   grid-template-columns: 150px auto 150px auto;
+}
+
+.grid-cols-\[150px_50px_150px_auto\]{
+  grid-template-columns: 150px 50px 150px auto;
 }
 
 .grid-cols-4{
@@ -2623,12 +2627,12 @@ div.code-toolbar .toolbar button:hover {
   padding-top: 1rem;
 }
 
-.pt-0{
-  padding-top: 0px;
-}
-
 .pr-6{
   padding-right: 1.5rem;
+}
+
+.pt-0{
+  padding-top: 0px;
 }
 
 .pt-2{

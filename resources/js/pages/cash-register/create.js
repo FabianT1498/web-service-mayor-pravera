@@ -1,6 +1,8 @@
 import Inputmask from "inputmask";
 
-export default function(){
+import { getAllBanks } from './../../services/banks';
+
+export default async function(){
 
     let decimalMaskOptions = {
         alias:'decimal',
@@ -39,23 +41,26 @@ export default function(){
         }, [])
     };
 
-    const keypressEventHandler = function(event){
-        
+    // --- HANDLING LIST ENTRANCE MODAL ---
+    const keyDownEventHandler = function(event){
         let key = event.key || event.keyCode;
 
-        if (isFinite(key) || key === 8 || key === 'Backspace'){ // Handle case to convert dollar to Bs.S
+        if (key === 8 || key === 'Backspace'){ // Handle case to convert dollar to Bs.S
+            updateConvertionCol(event)
+        }
+    };
 
-            const convertionCol = event.target.closest('tr').children[2];
-            const dataConvertionCol = convertionCol ? convertionCol?.getAttribute('data-table') : null;
+    const keypressEventHandler = function(event){
+        
+        event.preventDefault();
 
-            if (dataConvertionCol && dataConvertionCol === 'convertion-col'){
-                const dollarExchangeBs = parseFloat(document.querySelector(`#last-dollar-exchange-bs-val`).value);
-                const value = formatAmount(event.target.value);
-                convertionCol.innerHTML = `${ (Math.round(((dollarExchangeBs * value) + Number.EPSILON) * 100) / 100) } Bs.s`;
-            }            
+        let key = event.key || event.keyCode;
+
+        if (isFinite(key)){ // Handle case to convert dollar to Bs.S
+            updateConvertionCol(event)
         }
         else if (key === 13 || key === 'Enter'){ // Handle new table's row creation
-            event.preventDefault()
+            
             const currency = this.getAttribute('data-currency');
             const tBody = document.querySelector(`#${this.id} tbody`);
             tBody.insertAdjacentHTML('beforeend', tableRowTemplate(this.id, currency));
@@ -113,6 +118,18 @@ export default function(){
         }
     };
 
+    const updateConvertionCol = function(event){
+
+        const convertionCol = event.target.closest('tr').children[2];
+        const dataConvertionCol = convertionCol ? convertionCol?.getAttribute('data-table') : null;
+
+        if (dataConvertionCol && dataConvertionCol === 'convertion-col'){
+            const dollarExchangeBs = parseFloat(document.querySelector(`#last-dollar-exchange-bs-val`).value);
+            const value = formatAmount(event.target.value);
+            convertionCol.innerHTML = `${ (Math.round(((dollarExchangeBs * value) + Number.EPSILON) * 100) / 100) } Bs.s`;
+        }
+    };
+
     // --- HANDLING MODAL TO LIQUID MONEY DENOMINATIONS --- //
     const handleClickEventDenominationsModal = function(event){
         const closest = event.target.closest('button');
@@ -134,6 +151,39 @@ export default function(){
 
                 document.getElementById(`total_${this.id}`).value = total > 0 ? total : 0;
             }
+        }
+    };
+
+    // --- HANDLING POINT SALE MODAL --- //
+    const handleClickEventPointSaleModal = function(event){
+        const closest = event.target.closest('button');
+
+        if(closest && closest.tagName === 'BUTTON'){
+
+            // const idRow = closest.getAttribute('data-del-row');
+            // const modaToggleID = closest.getAttribute('data-modal-toggle');
+            
+            const action = closest.getAttribute('data-modal')
+
+            if (action && action === 'add'){
+               
+                console.log(banks.getBanks())
+                const tBody = document.querySelector(`#${this.id} tbody`);
+                tBody.insertAdjacentHTML('beforeend', pointSaletableRowTemplate(this.id));
+            }
+            
+            // if (modaToggleID){ // Checking if it's closing the modal
+
+            //     // get all inputs of the modal
+            //     let inputs = document.querySelectorAll(`#${this.id} input`)
+            //     const total = Array.from(inputs).reduce((acc, el) => {
+            //         let denomination = parseFloat(el.getAttribute('data-denomination'));
+            //         let num = formatAmount(el.value)
+            //         return acc + (num * denomination);
+            //     }, 0);
+
+            //     document.getElementById(`total_${this.id}`).value = total > 0 ? total : 0;
+            // }
         }
     };
 
@@ -161,7 +211,9 @@ export default function(){
 
         // Attach events to modals
         modals.forEach(el => {
-            el.addEventListener("keyup", keypressEventHandler);
+
+            el.addEventListener("keydown", keyDownEventHandler);
+            el.addEventListener("keypress", keypressEventHandler);
             el.addEventListener("click", clickEventHandler);
             currencies.push(` ${el.getAttribute('data-currency')}`);
         });
@@ -178,30 +230,65 @@ export default function(){
             (new Inputmask(decimalMaskOptions)).mask(el)
         })
 
-        // Apply mask to default total denominations input
+        // Get the IDs from total denomination inputs
         const totalInputsDenominationsID = modalsID.map(el => `#total_${el}_denominations`);
+        
+        // Get the total denomination Input Elements
         const totalInputDenominations = document.querySelectorAll(totalInputsDenominationsID.join(','))
-
-        // Apply the mask to total denominations inputs
-
+        
+        // Apply mask to default total denominations input
         totalInputDenominations.forEach(el => { 
             // Setting up currency suffix for each input
             decimalMaskOptions.suffix = el.getAttribute('data-currency');
             (new Inputmask(decimalMaskOptions)).mask(el)
         })
 
-        // Attach event handlers to denominations money modals
+        // Get the denomination Modals Elements
         const denominationModals = document
             .querySelectorAll(denominationModalsID
                 .map(el => `#${el}`)
                 .join(',')
             );
         
+        // Attach event handlers to denominations money modals
         denominationModals.forEach(el => {
             el.addEventListener("click", handleClickEventDenominationsModal);  
         });
 
+        // get Point Sale Bs Modal
+        document.querySelector('#point_sale_bs').addEventListener('click', handleClickEventPointSaleModal);
+
     })(modalsID, denominationModalsID);
+
+    let banks = (function() {
+        let banks = [];
+
+        getAllBanks()
+            .then((res) => banks = res.data.data)
+            .catch((e) => console.log(e));
+
+        const getBanks = function () {
+            return banks;
+        }
+
+        const deleteBank = (name) => {
+            let index = banks.findIndex((val) => val === name);
+            if (index !== -1) {
+                banks.splice(index, 1);
+            }
+        }
+
+        const pushBank = (name) => {
+            banks.push(name);
+            return banks;
+        }
+
+        return {
+            getBanks,
+            deleteBank,
+            pushBank
+        }
+    })();
 
     const getNewInputID = (name) => modalsID[name].length === 0 ? 0 : (modalsID[name][modalsID[name].length - 1] + 1);
 
@@ -273,6 +360,29 @@ export default function(){
 
         return (Math.round((parseFloat(numberString) + Number.EPSILON) * 100) / 100)
     }
+
+    // --- HANDLING POINT SALE
+    const pointSaletableRowTemplate = (name, currency = 'Bs.S') => `
+        <tr class="hover:bg-gray-100 dark:hover:bg-gray-700">
+            <td data-table="num-col" class="py-4 pl-6 pr-3 text-sm font-medium text-center text-gray-900 whitespace-nowrap dark:text-white">1</td>
+            <td class="py-4 pl-3 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white">
+                <select name="point_sale_bs_bank[]">
+                    ${banks.getBanks().map(el => `<option value="${el}">${el}</option>`)}
+                </select>
+            </td>
+            <td class="py-4 pl-3 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white">
+                ${ inputTemplate(name, currency) }
+            </td>
+            <td data-table="convertion-col" class="py-4 px-6 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                ${ inputTemplate(name, currency) }
+            </td>
+            <td class="py-4 pr-6 text-sm text-center font-medium whitespace-nowrap">
+                <button data-modal="delete" type="button" class="bg-red-600 flex justify-center w-6 h-6 items-center transition-colors duration-150 rounded-full shadow-lg hover:bg-red-500">
+                    <i class="fas fa-times  text-white"></i>                        
+                </button>
+            </td>
+        </tr>
+    `;
 
     // --- HANDLING INPUTS TO CREATE A NEW CASH REGISTER WORKER ---
     
