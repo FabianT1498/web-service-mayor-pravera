@@ -43,19 +43,18 @@ export default function(){
         
         let key = event.key || event.keyCode;
 
-        if (isFinite(key)){
-            // Handle case to convert dollar to bs.S
-            const dollarExchangeBs = parseFloat(document.querySelector(`#last-dollar-exchange-bs-val`).value);
-            const value = formatAmount(event.target.value);
+        if (isFinite(key) || key === 8 || key === 'Backspace'){ // Handle case to convert dollar to Bs.S
 
             const convertionCol = event.target.closest('tr').children[2];
+            const dataConvertionCol = convertionCol ? convertionCol?.getAttribute('data-table') : null;
 
-            const dataConvertionCol = convertionCol.getAttribute('data-table')
             if (dataConvertionCol && dataConvertionCol === 'convertion-col'){
+                const dollarExchangeBs = parseFloat(document.querySelector(`#last-dollar-exchange-bs-val`).value);
+                const value = formatAmount(event.target.value);
                 convertionCol.innerHTML = `${ (Math.round(((dollarExchangeBs * value) + Number.EPSILON) * 100) / 100) } Bs.s`;
-            }
+            }            
         }
-        else if (key === 13 || key === 'Enter'){
+        else if (key === 13 || key === 'Enter'){ // Handle new table's row creation
             event.preventDefault()
             const currency = this.getAttribute('data-currency');
             const tBody = document.querySelector(`#${this.id} tbody`);
@@ -83,9 +82,14 @@ export default function(){
                     const input = document.getElementById(`${this.id}_${idRow}`);
                     if (input?.inputmask){
                         input.value = 0;
-                        input.inputmask.remove();
-                        decimalMaskOptions.suffix = this.getAttribute('data-currency');
-                        (new Inputmask(decimalMaskOptions)).mask(input);
+                        const convertionCol = closest?.closest('tr')?.children[2];
+                        const dataConvertionCol = convertionCol ? convertionCol?.getAttribute('data-table') : null;
+                        if (dataConvertionCol && dataConvertionCol === 'convertion-col'){
+                            convertionCol.innerHTML = `0.00 Bs.s`
+                        }
+                        // input.inputmask.remove();
+                        // decimalMaskOptions.suffix = this.getAttribute('data-currency');
+                        // (new Inputmask(decimalMaskOptions)).mask(input);
                     }
                 } else {
                     let child = document.querySelector(`#${this.id} tr[data-id="${idRow}"]`)
@@ -157,7 +161,7 @@ export default function(){
 
         // Attach events to modals
         modals.forEach(el => {
-            el.addEventListener("keypress", keypressEventHandler);
+            el.addEventListener("keyup", keypressEventHandler);
             el.addEventListener("click", clickEventHandler);
             currencies.push(` ${el.getAttribute('data-currency')}`);
         });

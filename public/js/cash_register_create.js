@@ -51,17 +51,18 @@ __webpack_require__.r(__webpack_exports__);
   var keypressEventHandler = function keypressEventHandler(event) {
     var key = event.key || event.keyCode;
 
-    if (isFinite(key)) {
-      // Handle case to convert dollar to bs.S
-      var dollarExchangeBs = parseFloat(document.querySelector("#last-dollar-exchange-bs-val").value);
-      var value = formatAmount(event.target.value);
+    if (isFinite(key) || key === 8 || key === 'Backspace') {
+      // Handle case to convert dollar to Bs.S
       var convertionCol = event.target.closest('tr').children[2];
-      var dataConvertionCol = convertionCol.getAttribute('data-table');
+      var dataConvertionCol = convertionCol ? convertionCol === null || convertionCol === void 0 ? void 0 : convertionCol.getAttribute('data-table') : null;
 
       if (dataConvertionCol && dataConvertionCol === 'convertion-col') {
+        var dollarExchangeBs = parseFloat(document.querySelector("#last-dollar-exchange-bs-val").value);
+        var value = formatAmount(event.target.value);
         convertionCol.innerHTML = "".concat(Math.round((dollarExchangeBs * value + Number.EPSILON) * 100) / 100, " Bs.s");
       }
     } else if (key === 13 || key === 'Enter') {
+      // Handle new table's row creation
       event.preventDefault();
       var currency = this.getAttribute('data-currency');
       var tBody = document.querySelector("#".concat(this.id, " tbody"));
@@ -89,10 +90,18 @@ __webpack_require__.r(__webpack_exports__);
           var input = document.getElementById("".concat(this.id, "_").concat(idRow));
 
           if (input !== null && input !== void 0 && input.inputmask) {
+            var _closest$closest;
+
             input.value = 0;
-            input.inputmask.remove();
-            decimalMaskOptions.suffix = this.getAttribute('data-currency');
-            new (inputmask__WEBPACK_IMPORTED_MODULE_0___default())(decimalMaskOptions).mask(input);
+            var convertionCol = closest === null || closest === void 0 ? void 0 : (_closest$closest = closest.closest('tr')) === null || _closest$closest === void 0 ? void 0 : _closest$closest.children[2];
+            var dataConvertionCol = convertionCol ? convertionCol === null || convertionCol === void 0 ? void 0 : convertionCol.getAttribute('data-table') : null;
+
+            if (dataConvertionCol && dataConvertionCol === 'convertion-col') {
+              convertionCol.innerHTML = "0.00 Bs.s";
+            } // input.inputmask.remove();
+            // decimalMaskOptions.suffix = this.getAttribute('data-currency');
+            // (new Inputmask(decimalMaskOptions)).mask(input);
+
           }
         } else {
           var child = document.querySelector("#".concat(this.id, " tr[data-id=\"").concat(idRow, "\"]"));
@@ -160,7 +169,7 @@ __webpack_require__.r(__webpack_exports__);
     var currencies = []; // Attach events to modals
 
     modals.forEach(function (el) {
-      el.addEventListener("keypress", keypressEventHandler);
+      el.addEventListener("keyup", keypressEventHandler);
       el.addEventListener("click", clickEventHandler);
       currencies.push(" ".concat(el.getAttribute('data-currency')));
     }); // Get the default input IDs in modals
