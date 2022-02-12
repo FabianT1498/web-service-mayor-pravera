@@ -14,6 +14,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var inputmask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! inputmask */ "./node_modules/inputmask/dist/inputmask.js");
 /* harmony import */ var inputmask__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(inputmask__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _services_banks__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../../services/banks */ "./resources/js/services/banks/index.js");
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 
 
 /* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__() {
@@ -166,6 +178,8 @@ __webpack_require__.r(__webpack_exports__);
   }; // --- HANDLING POINT SALE MODAL --- //
 
 
+  var oldValuesSelects = {};
+
   var handleClickEventPointSaleModal = function handleClickEventPointSaleModal(event) {
     var closest = event.target.closest('button');
 
@@ -177,6 +191,10 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       if (action === 'add') {
+        if (banks.getBanks().length === 0) {
+          return;
+        }
+
         var tBody = document.querySelector("#".concat(this.id, " tbody"));
         tBody.insertAdjacentHTML('beforeend', pointSaletableRowTemplate(this.id));
         var input_debit = document.querySelector("#".concat(this.id, "_debit_").concat(getNewInputID(this.id)));
@@ -185,9 +203,93 @@ __webpack_require__.r(__webpack_exports__);
         var inputMask = new (inputmask__WEBPACK_IMPORTED_MODULE_0___default())(decimalMaskOptions);
         inputMask.mask([input_debit, input_credit]);
         modalsID["".concat(this.id, "_count")]++;
+        oldValuesSelects[getNewInputID(this.id)] = banks.shiftBank();
+        var rowsIDS = Object.keys(oldValuesSelects);
+
+        if (rowsIDS.length > 1) {
+          var selectors = getBankSelectSelectors(this.id, rowsIDS, getNewInputID(this.id));
+          updateBankSelects(selectors);
+        }
+
         saveNewInputID(this.id);
-        banks.shiftBank();
-      } else if (action === 'remove') {}
+      } else if (action === 'remove') {// Logic is here
+      }
+    }
+  };
+
+  var getBankSelectSelectors = function getBankSelectSelectors(parentID, rowsIDS) {
+    var currentID = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+
+    if (!rowsIDS) {
+      return '';
+    }
+
+    ;
+
+    if (rowsIDS.length === 0) {
+      return '';
+    }
+
+    ;
+    var selectSelectors = '';
+
+    if (!currentID) {
+      selectSelectors = rowsIDS.map(function (el) {
+        return "#".concat(parentID, " tr[data-id=\"").concat(el, "\"] select");
+      }).join(',');
+    } else {
+      selectSelectors = rowsIDS.reduce(function (prev, val) {
+        if (val !== currentID) {
+          prev.push("#".concat(parentID, " tr[data-id=\"").concat(val, "\"] select"));
+        }
+
+        return prev;
+      }, []).join(',');
+    }
+
+    return selectSelectors;
+  };
+
+  var updateBankSelects = function updateBankSelects(selectors) {
+    if (selectors === '') {
+      return false;
+    }
+
+    ;
+    var selectSelectorsElems = document.querySelectorAll(selectors);
+    selectSelectorsElems.forEach(function (el) {
+      var options = [el.value].concat(_toConsumableArray(banks.getBanks()));
+      var html = options.map(function (el) {
+        return "<option value=\"".concat(el, "\">").concat(el, "</option>");
+      }).join('');
+      el.innerHTML = html;
+    });
+    return true;
+  };
+
+  var handleOnChangeEventPointSaleModal = function handleOnChangeEventPointSaleModal(event) {
+    var newValue = ''; // get the select's row ID
+
+    var row = event.target.closest('tr');
+
+    if (row && row.getAttribute('data-id')) {
+      var rowID = row.getAttribute('data-id'); // Old value is pushed again in arr
+
+      banks.pushBank(oldValuesSelects[rowID]); // Get the current index
+
+      var index = event.target.selectedIndex; // Get the new value
+
+      newValue = event.target.options[index].value; // Remove the new value from available banks
+
+      banks.deleteBank(newValue); // Set the new value in old value select
+
+      oldValuesSelects[rowID] = newValue;
+      var rowsIDS = Object.keys(oldValuesSelects);
+
+      if (rowsIDS.length > 1) {
+        var selectors = getBankSelectSelectors(this.id, rowsIDS);
+        updateBankSelects(selectors);
+      }
     }
   };
 
@@ -251,6 +353,7 @@ __webpack_require__.r(__webpack_exports__);
     }); // get Point Sale Bs Modal
 
     document.querySelector('#point_sale_bs').addEventListener('click', handleClickEventPointSaleModal);
+    document.querySelector('#point_sale_bs').addEventListener('change', handleOnChangeEventPointSaleModal);
   })(modalsID, denominationModalsID);
 
   var banks = function () {
@@ -263,6 +366,10 @@ __webpack_require__.r(__webpack_exports__);
 
     var getBanks = function getBanks() {
       return banks;
+    };
+
+    var getBank = function getBank(index) {
+      return banks[index];
     };
 
     var deleteBank = function deleteBank(name) {
@@ -281,11 +388,12 @@ __webpack_require__.r(__webpack_exports__);
     };
 
     var shiftBank = function shiftBank() {
-      banks.shift();
+      return banks.shift();
     };
 
     return {
       getBanks: getBanks,
+      getBank: getBank,
       deleteBank: deleteBank,
       pushBank: pushBank,
       shiftBank: shiftBank
@@ -362,9 +470,9 @@ __webpack_require__.r(__webpack_exports__);
 
   var pointSaletableRowTemplate = function pointSaletableRowTemplate(name) {
     var currency = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'Bs.S';
-    return "\n        <tr class=\"hover:bg-gray-100 dark:hover:bg-gray-700\">\n            <td data-table=\"num-col\" class=\"py-4 pl-6 text-sm font-medium text-center text-gray-900 whitespace-nowrap dark:text-white\">".concat(modalsID["".concat(name, "_count")] + 1, "</td>\n            <td class=\"pl-3 py-4 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white\">\n                <select class=\"w-full form-select\" name=\"point_sale_bs_bank[]\">\n                    ").concat(banks.getBanks().map(function (el) {
+    return "\n        <tr class=\"hover:bg-gray-100 dark:hover:bg-gray-700\" data-id=".concat(getNewInputID(name), ">\n            <td data-table=\"num-col\" class=\"py-4 pl-6 text-sm font-medium text-center text-gray-900 whitespace-nowrap dark:text-white\">").concat(modalsID["".concat(name, "_count")] + 1, "</td>\n            <td class=\"pl-3 py-4 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white\">\n                <select class=\"w-full form-select\" name=\"point_sale_bs_bank[]\">\n                    ").concat(banks.getBanks().map(function (el) {
       return "<option value=\"".concat(el, "\">").concat(el, "</option>");
-    }), "\n                </select>\n            </td>\n            <td class=\"pl-3 py-4 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white\">\n                ").concat(pointSaleinputTemplate(name, currency, 'debit'), "\n            </td>\n            <td data-table=\"convertion-col\" class=\"pl-3 py-4 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white\">\n                ").concat(pointSaleinputTemplate(name, currency, 'credit'), "\n            </td>\n            <td class=\"py-4 pl-3 text-sm text-center font-medium whitespace-nowrap\">\n                <button data-modal=\"delete\" type=\"button\" class=\"bg-red-600 flex justify-center w-6 h-6 items-center transition-colors duration-150 rounded-full shadow-lg hover:bg-red-500\">\n                    <i class=\"fas fa-times  text-white\"></i>                        \n                </button>\n            </td>\n        </tr>\n    ");
+    }).join(''), "\n                </select>\n            </td>\n            <td class=\"pl-3 py-4 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white\">\n                ").concat(pointSaleinputTemplate(name, currency, 'debit'), "\n            </td>\n            <td data-table=\"convertion-col\" class=\"pl-3 py-4 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white\">\n                ").concat(pointSaleinputTemplate(name, currency, 'credit'), "\n            </td>\n            <td class=\"py-4 pl-3 text-sm text-center font-medium whitespace-nowrap\">\n                <button data-modal=\"delete\" type=\"button\" class=\"bg-red-600 flex justify-center w-6 h-6 items-center transition-colors duration-150 rounded-full shadow-lg hover:bg-red-500\">\n                    <i class=\"fas fa-times  text-white\"></i>                        \n                </button>\n            </td>\n        </tr>\n    ");
   }; // --- HANDLING INPUTS TO CREATE A NEW CASH REGISTER WORKER ---
 
 

@@ -157,6 +157,8 @@ export default function(){
     };
 
     // --- HANDLING POINT SALE MODAL --- //
+    const oldValuesSelects = {};
+
     const handleClickEventPointSaleModal = function(event){
         const closest = event.target.closest('button');
 
@@ -169,7 +171,11 @@ export default function(){
             }
 
             if (action === 'add'){
-               
+                
+                if (banks.getBanks().length === 0){
+                    return;
+                }
+
                 const tBody = document.querySelector(`#${this.id} tbody`);
                 tBody.insertAdjacentHTML('beforeend', pointSaletableRowTemplate(this.id));
 
@@ -180,10 +186,93 @@ export default function(){
                 const inputMask = new Inputmask(decimalMaskOptions);
                 inputMask.mask([input_debit,input_credit]);
                 modalsID[`${this.id}_count`]++;
-                saveNewInputID(this.id);
-                banks.shiftBank();
-            } else if (action === 'remove'){
+
+                oldValuesSelects[getNewInputID(this.id)] = banks.shiftBank();
+                let rowsIDS = Object.keys(oldValuesSelects);
                 
+                if (rowsIDS.length > 1){
+                    const selectors = getBankSelectSelectors(this.id, rowsIDS, getNewInputID(this.id));
+                    updateBankSelects(selectors);           
+                }
+
+                saveNewInputID(this.id);
+                
+            } else if (action === 'remove'){
+                // Logic is here
+            }
+        }
+    };
+
+    const getBankSelectSelectors = (parentID, rowsIDS, currentID = null) => {
+
+        if (!rowsIDS){ return ''};
+
+        if (rowsIDS.length === 0){ return ''};
+
+        let selectSelectors = '';
+
+        if (!currentID){
+            selectSelectors = rowsIDS.map((el) => `#${parentID} tr[data-id="${el}"] select`).join(',');
+        } else {
+            selectSelectors= rowsIDS.reduce((prev, val) => {
+            
+                if (val !== currentID){
+                    prev.push(`#${parentID} tr[data-id="${val}"] select`);
+                }
+
+                return prev;
+            }, []).join(',');
+        }
+
+        return selectSelectors;
+        
+    };
+
+    const updateBankSelects = (selectors) => {
+        if (selectors === ''){ return false };
+
+        const selectSelectorsElems = document.querySelectorAll(selectors);
+
+        selectSelectorsElems.forEach(el => {
+            let options = [el.value, ...banks.getBanks()];
+            const html = options.map(el => `<option value="${el}">${el}</option>`).join('');
+            el.innerHTML = html;
+        });
+
+        return true;
+    }
+
+    const handleOnChangeEventPointSaleModal = function(event){
+
+        let newValue = '';
+
+        // get the select's row ID
+        let row = event.target.closest('tr');
+
+        if (row && row.getAttribute('data-id')){
+
+            let rowID = row.getAttribute('data-id');
+
+            // Old value is pushed again in arr
+            banks.pushBank(oldValuesSelects[rowID]);
+            
+            // Get the current index
+            let index = event.target.selectedIndex;
+            
+            // Get the new value
+            newValue = event.target.options[index].value;
+
+            // Remove the new value from available banks
+            banks.deleteBank(newValue);
+
+            // Set the new value in old value select
+            oldValuesSelects[rowID] = newValue;
+
+            let rowsIDS = Object.keys(oldValuesSelects);
+
+            if (rowsIDS.length > 1){
+                const selectors = getBankSelectSelectors(this.id, rowsIDS);
+                updateBankSelects(selectors);
             }
         }
     };
@@ -258,6 +347,7 @@ export default function(){
 
         // get Point Sale Bs Modal
         document.querySelector('#point_sale_bs').addEventListener('click', handleClickEventPointSaleModal);
+        document.querySelector('#point_sale_bs').addEventListener('change', handleOnChangeEventPointSaleModal);
 
     })(modalsID, denominationModalsID);
 
@@ -270,6 +360,10 @@ export default function(){
 
         const getBanks = function () {
             return banks;
+        }
+
+        const getBank = (index) => {
+            return banks[index];
         }
 
         const deleteBank = (name) => {
@@ -285,14 +379,16 @@ export default function(){
         }
 
         const shiftBank = () => {
-            banks.shift();
+            return banks.shift();
         }
+
 
         return {
             getBanks,
+            getBank,
             deleteBank,
             pushBank,
-            shiftBank
+            shiftBank,
         }
     })();
 
@@ -373,11 +469,11 @@ export default function(){
     `
 
     const pointSaletableRowTemplate = (name, currency = 'Bs.S') => `
-        <tr class="hover:bg-gray-100 dark:hover:bg-gray-700">
+        <tr class="hover:bg-gray-100 dark:hover:bg-gray-700" data-id=${getNewInputID(name)}>
             <td data-table="num-col" class="py-4 pl-6 text-sm font-medium text-center text-gray-900 whitespace-nowrap dark:text-white">${modalsID[`${name}_count`] + 1}</td>
             <td class="pl-3 py-4 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white">
                 <select class="w-full form-select" name="point_sale_bs_bank[]">
-                    ${banks.getBanks().map(el => `<option value="${el}">${el}</option>`)}
+                    ${banks.getBanks().map(el => `<option value="${el}">${el}</option>`).join('')}
                 </select>
             </td>
             <td class="pl-3 py-4 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white">

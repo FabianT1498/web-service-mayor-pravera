@@ -1993,6 +1993,14 @@ div.code-toolbar .toolbar button:hover {
   width: auto;
 }
 
+.w-1\/12{
+  width: 8.333333%;
+}
+
+.w-1\/5{
+  width: 20%;
+}
+
 .w-6{
   width: 1.5rem;
 }
@@ -2011,22 +2019,6 @@ div.code-toolbar .toolbar button:hover {
 
 .w-1\/2{
   width: 50%;
-}
-
-.w-1\/6{
-  width: 16.666667%;
-}
-
-.w-1\/4{
-  width: 25%;
-}
-
-.w-1\/12{
-  width: 8.333333%;
-}
-
-.w-1\/5{
-  width: 20%;
 }
 
 .min-w-0{
