@@ -2013,6 +2013,22 @@ div.code-toolbar .toolbar button:hover {
   width: 50%;
 }
 
+.w-1\/6{
+  width: 16.666667%;
+}
+
+.w-1\/4{
+  width: 25%;
+}
+
+.w-1\/12{
+  width: 8.333333%;
+}
+
+.w-1\/5{
+  width: 20%;
+}
+
 .min-w-0{
   min-width: 0px;
 }

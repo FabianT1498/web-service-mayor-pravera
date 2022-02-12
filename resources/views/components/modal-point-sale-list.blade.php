@@ -2,7 +2,7 @@
 
 <!-- Main modal -->
 <div id={{ $modalID }} data-currency={{ $currency }} aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed h-108 right-0 left-0 top-4 z-50 justify-center items-center md:h-full md:inset-0">
-    <div class="flex flex-col relative px-4 w-full max-w-lg h-full">
+    <div class="flex flex-col relative w-full max-w-xl h-full">
          <!-- Modal header -->
          <div class="sticky top-0 flex justify-between items-start p-5 rounded-t border-b dark:border-gray-600 bg-gray-200">
             <h3 class="text-xl font-semibold text-gray-900 lg:text-2xl dark:text-white">
@@ -20,27 +20,26 @@
                         <table class="min-w-full divide-y divide-gray-200 table-fixed dark:divide-gray-700">
                             <thead class="bg-gray-100 dark:bg-gray-700">
                                 <tr>
-                                    <th scope="col" class="py-3 pl-6 pr-3 text-xs text-center tracking-wider  text-gray-700 uppercase dark:text-gray-400">
+                                    <th scope="col" class="w-1/12 py-3 pl-6 text-xs text-center tracking-wider  text-gray-700 uppercase dark:text-gray-400">
                                         Nro
                                     </th>
-                                    <th scope="col" class="py-3 pl-3 text-xs tracking-wider text-center text-gray-700 uppercase dark:text-gray-400">
+                                    <th scope="col" class="w-1/5 py-3 pl-3 text-xs tracking-wider text-center text-gray-700 uppercase dark:text-gray-400">
                                         Banco
                                     </th>
-                                    <th scope="col" class="py-3 pl-3 text-xs tracking-wider text-center text-gray-700 uppercase dark:text-gray-400">
+                                    <th scope="col" class="w-1/5 py-3 pl-3 text-xs tracking-wider text-center text-gray-700 uppercase dark:text-gray-400">
                                         {{ 'Debito (' . $currency . ')' }}
                                     </th>
-                                    <th scope="col" class="py-3 pl-3 text-xs tracking-wider text-center text-gray-700 uppercase dark:text-gray-400">
+                                    <th scope="col" class="w-1/5 py-3 pl-3 text-xs tracking-wider text-center text-gray-700 uppercase dark:text-gray-400">
                                         {{ 'Credito (' . $currency . ')' }}
                                     </th>
-                                    <th scope="col" class="pr-6 text-center">
+                                    <th scope="col" class="w-1/12 pl-3 pr-6 text-center">
                                         <button data-modal="add" type="button" class="bg-gray-800 flex justify-center w-6 h-6 items-center transition-colors duration-150 rounded-full shadow-lg">
                                             <i class="fas fa-plus  text-white"></i>                        
                                         </button>
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                            </tbody>
+                            <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700"></tbody>
                         </table>
                     </div>
                 </div>

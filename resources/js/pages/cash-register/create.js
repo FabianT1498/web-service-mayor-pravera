@@ -2,7 +2,7 @@ import Inputmask from "inputmask";
 
 import { getAllBanks } from './../../services/banks';
 
-export default async function(){
+export default function(){
 
     let decimalMaskOptions = {
         alias:'decimal',
@@ -25,6 +25,8 @@ export default async function(){
         'liquid_money_dollars_count': 1,
         'liquid_money_bolivares': [0],
         'liquid_money_bolivares_count': 1,
+        'point_sale_bs': [0],
+        'point_sale_bs_count': 0
     };
 
     const denominationModalsID = [
@@ -159,31 +161,30 @@ export default async function(){
         const closest = event.target.closest('button');
 
         if(closest && closest.tagName === 'BUTTON'){
-
-            // const idRow = closest.getAttribute('data-del-row');
-            // const modaToggleID = closest.getAttribute('data-modal-toggle');
             
             const action = closest.getAttribute('data-modal')
 
-            if (action && action === 'add'){
+            if (!action){
+                return;
+            }
+
+            if (action === 'add'){
                
-                console.log(banks.getBanks())
                 const tBody = document.querySelector(`#${this.id} tbody`);
                 tBody.insertAdjacentHTML('beforeend', pointSaletableRowTemplate(this.id));
+
+                const input_debit = document.querySelector(`#${this.id}_debit_${getNewInputID(this.id)}`);
+                const input_credit = document.querySelector(`#${this.id}_credit_${getNewInputID(this.id)}`);
+
+                decimalMaskOptions.suffix = ' Bs.S';
+                const inputMask = new Inputmask(decimalMaskOptions);
+                inputMask.mask([input_debit,input_credit]);
+                modalsID[`${this.id}_count`]++;
+                saveNewInputID(this.id);
+                banks.shiftBank();
+            } else if (action === 'remove'){
+                
             }
-            
-            // if (modaToggleID){ // Checking if it's closing the modal
-
-            //     // get all inputs of the modal
-            //     let inputs = document.querySelectorAll(`#${this.id} input`)
-            //     const total = Array.from(inputs).reduce((acc, el) => {
-            //         let denomination = parseFloat(el.getAttribute('data-denomination'));
-            //         let num = formatAmount(el.value)
-            //         return acc + (num * denomination);
-            //     }, 0);
-
-            //     document.getElementById(`total_${this.id}`).value = total > 0 ? total : 0;
-            // }
         }
     };
 
@@ -283,10 +284,15 @@ export default async function(){
             return banks;
         }
 
+        const shiftBank = () => {
+            banks.shift();
+        }
+
         return {
             getBanks,
             deleteBank,
-            pushBank
+            pushBank,
+            shiftBank
         }
     })();
 
@@ -362,21 +368,25 @@ export default async function(){
     }
 
     // --- HANDLING POINT SALE
+    const pointSaleinputTemplate = (name, currency, type) => `
+        <input type="text" placeholder="0.00 ${currency}" id="${name}_${type}_${getNewInputID(name)}" name="${name}_${type}[]" class="w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+    `
+
     const pointSaletableRowTemplate = (name, currency = 'Bs.S') => `
         <tr class="hover:bg-gray-100 dark:hover:bg-gray-700">
-            <td data-table="num-col" class="py-4 pl-6 pr-3 text-sm font-medium text-center text-gray-900 whitespace-nowrap dark:text-white">1</td>
-            <td class="py-4 pl-3 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                <select name="point_sale_bs_bank[]">
+            <td data-table="num-col" class="py-4 pl-6 text-sm font-medium text-center text-gray-900 whitespace-nowrap dark:text-white">${modalsID[`${name}_count`] + 1}</td>
+            <td class="pl-3 py-4 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white">
+                <select class="w-full form-select" name="point_sale_bs_bank[]">
                     ${banks.getBanks().map(el => `<option value="${el}">${el}</option>`)}
                 </select>
             </td>
-            <td class="py-4 pl-3 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                ${ inputTemplate(name, currency) }
+            <td class="pl-3 py-4 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white">
+                ${ pointSaleinputTemplate(name, currency, 'debit') }
             </td>
-            <td data-table="convertion-col" class="py-4 px-6 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                ${ inputTemplate(name, currency) }
+            <td data-table="convertion-col" class="pl-3 py-4 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                ${ pointSaleinputTemplate(name, currency, 'credit') }
             </td>
-            <td class="py-4 pr-6 text-sm text-center font-medium whitespace-nowrap">
+            <td class="py-4 pl-3 text-sm text-center font-medium whitespace-nowrap">
                 <button data-modal="delete" type="button" class="bg-red-600 flex justify-center w-6 h-6 items-center transition-colors duration-150 rounded-full shadow-lg hover:bg-red-500">
                     <i class="fas fa-times  text-white"></i>                        
                 </button>
