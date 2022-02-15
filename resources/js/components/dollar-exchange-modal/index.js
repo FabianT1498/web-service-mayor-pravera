@@ -1,4 +1,4 @@
-import { storeDollarExchange } from './../../services/dollar-exchange';
+import { storeDollarExchange } from '../../services/dollar-exchange';
 import Inputmask from "inputmask";
 
 const dollarExchangeInput = document.getElementById('dollar-exchange-bs-input');

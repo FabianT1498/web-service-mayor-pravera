@@ -1,136 +1,13 @@
-import Inputmask from "inputmask";
+
 
 import { getAllBanks } from './../../services/banks';
 
 export default function(){
 
-    let decimalMaskOptions = {
-        alias:'decimal',
-        suffix:' $',
-        positionCaretOnClick: "radixFocus",
-        digits: 2,
-        radixPoint: ",",
-        _radixDance: true,
-        numericInput: true,
-        placeholder: "0",
-        definitions: {
-            "0": {
-                validator: "[0-9\uFF11-\uFF19]"
-            },
-        },
-    }
-
-    const modalsID = {
-        'liquid_money_dollars': [0],
-        'liquid_money_dollars_count': 1,
-        'liquid_money_bolivares': [0],
-        'liquid_money_bolivares_count': 1,
-        'point_sale_bs': [0],
-        'point_sale_bs_count': 0
-    };
-
     const denominationModalsID = [
         'liquid_money_dollars_denominations',
         'liquid_money_bolivares_denominations'
     ];
-
-    const getModalsID = (obj) => {
-        return Object.keys(obj).reduce((arr, val) => {
-            if (!val.includes('_count')){
-                arr.push(`${val}`)
-            }
-            return arr;
-        }, [])
-    };
-
-    // --- HANDLING LIST ENTRANCE MODAL ---
-    const keyDownEventHandler = function(event){
-        let key = event.key || event.keyCode;
-
-        if (key === 8 || key === 'Backspace'){ // Handle case to convert dollar to Bs.S
-            updateConvertionCol(event)
-        }
-    };
-
-    const keypressEventHandler = function(event){
-        
-        event.preventDefault();
-
-        let key = event.key || event.keyCode;
-
-        if (isFinite(key)){ // Handle case to convert dollar to Bs.S
-            updateConvertionCol(event)
-        }
-        else if (key === 13 || key === 'Enter'){ // Handle new table's row creation
-            
-            const currency = this.getAttribute('data-currency');
-            const tBody = document.querySelector(`#${this.id} tbody`);
-            tBody.insertAdjacentHTML('beforeend', tableRowTemplate(this.id, currency));
-            const input = document.querySelector(`#${this.id}_${getNewInputID(this.id)}`);
-            decimalMaskOptions.suffix = currency;
-            (new Inputmask(decimalMaskOptions)).mask(input)
-            modalsID[`${this.id}_count`]++;
-            saveNewInputID(this.id);
-        }
-    };
-
-    const clickEventHandler = function(event){
-        const closest = event.target.closest('button');
-
-        if(closest && closest.tagName === 'BUTTON'){
-
-            const idRow = closest.getAttribute('data-del-row');
-            const modaToggleID = closest.getAttribute('data-modal-toggle');
-            
-            if (idRow){ // Checking if it's Deleting a row
-                let parent = document.querySelector(`#${this.id} tbody`)
-
-                if(parent.children.length === 1){
-                    const input = document.getElementById(`${this.id}_${idRow}`);
-                    if (input?.inputmask){
-                        input.value = 0;
-                        const convertionCol = closest?.closest('tr')?.children[2];
-                        const dataConvertionCol = convertionCol ? convertionCol?.getAttribute('data-table') : null;
-                        if (dataConvertionCol && dataConvertionCol === 'convertion-col'){
-                            convertionCol.innerHTML = `0.00 Bs.s`
-                        }
-                        // input.inputmask.remove();
-                        // decimalMaskOptions.suffix = this.getAttribute('data-currency');
-                        // (new Inputmask(decimalMaskOptions)).mask(input);
-                    }
-                } else {
-                    let child = document.querySelector(`#${this.id} tr[data-id="${idRow}"]`)
-                    parent.removeChild(child);
-                    modalsID[`${this.id}_count`]--;
-                    removeInputID(this.id, idRow)
-                    updateTableIDColumn(this.id);
-                }
-
-            } else if (modaToggleID){ // Checking if it's closing the modal
-
-                // get all inputs of the modal
-                let inputs = document.querySelectorAll(`#${this.id} input`)
-                const total = Array.from(inputs).reduce((acc, el) => {
-                    let num = formatAmount(el.value)
-                    return acc + num;
-                }, 0);
-
-                document.getElementById(`total_${this.id}`).value = total > 0 ? total : 0;
-            }
-        }
-    };
-
-    const updateConvertionCol = function(event){
-
-        const convertionCol = event.target.closest('tr').children[2];
-        const dataConvertionCol = convertionCol ? convertionCol?.getAttribute('data-table') : null;
-
-        if (dataConvertionCol && dataConvertionCol === 'convertion-col'){
-            const dollarExchangeBs = parseFloat(document.querySelector(`#last-dollar-exchange-bs-val`).value);
-            const value = formatAmount(event.target.value);
-            convertionCol.innerHTML = `${ (Math.round(((dollarExchangeBs * value) + Number.EPSILON) * 100) / 100) } Bs.s`;
-        }
-    };
 
     // --- HANDLING MODAL TO LIQUID MONEY DENOMINATIONS --- //
     const handleClickEventDenominationsModal = function(event){
@@ -392,17 +269,6 @@ export default function(){
         }
     })();
 
-    const getNewInputID = (name) => modalsID[name].length === 0 ? 0 : (modalsID[name][modalsID[name].length - 1] + 1);
-
-    const saveNewInputID = (name) => {
-        modalsID[name].push(getNewInputID(name));
-    }
-
-    const removeInputID = (name, id) => {
-        const index = modalsID[name].findIndex((val) => val == id)
-        return index !== -1 ? modalsID[name].slice(index, 1) : -1;
-    }
-
     const updateTableIDColumn = (name) => {
         const colsID = document.querySelectorAll(`#${name} td[data-table="num-col"]`);
 
@@ -411,58 +277,9 @@ export default function(){
         }
     }
 
-    const inputTemplate = (name, currency) => `
-        <input type="text" placeholder="0.00 ${currency}" id="${name}_${getNewInputID(name)}" name="${name}[]" class="w-36 rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-    `
-    const tableRowTemplate = (name, currency) => `
-        <tr class="hover:bg-gray-100 dark:hover:bg-gray-700" data-id=${getNewInputID(name)}>
-            <td data-table="num-col" class="py-4 pl-6 pr-3 text-sm font-medium text-center text-gray-900 whitespace-nowrap dark:text-white">${modalsID[`${name}_count`] + 1}</td>
-            <td class="py-4 pl-3 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                ${ inputTemplate(name, currency) }
-            </td>
-            <td data-table="convertion-col" class="py-4 px-6 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                0.00 bs.s
-            </td>
-            <td class="py-4 pr-6 text-sm text-center font-medium whitespace-nowrap">
-                <button data-del-row="${getNewInputID(name)}" type="button" class="bg-red-600 flex justify-center w-6 h-6 items-center transition-colors duration-150 rounded-full shadow-lg hover:bg-red-500">
-                    <i class="fas fa-times  text-white"></i>                        
-                </button>
-            </td>
-        </tr>
-    `;
+    
 
-    const formatAmount = (amount, defaultValue = '0.00') => {
-  
-        if (!amount){
-            return 0;
-        }
-
-        let index = amount.indexOf(" ");
-
-        // Remove suffix if exists
-        if (index !== -1){
-            amount = amount.slice(0, index);
-        }
-        
-        // Check if value is zero
-        if (amount === defaultValue){
-            return 0;
-        }
-        
-        let arr = amount.split(',', 2);
-        let integer = arr[0] ?? null;
-        let decimal = arr[1] ?? null;
-                
-        // Check if it is an integer number
-        if (!decimal){
-            return parseInt(integer);
-        }
-
-        let numberString = integer + '.' + decimal;
-
-        return (Math.round((parseFloat(numberString) + Number.EPSILON) * 100) / 100)
-    }
-
+    
     // --- HANDLING POINT SALE
     const pointSaleinputTemplate = (name, currency, type) => `
         <input type="text" placeholder="0.00 ${currency}" id="${name}_${type}_${getNewInputID(name)}" name="${name}_${type}[]" class="w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">

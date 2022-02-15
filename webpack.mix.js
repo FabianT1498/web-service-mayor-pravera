@@ -1,5 +1,7 @@
 const mix = require('laravel-mix');
 
+const resolve = require('./webpack/resolve.js')
+
 /*
  |--------------------------------------------------------------------------
  | Mix Asset Management
@@ -16,4 +18,7 @@ mix
     .sass('resources/sass/app.sass', 'public/css', {implementation: require('node-sass')}, [
         require('tailwindcss'),
         require('autoprefixer'),
-    ]);
+    ])
+    .webpackConfig({
+        resolve
+    });
