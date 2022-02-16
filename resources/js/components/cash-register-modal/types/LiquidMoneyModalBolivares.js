@@ -6,6 +6,10 @@ const LiquidMoneyModalBolivares = function({currency}) {
     this.currency = currency || 'Bs.S';
     LiquidMoneyModal.call(this);
 
+    this.init = function(container){
+        LiquidMoneyModal.prototype.init.call(this, container, "liquid_money_bs");
+    }
+
     this.keypressEventHandler = function(event){
         event.preventDefault();
 

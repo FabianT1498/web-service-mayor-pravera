@@ -268,17 +268,6 @@ export default function(){
             shiftBank,
         }
     })();
-
-    const updateTableIDColumn = (name) => {
-        const colsID = document.querySelectorAll(`#${name} td[data-table="num-col"]`);
-
-        for (let i = 0; i < modalsID[`${name}_count`]; i++){
-            colsID[i].innerHTML = i + 1;
-        }
-    }
-
-    
-
     
     // --- HANDLING POINT SALE
     const pointSaleinputTemplate = (name, currency, type) => `

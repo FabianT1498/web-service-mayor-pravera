@@ -1,45 +1,30 @@
 import PubSub from "pubsub-js";
 
+import CashRegisterTable from '_components/cash-register-table'
+
 const LiquidMoneyModal = function (){
 
-    this.init = function(container){
+    this.init = function(container, tableName){
         container.addEventListener("keypress", this.keypressEventHandler);
         container.addEventListener("click", this.clickEventHandler);
+
+        const tableContainer = container.querySelector('table')
+        const table = new CashRegisterTable(tableName);
+        table.init(tableContainer);
     }
 
     this.clickEventHandler = function(event){
-        const closest = event.target.closest('button');
+        const button = event.target.closest('button');
 
-        if(closest && closest.tagName === 'BUTTON'){
+        if(button && button.tagName === 'BUTTON'){
 
-            const idRow = closest.getAttribute('data-del-row');
-            const modaToggleID = closest.getAttribute('data-modal-toggle');
+            const rowID = button.getAttribute('data-del-row');
+            const modalToggleID = button.getAttribute('data-modal-toggle');
             
-            if (idRow){ // Checking if it's Deleting a row
-                let parent = document.querySelector(`#${this.id} tbody`)
-
-                if(parent.children.length === 1){
-                    const input = document.getElementById(`${this.id}_${idRow}`);
-                    if (input?.inputmask){
-                        input.value = 0;
-                        const convertionCol = closest?.closest('tr')?.children[2];
-                        const dataConvertionCol = convertionCol ? convertionCol?.getAttribute('data-table') : null;
-                        if (dataConvertionCol && dataConvertionCol === 'convertion-col'){
-                            convertionCol.innerHTML = `0.00 Bs.s`
-                        }
-                        // input.inputmask.remove();
-                        // decimalMaskOptions.suffix = this.getAttribute('data-currency');
-                        // (new Inputmask(decimalMaskOptions)).mask(input);
-                    }
-                } else {
-                    let child = document.querySelector(`#${this.id} tr[data-id="${idRow}"]`)
-                    parent.removeChild(child);
-                    modalsID[`${this.id}_count`]--;
-                    removeInputID(this.id, idRow)
-                    updateTableIDColumn(this.id);
-                }
-
-            } else if (modaToggleID){ // Checking if it's closing the modal
+            if (rowID){ // Checking if it's Deleting a row
+                const row = button.closest('tr');
+                PubSub.publish('deleteRow', { row, rowID});
+            } else if (modalToggleID){ // Checking if it's closing the modal
 
                 // get all inputs of the modal
                 let inputs = document.querySelectorAll(`#${this.id} input`)
