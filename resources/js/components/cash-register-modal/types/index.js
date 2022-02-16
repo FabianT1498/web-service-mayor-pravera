@@ -1,4 +1,2 @@
-import LiquidMoneyModalBolivares from './LiquidMoneyModalBolivares';
-import LiquidMoneyModalDollars from './LiquidMoneyModalDollars';
-
-export { LiquidMoneyModalBolivares, LiquidMoneyModalDollars };
+export { default as LiquidMoneyModalBolivares } from "./LiquidMoneyModalBolivares";
+export { default as LiquidMoneyModalDollars } from "./LiquidMoneyModalDollars";

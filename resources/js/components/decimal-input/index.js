@@ -1,11 +1,14 @@
 import PubSub from "pubsub-js";
 import Inputmask from "inputmask";
 
-const DecimalInput = function(){
-   
+import CURRENCY_SYMBOLS_MAP from '_assets/currencies';
+
+const DecimalInput = function(currency){
+    this.currency = currency ? currency : 'dollar';
+    this.suffix = CURRENCY_SYMBOLS_MAP[currency] || '$'
+
     let decimalMaskOptions = {
         alias:'decimal',
-        suffix: '$',
         positionCaretOnClick: "radixFocus",
         digits: 2,
         radixPoint: ",",
@@ -20,13 +23,12 @@ const DecimalInput = function(){
     }
     
     this.init = () =>{
-        PubSub.subscribe('attachMask', attachMask)
+        PubSub.subscribe(`attachMask.${this.currency}`, attachMask)
     };
 
     const attachMask = (msg, data) => {
-        let input = data.element;
-        let currency = data.currency; 
-        decimalMaskOptions.suffix = ` ${currency}`;
+        let input = data.input;
+        decimalMaskOptions['suffix'] = ` ${this.suffix}`;
         new Inputmask(decimalMaskOptions).mask(input)
     }
 }

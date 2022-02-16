@@ -5494,12 +5494,12 @@ __webpack_require__(/*! ./charts */ "./resources/js/charts/index.js");
 
 __webpack_require__(/*! ./external */ "./resources/js/external/index.js");
 
-__webpack_require__(/*! ./component/dollar-exchange-modal */ "./resources/js/component/dollar-exchange-modal/index.js");
+__webpack_require__(/*! _components/dollar-exchange-modal */ "./resources/js/components/dollar-exchange-modal/index.js");
 
 
 window.Alpine = alpinejs__WEBPACK_IMPORTED_MODULE_0__["default"];
 alpinejs__WEBPACK_IMPORTED_MODULE_0__["default"].start();
-__webpack_require__.e(/*! import() | ../../js/cash_register_create */ "/js/cash_register_create").then(__webpack_require__.bind(__webpack_require__, /*! ./pages/cash-register/create.js */ "./resources/js/pages/cash-register/create.js")).then(function (_ref) {
+__webpack_require__.e(/*! import() | ../../js/cash_register_create */ "/js/cash_register_create").then(__webpack_require__.bind(__webpack_require__, /*! ./pages/cash-register */ "./resources/js/pages/cash-register/index.js")).then(function (_ref) {
   var defaultCreate = _ref["default"];
   defaultCreate();
 });
@@ -5893,17 +5893,17 @@ window.toastr = __webpack_require__(/*! toastr */ "./node_modules/toastr/toastr.
 
 /***/ }),
 
-/***/ "./resources/js/component/dollar-exchange-modal/index.js":
-/*!***************************************************************!*\
-  !*** ./resources/js/component/dollar-exchange-modal/index.js ***!
-  \***************************************************************/
+/***/ "./resources/js/components/dollar-exchange-modal/index.js":
+/*!****************************************************************!*\
+  !*** ./resources/js/components/dollar-exchange-modal/index.js ***!
+  \****************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _services_dollar_exchange__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../../services/dollar-exchange */ "./resources/js/services/dollar-exchange/index.js");
+/* harmony import */ var _services_dollar_exchange__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../services/dollar-exchange */ "./resources/js/services/dollar-exchange/index.js");
 /* harmony import */ var inputmask__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! inputmask */ "./node_modules/inputmask/dist/inputmask.js");
 /* harmony import */ var inputmask__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(inputmask__WEBPACK_IMPORTED_MODULE_2__);
 
