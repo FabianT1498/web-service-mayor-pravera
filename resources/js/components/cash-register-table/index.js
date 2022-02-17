@@ -2,6 +2,8 @@ import PubSub from "pubsub-js";
 
 import { formatAmount } from '_utilities/mathUtilities'
 
+import DecimalInput from '_components/decimal-input';
+
 import CURRENCY_SYMBOLS_MAP from '_assets/currencies';
 
 const CashRegisterTable = function(tableName, currency){
@@ -14,9 +16,14 @@ const CashRegisterTable = function(tableName, currency){
     this.init = (container) => {
         this.container = container;
 
+        if (PubSub.getSubscriptions('attachMask').length === 0){
+            let decimalInputDollar = new DecimalInput();
+            decimalInputDollar.init();
+        }
+
         PubSub.subscribe(`addRow.${this.currency}`, addRow);
         PubSub.subscribe(`deleteRow.${this.currency}`, deleteRow);        
-        PubSub.subscribe(`getTotal.${this.currency}`, getTotal);  
+        PubSub.subscribe(`getTotal.records.${this.currency}`, getTotal);  
         PubSub.subscribe('updateConvertionCol', updateConvertionCol);  
 
         setInitialMask()
@@ -30,7 +37,7 @@ const CashRegisterTable = function(tableName, currency){
         const tBody = this.container.querySelector('tbody');
         if (tBody && tBody.children.length === 1){
             let input = tBody.querySelector('input');
-            PubSub.publish(`attachMask.${this.currency}`, {input});
+            PubSub.publish('attachMask', {input, currency: this.currency});
         }
     }
 
@@ -46,7 +53,6 @@ const CashRegisterTable = function(tableName, currency){
             return acc + num;
         }, 0);
 
-        console.log(`total_${this.tableName}`)
         document.getElementById(`total_${this.tableName}`).value = total > 0 ? total : 0;
     }
 
@@ -58,9 +64,9 @@ const CashRegisterTable = function(tableName, currency){
         const tBody = this.container.querySelector('tbody');
 
         tBody.insertAdjacentHTML('beforeend', tableRowTemplate(this.tableName, this.currency));
-        const input = document.querySelector(`#${this.tableName}_${getNewID()}`);
+        const input = tBody.querySelector(`#${this.tableName}_${getNewID()}`);
 
-        PubSub.publish(`attachMask.${this.currency}`, {input});
+        PubSub.publish('attachMask', {input, currency: this.currency});
 
         rowsCount++;
         saveNewID();

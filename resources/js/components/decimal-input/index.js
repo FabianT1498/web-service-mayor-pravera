@@ -3,10 +3,8 @@ import Inputmask from "inputmask";
 
 import CURRENCY_SYMBOLS_MAP from '_assets/currencies';
 
-const DecimalInput = function(currency){
-    this.currency = currency ? currency : 'dollar';
-    this.suffix = CURRENCY_SYMBOLS_MAP[currency] || '$'
-
+const DecimalInput = function(){
+    
     let decimalMaskOptions = {
         alias:'decimal',
         positionCaretOnClick: "radixFocus",
@@ -23,12 +21,14 @@ const DecimalInput = function(currency){
     }
     
     this.init = () =>{
-        PubSub.subscribe(`attachMask.${this.currency}`, attachMask)
+        PubSub.subscribe(`attachMask`, attachMask)
     };
 
     const attachMask = (msg, data) => {
+        let currency = data && data?.currency ? data.currency : 'dollar';
+        let suffix = CURRENCY_SYMBOLS_MAP[currency] || '$'
         let input = data.input;
-        decimalMaskOptions['suffix'] = ` ${this.suffix}`;
+        decimalMaskOptions['suffix'] = ` ${suffix}`;
         new Inputmask(decimalMaskOptions).mask(input)
     }
 }

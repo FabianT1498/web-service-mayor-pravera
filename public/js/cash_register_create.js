@@ -18,6 +18,86 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/collections/bankCollection.js":
+/*!****************************************************!*\
+  !*** ./resources/js/collections/bankCollection.js ***!
+  \****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _collection__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./collection */ "./resources/js/collections/collection.js");
+
+
+var BankCollection = function BankCollection() {
+  var banks = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+  _collection__WEBPACK_IMPORTED_MODULE_0__["default"].call(this);
+  this.elements = banks ? banks : [];
+};
+
+BankCollection.prototype = Object.create(_collection__WEBPACK_IMPORTED_MODULE_0__["default"].prototype);
+BankCollection.prototype.constructor = BankCollection;
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (BankCollection);
+
+/***/ }),
+
+/***/ "./resources/js/collections/collection.js":
+/*!************************************************!*\
+  !*** ./resources/js/collections/collection.js ***!
+  \************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+var CollectionPrototype = {
+  getAll: function getAll() {
+    return this.elements;
+  },
+  getLength: function getLength() {
+    return this.elements.length;
+  },
+  setElements: function setElements(elements) {
+    this.elements = elements ? elements : [];
+  },
+  getElement: function getElement(index) {
+    if (index > -1 && index < this.elements.length) {
+      return null;
+    }
+
+    return this.elements[index];
+  },
+  deleteElementByName: function deleteElementByName(name) {
+    var index = this.elements.findIndex(function (val) {
+      return val === name;
+    });
+
+    if (index !== -1) {
+      this.elements.splice(index, 1);
+    }
+  },
+  pushElement: function pushElement(name) {
+    this.elements.push(name);
+    return this.elements;
+  },
+  shiftElement: function shiftElement() {
+    return this.elements.shift();
+  }
+};
+
+var Collection = function Collection() {};
+
+Collection.prototype = CollectionPrototype;
+Collection.prototype.constructor = Collection;
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Collection);
+
+/***/ }),
+
 /***/ "./resources/js/components/cash-register-modal/index.js":
 /*!**************************************************************!*\
   !*** ./resources/js/components/cash-register-modal/index.js ***!
@@ -90,7 +170,7 @@ var LiquidMoneyModalPrototype = {
           });
         } else if (modalToggleID) {
           // Checking if it's closing the modal
-          pubsub_js__WEBPACK_IMPORTED_MODULE_0___default().publish("getTotal.".concat(currency));
+          pubsub_js__WEBPACK_IMPORTED_MODULE_0___default().publish("getTotal.records.".concat(currency));
         }
       }
     };
@@ -100,33 +180,7 @@ var LiquidMoneyModalPrototype = {
 var LiquidMoneyModal = function LiquidMoneyModal() {};
 
 LiquidMoneyModal.prototype = LiquidMoneyModalPrototype;
-LiquidMoneyModal.prototype.constructor = LiquidMoneyModal; // LiquidMoneyModal.prototype.init =  function (container, tableName){
-//     container.addEventListener("keypress", this.keypressEventHandler);
-//     container.addEventListener("click", this.clickEventHandler);
-//     const tableContainer = container.querySelector('table')
-//     const table = new CashRegisterTable(tableName);
-//     table.init(tableContainer);
-// }
-// LiquidMoneyModal.prototype.clickEventHandler = function clickEventHandler(event){
-//     const button = event.target.closest('button');
-//     if(button && button.tagName === 'BUTTON'){
-//         const rowID = button.getAttribute('data-del-row');
-//         const modalToggleID = button.getAttribute('data-modal-toggle');
-//         if (rowID){ // Checking if it's Deleting a row
-//             const row = button.closest('tr');
-//             PubSub.publish('deleteRow', { row, rowID});
-//         } else if (modalToggleID){ // Checking if it's closing the modal
-//             // get all inputs of the modal
-//             let inputs = document.querySelectorAll(`#${this.id} input`)
-//             const total = Array.from(inputs).reduce((acc, el) => {
-//                 let num = formatAmount(el.value)
-//                 return acc + num;
-//             }, 0);
-//             document.getElementById(`total_${this.id}`).value = total > 0 ? total : 0;
-//         }
-//     }
-// }
-
+LiquidMoneyModal.prototype.constructor = LiquidMoneyModal;
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (LiquidMoneyModal);
 
 /***/ }),
@@ -275,7 +329,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var pubsub_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pubsub-js */ "./node_modules/pubsub-js/src/pubsub.js");
 /* harmony import */ var pubsub_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(pubsub_js__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _utilities_mathUtilities__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! _utilities/mathUtilities */ "./resources/js/utilities/mathUtilities.js");
-/* harmony import */ var _assets_currencies__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! _assets/currencies */ "./resources/js/assets/currencies.js");
+/* harmony import */ var _components_decimal_input__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! _components/decimal-input */ "./resources/js/components/decimal-input/index.js");
+/* harmony import */ var _assets_currencies__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! _assets/currencies */ "./resources/js/assets/currencies.js");
+
 
 
 
@@ -290,9 +346,15 @@ var CashRegisterTable = function CashRegisterTable(tableName, currency) {
 
   this.init = function (container) {
     _this.container = container;
+
+    if (pubsub_js__WEBPACK_IMPORTED_MODULE_0___default().getSubscriptions('attachMask').length === 0) {
+      var decimalInputDollar = new _components_decimal_input__WEBPACK_IMPORTED_MODULE_2__["default"]();
+      decimalInputDollar.init();
+    }
+
     pubsub_js__WEBPACK_IMPORTED_MODULE_0___default().subscribe("addRow.".concat(_this.currency), addRow);
     pubsub_js__WEBPACK_IMPORTED_MODULE_0___default().subscribe("deleteRow.".concat(_this.currency), deleteRow);
-    pubsub_js__WEBPACK_IMPORTED_MODULE_0___default().subscribe("getTotal.".concat(_this.currency), getTotal);
+    pubsub_js__WEBPACK_IMPORTED_MODULE_0___default().subscribe("getTotal.records.".concat(_this.currency), getTotal);
     pubsub_js__WEBPACK_IMPORTED_MODULE_0___default().subscribe('updateConvertionCol', updateConvertionCol);
     setInitialMask();
   };
@@ -306,8 +368,9 @@ var CashRegisterTable = function CashRegisterTable(tableName, currency) {
 
     if (tBody && tBody.children.length === 1) {
       var input = tBody.querySelector('input');
-      pubsub_js__WEBPACK_IMPORTED_MODULE_0___default().publish("attachMask.".concat(_this.currency), {
-        input: input
+      pubsub_js__WEBPACK_IMPORTED_MODULE_0___default().publish('attachMask', {
+        input: input,
+        currency: _this.currency
       });
     }
   };
@@ -324,7 +387,6 @@ var CashRegisterTable = function CashRegisterTable(tableName, currency) {
       var num = (0,_utilities_mathUtilities__WEBPACK_IMPORTED_MODULE_1__.formatAmount)(el.value);
       return acc + num;
     }, 0);
-    console.log("total_".concat(_this.tableName));
     document.getElementById("total_".concat(_this.tableName)).value = total > 0 ? total : 0;
   };
 
@@ -336,9 +398,10 @@ var CashRegisterTable = function CashRegisterTable(tableName, currency) {
     var tBody = _this.container.querySelector('tbody');
 
     tBody.insertAdjacentHTML('beforeend', tableRowTemplate(_this.tableName, _this.currency));
-    var input = document.querySelector("#".concat(_this.tableName, "_").concat(getNewID()));
-    pubsub_js__WEBPACK_IMPORTED_MODULE_0___default().publish("attachMask.".concat(_this.currency), {
-      input: input
+    var input = tBody.querySelector("#".concat(_this.tableName, "_").concat(getNewID()));
+    pubsub_js__WEBPACK_IMPORTED_MODULE_0___default().publish('attachMask', {
+      input: input,
+      currency: _this.currency
     });
     rowsCount++;
     saveNewID();
@@ -381,7 +444,7 @@ var CashRegisterTable = function CashRegisterTable(tableName, currency) {
     var columnData = rowElement.querySelector('td[data-table="convertion-col"]');
 
     if (columnData) {
-      columnData.innerHTML = "".concat(Math.round((dollarExchangeBs * amount + Number.EPSILON) * 100) / 100, " ").concat(_assets_currencies__WEBPACK_IMPORTED_MODULE_2__["default"].bs);
+      columnData.innerHTML = "".concat(Math.round((dollarExchangeBs * amount + Number.EPSILON) * 100) / 100, " ").concat(_assets_currencies__WEBPACK_IMPORTED_MODULE_3__["default"].bs);
     }
   };
 
@@ -400,11 +463,11 @@ var CashRegisterTable = function CashRegisterTable(tableName, currency) {
   };
 
   var inputTemplate = function inputTemplate(name, currency) {
-    return "\n        <input type=\"text\" placeholder=\"0.00 ".concat(_assets_currencies__WEBPACK_IMPORTED_MODULE_2__["default"][currency], "\" id=\"").concat(name, "_").concat(getNewID(), "\" name=\"").concat(name, "[]\" class=\"w-36 rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50\">\n    ");
+    return "\n        <input type=\"text\" placeholder=\"0.00 ".concat(_assets_currencies__WEBPACK_IMPORTED_MODULE_3__["default"][currency], "\" id=\"").concat(name, "_").concat(getNewID(), "\" name=\"").concat(name, "[]\" class=\"w-36 rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50\">\n    ");
   };
 
   var tableRowTemplate = function tableRowTemplate(name, currency) {
-    return "\n        <tr class=\"hover:bg-gray-100 dark:hover:bg-gray-700\" data-id=".concat(getNewID(), ">\n            <td data-table=\"num-col\" class=\"py-4 pl-6 pr-3 text-sm font-medium text-center text-gray-900 whitespace-nowrap dark:text-white\">").concat(rowsCount + 1, "</td>\n            <td class=\"py-4 pl-3 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white\">\n                ").concat(inputTemplate(name, currency), "\n            </td>\n            ").concat(currency !== 'bs' ? "<td data-table=\"convertion-col\" class=\"py-4 px-6 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white\">\n                    0.00 ".concat(_assets_currencies__WEBPACK_IMPORTED_MODULE_2__["default"].bs, "\n                    </td>") : '', "\n            <td class=\"py-4 pr-6 text-sm text-center font-medium whitespace-nowrap\">\n                <button data-del-row=\"").concat(getNewID(), "\" type=\"button\" class=\"bg-red-600 flex justify-center w-6 h-6 items-center transition-colors duration-150 rounded-full shadow-lg hover:bg-red-500\">\n                    <i class=\"fas fa-times  text-white\"></i>                        \n                </button>\n            </td>\n        </tr>\n    ");
+    return "\n        <tr class=\"hover:bg-gray-100 dark:hover:bg-gray-700\" data-id=".concat(getNewID(), ">\n            <td data-table=\"num-col\" class=\"py-4 pl-6 pr-3 text-sm font-medium text-center text-gray-900 whitespace-nowrap dark:text-white\">").concat(rowsCount + 1, "</td>\n            <td class=\"py-4 pl-3 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white\">\n                ").concat(inputTemplate(name, currency), "\n            </td>\n            ").concat(currency !== 'bs' ? "<td data-table=\"convertion-col\" class=\"py-4 px-6 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white\">\n                    0.00 ".concat(_assets_currencies__WEBPACK_IMPORTED_MODULE_3__["default"].bs, "\n                    </td>") : '', "\n            <td class=\"py-4 pr-6 text-sm text-center font-medium whitespace-nowrap\">\n                <button data-del-row=\"").concat(getNewID(), "\" type=\"button\" class=\"bg-red-600 flex justify-center w-6 h-6 items-center transition-colors duration-150 rounded-full shadow-lg hover:bg-red-500\">\n                    <i class=\"fas fa-times  text-white\"></i>                        \n                </button>\n            </td>\n        </tr>\n    ");
   };
 
   var getNewID = function getNewID() {
@@ -447,11 +510,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var DecimalInput = function DecimalInput(currency) {
-  var _this = this;
-
-  this.currency = currency ? currency : 'dollar';
-  this.suffix = _assets_currencies__WEBPACK_IMPORTED_MODULE_2__["default"][currency] || '$';
+var DecimalInput = function DecimalInput() {
   var decimalMaskOptions = {
     alias: 'decimal',
     positionCaretOnClick: "radixFocus",
@@ -468,17 +527,414 @@ var DecimalInput = function DecimalInput(currency) {
   };
 
   this.init = function () {
-    pubsub_js__WEBPACK_IMPORTED_MODULE_0___default().subscribe("attachMask.".concat(_this.currency), attachMask);
+    pubsub_js__WEBPACK_IMPORTED_MODULE_0___default().subscribe("attachMask", attachMask);
   };
 
   var attachMask = function attachMask(msg, data) {
+    var currency = data && data !== null && data !== void 0 && data.currency ? data.currency : 'dollar';
+    var suffix = _assets_currencies__WEBPACK_IMPORTED_MODULE_2__["default"][currency] || '$';
     var input = data.input;
-    decimalMaskOptions['suffix'] = " ".concat(_this.suffix);
+    decimalMaskOptions['suffix'] = " ".concat(suffix);
     new (inputmask__WEBPACK_IMPORTED_MODULE_1___default())(decimalMaskOptions).mask(input);
   };
 };
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (DecimalInput);
+
+/***/ }),
+
+/***/ "./resources/js/components/denominations-modal/index.js":
+/*!**************************************************************!*\
+  !*** ./resources/js/components/denominations-modal/index.js ***!
+  \**************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var pubsub_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pubsub-js */ "./node_modules/pubsub-js/src/pubsub.js");
+/* harmony import */ var pubsub_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(pubsub_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _components_denominations_table__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! _components/denominations-table */ "./resources/js/components/denominations-table/index.js");
+
+
+var DenominationsModalPrototype = {
+  init: function init(container) {
+    var tableContainer = container.querySelector('table');
+    var table = new _components_denominations_table__WEBPACK_IMPORTED_MODULE_1__["default"](this.name, this.currency);
+    table.init(tableContainer);
+    container.addEventListener("click", this.clickEventHandlerWrapper(this.currency));
+  },
+  clickEventHandlerWrapper: function clickEventHandlerWrapper(currency) {
+    return function (event) {
+      var closest = event.target.closest('button');
+
+      if (closest && closest.tagName === 'BUTTON') {
+        var modaToggleID = closest.getAttribute('data-modal-toggle');
+
+        if (modaToggleID) {
+          // Checking if it's closing the modal
+          // get all inputs of the modal
+          pubsub_js__WEBPACK_IMPORTED_MODULE_0___default().publish("getTotal.denominations.".concat(currency));
+        }
+      }
+    };
+  }
+};
+
+var DenominationsModal = function DenominationsModal(name, currency) {
+  this.name = name;
+  this.currency = currency;
+};
+
+DenominationsModal.prototype = DenominationsModalPrototype;
+DenominationsModal.prototype.constructor = DenominationsModal;
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (DenominationsModal);
+
+/***/ }),
+
+/***/ "./resources/js/components/denominations-table/index.js":
+/*!**************************************************************!*\
+  !*** ./resources/js/components/denominations-table/index.js ***!
+  \**************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var pubsub_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pubsub-js */ "./node_modules/pubsub-js/src/pubsub.js");
+/* harmony import */ var pubsub_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(pubsub_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _utilities_mathUtilities__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! _utilities/mathUtilities */ "./resources/js/utilities/mathUtilities.js");
+
+
+
+var DenominationsTable = function DenominationsTable(name, currency) {
+  var _this = this;
+
+  this.name = name || "";
+  this.currency = currency || "dollar";
+
+  this.init = function (container) {
+    _this.container = container;
+    pubsub_js__WEBPACK_IMPORTED_MODULE_0___default().subscribe("getTotal.denominations.".concat(_this.currency), getTotal);
+  };
+
+  var getTotal = function getTotal(msg, data) {
+    if (!_this.container) {
+      return;
+    }
+
+    var tBody = _this.container.querySelector('tBody');
+
+    var inputs = tBody.querySelectorAll('input');
+    var total = Array.from(inputs).reduce(function (acc, el) {
+      var denomination = parseFloat(el.getAttribute('data-denomination'));
+      var num = (0,_utilities_mathUtilities__WEBPACK_IMPORTED_MODULE_1__.formatAmount)(el.value);
+      return acc + num * denomination;
+    }, 0);
+    document.getElementById("total_".concat(_this.name)).value = total > 0 ? total : 0;
+  };
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (DenominationsTable);
+
+/***/ }),
+
+/***/ "./resources/js/components/sale-point-modal/index.js":
+/*!***********************************************************!*\
+  !*** ./resources/js/components/sale-point-modal/index.js ***!
+  \***********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var pubsub_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pubsub-js */ "./node_modules/pubsub-js/src/pubsub.js");
+/* harmony import */ var pubsub_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(pubsub_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _components_sale_point_table__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! _components/sale-point-table */ "./resources/js/components/sale-point-table/index.js");
+
+
+var SalePointModalPrototype = {
+  init: function init(container) {
+    var tableContainer = container.querySelector('table');
+    var table = new _components_sale_point_table__WEBPACK_IMPORTED_MODULE_1__["default"](this.name, this.currency);
+    table.init(tableContainer);
+    container.addEventListener('click', this.handleClickEvent);
+    container.addEventListener('change', this.handleOnChangeEvent);
+  },
+  handleClickEvent: function handleClickEvent(event) {
+    var closest = event.target.closest('button');
+
+    if (closest && closest.tagName === 'BUTTON') {
+      var action = closest.getAttribute('data-modal');
+
+      if (!action) {
+        return;
+      }
+
+      if (action === 'add') {
+        pubsub_js__WEBPACK_IMPORTED_MODULE_0___default().publish('addRow.salePoint');
+      } else if (action === 'remove') {// Logic is here
+      }
+    }
+  },
+  handleOnChangeEvent: function handleOnChangeEvent(event) {
+    var row = event.target.closest('tr');
+
+    if (row && row.getAttribute('data-id')) {
+      var rowID = row.getAttribute('data-id'); // Get the selected index
+
+      var index = event.target.selectedIndex; // Get the new value
+
+      var newSelectValue = event.target.options[index].value;
+      pubsub_js__WEBPACK_IMPORTED_MODULE_0___default().publish('changeSelect.salePoint', {
+        rowID: rowID,
+        newSelectValue: newSelectValue
+      });
+    }
+  }
+};
+
+var SalePointModal = function SalePointModal(name, currency) {
+  this.name = name;
+  this.currency = currency;
+};
+
+SalePointModal.prototype = SalePointModalPrototype;
+SalePointModal.prototype.constructor = SalePointModal;
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (SalePointModal);
+
+/***/ }),
+
+/***/ "./resources/js/components/sale-point-table/index.js":
+/*!***********************************************************!*\
+  !*** ./resources/js/components/sale-point-table/index.js ***!
+  \***********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var pubsub_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! pubsub-js */ "./node_modules/pubsub-js/src/pubsub.js");
+/* harmony import */ var pubsub_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(pubsub_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _app_collections_bankCollection__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! _app/collections/bankCollection */ "./resources/js/collections/bankCollection.js");
+/* harmony import */ var _assets_currencies__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! _assets/currencies */ "./resources/js/assets/currencies.js");
+/* harmony import */ var _services_banks__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! _services/banks */ "./resources/js/services/banks/index.js");
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+
+
+
+var SalePointTable = function SalePointTable(name, currency) {
+  var _this = this;
+
+  this.name = name || "";
+  this.currency = currency || "dollar";
+  var rowsCount = 0;
+  var idsList = [];
+  var oldValueSelects = {};
+
+  this.init = function (container) {
+    _this.container = container;
+    _this.banks = new _app_collections_bankCollection__WEBPACK_IMPORTED_MODULE_2__["default"]();
+    console.log(_this); // fetchInitialData().then(res => {
+    //     this.banks = res.banks
+    // }).catch(err => {
+    //     console.log(err)
+    // });
+
+    pubsub_js__WEBPACK_IMPORTED_MODULE_1___default().subscribe('addRow.salePoint', _this.addRow);
+    pubsub_js__WEBPACK_IMPORTED_MODULE_1___default().subscribe('changeSelect.salePoint', _this.changeSelect);
+  };
+
+  var fetchInitialData = /*#__PURE__*/function () {
+    var _ref = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee() {
+      var _banks;
+
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              _context.prev = 0;
+              _context.next = 3;
+              return (0,_services_banks__WEBPACK_IMPORTED_MODULE_4__.getAllBanks)();
+
+            case 3:
+              _banks = _context.sent;
+              return _context.abrupt("return", {
+                banks: _banks
+              });
+
+            case 7:
+              _context.prev = 7;
+              _context.t0 = _context["catch"](0);
+              return _context.abrupt("return", {
+                banks: []
+              });
+
+            case 10:
+            case "end":
+              return _context.stop();
+          }
+        }
+      }, _callee, null, [[0, 7]]);
+    }));
+
+    return function fetchInitialData() {
+      return _ref.apply(this, arguments);
+    };
+  }();
+
+  this.addRow = function (msg, data) {
+    console.log(this); // if (this.banks.getLength() === 0 || !this.container){
+    //     return;
+    // }
+
+    var tBody = this.container.querySelector("tbody");
+    tBody.insertAdjacentHTML('beforeend', tableRowTemplate(this.name, this.currency));
+    var input_debit = tBody.querySelector("#".concat(this.name, "_debit_").concat(getNewID()));
+    var input_credit = tBody.querySelector("#".concat(this.name, "_credit_").concat(getNewID()));
+    pubsub_js__WEBPACK_IMPORTED_MODULE_1___default().publish('attachMask', {
+      input: input_debit,
+      currency: this.currency
+    });
+    pubsub_js__WEBPACK_IMPORTED_MODULE_1___default().publish('attachMask', {
+      input: input_credit,
+      currency: this.currency
+    });
+    rowsCount++;
+    var rowsIDS = Object.keys(oldValueSelects);
+
+    if (rowsIDS.length > 0) {
+      var selectors = getBankSelectSelectors(rowsIDS);
+      updateBankSelects(tBody, selectors);
+    }
+
+    oldValueSelects[getNewID()] = banks.shiftBank();
+    saveNewID();
+  };
+
+  this.changeSelect = function (msg, data) {
+    var rowsIDS = Object.keys(oldValueSelects);
+    var rowID = data.rowID;
+    var newValue = data.newSelectValue;
+
+    if (rowsIDS.length === 1) {
+      return false;
+    }
+
+    if (!rowID) {
+      return false;
+    }
+
+    if (oldValueSelects[rowID] === undefined) {
+      return false;
+    }
+
+    if (this.banks.getLength === 0 || !this.container) {
+      return;
+    }
+
+    var tBody = this.container.querySelector("tbody"); // Old value is pushed again in collection
+
+    banks.pushElement(oldValueSelects[rowID]); // Remove the new value from available banks
+
+    banks.deleteElement(newValue); // Set the new value in old value select
+
+    oldValueSelects[rowID] = newValue;
+    var selectors = getBankSelectSelectors(rowsIDS);
+    updateBankSelects(tBody, selectors);
+  };
+
+  var inputTemplate = function inputTemplate(name, currency, type) {
+    return "\n        <input type=\"text\" placeholder=\"0.00 ".concat(_assets_currencies__WEBPACK_IMPORTED_MODULE_3__["default"][currency], "\" id=\"").concat(name, "_").concat(type, "_").concat(getNewID(), "\" name=\"").concat(name, "_").concat(type, "[]\" class=\"w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50\">\n    ");
+  };
+
+  var tableRowTemplate = function tableRowTemplate(name) {
+    var currency = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'bs';
+    return "\n        <tr class=\"hover:bg-gray-100 dark:hover:bg-gray-700\" data-id=".concat(getNewID(), ">\n            <td data-table=\"num-col\" class=\"py-4 pl-6 text-sm font-medium text-center text-gray-900 whitespace-nowrap dark:text-white\">").concat(rowsCount + 1, "</td>\n            <td class=\"pl-3 py-4 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white\">\n                <select class=\"w-full form-select\" name=\"point_sale_bs_bank[]\">\n                    ").concat(_this.banks.getElements().map(function (el) {
+      return "<option value=\"".concat(el, "\">").concat(el, "</option>");
+    }).join(''), "\n                </select>\n            </td>\n            <td class=\"pl-3 py-4 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white\">\n                ").concat(inputTemplate(name, currency, 'debit'), "\n            </td>\n            <td data-table=\"convertion-col\" class=\"pl-3 py-4 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white\">\n                ").concat(inputTemplate(name, currency, 'credit'), "\n            </td>\n            <td class=\"py-4 pl-3 text-sm text-center font-medium whitespace-nowrap\">\n                <button data-modal=\"delete\" type=\"button\" class=\"bg-red-600 flex justify-center w-6 h-6 items-center transition-colors duration-150 rounded-full shadow-lg hover:bg-red-500\">\n                    <i class=\"fas fa-times  text-white\"></i>                        \n                </button>\n            </td>\n        </tr>\n    ");
+  };
+
+  var getBankSelectSelectors = function getBankSelectSelectors(rowsIDS) {
+    if (!rowsIDS) {
+      return '';
+    }
+
+    ;
+
+    if (rowsIDS.length === 0) {
+      return '';
+    }
+
+    ;
+    return rowsIDS.map(function (el) {
+      return "tr[data-id=\"".concat(el, "\"] select");
+    }).join(',');
+  };
+
+  var updateBankSelects = function updateBankSelects(container, selectors) {
+    if (selectors === '') {
+      return false;
+    }
+
+    ;
+    var selectSelectorsElems = container.querySelectorAll(selectors);
+    selectSelectorsElems.forEach(function (el) {
+      var options = [el.value].concat(_toConsumableArray(banks.getElements()));
+      var html = options.map(function (el) {
+        return "<option value=\"".concat(el, "\">").concat(el, "</option>");
+      }).join('');
+      el.innerHTML = html;
+    });
+    return true;
+  };
+
+  var getNewID = function getNewID() {
+    return idsList.length === 0 ? 0 : idsList[idsList.length - 1] + 1;
+  };
+
+  var saveNewID = function saveNewID() {
+    idsList.push(getNewID());
+  };
+
+  var removeID = function removeID(id) {
+    var index = idsList.findIndex(function (val) {
+      return val == id;
+    });
+    return index !== -1 ? idsList.slice(index, 1) : -1;
+  };
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (SalePointTable);
 
 /***/ }),
 
@@ -493,44 +949,127 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _components_cash_register_modal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! _components/cash-register-modal */ "./resources/js/components/cash-register-modal/index.js");
-/* harmony import */ var pubsub_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! pubsub-js */ "./node_modules/pubsub-js/src/pubsub.js");
-/* harmony import */ var pubsub_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(pubsub_js__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _components_decimal_input__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! _components/decimal-input */ "./resources/js/components/decimal-input/index.js");
+/* harmony import */ var pubsub_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pubsub-js */ "./node_modules/pubsub-js/src/pubsub.js");
+/* harmony import */ var pubsub_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(pubsub_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _components_cash_register_modal__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! _components/cash-register-modal */ "./resources/js/components/cash-register-modal/index.js");
+/* harmony import */ var _components_denominations_modal__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! _components/denominations-modal */ "./resources/js/components/denominations-modal/index.js");
+/* harmony import */ var _components_sale_point_modal__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! _components/sale-point-modal */ "./resources/js/components/sale-point-modal/index.js");
+/* harmony import */ var _components_decimal_input__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! _components/decimal-input */ "./resources/js/components/decimal-input/index.js");
+
+
 
 
 
 /* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__() {
-  document.addEventListener('DOMContentLoaded', function () {
-    // Decimal Input Subscribers
-    var decimalInputDollar = new _components_decimal_input__WEBPACK_IMPORTED_MODULE_2__["default"]('dollar');
-    decimalInputDollar.init();
-    var decimalInputBs = new _components_decimal_input__WEBPACK_IMPORTED_MODULE_2__["default"]('bs');
-    decimalInputBs.init(); // Containers
+  // Decimal Input Subscribers
+  var decimalInputDollar = new _components_decimal_input__WEBPACK_IMPORTED_MODULE_4__["default"]();
+  decimalInputDollar.init(); // Containers
 
-    var liquidMoneyBsRegisterModal = document.querySelector('#liquid_money_bolivares');
-    var liquidMoneyDollarRegisterModal = document.querySelector('#liquid_money_dollars'); // Cash register modal factory
+  var liquidMoneyBsRegisterModal = document.querySelector('#liquid_money_bolivares');
+  var liquidMoneyDollarRegisterModal = document.querySelector('#liquid_money_dollars'); // Cash register modal factory
 
-    var liquidMoneyModalFactory = new _components_cash_register_modal__WEBPACK_IMPORTED_MODULE_0__["default"]();
-    var liquidMoneyBsRegister = liquidMoneyModalFactory.create({
-      currency: 'bs'
-    });
-    liquidMoneyBsRegister.init(liquidMoneyBsRegisterModal);
-    var liquidMoneyDollarRegister = liquidMoneyModalFactory.create({
-      currency: 'dollar'
-    });
-    liquidMoneyDollarRegister.init(liquidMoneyDollarRegisterModal); // Total inputs
-
-    var totalLiquidMoneyBolivares = document.querySelector('#total_liquid_money_bolivares');
-    var totalLiquidMoneyDollars = document.querySelector('#total_liquid_money_dollars');
-    pubsub_js__WEBPACK_IMPORTED_MODULE_1___default().publish('attachMask.bs', {
-      input: totalLiquidMoneyBolivares
-    });
-    pubsub_js__WEBPACK_IMPORTED_MODULE_1___default().publish('attachMask.dollar', {
-      input: totalLiquidMoneyDollars
-    });
+  var liquidMoneyModalFactory = new _components_cash_register_modal__WEBPACK_IMPORTED_MODULE_1__["default"]();
+  var liquidMoneyBsRegister = liquidMoneyModalFactory.create({
+    currency: 'bs'
   });
+  liquidMoneyBsRegister.init(liquidMoneyBsRegisterModal);
+  var liquidMoneyDollarRegister = liquidMoneyModalFactory.create({
+    currency: 'dollar'
+  });
+  liquidMoneyDollarRegister.init(liquidMoneyDollarRegisterModal); // Total inputs
+
+  var totalLiquidMoneyBolivares = document.querySelector('#total_liquid_money_bolivares');
+  var totalLiquidMoneyDollars = document.querySelector('#total_liquid_money_dollars');
+  pubsub_js__WEBPACK_IMPORTED_MODULE_0___default().publish('attachMask', {
+    input: totalLiquidMoneyBolivares,
+    currency: 'bs'
+  });
+  pubsub_js__WEBPACK_IMPORTED_MODULE_0___default().publish('attachMask', {
+    input: totalLiquidMoneyDollars,
+    currency: 'dollar'
+  }); // Denominations modals Containers
+
+  var bsDenominationsModal = document.querySelector('#liquid_money_bolivares_denominations');
+  var dollarDenominationsModal = document.querySelector('#liquid_money_dollars_denominations');
+  var bsDenominations = new _components_denominations_modal__WEBPACK_IMPORTED_MODULE_2__["default"]('liquid_money_bolivares_denominations', 'bs');
+  bsDenominations.init(bsDenominationsModal);
+  var dollarDenominations = new _components_denominations_modal__WEBPACK_IMPORTED_MODULE_2__["default"]('liquid_money_dollars_denominations', 'dollar');
+  dollarDenominations.init(dollarDenominationsModal); // Total inputs
+
+  var totalbsDenominations = document.querySelector('#total_liquid_money_bolivares_denominations');
+  var totaldollarDenominations = document.querySelector('#total_liquid_money_dollars_denominations');
+  pubsub_js__WEBPACK_IMPORTED_MODULE_0___default().publish('attachMask', {
+    input: totalbsDenominations,
+    currency: 'bs'
+  });
+  pubsub_js__WEBPACK_IMPORTED_MODULE_0___default().publish('attachMask', {
+    input: totaldollarDenominations,
+    currency: 'dollar'
+  }); // Sale points
+
+  var bsSalePointModal = document.querySelector('#point_sale_bs');
+  var bsSalePoint = new _components_sale_point_modal__WEBPACK_IMPORTED_MODULE_3__["default"]('point_sale_bs', 'bs');
+  bsSalePoint.init(bsSalePointModal);
 }
+
+/***/ }),
+
+/***/ "./resources/js/services/banks/index.js":
+/*!**********************************************!*\
+  !*** ./resources/js/services/banks/index.js ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getAllBanks": () => (/* binding */ getAllBanks)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _utilities_axiosClient__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utilities/axiosClient */ "./resources/js/utilities/axiosClient.js");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+var getAllBanks = /*#__PURE__*/function () {
+  var _ref = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee(obj) {
+    var result;
+    return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            _context.prev = 0;
+            _context.next = 3;
+            return _utilities_axiosClient__WEBPACK_IMPORTED_MODULE_1__["default"].get('/banks');
+
+          case 3:
+            result = _context.sent;
+            return _context.abrupt("return", result.data.data);
+
+          case 7:
+            _context.prev = 7;
+            _context.t0 = _context["catch"](0);
+            console.log(_context.t0);
+
+          case 10:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee, null, [[0, 7]]);
+  }));
+
+  return function getAllBanks(_x) {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+
 
 /***/ }),
 
