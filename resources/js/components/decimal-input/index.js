@@ -1,7 +1,7 @@
 import PubSub from "pubsub-js";
 import Inputmask from "inputmask";
 
-import CURRENCY_SYMBOLS_MAP from '_assets/currencies';
+import { SIGN as CURRENCY_SYMBOLS_MAP, CURRENCIES} from '_assets/currencies';
 
 const DecimalInput = function(){
     
@@ -25,8 +25,8 @@ const DecimalInput = function(){
     };
 
     const attachMask = (msg, data) => {
-        let currency = data && data?.currency ? data.currency : 'dollar';
-        let suffix = CURRENCY_SYMBOLS_MAP[currency] || '$'
+        let currency = data && data?.currency ? data.currency : CURRENCIES.DOLLAR;
+        let suffix = CURRENCY_SYMBOLS_MAP[currency] || CURRENCY_SYMBOLS_MAP[CURRENCIES.DOLLAR]
         let input = data.input;
         decimalMaskOptions['suffix'] = ` ${suffix}`;
         new Inputmask(decimalMaskOptions).mask(input)

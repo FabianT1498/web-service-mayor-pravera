@@ -2,10 +2,12 @@ import PubSub from "pubsub-js";
 
 import { formatAmount } from '_utilities/mathUtilities'
 
+import { CURRENCIES} from '_assets/currencies';
+
 const DenominationsTable = function(name, currency){
 
     this.name = name || "";
-    this.currency = currency || "dollar";
+    this.currency = currency || CURRENCIES.DOLLAR;
 
     this.init = (container) => {
         this.container = container;

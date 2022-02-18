@@ -121,11 +121,27 @@
             <x-input data-currency="amount-$" placeholder="0.00" id="debit_card_payment_dollar" class="block ml-4" type="text" name="debit_card_payment_dollar" :value="old('debit_card_payment_dollar')" autofocus />
         </div>
 
+        <div class="w-10/12"><h3 class="h3 text-center mb-8">Ingresos en Zelle</h3></div>
+
+        <div class="w-10/12 grid gap-4 grid-cols-[150px_auto] mb-8 mx-auto items-center">
+            <x-label :value="__('Total en Zelle:')" />
+            <x-input-with-button 
+                :inputID="__('total_zelle_record')"
+                :modalID="__('zelle_record')"
+                name="total_zelle_record"
+                type="text"
+            />
+        </div>
+
         <div class="w-10/12 flex mx-auto justify-end pt-8">
             <x-button>
                 {{ __('Continuar') }}
             </x-button>
         </div>
+
+        <x-modal-input-list 
+            :modalID="__('zelle_record')"
+        />
         
         <x-modal-input-list :modalID="__('liquid_money_dollars')"/>
         <x-modal-input-denominations 

@@ -1,13 +1,13 @@
 import PubSub from "pubsub-js";
 
 import BankCollection from '_app/collections/bankCollection';
-import CURRENCY_SYMBOLS_MAP from '_assets/currencies';
+import { SIGN as CURRENCY_SYMBOLS_MAP, CURRENCIES} from '_assets/currencies';
 import { getAllBanks } from '_services/banks'
 
 const SalePointTable = function(name, currency){
 
     this.name = name || "";
-    this.currency = currency || "dollar";
+    this.currency = currency || CURRENCIES.DOLLAR;
 
     let rowsCount = 0;
     let idsList = [];

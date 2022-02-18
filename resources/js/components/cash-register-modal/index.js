@@ -1,14 +1,16 @@
-import { LiquidMoneyModalDollars, LiquidMoneyModalBolivares } from "./types";
+import { RecordMoneyModalDollars, RecordMoneyModalBolivares } from "./types";
 
-const CURRENCIES = {'bs': LiquidMoneyModalBolivares, 'dollar' : LiquidMoneyModalDollars};
+import { CURRENCIES } from '_assets/currencies';
 
-const LiquidMoneyModalFactory = function(){
+const CURRENCY_CONSTRUCTORS = {[CURRENCIES.BOLIVAR]: RecordMoneyModalBolivares, [CURRENCIES.DOLLAR] : RecordMoneyModalDollars};
+
+const RecordMoneyModalFactory = function(){
     
     // Our Factory method for creating new Modal instances
     this.create = function(options) {
-        this.modalClass = CURRENCIES[options.currency] || LiquidMoneyModalBolivares;
+        this.modalClass = CURRENCY_CONSTRUCTORS[options.currency] || RecordMoneyModalBolivares;
         return new this.modalClass(options);
     }
 }
 
-export default LiquidMoneyModalFactory;
+export default RecordMoneyModalFactory;

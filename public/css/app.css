@@ -2161,6 +2161,10 @@ div.code-toolbar .toolbar button:hover {
   grid-template-columns: 150px 50px 150px auto;
 }
 
+.grid-cols-\[150px_auto\]{
+  grid-template-columns: 150px auto;
+}
+
 .grid-cols-4{
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
