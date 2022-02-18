@@ -5499,7 +5499,7 @@ __webpack_require__(/*! _components/dollar-exchange-modal */ "./resources/js/com
 
 window.Alpine = alpinejs__WEBPACK_IMPORTED_MODULE_0__["default"];
 alpinejs__WEBPACK_IMPORTED_MODULE_0__["default"].start();
-__webpack_require__.e(/*! import() | ../../js/cash_register_create */ "/js/cash_register_create").then(__webpack_require__.bind(__webpack_require__, /*! ./pages/cash-register */ "./resources/js/pages/cash-register/index.js")).then(function (_ref) {
+__webpack_require__.e(/*! import() | ../../js/cash_register_create */ "/js/cash_register_create").then(__webpack_require__.bind(__webpack_require__, /*! ./pages/cash-register/create */ "./resources/js/pages/cash-register/create.js")).then(function (_ref) {
   var defaultCreate = _ref["default"];
   defaultCreate();
 });

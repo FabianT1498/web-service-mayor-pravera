@@ -15,7 +15,8 @@
         <input id="last-dollar-exchange-bs-val" type="hidden" value={{ $dollar_exchange?->bs_exchange ?? 0 }}>
 
         <div class="w-10/12"><h3 class="h3 text-center mb-4">Datos de la caja</h3></div>
-        <div class="w-10/12 grid gap-4 grid-cols-[200px_250px] grid-rows-4 mb-8 mx-auto">
+
+        <div id="cash_register_data" class="w-10/12 grid gap-4 grid-cols-[200px_250px] grid-rows-4 mb-8 mx-auto">
             <!-- Cash register date -->
         
             <x-label for="date" :value="__('Fecha')" />
@@ -26,7 +27,6 @@
             <x-select-input 
                 :options="$cash_registers_id_arr" 
                 :defaultOptTitle="__('Seleccione la caja')"
-                id="cash_register" 
                 :name="__('cash_register_id')" 
                 :value="old('cash_register_id')" 
                 required  
@@ -36,17 +36,17 @@
             <x-select-input 
                 :options="$cash_registers_workers_id_arr"
                 :defaultOptTitle="__('Seleccione el cajero/a')"
-                id="cash_register_worker" 
                 :name="__('cash_register_worker')" 
-                :value="old('cash_register_worker')" 
+                :value="old('cash_register_worker')"
+                data-select="worker"
                 required 
             />
 
             <div class="flex items-center">
                    <x-label for="exist_cash_register_worker" class="basis-2/3" :value="__('No esta registrado el cajero/a ?')" />
-                   <input id="exist_cash_register_worker" type="checkbox" name="exist_cash_register_worker" value="{{ old('exist_cash_register_worker') ? old('exist_cash_register_worker') : 0 }}" />
+                   <input data-action="checkIfWorkerExist" type="checkbox" name="exist_cash_register_worker" value="{{ old('exist_cash_register_worker') ? old('exist_cash_register_worker') : 0 }}" />
            </div>
-           <div id="hidden-new-cash-register-worker-container" class="hidden">
+           <div id="new_cash_register_worker_container" class="hidden">
                     <x-input 
                         id="new_cash_register_worker" 
                         placeholder="Nombre del cajero"

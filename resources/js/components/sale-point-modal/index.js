@@ -13,11 +13,11 @@ const SalePointModalPrototype = {
         container.addEventListener('change', this.handleOnChangeEvent);
     },
     handleClickEvent(event){
-        const closest = event.target.closest('button');
+        const button = event.target.closest('button');
 
-        if(closest && closest.tagName === 'BUTTON'){
+        if(button && button.tagName === 'BUTTON'){
             
-            const action = closest.getAttribute('data-modal')
+            const action = button.getAttribute('data-modal')
 
             if (!action){
                 return;
@@ -27,8 +27,10 @@ const SalePointModalPrototype = {
                 
                 PubSub.publish('addRow.salePoint');
                 
-            } else if (action === 'remove'){
-                // Logic is here
+            } else if (action === 'delete'){
+                let row = button.closest('tr');
+                let rowID = row ? row.getAttribute('data-id') : null
+                PubSub.publish('deleteRow.salePoint', {row, rowID});
             }
         }
     },

@@ -17,15 +17,15 @@ const SalePointTable = function(name, currency){
         this.container = container;
         this.banks = new BankCollection();
 
-        console.log(this)
-        // fetchInitialData().then(res => {
-        //     this.banks = res.banks
-        // }).catch(err => {
-        //     console.log(err)
-        // });
+        fetchInitialData().then(res => {
+            this.banks.setElements(res.banks);
+        }).catch(err => {
+            console.log(err)
+        });
 
-        PubSub.subscribe('addRow.salePoint', this.addRow);
-        PubSub.subscribe('changeSelect.salePoint', this.changeSelect)
+        PubSub.subscribe('addRow.salePoint', addRow);
+        PubSub.subscribe('deleteRow.salePoint', deleteRow);
+        PubSub.subscribe('changeSelect.salePoint', changeSelect)
     }
 
     const fetchInitialData = async function(){
@@ -37,12 +37,11 @@ const SalePointTable = function(name, currency){
         }
     }
 
-    this.addRow = function(msg, data){
-        console.log(this)
-        
-        // if (this.banks.getLength() === 0 || !this.container){
-        //     return;
-        // }
+    const addRow = (msg, data) => {
+    
+        if (this.banks.getLength() === 0 || !this.container){
+            return;
+        }
 
         const tBody = this.container.querySelector(`tbody`);
         tBody.insertAdjacentHTML('beforeend', tableRowTemplate(this.name, this.currency));
@@ -58,24 +57,68 @@ const SalePointTable = function(name, currency){
         let rowsIDS = Object.keys(oldValueSelects);
         
         if (rowsIDS.length > 0){
+            oldValueSelects[getNewID()] = this.banks.shiftElement();
             const selectors = getBankSelectSelectors(rowsIDS);
             updateBankSelects(tBody, selectors);           
+        } else {
+            oldValueSelects[getNewID()] = this.banks.shiftElement();
         }
         
-        oldValueSelects[getNewID()] = banks.shiftBank();
         saveNewID();
     }
 
-    this.changeSelect = function(msg, data){
-        
+    const deleteRow = (msg, {row, rowID}) => {
+        if (!this.container){
+            return false;
+        }
+
+        /**
+         * Eliminar un pv
+         * 1. Obtener fila y su id
+         * 2. Buscar en los valores antiguos el banco
+         * 3. Remover el id de los valores antiguos
+         * 4. Agregar banco antiguo a la coleccion
+         * 5. Eliminar fila de la tabla
+         * 6. Actualizar los selects restantes
+         */
+
+        if (!rowID || !row){
+            return false;
+        }
+
+        if (oldValueSelects[rowID] === undefined){
+            return false;
+        }
+
+        let bank = oldValueSelects[rowID]
+
+        delete oldValueSelects[rowID]
+
+        this.banks.pushElement(bank);
+
+        const tBody = this.container.querySelector('tbody');
+
+        tBody.removeChild(row);
+
         let rowsIDS = Object.keys(oldValueSelects);
+        
+        rowsCount--;
+
+        if (rowsIDS.length > 0){
+            const selectors = getBankSelectSelectors(rowsIDS);
+            updateBankSelects(tBody, selectors);
+        }
+    }
+
+    const changeSelect = (msg, data) => {
+
+        if (this.banks.getLength() === 0 || !this.container){
+            return;
+        }
+        
 
         let rowID = data.rowID;
         let newValue = data.newSelectValue;
-
-        if (rowsIDS.length === 1){
-            return false;
-        }
         
         if (!rowID){
             return false;
@@ -85,20 +128,18 @@ const SalePointTable = function(name, currency){
             return false;
         }
 
-        if (this.banks.getLength === 0 || !this.container){
-            return;
-        }
-
         const tBody = this.container.querySelector(`tbody`);
 
         // Old value is pushed again in collection
-        banks.pushElement(oldValueSelects[rowID]);
+        this.banks.pushElement(oldValueSelects[rowID]);
             
         // Remove the new value from available banks
-        banks.deleteElement(newValue);
+        this.banks.deleteElementByName(newValue);
 
         // Set the new value in old value select
         oldValueSelects[rowID] = newValue;
+
+        let rowsIDS = Object.keys(oldValueSelects);
 
         const selectors = getBankSelectSelectors(rowsIDS);
         updateBankSelects(tBody, selectors);
@@ -113,7 +154,7 @@ const SalePointTable = function(name, currency){
             <td data-table="num-col" class="py-4 pl-6 text-sm font-medium text-center text-gray-900 whitespace-nowrap dark:text-white">${rowsCount + 1}</td>
             <td class="pl-3 py-4 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white">
                 <select class="w-full form-select" name="point_sale_bs_bank[]">
-                    ${this.banks.getElements().map(el => `<option value="${el}">${el}</option>`).join('')}
+                    ${this.banks.getAll().map(el => `<option value="${el}">${el}</option>`).join('')}
                 </select>
             </td>
             <td class="pl-3 py-4 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white">
@@ -144,11 +185,11 @@ const SalePointTable = function(name, currency){
 
         const selectSelectorsElems = container.querySelectorAll(selectors);
 
-        selectSelectorsElems.forEach(el => {
-            let options = [el.value, ...banks.getElements()];
+        selectSelectorsElems.forEach(function(el) {
+            let options = [el.value, ...this.banks.getAll()];
             const html = options.map(el => `<option value="${el}">${el}</option>`).join('');
             el.innerHTML = html;
-        });
+        }, this);
 
         return true;
     }

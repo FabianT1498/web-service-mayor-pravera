@@ -98,6 +98,53 @@ Collection.prototype.constructor = Collection;
 
 /***/ }),
 
+/***/ "./resources/js/components/cash-register-data/index.js":
+/*!*************************************************************!*\
+  !*** ./resources/js/components/cash-register-data/index.js ***!
+  \*************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+var CashRegisterDataPrototype = {
+  init: function init(container) {
+    container.addEventListener("change", this.changeEventHandlerWrapper(container));
+  },
+  changeEventHandlerWrapper: function changeEventHandlerWrapper(container) {
+    return function (event) {
+      var action = event.target.getAttribute('data-action');
+
+      if (action === 'checkIfWorkerExist') {
+        var workersSelectEl = container.querySelector('select[data-select="worker"]');
+        var newCashRegisterWorkerContainer = container.querySelector('#new_cash_register_worker_container');
+
+        if (newCashRegisterWorkerContainer && workersSelectEl) {
+          var _newCashRegisterWorke;
+
+          newCashRegisterWorkerContainer.classList.toggle('hidden');
+          workersSelectEl.disabled = !workersSelectEl.disabled;
+          newCashRegisterWorkerContainer === null || newCashRegisterWorkerContainer === void 0 ? void 0 : (_newCashRegisterWorke = newCashRegisterWorkerContainer.lastElementChild) === null || _newCashRegisterWorke === void 0 ? void 0 : _newCashRegisterWorke.toggleAttribute('required');
+
+          if (workersSelectEl.disabled) {
+            workersSelectEl.selectedIndex = "0";
+          }
+        }
+      }
+    };
+  }
+};
+
+var CashRegisterData = function CashRegisterData() {};
+
+CashRegisterData.prototype = CashRegisterDataPrototype;
+CashRegisterData.prototype.constructor = CashRegisterData;
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (CashRegisterData);
+
+/***/ }),
+
 /***/ "./resources/js/components/cash-register-modal/index.js":
 /*!**************************************************************!*\
   !*** ./resources/js/components/cash-register-modal/index.js ***!
@@ -668,10 +715,10 @@ var SalePointModalPrototype = {
     container.addEventListener('change', this.handleOnChangeEvent);
   },
   handleClickEvent: function handleClickEvent(event) {
-    var closest = event.target.closest('button');
+    var button = event.target.closest('button');
 
-    if (closest && closest.tagName === 'BUTTON') {
-      var action = closest.getAttribute('data-modal');
+    if (button && button.tagName === 'BUTTON') {
+      var action = button.getAttribute('data-modal');
 
       if (!action) {
         return;
@@ -679,7 +726,13 @@ var SalePointModalPrototype = {
 
       if (action === 'add') {
         pubsub_js__WEBPACK_IMPORTED_MODULE_0___default().publish('addRow.salePoint');
-      } else if (action === 'remove') {// Logic is here
+      } else if (action === 'delete') {
+        var row = button.closest('tr');
+        var rowID = row ? row.getAttribute('data-id') : null;
+        pubsub_js__WEBPACK_IMPORTED_MODULE_0___default().publish('deleteRow.salePoint', {
+          row: row,
+          rowID: rowID
+        });
       }
     }
   },
@@ -764,20 +817,19 @@ var SalePointTable = function SalePointTable(name, currency) {
   this.init = function (container) {
     _this.container = container;
     _this.banks = new _app_collections_bankCollection__WEBPACK_IMPORTED_MODULE_2__["default"]();
-    console.log(_this); // fetchInitialData().then(res => {
-    //     this.banks = res.banks
-    // }).catch(err => {
-    //     console.log(err)
-    // });
-
-    pubsub_js__WEBPACK_IMPORTED_MODULE_1___default().subscribe('addRow.salePoint', _this.addRow);
-    pubsub_js__WEBPACK_IMPORTED_MODULE_1___default().subscribe('changeSelect.salePoint', _this.changeSelect);
+    fetchInitialData().then(function (res) {
+      _this.banks.setElements(res.banks);
+    })["catch"](function (err) {
+      console.log(err);
+    });
+    pubsub_js__WEBPACK_IMPORTED_MODULE_1___default().subscribe('addRow.salePoint', addRow);
+    pubsub_js__WEBPACK_IMPORTED_MODULE_1___default().subscribe('deleteRow.salePoint', deleteRow);
+    pubsub_js__WEBPACK_IMPORTED_MODULE_1___default().subscribe('changeSelect.salePoint', changeSelect);
   };
 
   var fetchInitialData = /*#__PURE__*/function () {
     var _ref = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee() {
-      var _banks;
-
+      var banks;
       return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
@@ -787,9 +839,9 @@ var SalePointTable = function SalePointTable(name, currency) {
               return (0,_services_banks__WEBPACK_IMPORTED_MODULE_4__.getAllBanks)();
 
             case 3:
-              _banks = _context.sent;
+              banks = _context.sent;
               return _context.abrupt("return", {
-                banks: _banks
+                banks: banks
               });
 
             case 7:
@@ -812,43 +864,88 @@ var SalePointTable = function SalePointTable(name, currency) {
     };
   }();
 
-  this.addRow = function (msg, data) {
-    console.log(this); // if (this.banks.getLength() === 0 || !this.container){
-    //     return;
-    // }
+  var addRow = function addRow(msg, data) {
+    if (_this.banks.getLength() === 0 || !_this.container) {
+      return;
+    }
 
-    var tBody = this.container.querySelector("tbody");
-    tBody.insertAdjacentHTML('beforeend', tableRowTemplate(this.name, this.currency));
-    var input_debit = tBody.querySelector("#".concat(this.name, "_debit_").concat(getNewID()));
-    var input_credit = tBody.querySelector("#".concat(this.name, "_credit_").concat(getNewID()));
+    var tBody = _this.container.querySelector("tbody");
+
+    tBody.insertAdjacentHTML('beforeend', tableRowTemplate(_this.name, _this.currency));
+    var input_debit = tBody.querySelector("#".concat(_this.name, "_debit_").concat(getNewID()));
+    var input_credit = tBody.querySelector("#".concat(_this.name, "_credit_").concat(getNewID()));
     pubsub_js__WEBPACK_IMPORTED_MODULE_1___default().publish('attachMask', {
       input: input_debit,
-      currency: this.currency
+      currency: _this.currency
     });
     pubsub_js__WEBPACK_IMPORTED_MODULE_1___default().publish('attachMask', {
       input: input_credit,
-      currency: this.currency
+      currency: _this.currency
     });
     rowsCount++;
     var rowsIDS = Object.keys(oldValueSelects);
 
     if (rowsIDS.length > 0) {
+      oldValueSelects[getNewID()] = _this.banks.shiftElement();
       var selectors = getBankSelectSelectors(rowsIDS);
       updateBankSelects(tBody, selectors);
+    } else {
+      oldValueSelects[getNewID()] = _this.banks.shiftElement();
     }
 
-    oldValueSelects[getNewID()] = banks.shiftBank();
     saveNewID();
   };
 
-  this.changeSelect = function (msg, data) {
-    var rowsIDS = Object.keys(oldValueSelects);
-    var rowID = data.rowID;
-    var newValue = data.newSelectValue;
+  var deleteRow = function deleteRow(msg, _ref2) {
+    var row = _ref2.row,
+        rowID = _ref2.rowID;
 
-    if (rowsIDS.length === 1) {
+    if (!_this.container) {
       return false;
     }
+    /**
+     * Eliminar un pv
+     * 1. Obtener fila y su id
+     * 2. Buscar en los valores antiguos el banco
+     * 3. Remover el id de los valores antiguos
+     * 4. Agregar banco antiguo a la coleccion
+     * 5. Eliminar fila de la tabla
+     * 6. Actualizar los selects restantes
+     */
+
+
+    if (!rowID || !row) {
+      return false;
+    }
+
+    if (oldValueSelects[rowID] === undefined) {
+      return false;
+    }
+
+    var bank = oldValueSelects[rowID];
+    delete oldValueSelects[rowID];
+
+    _this.banks.pushElement(bank);
+
+    var tBody = _this.container.querySelector('tbody');
+
+    tBody.removeChild(row);
+    var rowsIDS = Object.keys(oldValueSelects);
+    rowsCount--;
+
+    if (rowsIDS.length > 0) {
+      var selectors = getBankSelectSelectors(rowsIDS);
+      updateBankSelects(tBody, selectors);
+    }
+  };
+
+  var changeSelect = function changeSelect(msg, data) {
+    if (_this.banks.getLength() === 0 || !_this.container) {
+      return;
+    }
+
+    var rowID = data.rowID;
+    var newValue = data.newSelectValue;
 
     if (!rowID) {
       return false;
@@ -858,17 +955,17 @@ var SalePointTable = function SalePointTable(name, currency) {
       return false;
     }
 
-    if (this.banks.getLength === 0 || !this.container) {
-      return;
-    }
+    var tBody = _this.container.querySelector("tbody"); // Old value is pushed again in collection
 
-    var tBody = this.container.querySelector("tbody"); // Old value is pushed again in collection
 
-    banks.pushElement(oldValueSelects[rowID]); // Remove the new value from available banks
+    _this.banks.pushElement(oldValueSelects[rowID]); // Remove the new value from available banks
 
-    banks.deleteElement(newValue); // Set the new value in old value select
+
+    _this.banks.deleteElementByName(newValue); // Set the new value in old value select
+
 
     oldValueSelects[rowID] = newValue;
+    var rowsIDS = Object.keys(oldValueSelects);
     var selectors = getBankSelectSelectors(rowsIDS);
     updateBankSelects(tBody, selectors);
   };
@@ -879,7 +976,7 @@ var SalePointTable = function SalePointTable(name, currency) {
 
   var tableRowTemplate = function tableRowTemplate(name) {
     var currency = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'bs';
-    return "\n        <tr class=\"hover:bg-gray-100 dark:hover:bg-gray-700\" data-id=".concat(getNewID(), ">\n            <td data-table=\"num-col\" class=\"py-4 pl-6 text-sm font-medium text-center text-gray-900 whitespace-nowrap dark:text-white\">").concat(rowsCount + 1, "</td>\n            <td class=\"pl-3 py-4 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white\">\n                <select class=\"w-full form-select\" name=\"point_sale_bs_bank[]\">\n                    ").concat(_this.banks.getElements().map(function (el) {
+    return "\n        <tr class=\"hover:bg-gray-100 dark:hover:bg-gray-700\" data-id=".concat(getNewID(), ">\n            <td data-table=\"num-col\" class=\"py-4 pl-6 text-sm font-medium text-center text-gray-900 whitespace-nowrap dark:text-white\">").concat(rowsCount + 1, "</td>\n            <td class=\"pl-3 py-4 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white\">\n                <select class=\"w-full form-select\" name=\"point_sale_bs_bank[]\">\n                    ").concat(_this.banks.getAll().map(function (el) {
       return "<option value=\"".concat(el, "\">").concat(el, "</option>");
     }).join(''), "\n                </select>\n            </td>\n            <td class=\"pl-3 py-4 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white\">\n                ").concat(inputTemplate(name, currency, 'debit'), "\n            </td>\n            <td data-table=\"convertion-col\" class=\"pl-3 py-4 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white\">\n                ").concat(inputTemplate(name, currency, 'credit'), "\n            </td>\n            <td class=\"py-4 pl-3 text-sm text-center font-medium whitespace-nowrap\">\n                <button data-modal=\"delete\" type=\"button\" class=\"bg-red-600 flex justify-center w-6 h-6 items-center transition-colors duration-150 rounded-full shadow-lg hover:bg-red-500\">\n                    <i class=\"fas fa-times  text-white\"></i>                        \n                </button>\n            </td>\n        </tr>\n    ");
   };
@@ -909,12 +1006,12 @@ var SalePointTable = function SalePointTable(name, currency) {
     ;
     var selectSelectorsElems = container.querySelectorAll(selectors);
     selectSelectorsElems.forEach(function (el) {
-      var options = [el.value].concat(_toConsumableArray(banks.getElements()));
+      var options = [el.value].concat(_toConsumableArray(this.banks.getAll()));
       var html = options.map(function (el) {
         return "<option value=\"".concat(el, "\">").concat(el, "</option>");
       }).join('');
       el.innerHTML = html;
-    });
+    }, _this);
     return true;
   };
 
@@ -938,10 +1035,10 @@ var SalePointTable = function SalePointTable(name, currency) {
 
 /***/ }),
 
-/***/ "./resources/js/pages/cash-register/index.js":
-/*!***************************************************!*\
-  !*** ./resources/js/pages/cash-register/index.js ***!
-  \***************************************************/
+/***/ "./resources/js/pages/cash-register/create.js":
+/*!****************************************************!*\
+  !*** ./resources/js/pages/cash-register/create.js ***!
+  \****************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -955,6 +1052,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_denominations_modal__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! _components/denominations-modal */ "./resources/js/components/denominations-modal/index.js");
 /* harmony import */ var _components_sale_point_modal__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! _components/sale-point-modal */ "./resources/js/components/sale-point-modal/index.js");
 /* harmony import */ var _components_decimal_input__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! _components/decimal-input */ "./resources/js/components/decimal-input/index.js");
+/* harmony import */ var _components_cash_register_data__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! _components/cash-register-data */ "./resources/js/components/cash-register-data/index.js");
+
 
 
 
@@ -1009,7 +1108,11 @@ __webpack_require__.r(__webpack_exports__);
 
   var bsSalePointModal = document.querySelector('#point_sale_bs');
   var bsSalePoint = new _components_sale_point_modal__WEBPACK_IMPORTED_MODULE_3__["default"]('point_sale_bs', 'bs');
-  bsSalePoint.init(bsSalePointModal);
+  bsSalePoint.init(bsSalePointModal); // Cash register data
+
+  var cashRegisterDataContainer = document.querySelector('#cash_register_data');
+  var cashRegisterData = new _components_cash_register_data__WEBPACK_IMPORTED_MODULE_5__["default"]();
+  cashRegisterData.init(cashRegisterDataContainer);
 }
 
 /***/ }),

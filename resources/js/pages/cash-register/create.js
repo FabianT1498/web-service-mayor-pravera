@@ -1,51 +1,61 @@
+import PubSub from "pubsub-js";
 
+import LiquidMoneyModalFactory from '_components/cash-register-modal';
+import DenominationsModal from '_components/denominations-modal';
+import SalePointModal from '_components/sale-point-modal';
+import DecimalInput from '_components/decimal-input';
+import CashRegisterData from '_components/cash-register-data'
 
 export default function(){
-
-    // --- HANDLING INPUTS TO CREATE A NEW CASH REGISTER WORKER ---
+     
+    // Decimal Input Subscribers
+    let decimalInputDollar = new DecimalInput();
+    decimalInputDollar.init();
     
-    const existCashRegisterWorker = document.getElementById('exist_cash_register_worker');
-    const cashRegisterWorkerSelect = document.getElementById('cash_register_worker');
-    const newCashRegisterWorkerContainer = document.getElementById('hidden-new-cash-register-worker-container');
-    
-    const handleChangeExistWorker = function(event) {
-        newCashRegisterWorkerContainer.classList.toggle('hidden');
-        cashRegisterWorkerSelect.disabled = !cashRegisterWorkerSelect.disabled;
-        newCashRegisterWorkerContainer.lastElementChild.toggleAttribute('required');
-        
-        if (cashRegisterWorkerSelect.disabled){
-            cashRegisterWorkerSelect.selectedIndex = "0"
-        }
-    }
+    // Containers
+    let liquidMoneyBsRegisterModal = document.querySelector('#liquid_money_bolivares');
+    let liquidMoneyDollarRegisterModal = document.querySelector('#liquid_money_dollars');
 
-    existCashRegisterWorker.addEventListener('change', handleChangeExistWorker);
-    
-    // --- HANDLING FORM SUBMIT ---
-    const form = document.querySelector('#form');
+    // Cash register modal factory
+    let liquidMoneyModalFactory = new LiquidMoneyModalFactory();
 
-    const submit = (event) => {
-        let allIsNull = true;
-      
-        for(let i = 0; i < inputs.length; i++){
-            let el = inputs[i];
-            
-            if (el.value){
-                allIsNull = false;
-                break;
-            }
-        }
-       
-        // Check if there's at least one input filled
-        if (allIsNull){
-            event.preventDefault();
-            alert('Epa, no se ha ingresado ningun ingreso')
-            return;
-        }
-    }
-    
-    form.addEventListener('submit', submit);
+    let liquidMoneyBsRegister = liquidMoneyModalFactory.create({currency: 'bs'});
+    liquidMoneyBsRegister.init(liquidMoneyBsRegisterModal);
 
-    // --- HANDLING INPUT MASKS ---
-    let inputs = document.querySelectorAll('[data-currency^="amount"]');
+    let liquidMoneyDollarRegister = liquidMoneyModalFactory.create({currency: 'dollar'});
+    liquidMoneyDollarRegister.init(liquidMoneyDollarRegisterModal);
 
+    // Total inputs
+    let totalLiquidMoneyBolivares = document.querySelector('#total_liquid_money_bolivares');
+    let totalLiquidMoneyDollars = document.querySelector('#total_liquid_money_dollars');
+
+    PubSub.publish('attachMask', {input: totalLiquidMoneyBolivares, currency: 'bs'})
+    PubSub.publish('attachMask', {input: totalLiquidMoneyDollars, currency: 'dollar'})
+
+    // Denominations modals Containers
+    let bsDenominationsModal = document.querySelector('#liquid_money_bolivares_denominations');
+    let dollarDenominationsModal = document.querySelector('#liquid_money_dollars_denominations');
+
+    let bsDenominations = new DenominationsModal('liquid_money_bolivares_denominations', 'bs');
+    bsDenominations.init(bsDenominationsModal);
+
+    let dollarDenominations = new DenominationsModal('liquid_money_dollars_denominations', 'dollar');
+    dollarDenominations.init(dollarDenominationsModal);
+
+    // Total inputs
+    let totalbsDenominations = document.querySelector('#total_liquid_money_bolivares_denominations');
+    let totaldollarDenominations = document.querySelector('#total_liquid_money_dollars_denominations');
+
+    PubSub.publish('attachMask', {input: totalbsDenominations, currency: 'bs'})
+    PubSub.publish('attachMask', {input: totaldollarDenominations, currency: 'dollar'})
+
+    // Sale points
+    let bsSalePointModal = document.querySelector('#point_sale_bs');
+    let bsSalePoint = new SalePointModal('point_sale_bs', 'bs');
+    bsSalePoint.init(bsSalePointModal);
+
+    // Cash register data
+    const cashRegisterDataContainer = document.querySelector('#cash_register_data');
+    const cashRegisterData = new CashRegisterData();
+    cashRegisterData.init(cashRegisterDataContainer);
 }
