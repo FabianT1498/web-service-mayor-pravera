@@ -12,6 +12,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 var CollectionPrototype = {
+  elements: [],
   getAll: function getAll() {
     return this.elements;
   },
@@ -44,7 +45,9 @@ var CollectionPrototype = {
   }
 };
 
-var Collection = function Collection() {};
+var Collection = function Collection(elements) {
+  this.elements = elements;
+};
 
 Collection.prototype = CollectionPrototype;
 Collection.prototype.constructor = Collection;
@@ -69,9 +72,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var MoneyRecordCollection = function MoneyRecordCollection() {
-  var moneyRecords = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-  _objectCollection__WEBPACK_IMPORTED_MODULE_1__["default"].call(this);
-  this.elements = moneyRecords;
+  var elements = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+  _objectCollection__WEBPACK_IMPORTED_MODULE_1__["default"].call(this, elements);
 
   this.pushElement = function (el) {
     el.id = this.getNewID();
@@ -100,14 +102,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _collection__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./collection */ "./resources/js/collections/collection.js");
 
 
-var ObjectCollection = function ObjectCollection() {
-  _collection__WEBPACK_IMPORTED_MODULE_0__["default"].call(this);
+var ObjectCollection = function ObjectCollection(elements) {
+  _collection__WEBPACK_IMPORTED_MODULE_0__["default"].call(this, elements);
 
   this.removeElementByID = function (id) {
     var index = this.elements.findIndex(function (obj) {
-      return (obj === null || obj === void 0 ? void 0 : obj.id) && obj.id === id;
+      return obj.id === id;
     });
-    return index !== -1 ? this.elements.slice(index, 1) : -1;
+    console.log(index);
+
+    if (index !== -1) {
+      console.log(index);
+      this.elements.splice(index, 1);
+      return true;
+    }
+
+    return false;
   };
 
   this.getNewID = function () {
@@ -166,7 +176,8 @@ var CashRegisterTable = function CashRegisterTable(tableName, currency) {
 
     tBody.insertAdjacentHTML('beforeend', tableRowTemplate(id, total));
     var input = tBody.querySelector("#".concat(_this.tableName, "_").concat(id));
-    _components_decimal_input__WEBPACK_IMPORTED_MODULE_1__.decimalInputs[currency].mask(input);
+
+    _components_decimal_input__WEBPACK_IMPORTED_MODULE_1__.decimalInputs[_this.currency].mask(input);
   };
 
   this.deleteRow = function (rowID) {
@@ -176,7 +187,7 @@ var CashRegisterTable = function CashRegisterTable(tableName, currency) {
 
     var tBody = _this.container.querySelector('tbody');
 
-    var row = tBody ? tBody.querySelector("tr[data-id=".concat(rowID, "]")) : null;
+    var row = tBody ? tBody.querySelector("tr[data-id=\"".concat(rowID, "\"]")) : null;
     tBody.removeChild(row);
     updateTableIDColumn(tBody);
   };
@@ -187,7 +198,7 @@ var CashRegisterTable = function CashRegisterTable(tableName, currency) {
     }
 
     var tBody = this.container.querySelector('tbody');
-    var input = tbody.querySelector("#".concat(this.tableName, "_").concat(id));
+    var input = tBody.querySelector("#".concat(this.tableName, "_").concat(id));
 
     if (input && input !== null && input !== void 0 && input.inputmask) {
       input.value = 0; // // Update convertion col only in foreign currency tables
@@ -206,6 +217,8 @@ var CashRegisterTable = function CashRegisterTable(tableName, currency) {
     var tBody = _this.container.querySelector('tbody');
 
     var input = tBody.querySelector('input');
+
+    _components_decimal_input__WEBPACK_IMPORTED_MODULE_1__.decimalInputs[_this.currency].mask(input);
   };
 
   var updateTableIDColumn = function updateTableIDColumn(container) {
@@ -356,8 +369,13 @@ var PAYMENT_METHODS = Object.freeze({
 /*!********************************************!*\
   !*** ./resources/js/models/moneyRecord.js ***!
   \********************************************/
-/***/ (() => {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
 var MoneyRecord = function MoneyRecord(amount, currency, method) {
   var id = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
   this.id = id;
@@ -365,6 +383,9 @@ var MoneyRecord = function MoneyRecord(amount, currency, method) {
   this.currency = currency;
   this.method = method;
 };
+
+MoneyRecord.prototype.constructor = MoneyRecord;
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (MoneyRecord);
 
 /***/ }),
 
@@ -384,6 +405,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _constants_currencies__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! _constants/currencies */ "./resources/js/constants/currencies.js");
 /* harmony import */ var _constants_paymentMethods__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! _constants/paymentMethods */ "./resources/js/constants/paymentMethods.js");
 /* harmony import */ var _views_MoneyRecordModalView__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! _views/MoneyRecordModalView */ "./resources/js/views/MoneyRecordModalView.js");
+/* harmony import */ var _presenters_MoneyRecordModalPresenter__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! _presenters/MoneyRecordModalPresenter */ "./resources/js/presenters/MoneyRecordModalPresenter.js");
 
 
  // import RecordMoneyModalFactory from '_components/cash-register-modal';
@@ -393,8 +415,10 @@ __webpack_require__.r(__webpack_exports__);
 // import CashRegisterData from '_components/cash-register-dbata'
 
 
+
 /* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__() {
-  var moneyRecordMoneyView = new _views_MoneyRecordModalView__WEBPACK_IMPORTED_MODULE_3__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_1__.CURRENCIES.BOLIVAR, _constants_paymentMethods__WEBPACK_IMPORTED_MODULE_2__.PAYMENT_METHODS.CASH);
+  var moneyRecordMoneyPresenter = new _presenters_MoneyRecordModalPresenter__WEBPACK_IMPORTED_MODULE_4__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_1__.CURRENCIES.BOLIVAR, _constants_paymentMethods__WEBPACK_IMPORTED_MODULE_2__.PAYMENT_METHODS.CASH);
+  var moneyRecordMoneyView = new _views_MoneyRecordModalView__WEBPACK_IMPORTED_MODULE_3__["default"](moneyRecordMoneyPresenter);
   var liquidMoneyBsRegisterModal = document.querySelector('#liquid_money_bolivares');
   moneyRecordMoneyView.init(liquidMoneyBsRegisterModal, 'liquid_money_bolivares'); // // Cash register data DOM
   // const cashRegisterDataContainer = document.querySelector('#cash_register_data');
@@ -473,7 +497,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _collections_moneyRecordCollection__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! _collections/moneyRecordCollection */ "./resources/js/collections/moneyRecordCollection.js");
 /* harmony import */ var _models_moneyRecord__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! _models/moneyRecord */ "./resources/js/models/moneyRecord.js");
-/* harmony import */ var _models_moneyRecord__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_models_moneyRecord__WEBPACK_IMPORTED_MODULE_1__);
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
@@ -483,11 +506,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 var MoneyRecordModalPresenterPrototype = {
-  init: function init(currency, method) {
-    this.currency = currency;
-    this.method = method;
-    this.moneyRecordCollection = new _collections_moneyRecordCollection__WEBPACK_IMPORTED_MODULE_0__["default"]([]);
-  },
   clickOnModal: function clickOnModal(_ref) {
     var target = _ref.target;
     var button = target.closest('button');
@@ -502,11 +520,15 @@ var MoneyRecordModalPresenterPrototype = {
           // Clean the remaining row
           var record = this.moneyRecordCollection.getAll()[0];
           this.view.resetLastInput(record.id);
+          console.log('Last record');
+          console.log(this.moneyRecordCollection.getAll());
         } else {
           // Delete the entry with the id
           var id = parseInt(rowID);
           this.moneyRecordCollection.removeElementByID(id);
           this.view.deleteRow(rowID);
+          console.log('Deleted record');
+          console.log(this.moneyRecordCollection.getAll());
         }
       } else if (modalToggleID) {// Checking if it's closing the modal
         // console.log(`getTotal.records.${method}.${currency}`)
@@ -515,21 +537,31 @@ var MoneyRecordModalPresenterPrototype = {
     }
   },
   keyPressedOnModal: function keyPressedOnModal(_ref2) {
-    var key = _ref2.key;
+    var target = _ref2.target;
+    var key = target.key || target.keyCode;
+    console.log(target);
 
     if (key === 13 || key === 'Enter') {
       // Handle new table's row creation
-      var moneyRecord = new (_models_moneyRecord__WEBPACK_IMPORTED_MODULE_1___default())(0.00, this.currency, this.method);
+      var moneyRecord = new _models_moneyRecord__WEBPACK_IMPORTED_MODULE_1__["default"](0.00, this.currency, this.method);
       moneyRecord = this.moneyRecordCollection.pushElement(moneyRecord);
       this.view.addRow(_objectSpread(_objectSpread({}, moneyRecord), {}, {
         total: this.moneyRecordCollection.getLength()
       }));
+      console.log('Record Added');
+      console.log(this.moneyRecordCollection.getAll());
     }
+  },
+  setView: function setView(view) {
+    this.view = view;
   }
 };
 
-var MoneyRecordModalPresenter = function MoneyRecordModalPresenter(view) {
-  this.view = view;
+var MoneyRecordModalPresenter = function MoneyRecordModalPresenter(currency, method) {
+  this.view = null;
+  this.currency = currency;
+  this.method = method;
+  this.moneyRecordCollection = new _collections_moneyRecordCollection__WEBPACK_IMPORTED_MODULE_0__["default"]([new _models_moneyRecord__WEBPACK_IMPORTED_MODULE_1__["default"](0.00, this.currency, this.method)]);
 };
 
 MoneyRecordModalPresenter.prototype = MoneyRecordModalPresenterPrototype;
@@ -596,34 +628,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var pubsub_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pubsub-js */ "./node_modules/pubsub-js/src/pubsub.js");
-/* harmony import */ var pubsub_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(pubsub_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _components_cash_register_table__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! _components/cash-register-table */ "./resources/js/components/cash-register-table/index.js");
-/* harmony import */ var _presenters_MoneyRecordModalPresenter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! _presenters/MoneyRecordModalPresenter */ "./resources/js/presenters/MoneyRecordModalPresenter.js");
-
-
+/* harmony import */ var _components_cash_register_table__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! _components/cash-register-table */ "./resources/js/components/cash-register-table/index.js");
 
 var MoneyRecordModalViewPrototype = {
   init: function init(container, name) {
     var tableContainer = container.querySelector('table');
-    var table = new _components_cash_register_table__WEBPACK_IMPORTED_MODULE_1__["default"](name, this.currency);
-    container.addEventListener("keypress", function () {
-      var presenter = this.presenter;
-      return function (event) {
-        event.preventDefault();
-        presenter.keyPressedOnModal({
-          key: event.key || event.keyCode
-        });
-      };
-    });
-    container.addEventListener("click", function () {
-      var presenter = this.presenter;
-      return function (event) {
-        presenter.clickOnModal({
-          target: event.target
-        });
-      };
-    });
+    this.table = new _components_cash_register_table__WEBPACK_IMPORTED_MODULE_0__["default"](name, this.presenter.currency);
+    this.table.init(tableContainer);
+    container.addEventListener("keypress", this.keyPressEventHandlerWrapper(this.presenter));
+    container.addEventListener("click", this.clickEventHandlerWrapper(this.presenter));
   },
   resetLastInput: function resetLastInput(id) {
     this.table.resetLastInput(id);
@@ -633,14 +646,27 @@ var MoneyRecordModalViewPrototype = {
   },
   deleteRow: function deleteRow(id) {
     this.table.deleteRow(id);
+  },
+  keyPressEventHandlerWrapper: function keyPressEventHandlerWrapper(presenter) {
+    return function (event) {
+      event.preventDefault();
+      presenter.keyPressedOnModal({
+        target: event.target
+      });
+    };
+  },
+  clickEventHandlerWrapper: function clickEventHandlerWrapper(presenter) {
+    return function (event) {
+      presenter.clickOnModal({
+        target: event.target
+      });
+    };
   }
 };
 
-var MoneyRecordModalView = function MoneyRecordModalView(currency, method) {
-  this.currency = currency;
-  console.log(this);
-  this.presenter = new _presenters_MoneyRecordModalPresenter__WEBPACK_IMPORTED_MODULE_2__["default"](this);
-  this.presenter.init(currency, method);
+var MoneyRecordModalView = function MoneyRecordModalView(presenter) {
+  this.presenter = presenter;
+  this.presenter.setView(this);
 };
 
 MoneyRecordModalView.prototype = MoneyRecordModalViewPrototype;

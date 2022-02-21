@@ -10,10 +10,12 @@ import { PAYMENT_METHODS } from '_constants/paymentMethods';
 // import CashRegisterData from '_components/cash-register-dbata'
 
 import MoneyRecordModalView from '_views/MoneyRecordModalView'
+import MoneyRecordModalPresenter from '_presenters/MoneyRecordModalPresenter'
 
 export default function(){
 
-    let moneyRecordMoneyView = new MoneyRecordModalView(CURRENCIES.BOLIVAR, PAYMENT_METHODS.CASH);
+    let moneyRecordMoneyPresenter = new MoneyRecordModalPresenter(CURRENCIES.BOLIVAR, PAYMENT_METHODS.CASH);
+    let moneyRecordMoneyView = new MoneyRecordModalView(moneyRecordMoneyPresenter);
     let liquidMoneyBsRegisterModal = document.querySelector('#liquid_money_bolivares');
     moneyRecordMoneyView.init(liquidMoneyBsRegisterModal, 'liquid_money_bolivares')
 

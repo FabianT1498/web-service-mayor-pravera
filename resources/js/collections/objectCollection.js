@@ -1,11 +1,18 @@
 import Collection from "./collection";
 
-const ObjectCollection = function() {
-    Collection.call(this);
+const ObjectCollection = function(elements) {
+    Collection.call(this, elements);
     
     this.removeElementByID = function(id){
-        const index = this.elements.findIndex((obj) => obj?.id && obj.id === id)
-        return index !== -1 ? this.elements.slice(index, 1) : -1;
+        const index = this.elements.findIndex((obj) => obj.id === id)
+        console.log(index);
+        if (index !== -1){
+            console.log(index);
+            this.elements.splice(index, 1)
+            return true;
+        }
+        
+        return false;
     }
 
     this.getNewID = function(){

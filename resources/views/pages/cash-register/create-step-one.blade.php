@@ -144,9 +144,13 @@
 
         <x-modal-input-list 
             :modalID="__('zelle_record')"
+            :currency="config('constants.CURRENCIES.DOLLAR')"
         />
         
-        <x-modal-input-list :modalID="__('liquid_money_dollars')"/>
+        <x-modal-input-list 
+            :modalID="__('liquid_money_dollars')"
+            :currency="config('constants.CURRENCIES.DOLLAR')"
+        />
         <x-modal-input-denominations 
             :modalID="__('liquid_money_dollars_denominations')"
             :denominations="['0.50', '1', '2', '5', '10', '20','50', '100']"
@@ -154,7 +158,7 @@
 
         <x-modal-input-list 
             :modalID="__('liquid_money_bolivares')"
-            :currency="__('Bs.S')"
+            :currency="config('constants.CURRENCIES.BOLIVAR')"
             :isBolivar="true"
         />
         <x-modal-input-denominations 

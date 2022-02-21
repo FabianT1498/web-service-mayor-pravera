@@ -29,7 +29,7 @@ const CashRegisterTable = function(tableName, currency){
         tBody.insertAdjacentHTML('beforeend', tableRowTemplate(id, total));
         const input = tBody.querySelector(`#${this.tableName}_${id}`);
 
-        decimalInputs[currency].mask(input);
+        decimalInputs[this.currency].mask(input);
     }
 
     this.deleteRow = (rowID) => {
@@ -38,7 +38,7 @@ const CashRegisterTable = function(tableName, currency){
         }
         
         const tBody = this.container.querySelector('tbody')
-        const row = tBody ? tBody.querySelector(`tr[data-id=${rowID}]`) : null
+        const row = tBody ? tBody.querySelector(`tr[data-id="${rowID}"]`) : null
         tBody.removeChild(row)
         updateTableIDColumn(tBody)
     }
@@ -49,7 +49,7 @@ const CashRegisterTable = function(tableName, currency){
         }
 
         const tBody = this.container.querySelector('tbody');
-        const input = tbody.querySelector(`#${this.tableName}_${id}`);
+        const input = tBody.querySelector(`#${this.tableName}_${id}`);
         
         if (input && input?.inputmask){
             input.value = 0;
@@ -70,6 +70,7 @@ const CashRegisterTable = function(tableName, currency){
         
         const tBody = this.container.querySelector('tbody');
         let input = tBody.querySelector('input');
+        decimalInputs[this.currency].mask(input);
     }
 
     const updateTableIDColumn = (container) => {

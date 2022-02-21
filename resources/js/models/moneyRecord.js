@@ -4,3 +4,7 @@ const MoneyRecord = function(amount, currency, method, id = 0){
 	this.currency = currency;
 	this.method = method
 }
+
+MoneyRecord.prototype.constructor = MoneyRecord;
+
+export default MoneyRecord;

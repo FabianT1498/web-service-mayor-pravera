@@ -1,4 +1,5 @@
 const CollectionPrototype = {
+    elements: [],
     getAll(){
         return this.elements
     },
@@ -31,8 +32,8 @@ const CollectionPrototype = {
     },
 }
 
-const Collection = function (){
-
+const Collection = function (elements){
+    this.elements = elements;
 }
 
 Collection.prototype = CollectionPrototype;

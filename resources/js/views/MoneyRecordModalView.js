@@ -1,32 +1,13 @@
-import PubSub from "pubsub-js";
-
 import MoneyRecordTable from '_components/cash-register-table'
-import MoneyRecordModalPresenter from '_presenters/MoneyRecordModalPresenter'
 
 const MoneyRecordModalViewPrototype = {
     init(container, name){
         const tableContainer = container.querySelector('table')
-        const table = new MoneyRecordTable(name, this.currency);
+        this.table = new MoneyRecordTable(name, this.presenter.currency);
+        this.table.init(tableContainer);
         
-        
-        container.addEventListener("keypress", function(){
-            let presenter = this.presenter
-            return (event) => {
-                event.preventDefault();
-                presenter.keyPressedOnModal({
-                    key: event.key || event.keyCode
-                })
-            }
-        })
-
-        container.addEventListener("click", function(){
-            let presenter = this.presenter;
-            return (event) => {
-                presenter.clickOnModal({
-                    target: event.target
-                })
-            }
-        });
+        container.addEventListener("keypress", this.keyPressEventHandlerWrapper(this.presenter))
+        container.addEventListener("click", this.clickEventHandlerWrapper(this.presenter));
     },
     resetLastInput(id){
         this.table.resetLastInput(id)
@@ -37,13 +18,26 @@ const MoneyRecordModalViewPrototype = {
     deleteRow(id){
         this.table.deleteRow(id);
     },
+    keyPressEventHandlerWrapper(presenter){
+        return (event) => {
+            event.preventDefault();
+            presenter.keyPressedOnModal({
+                target: event.target
+            })
+        }
+    },
+    clickEventHandlerWrapper(presenter){
+        return (event) => {
+            presenter.clickOnModal({
+                target: event.target
+            })
+        }
+    }
 }
 
-const MoneyRecordModalView = function (currency, method){
-    this.currency = currency;
-    console.log(this)
-    this.presenter = new MoneyRecordModalPresenter(this);
-    this.presenter.init(currency, method);
+const MoneyRecordModalView = function (presenter){
+    this.presenter = presenter;
+    this.presenter.setView(this);
 }
 
 MoneyRecordModalView.prototype = MoneyRecordModalViewPrototype;
