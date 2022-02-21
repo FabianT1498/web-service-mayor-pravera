@@ -1,5 +1,3 @@
-import PubSub from "pubsub-js";
-
 import { CURRENCIES} from '_constants/currencies';
 import { PAYMENT_METHODS } from '_constants/paymentMethods';
 
@@ -12,12 +10,22 @@ import { PAYMENT_METHODS } from '_constants/paymentMethods';
 import MoneyRecordModalView from '_views/MoneyRecordModalView'
 import MoneyRecordModalPresenter from '_presenters/MoneyRecordModalPresenter'
 
+import ForeignMoneyRecordModalView from '_views/ForeignMoneyRecordModalView'
+import ForeignMoneyRecordModalPresenter from '_presenters/ForeignMoneyRecordModalPresenter'
+
 export default function(){
 
     let moneyRecordMoneyPresenter = new MoneyRecordModalPresenter(CURRENCIES.BOLIVAR, PAYMENT_METHODS.CASH);
     let moneyRecordMoneyView = new MoneyRecordModalView(moneyRecordMoneyPresenter);
     let liquidMoneyBsRegisterModal = document.querySelector('#liquid_money_bolivares');
     moneyRecordMoneyView.init(liquidMoneyBsRegisterModal, 'liquid_money_bolivares')
+
+    let foreignMoneyRecordMoneyPresenter = new ForeignMoneyRecordModalPresenter(CURRENCIES.DOLLAR, PAYMENT_METHODS.CASH);
+    let foreignMoneyRecordMoneyView = new ForeignMoneyRecordModalView(foreignMoneyRecordMoneyPresenter);
+    let cashDollarRecordModal = document.querySelector('#liquid_money_dollars');
+    foreignMoneyRecordMoneyView.init(cashDollarRecordModal, 'liquid_money_dollars')
+
+
 
     // // Cash register data DOM
     // const cashRegisterDataContainer = document.querySelector('#cash_register_data');

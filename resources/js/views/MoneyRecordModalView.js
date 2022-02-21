@@ -1,4 +1,4 @@
-import MoneyRecordTable from '_components/cash-register-table'
+import MoneyRecordTable from '_components/money-record-table/MoneyRecordTable'
 
 const MoneyRecordModalViewPrototype = {
     init(container, name){
@@ -22,7 +22,8 @@ const MoneyRecordModalViewPrototype = {
         return (event) => {
             event.preventDefault();
             presenter.keyPressedOnModal({
-                target: event.target
+                target: event.target,
+                key: event.key || event.keyCode
             })
         }
     },

@@ -30,9 +30,7 @@ const MoneyRecordModalPresenterPrototype = {
 		  }
 		}
    },
-   keyPressedOnModal({target}){
-	   	let key = target.key || target.keyCode
-		   console.log(target)
+   keyPressedOnModal({target, key}){
    		if (key === 13 || key === 'Enter'){ // Handle new table's row creation
    			let moneyRecord = new MoneyRecord(0.00, this.currency, this.method);
    			moneyRecord = this.moneyRecordCollection.pushElement(moneyRecord)
