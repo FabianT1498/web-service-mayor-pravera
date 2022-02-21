@@ -2,7 +2,7 @@ import PubSub from "pubsub-js";
 
 import { formatAmount } from '_utilities/mathUtilities'
 
-import { CURRENCIES} from '_assets/currencies';
+import { CURRENCIES} from '_constants/currencies';
 
 const DenominationsTable = function(name, currency){
 

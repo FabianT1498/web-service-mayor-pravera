@@ -1,4 +1,3 @@
-
 const CURRENCIES = Object.freeze(
     {
         BOLIVAR: 'bs',

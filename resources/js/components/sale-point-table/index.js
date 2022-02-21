@@ -1,7 +1,7 @@
 import PubSub from "pubsub-js";
 
 import BankCollection from '_app/collections/bankCollection';
-import { SIGN as CURRENCY_SYMBOLS_MAP, CURRENCIES} from '_assets/currencies';
+import { SIGN as CURRENCY_SYMBOLS_MAP, CURRENCIES} from '_constants/currencies';
 import { getAllBanks } from '_services/banks'
 
 const SalePointTable = function(name, currency){

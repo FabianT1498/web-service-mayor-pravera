@@ -1,6 +1,6 @@
 import { RecordMoneyModalDollars, RecordMoneyModalBolivares } from "./types";
 
-import { CURRENCIES } from '_assets/currencies';
+import { CURRENCIES } from '_constants/currencies';
 
 const CURRENCY_CONSTRUCTORS = {[CURRENCIES.BOLIVAR]: RecordMoneyModalBolivares, [CURRENCIES.DOLLAR] : RecordMoneyModalDollars};
 

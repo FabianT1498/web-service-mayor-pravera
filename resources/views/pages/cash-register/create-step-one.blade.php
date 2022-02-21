@@ -12,43 +12,46 @@
     @endforeach
     <form id="form" autocomplete="off" method="POST" action="{{ route('cash_register_step_one.post') }}">
         @csrf
-        <input id="last-dollar-exchange-bs-val" type="hidden" value={{ $dollar_exchange?->bs_exchange ?? 0 }}>
-
         <div class="w-10/12"><h3 class="h3 text-center mb-4">Datos de la caja</h3></div>
 
         <div id="cash_register_data" class="w-10/12 grid gap-4 grid-cols-[200px_250px] grid-rows-4 mb-8 mx-auto">
             <!-- Cash register date -->
         
             <x-label for="date" :value="__('Fecha')" />
-            <x-input id="date" type="text" :value="__($date)" readonly />
+            <x-input type="text" :value="__($date)" readonly />
             
             <!-- Cash register number-->
             <x-label for="cash_register" :value="__('Caja')" />
             <x-select-input 
                 :options="$cash_registers_id_arr" 
                 :defaultOptTitle="__('Seleccione la caja')"
+                id="cash_register_id"
                 :name="__('cash_register_id')" 
                 :value="old('cash_register_id')" 
                 required  
             />
             
             <x-label for="cash_register_worker" :value="__('Cajero/a:')" />
-            <x-select-input 
+            <x-select-input
+                id="cash_register_worker"
                 :options="$cash_registers_workers_id_arr"
                 :defaultOptTitle="__('Seleccione el cajero/a')"
                 :name="__('cash_register_worker')" 
                 :value="old('cash_register_worker')"
-                data-select="worker"
                 required 
             />
 
             <div class="flex items-center">
                    <x-label for="exist_cash_register_worker" class="basis-2/3" :value="__('No esta registrado el cajero/a ?')" />
-                   <input data-action="checkIfWorkerExist" type="checkbox" name="exist_cash_register_worker" value="{{ old('exist_cash_register_worker') ? old('exist_cash_register_worker') : 0 }}" />
+                   <input
+                        id="cash_register_worker_exist_check"
+                        type="checkbox"
+                        name="exist_cash_register_worker"
+                        value="{{ old('exist_cash_register_worker') ? old('exist_cash_register_worker') : 0 }}"
+                    />
            </div>
            <div id="new_cash_register_worker_container" class="hidden">
-                    <x-input 
-                        id="new_cash_register_worker" 
+                    <x-input
                         placeholder="Nombre del cajero"
                         class="w-full"
                         type="text" 
@@ -62,10 +65,10 @@
 
         <div class="w-10/12 grid gap-4 grid-cols-[150px_auto_150px_auto] mb-8 mx-auto items-center">
             <x-label :value="__('Fecha de registro de la última tasa: ')" />
-            <p id="last-dollar-exchange-bs-date">{{ $dollar_exchange->created_at }}</p>
+            <p id="last-dollar-exchange-bs-date">{{ $dollar_exchange?->created_at }}</p>
 
             <x-label class="w-56" :value="__('Cotización del $:')" />
-            <p id="last-dollar-exchange-bs-label">{{ $dollar_exchange->bs_exchange }} Bs.S</p>
+            <p id="last-dollar-exchange-bs-label">{{ $dollar_exchange?->bs_exchange }} Bs.S</p>
                             
 
             <!-- Cash on liquid input (dollars) -->

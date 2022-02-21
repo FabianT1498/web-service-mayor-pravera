@@ -52,19 +52,23 @@ class CashRegisterController extends Controller
     {  
         $date =  Date::now()->format('d-m-Y');
 
-        $cash_registers_id = DB::connection('saint_db')->table('SSUSRS')
-            ->select('CodUsua as cash_register_id')
-            ->where("CodUsua", "LIKE", "CAJA%")
-            ->where("CodUsua", "=", "DELIVERY", 'or')
-            ->get();
+        // $cash_registers_id = DB::connection('saint_db')->table('SSUSRS')
+        //     ->select('CodUsua as cash_register_id')
+        //     ->where("CodUsua", "LIKE", "CAJA%")
+        //     ->where("CodUsua", "=", "DELIVERY", 'or')
+        //     ->get();
 
         $cash_register_workers = DB::table('workers')
             ->select()
             ->get();
 
-        $cash_registers_id_arr = $cash_registers_id->map(function($item, $key) {
-            return (object) array("key" => $item->cash_register_id, "value" => $item->cash_register_id);
-        });
+        // $cash_registers_id_arr = $cash_registers_id->map(function($item, $key) {
+        //     return (object) array("key" => $item->cash_register_id, "value" => $item->cash_register_id);
+        // });
+
+        $cash_registers_id_arr = [
+            (object) array('key' => 'Caja 1', 'value' => 'Caja 1'),
+        ];
 
         $cash_registers_workers_id_arr = $cash_register_workers->map(function($item, $key) {
             return (object) array("key" => $item->id, "value" => $item->name);

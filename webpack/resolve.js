@@ -7,8 +7,12 @@ module.exports = {
     _app: path.resolve(__dirname, '..', 'resources/js'),
     _components: path.resolve(__dirname, '..', 'resources/js/components'),
     _pages: path.resolve(__dirname, '..', 'resources/js/pages'),
+    _collections: path.resolve(__dirname, '..', 'resources/js/collections'),
+    _models: path.resolve(__dirname, '..', 'resources/js/models'),
+    _presenters: path.resolve(__dirname, '..', 'resources/js/presenters'),
+    _views: path.resolve(__dirname, '..', 'resources/js/views'),
     _services: path.resolve(__dirname, '..', 'resources/js/services'),
     _utilities: path.resolve(__dirname, '..', 'resources/js/utilities'),
-    _assets: path.resolve(__dirname, '..', 'resources/js/assets'),
+    _constants: path.resolve(__dirname, '..', 'resources/js/constants'),
   },
 }

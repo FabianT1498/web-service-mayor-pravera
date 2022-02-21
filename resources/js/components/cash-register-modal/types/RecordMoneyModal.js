@@ -28,7 +28,18 @@ const RecordMoneyModalPrototype = {
                 }
             }
         }
-    } 
+    },
+    keypressEventHandlerWrapper(currency, method){
+        return (event) => {
+            event.preventDefault();
+    
+            let key = event.key || event.keyCode;
+            
+            if (key === 13 || key === 'Enter'){ // Handle new table's row creation
+                PubSub.publish(`addRow.${method}.${currency}`);
+            }
+        }
+    }
 }
 
 const RecordMoneyModal = function (){

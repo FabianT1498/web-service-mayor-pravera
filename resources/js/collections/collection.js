@@ -8,26 +8,27 @@ const CollectionPrototype = {
     setElements(elements){
         this.elements = elements ? elements : []
     },
-    getElement(index){
+    getElementByIndex(index){
         if (index > -1 && index < this.elements.length){
-            return null;
+            return this.elements[index]
         }
 
-        return this.elements[index]
+        return undefined;        
     },
-    deleteElementByName(name){
-        let index = this.elements.findIndex((val) => val === name);
-        if (index !== -1) {
+    deleteElementByIndex(index){
+        if (index > -1 && index < this.elements.length){
             this.elements.splice(index, 1);
         }
+
+        return false;
     },
-    pushElement(name){
-        this.elements.push(name);
+    pushElement(el){
+        this.elements.push(el);
         return this.elements;
     },
     shiftElement(){
         return this.elements.shift();
-    }
+    },
 }
 
 const Collection = function (){

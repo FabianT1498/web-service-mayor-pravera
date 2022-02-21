@@ -2,7 +2,7 @@ import PubSub from "pubsub-js";
 
 import { formatAmount } from '_utilities/mathUtilities'
 import RecordMoneyModal from "./RecordMoneyModal";
-import { CURRENCIES} from '_assets/currencies';
+import { CURRENCIES} from '_constants/currencies';
 
 const RecordMoneyModalDollars = function({currency, method}) {
     this.currency = currency || CURRENCIES.DOLLAR;
@@ -17,8 +17,10 @@ const RecordMoneyModalDollars = function({currency, method}) {
 
     const handleUpdateConvertionColEvent = (event, currency, method) => {
         const row = event.target.closest('tr');
-        const lastDollarExchangeValEl = document.querySelector(`#last-dollar-exchange-bs-val`);
-        const lastDollarExchangeVal = lastDollarExchangeValEl ? parseFloat(lastDollarExchangeValEl.value) : 0
+        // const lastDollarExchangeValEl = document.querySelector(`#last-dollar-exchange-bs-val`);
+        // const lastDollarExchangeVal = lastDollarExchangeValEl ? parseFloat(lastDollarExchangeValEl.value) : 0
+
+        const lastDollarExchangeVal = 5.12;
         
         PubSub.publish(`updateConvertionCol.${method}.${currency}`, {
             row,
