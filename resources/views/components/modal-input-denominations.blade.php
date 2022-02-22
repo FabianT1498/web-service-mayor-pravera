@@ -35,12 +35,13 @@
                                         <td class="py-4 pl-3 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white">
                                             <input 
                                                 data-denomination={{ $denomination }}
-                                                type="number"
-                                                placeholder="0"
+                                                type="text"
                                                 min="0"
                                                 name={{ 'total_amount_liquid_money[' . $modalID . '][' . $denomination . ']' }} 
-                                                class="w-36 rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                        </td>
+                                                class="w-36 rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                            >
+                                                
+                                            </td>
                                     </tr>
                                 @endforeach
                             </tbody>

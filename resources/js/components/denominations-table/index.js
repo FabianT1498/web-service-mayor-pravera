@@ -1,5 +1,7 @@
 import { formatAmount } from '_utilities/mathUtilities'
 
+import numericInput from '_utilities/numericInput';
+
 import { CURRENCIES} from '_constants/currencies';
 
 const DenominationsTable = function(){
@@ -8,6 +10,7 @@ const DenominationsTable = function(){
         this.container = container;
         this.name = name;
         this.currency = currency || CURRENCIES.DOLLAR;
+        setInitialMask();
     }
 
     this.isContainerDefined = function(){
@@ -28,6 +31,18 @@ const DenominationsTable = function(){
         }, 0);
         
         return total;
+    }
+
+    const setInitialMask = () => {
+        if (!this.isContainerDefined()){
+            return;
+        }
+        
+        const tBody = this.container.querySelector('tbody');
+        let inputs = tBody.querySelectorAll('input');
+        inputs.forEach(el => {
+            numericInput.mask(el);
+        })
     }
 }
 

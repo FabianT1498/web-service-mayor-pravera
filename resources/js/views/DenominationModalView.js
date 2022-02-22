@@ -6,16 +6,30 @@ const DenominationModalViewPrototype = {
     init(container, tableName){
         const tableContainer = container.querySelector('table')
         this.table = new DenominationsTable();
-        this.table.init(tableContainer, this.name, this.presenter.currency);
+        this.table.init(tableContainer, tableName, this.presenter.currency);
         container.addEventListener("click", this.clickEventHandlerWrapper(this.presenter));
-    },
-    getTotal(){
-        const total = this.table.getTotal();
-        console.log(total)
+        container.addEventListener("keypress", this.keypressEventHandlerWrapper(this.presenter));
+        container.addEventListener("keydown", this.keydownEventHandlerWrapper(this.presenter));
     },
     clickEventHandlerWrapper(presenter){
         return (event) => {
             presenter.clickOnModal({
+                target: event.target
+            })
+        }
+    },
+    keypressEventHandlerWrapper(presenter){
+        return (event) => {
+            presenter.keyPressedOnModal({
+                key: event.key,
+                target: event.target
+            })
+        }
+    },
+    keydownEventHandlerWrapper(presenter){
+        return (event) => {
+            presenter.keyDownOnModal({
+                key: event.key,
                 target: event.target
             })
         }

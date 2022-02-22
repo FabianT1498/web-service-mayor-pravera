@@ -24,7 +24,8 @@ const MoneyRecordModalPresenterPrototype = {
 			  		this.view.deleteRow(rowID)
 			  	}
 		  	} else if (modalToggleID){ // Checking if it's closing the modal
-				// Get total
+				const total = this.moneyRecordCollection.getAll().reduce((acc, curr) => acc + curr.amount, 0)
+				console.log(total)
 		  	}
 		}
    },
