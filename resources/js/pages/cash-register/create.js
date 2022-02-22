@@ -9,21 +9,25 @@ import { PAYMENT_METHODS } from '_constants/paymentMethods';
 
 import MoneyRecordModalView from '_views/MoneyRecordModalView'
 import MoneyRecordModalPresenter from '_presenters/MoneyRecordModalPresenter'
+import MoneyRecordTable from '_components/money-record-table/MoneyRecordTable'
 
 import ForeignMoneyRecordModalView from '_views/ForeignMoneyRecordModalView'
 import ForeignMoneyRecordModalPresenter from '_presenters/ForeignMoneyRecordModalPresenter'
+import ForeignMoneyRecordTable from '_components/money-record-table/ForeignMoneyRecordTable'
 
 export default function(){
 
     let moneyRecordMoneyPresenter = new MoneyRecordModalPresenter(CURRENCIES.BOLIVAR, PAYMENT_METHODS.CASH);
     let moneyRecordMoneyView = new MoneyRecordModalView(moneyRecordMoneyPresenter);
     let liquidMoneyBsRegisterModal = document.querySelector('#liquid_money_bolivares');
-    moneyRecordMoneyView.init(liquidMoneyBsRegisterModal, 'liquid_money_bolivares')
+    let moneyRecordTable = new MoneyRecordTable()
+    moneyRecordMoneyView.init(liquidMoneyBsRegisterModal, 'liquid_money_bolivares', moneyRecordTable)
 
     let foreignMoneyRecordMoneyPresenter = new ForeignMoneyRecordModalPresenter(CURRENCIES.DOLLAR, PAYMENT_METHODS.CASH);
     let foreignMoneyRecordMoneyView = new ForeignMoneyRecordModalView(foreignMoneyRecordMoneyPresenter);
     let cashDollarRecordModal = document.querySelector('#liquid_money_dollars');
-    foreignMoneyRecordMoneyView.init(cashDollarRecordModal, 'liquid_money_dollars')
+    let foreignMoneyRecordTable = new ForeignMoneyRecordTable()
+    foreignMoneyRecordMoneyView.init(cashDollarRecordModal, 'liquid_money_dollars', foreignMoneyRecordTable)
 
 
 

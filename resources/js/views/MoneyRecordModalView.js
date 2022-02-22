@@ -1,10 +1,12 @@
-import MoneyRecordTable from '_components/money-record-table/MoneyRecordTable'
-
 const MoneyRecordModalViewPrototype = {
-    init(container, name){
-        const tableContainer = container.querySelector('table')
-        this.table = new MoneyRecordTable(name, this.presenter.currency);
-        this.table.init(tableContainer);
+    init(container, name, table){
+        if (!container || !table || !this.presenter){
+            return false;
+        }
+
+        let tableContainer = container.querySelector('table');
+        this.table = table;
+        this.table.init(tableContainer, name, this.presenter.currency);
         
         container.addEventListener("keypress", this.keyPressEventHandlerWrapper(this.presenter))
         container.addEventListener("click", this.clickEventHandlerWrapper(this.presenter));

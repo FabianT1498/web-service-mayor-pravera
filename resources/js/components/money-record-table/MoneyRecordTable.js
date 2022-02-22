@@ -1,16 +1,19 @@
-import {decimalInputs} from '_components/decimal-input';
+import {decimalInputs} from '_utilities/decimalInput';
 
 import { SIGN as CURRENCY_SYMBOLS_MAP} from '_constants/currencies';
 
 const MoneyRecordTablePrototype = { 
-    init(container){
+    init(container, tableName, currency){
         this.container = container;
+        this.tableName = tableName;
+        this.currency = currency;
 
-        // if (PubSub.getSubscriptions('attachMask').length === 0){
-        //     let decimalInputDollar = new DecimalInput();
-        //     decimalInputDollar.init();
-        // }
+        if (!container){
+            return false;
+        }
+
         this.setInitialMask()
+        return true;
     },
     addRow ({id, total}){
         if (!this.isContainerDefined()){
@@ -84,26 +87,10 @@ const MoneyRecordTablePrototype = {
             colsID[i].innerHTML = i + 1;
         }
     }
-
-    // const getTotal = (msg, data) => {
-    //     if (!this.container){
-    //         return;
-    //     }
-        
-    //     const tBody = this.container.querySelector('tbody');
-    //     let inputs = tBody.querySelectorAll(`input`)
-    //     const total = Array.from(inputs).reduce((acc, el) => {
-    //         let num = formatAmount(el.value)
-    //         return acc + num;
-    //     }, 0);
-
-    //     document.getElementById(`total_${this.tableName}`).value = total > 0 ? total : 0;
-    // }
 }
 
-const MoneyRecordTable = function(tableName, currency){
-    this.tableName = tableName || "";
-    this.currency = currency || "";
+const MoneyRecordTable = function(){
+
 }
 
 MoneyRecordTable.prototype = MoneyRecordTablePrototype

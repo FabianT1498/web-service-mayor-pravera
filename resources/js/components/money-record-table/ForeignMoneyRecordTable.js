@@ -2,8 +2,8 @@ import MoneyRecordTable from './MoneyRecordTable';
 
 import { SIGN as CURRENCY_SYMBOLS_MAP, CURRENCIES} from '_constants/currencies';
 
-const ForeignMoneyRecordTable = function(tableName, currency){
-    MoneyRecordTable.call(this, tableName, currency)
+const ForeignMoneyRecordTable = function(){
+    MoneyRecordTable.call(this)
 
     this.resetLastInput = function(id){
         MoneyRecordTable.prototype.resetLastInput.call(this, id)

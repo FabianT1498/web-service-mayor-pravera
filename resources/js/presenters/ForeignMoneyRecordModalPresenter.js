@@ -8,22 +8,31 @@ const ForeignMoneyRecordModalPresenter = function (currency, method){
 	MoneyRecordModalPresenter.call(this, currency, method);
 
 	this.keyPressedOnModal = function({target, key}){
-		console.log(target);
-		 MoneyRecordModalPresenter.prototype.keyPressedOnModal.call(this, {target, key})
+		MoneyRecordModalPresenter.prototype.keyPressedOnModal.call(this, {target, key})
  
-		 if (isFinite(key)){ // Handle case to convert dollar to Bs.S`
-			 console.log('Number pressed')
-			 let rowID = target.closest('tr').getAttribute('data-id');
-			 let inputValue = formatAmount(target.value)
-			 let dollarExchangeValue = 4.30
-			 let formatedConvertion = `${getConvertion(inputValue, dollarExchangeValue)} ${CURRENCY_SYMBOLS_MAP[CURRENCIES.BOLIVAR]}`;
-			 // Necesito recuperar el valo del dolar actual
-			 this.view.updateConvertionCol({rowID, formatedConvertion});
-		 }
+		if (isFinite(key)){ // Handle case to convert dollar to Bs.S`
+			let rowID = target.closest('tr').getAttribute('data-id');
+            let formatedConvertion = getConvertionFormated(target)
+			this.view.updateConvertionCol({rowID, formatedConvertion});
+		}
 	}
 
-	const getConvertion = function(amount, exchangeValue){
-		 return (Math.round(((exchangeValue * amount) + Number.EPSILON) * 100) / 100)
+	this.keyDownOnModal = function({target, key}){
+		if (key === 8 || key === 'Backspace'){
+            let rowID = target.closest('tr').getAttribute('data-id');
+            let formatedConvertion = getConvertionFormated(target)
+			this.view.updateConvertionCol({rowID, formatedConvertion});
+        }
+	}
+
+	const getConvertionFormated = function(target) {
+		let inputValue = formatAmount(target.value)
+		let dollarExchangeValue = 4.30
+		return `${calculateConvertion(inputValue, dollarExchangeValue)} ${CURRENCY_SYMBOLS_MAP[CURRENCIES.BOLIVAR]}`;
+	}
+
+	const calculateConvertion = function(amount, exchangeValue){
+		return (Math.round(((exchangeValue * amount) + Number.EPSILON) * 100) / 100)
 	}
 }
 
