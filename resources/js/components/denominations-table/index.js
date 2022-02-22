@@ -1,34 +1,33 @@
-import PubSub from "pubsub-js";
-
 import { formatAmount } from '_utilities/mathUtilities'
 
 import { CURRENCIES} from '_constants/currencies';
 
-const DenominationsTable = function(name, currency){
+const DenominationsTable = function(){
 
-    this.name = name || "";
-    this.currency = currency || CURRENCIES.DOLLAR;
-
-    this.init = (container) => {
+    this.init = (container, name, currency) => {
         this.container = container;
-     
-        PubSub.subscribe(`getTotal.denominations.${this.currency}`, getTotal); 
+        this.name = name;
+        this.currency = currency || CURRENCIES.DOLLAR;
     }
 
-    const getTotal = (msg, data) => {
-        if (!this.container){
-            return;
+    this.isContainerDefined = function(){
+        return this.container !== null
+    }
+
+    this.getTotal = function(){
+        if (!this.isContainerDefined){
+            return 0;
         }
         
         const tBody = this.container.querySelector('tBody')
         let inputs = tBody.querySelectorAll('input')
-        const total = Array.from(inputs).reduce((acc, el) => {
+        let total = Array.from(inputs).reduce((acc, el) => {
             let denomination = parseFloat(el.getAttribute('data-denomination'));
             let num = formatAmount(el.value)
             return acc + (num * denomination);
         }, 0);
-
-        document.getElementById(`total_${this.name}`).value = total > 0 ? total : 0;
+        
+        return total;
     }
 }
 
