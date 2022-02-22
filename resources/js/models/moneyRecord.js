@@ -1,4 +1,4 @@
-const MoneyRecord = function(amount, currency, method, id = 0){
+const MoneyRecord = function(amount, currency, method, id = null){
 	this.id = id;
 	this.amount = amount;
 	this.currency = currency;

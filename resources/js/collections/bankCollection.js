@@ -1,11 +1,10 @@
-import Collection from "./collection";
+import ObjectCollection from "./objectCollection"
 
 const BankCollection = function(banks = []) {
-    Collection.call(this);
-    this.elements = banks ? banks : [];    
+    ObjectCollection.call(this, elements);
 }
 
-BankCollection.prototype = Object.create(Collection.prototype);
+BankCollection.prototype = Object.create(ObjectCollection.prototype);
 BankCollection.prototype.constructor = BankCollection;
 
 export default BankCollection;

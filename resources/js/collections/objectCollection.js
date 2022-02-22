@@ -2,6 +2,12 @@ import Collection from "./collection";
 
 const ObjectCollection = function(elements) {
     Collection.call(this, elements);
+
+    this.pushElement = function(el){
+        el.id = el?.id ? el.id : this.getNewID();
+        Collection.prototype.pushElement.call(this, el);
+        return el;
+    }
     
     this.removeElementByID = function(id){
         const index = this.elements.findIndex((obj) => obj.id === id)

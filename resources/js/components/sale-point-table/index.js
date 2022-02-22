@@ -1,53 +1,29 @@
-import PubSub from "pubsub-js";
-
-import BankCollection from '_app/collections/bankCollection';
 import { SIGN as CURRENCY_SYMBOLS_MAP, CURRENCIES} from '_constants/currencies';
-import { getAllBanks } from '_services/banks'
 
-const SalePointTable = function(name, currency){
+import {decimalInputs} from '_utilities/decimalInput';
 
-    this.name = name || "";
-    this.currency = currency || CURRENCIES.DOLLAR;
-
-    let rowsCount = 0;
-    let idsList = [];
-    let oldValueSelects = {};
+const SalePointTable = function(){
     
-    this.init = (container) => {
+    this.init = (container, name, currency) => {
         this.container = container;
-        this.banks = new BankCollection();
-
-        fetchInitialData().then(res => {
-            this.banks.setElements(res.banks);
-        }).catch(err => {
-            console.log(err)
-        });
-
-        PubSub.subscribe('addRow.salePoint', addRow);
-        PubSub.subscribe('deleteRow.salePoint', deleteRow);
-        PubSub.subscribe('changeSelect.salePoint', changeSelect)
+        this.name = name || "";
+        this.currency = currency || CURRENCIES.DOLLAR;
     }
 
-    const fetchInitialData = async function(){
-        try {
-            const banks = await getAllBanks();
-            return {banks}
-        } catch(e){
-            return { banks: [] }
-        }
-    }
-
-    const addRow = (msg, data) => {
+    this.addRow = ({prevIDArr, newID, availableBanks, totalElements}) => {
     
-        if (this.banks.getLength() === 0 || !this.container){
+        if (!this.isContainerDefined()){
             return;
         }
 
         const tBody = this.container.querySelector(`tbody`);
-        tBody.insertAdjacentHTML('beforeend', tableRowTemplate(this.name, this.currency));
+        tBody.insertAdjacentHTML('beforeend', this.getTableRowTemplate(id, availableBanks));
 
         const input_debit = tBody.querySelector(`#${this.name}_debit_${getNewID()}`);
         const input_credit = tBody.querySelector(`#${this.name}_credit_${getNewID()}`);
+
+        decimalInputs[this.currency].mask(input_debit);
+        decimalInputs[this.currency].mask(input_credit);
 
         PubSub.publish('attachMask', {input: input_debit, currency: this.currency});
         PubSub.publish('attachMask', {input: input_credit, currency: this.currency});
@@ -67,7 +43,7 @@ const SalePointTable = function(name, currency){
         saveNewID();
     }
 
-    const deleteRow = (msg, {row, rowID}) => {
+    this.deleteRow = (msg, {row, rowID}) => {
         if (!this.container){
             return false;
         }
@@ -110,7 +86,7 @@ const SalePointTable = function(name, currency){
         }
     }
 
-    const changeSelect = (msg, data) => {
+    this.changeSelect = (msg, data) => {
 
         if (this.banks.getLength() === 0 || !this.container){
             return;
@@ -145,23 +121,23 @@ const SalePointTable = function(name, currency){
         updateBankSelects(tBody, selectors);
     }
 
-    const inputTemplate = (name, currency, type) => `
-        <input type="text" placeholder="0.00 ${CURRENCY_SYMBOLS_MAP[currency]}" id="${name}_${type}_${getNewID()}" name="${name}_${type}[]" class="w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+    this.getInputTemplate = (id, type) => `
+        <input type="text" placeholder="0.00 ${CURRENCY_SYMBOLS_MAP[this.currency]}" id="${this.name}_${type}_${id}" name="${this.name}_${type}[]" class="w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
     `
 
-    const tableRowTemplate = (name, currency = 'bs') => `
-        <tr class="hover:bg-gray-100 dark:hover:bg-gray-700" data-id=${getNewID()}>
+    this.getTableRowTemplate = (id, availableBanks) => `
+        <tr class="hover:bg-gray-100 dark:hover:bg-gray-700" data-id=${id}>
             <td data-table="num-col" class="py-4 pl-6 text-sm font-medium text-center text-gray-900 whitespace-nowrap dark:text-white">${rowsCount + 1}</td>
             <td class="pl-3 py-4 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white">
                 <select class="w-full form-select" name="point_sale_bs_bank[]">
-                    ${this.banks.getAll().map(el => `<option value="${el}">${el}</option>`).join('')}
+                    ${availableBanks.map(el => `<option value="${el}">${el}</option>`).join('')}
                 </select>
             </td>
             <td class="pl-3 py-4 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                ${ inputTemplate(name, currency, 'debit') }
+                ${ inputTemplate(id, 'debit') }
             </td>
             <td data-table="convertion-col" class="pl-3 py-4 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                ${ inputTemplate(name, currency, 'credit') }
+                ${ inputTemplate(id, 'credit') }
             </td>
             <td class="py-4 pl-3 text-sm text-center font-medium whitespace-nowrap">
                 <button data-modal="delete" type="button" class="bg-red-600 flex justify-center w-6 h-6 items-center transition-colors duration-150 rounded-full shadow-lg hover:bg-red-500">
@@ -170,6 +146,10 @@ const SalePointTable = function(name, currency){
             </td>
         </tr>
     `;
+
+    this.isContainerDefined(){
+        this.container !== null
+    }
 
     const getBankSelectSelectors = (rowsIDS) => {
 
