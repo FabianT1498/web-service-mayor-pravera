@@ -1,8 +1,8 @@
 import MoneyRecordModalPresenter from './MoneyRecordModalPresenter';
 
-import { formatAmount } from '_utilities/mathUtilities'
-
 import { CURRENCIES, SIGN as CURRENCY_SYMBOLS_MAP } from '_constants/currencies'
+
+import { formatAmount } from '_utilities/mathUtilities'
 
 const ForeignMoneyRecordModalPresenter = function (currency, method){
 	MoneyRecordModalPresenter.call(this, currency, method);
@@ -18,6 +18,7 @@ const ForeignMoneyRecordModalPresenter = function (currency, method){
 	}
 
 	this.keyDownOnModal = function({target, key}){
+		MoneyRecordModalPresenter.prototype.keyDownOnModal.call(this, {target, key})
 		if (key === 8 || key === 'Backspace'){
             let rowID = target.closest('tr').getAttribute('data-id');
             let formatedConvertion = getConvertionFormated(target)

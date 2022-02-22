@@ -18,6 +18,9 @@ import ForeignMoneyRecordTable from '_components/money-record-table/ForeignMoney
 import DenominationModalPresenter from '_presenters/DenominationModalPresenter'
 import DenominationModalView from '_views/DenominationModalView'
 
+import SalePointModalPresenter from '_presenters/SalePointModalPresenter'
+import SalePointModalView from '_views/SalePointModalView'
+
 export default function(){
 
     let moneyRecordMoneyPresenter = new MoneyRecordModalPresenter(CURRENCIES.BOLIVAR, PAYMENT_METHODS.CASH);
@@ -36,6 +39,11 @@ export default function(){
     let denominationModalPresenter = new DenominationModalPresenter(CURRENCIES.BOLIVAR, PAYMENT_METHODS.CASH)
     let denominationModalView = new DenominationModalView(denominationModalPresenter);
     denominationModalView.init(bsDenominationsModal, 'liquid_money_bolivares_denominations');
+
+    let salePointModal = document.querySelector('#point_sale_bs');
+    let salePointModalPresenter = new SalePointModalPresenter(CURRENCIES.BOLIVAR, PAYMENT_METHODS.CASH)
+    let salePointModalView = new SalePointModalView(salePointModalPresenter);
+    salePointModalView.init(salePointModal, 'point_sale_bs');
 
     // // Cash register data DOM
     // const cashRegisterDataContainer = document.querySelector('#cash_register_data');

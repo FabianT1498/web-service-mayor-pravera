@@ -10,6 +10,7 @@ const MoneyRecordModalViewPrototype = {
         
         container.addEventListener("keypress", this.keyPressEventHandlerWrapper(this.presenter))
         container.addEventListener("click", this.clickEventHandlerWrapper(this.presenter));
+        container.addEventListener("keydown", this.keyDownEventHandlerWrapper(this.presenter));
     },
     resetLastInput(id){
         this.table.resetLastInput(id)
@@ -34,6 +35,14 @@ const MoneyRecordModalViewPrototype = {
             presenter.clickOnModal({
                 target: event.target
             })
+        }
+    },
+    keyDownEventHandlerWrapper(presenter){
+        return (event) => {
+            this.presenter.keyDownOnModal({
+                target: event.target,
+                key: event.key || event.keyCode
+            });
         }
     }
 }

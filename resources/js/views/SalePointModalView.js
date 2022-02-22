@@ -3,7 +3,7 @@ import SalePointTable from "_components/sale-point-table";
 const SalePointModalViewPrototype = {
     init(container, tableName){
         const tableContainer = container.querySelector('table')
-        this.table = new DenominationsTable();
+        this.table = new SalePointTable();
         this.table.init(tableContainer, this.name, this.presenter.currency);
 
         container.addEventListener("click", this.clickEventHandlerWrapper(this.presenter));
@@ -12,8 +12,11 @@ const SalePointModalViewPrototype = {
     addRow(obj){
         this.table.addRow(obj);
     },
-    deleteRow(id){
-        this.table.deleteRow(id);
+    deleteRow(obj){
+        this.table.deleteRow(obj);
+    },
+    changeSelect(obj){
+        this.table.changeSelect(obj)
     },
     clickEventHandlerWrapper(presenter){
         return (event) => {
@@ -24,7 +27,7 @@ const SalePointModalViewPrototype = {
     },
     changeEventHandlerWrapper(presenter){
         return (event) => {
-            presenter.clickOnModal({
+            presenter.changeOnModal({
                 target: event.target
             })
         }

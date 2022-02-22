@@ -8,12 +8,23 @@ const ObjectCollection = function(elements) {
         Collection.prototype.pushElement.call(this, el);
         return el;
     }
+
+    this.getElementByID = function(id)  {
+        return this.elements.find((val) => val.id === id);
+    }
+
+    this.getIndexByID = function(id)  {
+        return this.elements.findIndex((val) => val.id === id);
+    }
+
+    this.setElementAtIndex = function(index, obj){
+        this.elements[index] = {...this.elements[index], ...obj}
+    }
     
     this.removeElementByID = function(id){
         const index = this.elements.findIndex((obj) => obj.id === id)
-        console.log(index);
+
         if (index !== -1){
-            console.log(index);
             this.elements.splice(index, 1)
             return true;
         }

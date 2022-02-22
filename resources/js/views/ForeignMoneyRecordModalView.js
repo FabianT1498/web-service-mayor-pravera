@@ -10,16 +10,6 @@ const ForeignMoneyRecordModalView = function(presenter) {
 
     this.init = function(container, name, table){
         MoneyRecordModalView.prototype.init.call(this, container, name, table)
-        container.addEventListener("keydown", this.keyDownEventHandlerWrapper(this.presenter));
-    }
-
-    this.keyDownEventHandlerWrapper = function(presenter){
-        return (event) => {
-            this.presenter.keyDownOnModal({
-                target: event.target,
-                key: event.key || event.keyCode
-            });
-        }
     }
 }
 

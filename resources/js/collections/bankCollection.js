@@ -1,6 +1,6 @@
 import ObjectCollection from "./objectCollection"
 
-const BankCollection = function(banks = []) {
+const BankCollection = function(elements = []) {
     ObjectCollection.call(this, elements);
 }
 

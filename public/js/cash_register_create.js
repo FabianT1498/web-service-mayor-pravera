@@ -1,5 +1,30 @@
 (self["webpackChunk"] = self["webpackChunk"] || []).push([["/js/cash_register_create"],{
 
+/***/ "./resources/js/collections/bankCollection.js":
+/*!****************************************************!*\
+  !*** ./resources/js/collections/bankCollection.js ***!
+  \****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _objectCollection__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./objectCollection */ "./resources/js/collections/objectCollection.js");
+
+
+var BankCollection = function BankCollection() {
+  var elements = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+  _objectCollection__WEBPACK_IMPORTED_MODULE_0__["default"].call(this, elements);
+};
+
+BankCollection.prototype = Object.create(_objectCollection__WEBPACK_IMPORTED_MODULE_0__["default"].prototype);
+BankCollection.prototype.constructor = BankCollection;
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (BankCollection);
+
+/***/ }),
+
 /***/ "./resources/js/collections/collection.js":
 /*!************************************************!*\
   !*** ./resources/js/collections/collection.js ***!
@@ -74,12 +99,6 @@ __webpack_require__.r(__webpack_exports__);
 var MoneyRecordCollection = function MoneyRecordCollection() {
   var elements = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   _objectCollection__WEBPACK_IMPORTED_MODULE_1__["default"].call(this, elements);
-
-  this.pushElement = function (el) {
-    el.id = this.getNewID();
-    _collection__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.pushElement.call(this, el);
-    return el;
-  };
 };
 
 MoneyRecordCollection.prototype = Object.create(_objectCollection__WEBPACK_IMPORTED_MODULE_1__["default"].prototype);
@@ -100,19 +119,45 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _collection__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./collection */ "./resources/js/collections/collection.js");
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 
 var ObjectCollection = function ObjectCollection(elements) {
   _collection__WEBPACK_IMPORTED_MODULE_0__["default"].call(this, elements);
 
+  this.pushElement = function (el) {
+    el.id = el !== null && el !== void 0 && el.id ? el.id : this.getNewID();
+    _collection__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.pushElement.call(this, el);
+    return el;
+  };
+
+  this.getElementByID = function (id) {
+    return this.elements.find(function (val) {
+      return val.id === id;
+    });
+  };
+
+  this.getIndexByID = function (id) {
+    return this.elements.findIndex(function (val) {
+      return val.id === id;
+    });
+  };
+
+  this.setElementAtIndex = function (index, obj) {
+    this.elements[index] = _objectSpread(_objectSpread({}, this.elements[index]), obj);
+  };
+
   this.removeElementByID = function (id) {
     var index = this.elements.findIndex(function (obj) {
       return obj.id === id;
     });
-    console.log(index);
 
     if (index !== -1) {
-      console.log(index);
       this.elements.splice(index, 1);
       return true;
     }
@@ -345,6 +390,176 @@ MoneyRecordTable.prototype.constructor = MoneyRecordTable;
 
 /***/ }),
 
+/***/ "./resources/js/components/sale-point-table/index.js":
+/*!***********************************************************!*\
+  !*** ./resources/js/components/sale-point-table/index.js ***!
+  \***********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _constants_currencies__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! _constants/currencies */ "./resources/js/constants/currencies.js");
+/* harmony import */ var _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! _utilities/decimalInput */ "./resources/js/utilities/decimalInput.js");
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+
+
+
+var SalePointTable = function SalePointTable() {
+  var _this = this;
+
+  this.init = function (container, name, currency) {
+    _this.container = container;
+    _this.name = name || "";
+    _this.currency = currency || _constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.DOLLAR;
+  };
+
+  this.addRow = function (_ref) {
+    var prevIDArr = _ref.prevIDArr,
+        newID = _ref.newID,
+        availableBanks = _ref.availableBanks,
+        currentBank = _ref.currentBank,
+        totalElements = _ref.totalElements;
+
+    if (!_this.isContainerDefined()) {
+      return;
+    }
+
+    var tBody = _this.container.querySelector("tbody");
+
+    tBody.insertAdjacentHTML('beforeend', _this.getTableRowTemplate(newID, availableBanks, currentBank, totalElements));
+    var input_debit = tBody.querySelector("#".concat(_this.name, "_debit_").concat(newID));
+    var input_credit = tBody.querySelector("#".concat(_this.name, "_credit_").concat(newID));
+
+    _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_1__.decimalInputs[_this.currency].mask(input_debit);
+
+    _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_1__.decimalInputs[_this.currency].mask(input_credit);
+
+    if (prevIDArr.length > 0) {
+      var selectors = getBankSelectSelectors(prevIDArr);
+      updateBankSelects(tBody, availableBanks, selectors);
+    }
+  };
+
+  this.deleteRow = function (_ref2) {
+    var prevIDArr = _ref2.prevIDArr,
+        deleteID = _ref2.deleteID,
+        availableBanks = _ref2.availableBanks,
+        totalElements = _ref2.totalElements;
+
+    if (!_this.isContainerDefined()) {
+      return;
+    }
+    /**
+     * Eliminar un pv
+     * 1. Obtener fila y su id
+     * 2. Buscar en los valores antiguos el banco
+     * 3. Remover el id de los valores antiguos
+     * 4. Agregar banco antiguo a la coleccion
+     * 5. Eliminar fila de la tabla
+     * 6. Actualizar los selects restantes
+     */
+
+
+    var tBody = _this.container.querySelector('tbody');
+
+    var row = tBody.querySelector("tr[data-id=\"".concat(deleteID, "\"]"));
+    tBody.removeChild(row);
+
+    if (prevIDArr.length > 0) {
+      var selectors = getBankSelectSelectors(prevIDArr);
+      updateBankSelects(tBody, availableBanks, selectors);
+      updateTableIDColumn(tBody);
+    }
+  };
+
+  this.changeSelect = function (_ref3) {
+    var prevIDArr = _ref3.prevIDArr,
+        availableBanks = _ref3.availableBanks;
+
+    if (!_this.isContainerDefined()) {
+      return;
+    }
+
+    var tBody = _this.container.querySelector('tbody');
+
+    if (prevIDArr.length > 1) {
+      var selectors = getBankSelectSelectors(prevIDArr);
+      updateBankSelects(tBody, availableBanks, selectors);
+    }
+  };
+
+  this.getInputTemplate = function (id, type) {
+    return "\n        <input type=\"text\" placeholder=\"0.00 ".concat(_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.SIGN[_this.currency], "\" id=\"").concat(_this.name, "_").concat(type, "_").concat(id, "\" name=\"").concat(_this.name, "_").concat(type, "[]\" class=\"w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50\">\n    ");
+  };
+
+  this.getTableRowTemplate = function (id, availableBanks, currentBank, total) {
+    return "\n        <tr class=\"hover:bg-gray-100 dark:hover:bg-gray-700\" data-id=".concat(id, ">\n            <td data-table=\"num-col\" class=\"py-4 pl-6 text-sm font-medium text-center text-gray-900 whitespace-nowrap dark:text-white\">").concat(total, "</td>\n            <td class=\"pl-3 py-4 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white\">\n                <select class=\"w-full form-select\" name=\"point_sale_bs_bank[]\">\n                    <option value=\"").concat(currentBank, "\">").concat(currentBank, "</option>\n                    ").concat(availableBanks.map(function (el) {
+      return "<option value=\"".concat(el, "\">").concat(el, "</option>");
+    }).join(''), "\n                </select>\n            </td>\n            <td class=\"pl-3 py-4 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white\">\n                ").concat(_this.getInputTemplate(id, 'debit'), "\n            </td>\n            <td data-table=\"convertion-col\" class=\"pl-3 py-4 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white\">\n                ").concat(_this.getInputTemplate(id, 'credit'), "\n            </td>\n            <td class=\"py-4 pl-3 text-sm text-center font-medium whitespace-nowrap\">\n                <button data-modal=\"delete\" type=\"button\" class=\"bg-red-600 flex justify-center w-6 h-6 items-center transition-colors duration-150 rounded-full shadow-lg hover:bg-red-500\">\n                    <i class=\"fas fa-times  text-white\"></i>                        \n                </button>\n            </td>\n        </tr>\n    ");
+  };
+
+  this.isContainerDefined = function () {
+    return _this.container !== null;
+  };
+
+  var getBankSelectSelectors = function getBankSelectSelectors(rowsIDS) {
+    if (rowsIDS && rowsIDS.length > 0) {
+      return rowsIDS.map(function (el) {
+        return "tr[data-id=\"".concat(el, "\"] select");
+      }).join(',');
+    }
+
+    return '';
+  };
+
+  var updateBankSelects = function updateBankSelects() {
+    var container = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+    var availableBanks = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+    var selectors = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+
+    if (selectors === '') {
+      return false;
+    }
+
+    ;
+    var selectSelectorsElems = container.querySelectorAll(selectors);
+    selectSelectorsElems.forEach(function (el) {
+      var options = [el.value].concat(_toConsumableArray(availableBanks));
+      var html = options.map(function (el) {
+        return "<option value=\"".concat(el, "\">").concat(el, "</option>");
+      }).join('');
+      el.innerHTML = html;
+    });
+    return true;
+  };
+
+  var updateTableIDColumn = function updateTableIDColumn(container) {
+    var colsID = container.querySelectorAll("td[data-table=\"num-col\"]");
+
+    for (var i = 0; i < colsID.length; i++) {
+      colsID[i].innerHTML = i + 1;
+    }
+  };
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (SalePointTable);
+
+/***/ }),
+
 /***/ "./resources/js/constants/currencies.js":
 /*!**********************************************!*\
   !*** ./resources/js/constants/currencies.js ***!
@@ -390,6 +605,28 @@ var PAYMENT_METHODS = Object.freeze({
 
 /***/ }),
 
+/***/ "./resources/js/models/Bank.js":
+/*!*************************************!*\
+  !*** ./resources/js/models/Bank.js ***!
+  \*************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+var Bank = function Bank(name) {
+  var id = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+  this.id = id;
+  this.name = name;
+};
+
+Bank.prototype.constructor = Bank;
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Bank);
+
+/***/ }),
+
 /***/ "./resources/js/models/moneyRecord.js":
 /*!********************************************!*\
   !*** ./resources/js/models/moneyRecord.js ***!
@@ -402,7 +639,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 var MoneyRecord = function MoneyRecord(amount, currency, method) {
-  var id = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+  var id = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
   this.id = id;
   this.amount = amount;
   this.currency = currency;
@@ -435,12 +672,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_money_record_table_ForeignMoneyRecordTable__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! _components/money-record-table/ForeignMoneyRecordTable */ "./resources/js/components/money-record-table/ForeignMoneyRecordTable.js");
 /* harmony import */ var _presenters_DenominationModalPresenter__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! _presenters/DenominationModalPresenter */ "./resources/js/presenters/DenominationModalPresenter.js");
 /* harmony import */ var _views_DenominationModalView__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! _views/DenominationModalView */ "./resources/js/views/DenominationModalView.js");
+/* harmony import */ var _presenters_SalePointModalPresenter__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! _presenters/SalePointModalPresenter */ "./resources/js/presenters/SalePointModalPresenter.js");
+/* harmony import */ var _views_SalePointModalView__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! _views/SalePointModalView */ "./resources/js/views/SalePointModalView.js");
 
  // import RecordMoneyModalFactory from '_components/cash-register-modal';
 // import DenominationsModal from '_components/denominations-modal';
 // import SalePointModal from '_components/sale-point-modal';
 // import DecimalInput from '_components/decimal-input';
 // import CashRegisterData from '_components/cash-register-dbata'
+
+
 
 
 
@@ -464,7 +705,11 @@ __webpack_require__.r(__webpack_exports__);
   var bsDenominationsModal = document.querySelector('#liquid_money_bolivares_denominations');
   var denominationModalPresenter = new _presenters_DenominationModalPresenter__WEBPACK_IMPORTED_MODULE_8__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.BOLIVAR, _constants_paymentMethods__WEBPACK_IMPORTED_MODULE_1__.PAYMENT_METHODS.CASH);
   var denominationModalView = new _views_DenominationModalView__WEBPACK_IMPORTED_MODULE_9__["default"](denominationModalPresenter);
-  denominationModalView.init(bsDenominationsModal, 'liquid_money_bolivares_denominations'); // // Cash register data DOM
+  denominationModalView.init(bsDenominationsModal, 'liquid_money_bolivares_denominations');
+  var salePointModal = document.querySelector('#point_sale_bs');
+  var salePointModalPresenter = new _presenters_SalePointModalPresenter__WEBPACK_IMPORTED_MODULE_10__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.BOLIVAR, _constants_paymentMethods__WEBPACK_IMPORTED_MODULE_1__.PAYMENT_METHODS.CASH);
+  var salePointModalView = new _views_SalePointModalView__WEBPACK_IMPORTED_MODULE_11__["default"](salePointModalPresenter);
+  salePointModalView.init(salePointModal, 'point_sale_bs'); // // Cash register data DOM
   // const cashRegisterDataContainer = document.querySelector('#cash_register_data');
   // const cashRegisterData = new CashRegisterData();
   // cashRegisterData.init(cashRegisterDataContainer);
@@ -582,8 +827,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _MoneyRecordModalPresenter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./MoneyRecordModalPresenter */ "./resources/js/presenters/MoneyRecordModalPresenter.js");
-/* harmony import */ var _utilities_mathUtilities__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! _utilities/mathUtilities */ "./resources/js/utilities/mathUtilities.js");
-/* harmony import */ var _constants_currencies__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! _constants/currencies */ "./resources/js/constants/currencies.js");
+/* harmony import */ var _constants_currencies__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! _constants/currencies */ "./resources/js/constants/currencies.js");
+/* harmony import */ var _utilities_mathUtilities__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! _utilities/mathUtilities */ "./resources/js/utilities/mathUtilities.js");
 
 
 
@@ -613,6 +858,10 @@ var ForeignMoneyRecordModalPresenter = function ForeignMoneyRecordModalPresenter
   this.keyDownOnModal = function (_ref2) {
     var target = _ref2.target,
         key = _ref2.key;
+    _MoneyRecordModalPresenter__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.keyDownOnModal.call(this, {
+      target: target,
+      key: key
+    });
 
     if (key === 8 || key === 'Backspace') {
       var rowID = target.closest('tr').getAttribute('data-id');
@@ -625,9 +874,9 @@ var ForeignMoneyRecordModalPresenter = function ForeignMoneyRecordModalPresenter
   };
 
   var getConvertionFormated = function getConvertionFormated(target) {
-    var inputValue = (0,_utilities_mathUtilities__WEBPACK_IMPORTED_MODULE_1__.formatAmount)(target.value);
+    var inputValue = (0,_utilities_mathUtilities__WEBPACK_IMPORTED_MODULE_2__.formatAmount)(target.value);
     var dollarExchangeValue = 4.30;
-    return "".concat(calculateConvertion(inputValue, dollarExchangeValue), " ").concat(_constants_currencies__WEBPACK_IMPORTED_MODULE_2__.SIGN[_constants_currencies__WEBPACK_IMPORTED_MODULE_2__.CURRENCIES.BOLIVAR]);
+    return "".concat(calculateConvertion(inputValue, dollarExchangeValue), " ").concat(_constants_currencies__WEBPACK_IMPORTED_MODULE_1__.SIGN[_constants_currencies__WEBPACK_IMPORTED_MODULE_1__.CURRENCIES.BOLIVAR]);
   };
 
   var calculateConvertion = function calculateConvertion(amount, exchangeValue) {
@@ -654,11 +903,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _collections_moneyRecordCollection__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! _collections/moneyRecordCollection */ "./resources/js/collections/moneyRecordCollection.js");
 /* harmony import */ var _models_moneyRecord__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! _models/moneyRecord */ "./resources/js/models/moneyRecord.js");
+/* harmony import */ var _utilities_mathUtilities__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! _utilities/mathUtilities */ "./resources/js/utilities/mathUtilities.js");
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 
 
@@ -675,21 +926,19 @@ var MoneyRecordModalPresenterPrototype = {
         // Delete a row
         if (this.moneyRecordCollection.getLength() === 1) {
           // Clean the remaining row
-          var record = this.moneyRecordCollection.getAll()[0];
+          this.moneyRecordCollection.setElementAtIndex(0, {
+            amount: 0
+          });
+          var record = this.moneyRecordCollection.getElementByIndex(0);
           this.view.resetLastInput(record.id);
-          console.log('Last record');
-          console.log(this.moneyRecordCollection.getAll());
         } else {
           // Delete the entry with the id
           var id = parseInt(rowID);
           this.moneyRecordCollection.removeElementByID(id);
           this.view.deleteRow(rowID);
-          console.log('Deleted record');
-          console.log(this.moneyRecordCollection.getAll());
         }
       } else if (modalToggleID) {// Checking if it's closing the modal
-        // console.log(`getTotal.records.${method}.${currency}`)
-        // PubSub.publish(`getTotal.records.${method}.${currency}`);
+        // Get total
       }
     }
   },
@@ -699,17 +948,34 @@ var MoneyRecordModalPresenterPrototype = {
 
     if (key === 13 || key === 'Enter') {
       // Handle new table's row creation
-      var moneyRecord = new _models_moneyRecord__WEBPACK_IMPORTED_MODULE_1__["default"](0.00, this.currency, this.method);
+      var moneyRecord = new _models_moneyRecord__WEBPACK_IMPORTED_MODULE_1__["default"](0, this.currency, this.method);
       moneyRecord = this.moneyRecordCollection.pushElement(moneyRecord);
       this.view.addRow(_objectSpread(_objectSpread({}, moneyRecord), {}, {
         total: this.moneyRecordCollection.getLength()
       }));
-      console.log('Record Added');
-      console.log(this.moneyRecordCollection.getAll());
+    } else if (isFinite(key)) {
+      var id = target.closest('tr').getAttribute('data-id');
+      this.updateMoneyRecord(parseInt(id), target.value);
+    }
+  },
+  keyDownOnModal: function keyDownOnModal(_ref3) {
+    var target = _ref3.target,
+        key = _ref3.key;
+
+    if (key === 8 || key === 'Backspace') {
+      var id = target.closest('tr').getAttribute('data-id');
+      this.updateMoneyRecord(parseInt(id), target.value);
     }
   },
   setView: function setView(view) {
     this.view = view;
+  },
+  updateMoneyRecord: function updateMoneyRecord(id, inputValue) {
+    var index = this.moneyRecordCollection.getIndexByID(parseInt(id));
+    var value = (0,_utilities_mathUtilities__WEBPACK_IMPORTED_MODULE_2__.formatAmount)(inputValue);
+    this.moneyRecordCollection.setElementAtIndex(index, {
+      amount: value
+    });
   }
 };
 
@@ -717,12 +983,256 @@ var MoneyRecordModalPresenter = function MoneyRecordModalPresenter(currency, met
   this.view = null;
   this.currency = currency;
   this.method = method;
-  this.moneyRecordCollection = new _collections_moneyRecordCollection__WEBPACK_IMPORTED_MODULE_0__["default"]([new _models_moneyRecord__WEBPACK_IMPORTED_MODULE_1__["default"](0.00, this.currency, this.method)]);
+  this.moneyRecordCollection = new _collections_moneyRecordCollection__WEBPACK_IMPORTED_MODULE_0__["default"]([new _models_moneyRecord__WEBPACK_IMPORTED_MODULE_1__["default"](0.00, this.currency, this.method, 0)]);
 };
 
 MoneyRecordModalPresenter.prototype = MoneyRecordModalPresenterPrototype;
 MoneyRecordModalPresenter.prototype.constructor = MoneyRecordModalPresenter;
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (MoneyRecordModalPresenter);
+
+/***/ }),
+
+/***/ "./resources/js/presenters/SalePointModalPresenter.js":
+/*!************************************************************!*\
+  !*** ./resources/js/presenters/SalePointModalPresenter.js ***!
+  \************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _app_collections_bankCollection__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! _app/collections/bankCollection */ "./resources/js/collections/bankCollection.js");
+/* harmony import */ var _services_banks__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! _services/banks */ "./resources/js/services/banks/index.js");
+/* harmony import */ var _models_Bank__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! _models/Bank */ "./resources/js/models/Bank.js");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+
+var SalePointModalPresenterPrototype = {
+  clickOnModal: function clickOnModal(_ref) {
+    var target = _ref.target;
+    var button = target.closest('button');
+
+    if (button && button.tagName === 'BUTTON') {
+      var action = button.getAttribute('data-modal');
+
+      if (!action) {
+        return;
+      }
+
+      if (action === 'add') {
+        if (this.banks.length === 0) {
+          return;
+        }
+
+        var idArr = [];
+        var bank = new _models_Bank__WEBPACK_IMPORTED_MODULE_3__["default"](this.banks.shift());
+
+        if (this.selectedBanks.getLength() > 0) {
+          idArr = this.selectedBanks.getAll().map(function (el) {
+            return el.id;
+          });
+          bank = this.selectedBanks.pushElement(bank);
+        } else {
+          bank = this.selectedBanks.pushElement(bank);
+        }
+
+        this.view.addRow({
+          prevIDArr: idArr,
+          newID: bank.id,
+          currentBank: bank.name,
+          availableBanks: this.banks,
+          totalElements: this.selectedBanks.getLength()
+        });
+      } else if (action === 'delete') {
+        var row = button.closest('tr');
+        var id = row ? parseInt(row.getAttribute('data-id')) : null;
+
+        var _bank = this.selectedBanks.getElementByID(id);
+
+        if (_bank === undefined) {
+          return false;
+        }
+
+        this.selectedBanks.removeElementByID(id);
+        this.banks.push(_bank.name);
+
+        var _idArr = this.selectedBanks.getAll().map(function (el) {
+          return el.id;
+        });
+
+        this.view.deleteRow({
+          prevIDArr: _idArr,
+          deleteID: id,
+          availableBanks: this.banks,
+          totalElements: this.selectedBanks.getLength()
+        });
+      }
+    }
+  },
+  changeOnModal: function changeOnModal(_ref2) {
+    var target = _ref2.target;
+
+    if (this.banks.length === 0) {
+      return;
+    }
+
+    var row = target.closest('tr');
+    var id = row && row.getAttribute('data-id') ? parseInt(row.getAttribute('data-id')) : null;
+
+    if (id !== null) {
+      // Old bank selected
+      var bank = this.selectedBanks.getElementByID(id); // New Bank selected
+
+      var index = target.selectedIndex;
+      var newSelectedValue = target.options[index].value; // Old value is pushed again in banks array
+
+      this.banks.push(bank.name); // Remove the new value from available banks
+
+      var indexNew = this.banks.indexOf(newSelectedValue);
+      this.banks.splice(indexNew, 1); // Set the new value in old value select
+
+      var indexOld = this.selectedBanks.getIndexByID(id);
+      this.selectedBanks.setElementAtIndex(indexOld, {
+        name: newSelectedValue
+      });
+      console.log(this.selectedBanks.getAll());
+      this.view.changeSelect({
+        prevIDArr: this.selectedBanks.getAll().map(function (el) {
+          return el.id;
+        }),
+        availableBanks: this.banks
+      });
+    }
+  },
+  setView: function setView(view) {
+    this.view = view;
+  }
+};
+
+var SalePointModalPresenter = function SalePointModalPresenter(currency) {
+  var _this = this;
+
+  this.view = null;
+  this.currency = currency;
+  this.banks = [];
+  this.selectedBanks = new _app_collections_bankCollection__WEBPACK_IMPORTED_MODULE_1__["default"]();
+  fetchInitialData().then(function (res) {
+    _this.banks = res.banks;
+  })["catch"](function (err) {
+    console.log(err);
+  });
+
+  function fetchInitialData() {
+    return _fetchInitialData.apply(this, arguments);
+  }
+
+  function _fetchInitialData() {
+    _fetchInitialData = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee() {
+      var banks;
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              _context.prev = 0;
+              _context.next = 3;
+              return (0,_services_banks__WEBPACK_IMPORTED_MODULE_2__.getAllBanks)();
+
+            case 3:
+              banks = _context.sent;
+              return _context.abrupt("return", {
+                banks: banks
+              });
+
+            case 7:
+              _context.prev = 7;
+              _context.t0 = _context["catch"](0);
+              return _context.abrupt("return", {
+                banks: []
+              });
+
+            case 10:
+            case "end":
+              return _context.stop();
+          }
+        }
+      }, _callee, null, [[0, 7]]);
+    }));
+    return _fetchInitialData.apply(this, arguments);
+  }
+};
+
+SalePointModalPresenter.prototype = SalePointModalPresenterPrototype;
+SalePointModalPresenter.prototype.constructor = SalePointModalPresenter;
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (SalePointModalPresenter);
+
+/***/ }),
+
+/***/ "./resources/js/services/banks/index.js":
+/*!**********************************************!*\
+  !*** ./resources/js/services/banks/index.js ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getAllBanks": () => (/* binding */ getAllBanks)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _utilities_axiosClient__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utilities/axiosClient */ "./resources/js/utilities/axiosClient.js");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+var getAllBanks = /*#__PURE__*/function () {
+  var _ref = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee(obj) {
+    var result;
+    return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            _context.prev = 0;
+            _context.next = 3;
+            return _utilities_axiosClient__WEBPACK_IMPORTED_MODULE_1__["default"].get('/banks');
+
+          case 3:
+            result = _context.sent;
+            return _context.abrupt("return", result.data.data);
+
+          case 7:
+            _context.prev = 7;
+            _context.t0 = _context["catch"](0);
+            console.log(_context.t0);
+
+          case 10:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee, null, [[0, 7]]);
+  }));
+
+  return function getAllBanks(_x) {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+
 
 /***/ }),
 
@@ -892,18 +1402,6 @@ var ForeignMoneyRecordModalView = function ForeignMoneyRecordModalView(presenter
 
   this.init = function (container, name, table) {
     _MoneyRecordModalView__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.init.call(this, container, name, table);
-    container.addEventListener("keydown", this.keyDownEventHandlerWrapper(this.presenter));
-  };
-
-  this.keyDownEventHandlerWrapper = function (presenter) {
-    var _this = this;
-
-    return function (event) {
-      _this.presenter.keyDownOnModal({
-        target: event.target,
-        key: event.key || event.keyCode
-      });
-    };
   };
 };
 
@@ -935,6 +1433,7 @@ var MoneyRecordModalViewPrototype = {
     this.table.init(tableContainer, name, this.presenter.currency);
     container.addEventListener("keypress", this.keyPressEventHandlerWrapper(this.presenter));
     container.addEventListener("click", this.clickEventHandlerWrapper(this.presenter));
+    container.addEventListener("keydown", this.keyDownEventHandlerWrapper(this.presenter));
   },
   resetLastInput: function resetLastInput(id) {
     this.table.resetLastInput(id);
@@ -960,6 +1459,16 @@ var MoneyRecordModalViewPrototype = {
         target: event.target
       });
     };
+  },
+  keyDownEventHandlerWrapper: function keyDownEventHandlerWrapper(presenter) {
+    var _this = this;
+
+    return function (event) {
+      _this.presenter.keyDownOnModal({
+        target: event.target,
+        key: event.key || event.keyCode
+      });
+    };
   }
 };
 
@@ -971,6 +1480,63 @@ var MoneyRecordModalView = function MoneyRecordModalView(presenter) {
 MoneyRecordModalView.prototype = MoneyRecordModalViewPrototype;
 MoneyRecordModalView.prototype.constructor = MoneyRecordModalView;
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (MoneyRecordModalView);
+
+/***/ }),
+
+/***/ "./resources/js/views/SalePointModalView.js":
+/*!**************************************************!*\
+  !*** ./resources/js/views/SalePointModalView.js ***!
+  \**************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _components_sale_point_table__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! _components/sale-point-table */ "./resources/js/components/sale-point-table/index.js");
+
+var SalePointModalViewPrototype = {
+  init: function init(container, tableName) {
+    var tableContainer = container.querySelector('table');
+    this.table = new _components_sale_point_table__WEBPACK_IMPORTED_MODULE_0__["default"]();
+    this.table.init(tableContainer, this.name, this.presenter.currency);
+    container.addEventListener("click", this.clickEventHandlerWrapper(this.presenter));
+    container.addEventListener('change', this.changeEventHandlerWrapper(this.presenter));
+  },
+  addRow: function addRow(obj) {
+    this.table.addRow(obj);
+  },
+  deleteRow: function deleteRow(obj) {
+    this.table.deleteRow(obj);
+  },
+  changeSelect: function changeSelect(obj) {
+    this.table.changeSelect(obj);
+  },
+  clickEventHandlerWrapper: function clickEventHandlerWrapper(presenter) {
+    return function (event) {
+      presenter.clickOnModal({
+        target: event.target
+      });
+    };
+  },
+  changeEventHandlerWrapper: function changeEventHandlerWrapper(presenter) {
+    return function (event) {
+      presenter.changeOnModal({
+        target: event.target
+      });
+    };
+  }
+};
+
+var SalePointModalView = function SalePointModalView(presenter) {
+  this.presenter = presenter;
+  this.presenter.setView(this);
+};
+
+SalePointModalView.prototype = SalePointModalViewPrototype;
+SalePointModalView.prototype.constructor = SalePointModalView;
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (SalePointModalView);
 
 /***/ }),
 
