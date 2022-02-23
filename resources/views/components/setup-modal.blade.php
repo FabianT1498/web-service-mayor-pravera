@@ -29,7 +29,7 @@
                                     value={{ $dollar_exchange?->bs_exchange ?? 0 }}
                                     class="w-36 rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                 >
-                                <x-button type="button" id="update-dollar-exchange-btn" class="basis-1/5">
+                                <x-button type="button" id="store_dollar_exchange_btn" class="basis-1/5">
                                     {{ __('Actualizar') }}
                                 </x-button>      
                             </div>

@@ -1,15 +1,11 @@
-require('./bootstrap');
-
-require('./base')
-
-require('./charts')
-
-require('./external')
-
-require('_components/dollar-exchange-modal')
-
 import Alpine from 'alpinejs';
 
+import * as base from './base'
+
+require('./bootstrap');
+require('./external')
+
+// require('./charts')
 window.Alpine = Alpine;
 
 Alpine.start();

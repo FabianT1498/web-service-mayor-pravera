@@ -3,6 +3,8 @@ import { PAYMENT_METHODS } from '_constants/paymentMethods';
 
 import CashRegisterData from '_components/cash-register-data'
 
+import { store } from '_store/index'
+
 import MoneyRecordModalView from '_views/MoneyRecordModalView'
 import MoneyRecordModalPresenter from '_presenters/MoneyRecordModalPresenter'
 import MoneyRecordTable from '_components/money-record-table/MoneyRecordTable'
@@ -20,6 +22,10 @@ import SalePointModalView from '_views/SalePointModalView'
 import {decimalInputs} from '_utilities/decimalInput';
 
 export default function(){
+
+    store.subscribe(function(){
+        console.log(store.getState())
+    })
 
     let bolivarRecordMoneyPresenter = new MoneyRecordModalPresenter(CURRENCIES.BOLIVAR, PAYMENT_METHODS.CASH);
     let bolivarRecordMoneyView = new MoneyRecordModalView(bolivarRecordMoneyPresenter);

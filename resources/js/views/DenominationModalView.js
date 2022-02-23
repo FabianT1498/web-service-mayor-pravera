@@ -1,5 +1,3 @@
-import PubSub from "pubsub-js";
-
 import DenominationsTable from '_components/denominations-table'
 
 const DenominationModalViewPrototype = {

@@ -14,5 +14,6 @@ module.exports = {
     _services: path.resolve(__dirname, '..', 'resources/js/services'),
     _utilities: path.resolve(__dirname, '..', 'resources/js/utilities'),
     _constants: path.resolve(__dirname, '..', 'resources/js/constants'),
+    _store: path.resolve(__dirname, '..', 'resources/js/store'),
   },
 }

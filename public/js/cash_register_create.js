@@ -1,3 +1,4 @@
+"use strict";
 (self["webpackChunk"] = self["webpackChunk"] || []).push([["/js/cash_register_create"],{
 
 /***/ "./resources/js/collections/bankCollection.js":
@@ -6,7 +7,6 @@
   \****************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
@@ -31,7 +31,6 @@ BankCollection.prototype.constructor = BankCollection;
   \************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
@@ -86,7 +85,6 @@ Collection.prototype.constructor = Collection;
   \******************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
@@ -117,7 +115,6 @@ DenominationRecordCollection.prototype.constructor = DenominationRecordCollectio
   \***********************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
@@ -144,7 +141,6 @@ MoneyRecordCollection.prototype.constructor = MoneyRecordCollection;
   \******************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
@@ -213,7 +209,6 @@ ObjectCollection.prototype.constructor = ObjectCollection;
   \*************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
@@ -266,7 +261,6 @@ CashRegisterData.prototype.constructor = CashRegisterData;
   \**************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
@@ -331,7 +325,6 @@ var DenominationsTable = function DenominationsTable() {
   \*******************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
@@ -398,7 +391,6 @@ ForeignMoneyRecordTable.prototype.constructor = ForeignMoneyRecordTable;
   \************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
@@ -496,7 +488,6 @@ MoneyRecordTable.prototype.constructor = MoneyRecordTable;
   \***********************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
@@ -660,38 +651,12 @@ var SalePointTable = function SalePointTable() {
 
 /***/ }),
 
-/***/ "./resources/js/constants/currencies.js":
-/*!**********************************************!*\
-  !*** ./resources/js/constants/currencies.js ***!
-  \**********************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "CURRENCIES": () => (/* binding */ CURRENCIES),
-/* harmony export */   "SIGN": () => (/* binding */ SIGN)
-/* harmony export */ });
-var _Object$freeze;
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-var CURRENCIES = Object.freeze({
-  BOLIVAR: 'bs',
-  DOLLAR: 'dollar'
-});
-var SIGN = Object.freeze((_Object$freeze = {}, _defineProperty(_Object$freeze, CURRENCIES.DOLLAR, '$'), _defineProperty(_Object$freeze, CURRENCIES.BOLIVAR, 'Bs.s'), _Object$freeze));
-
-
-/***/ }),
-
 /***/ "./resources/js/constants/currenciesDenominations.js":
 /*!***********************************************************!*\
   !*** ./resources/js/constants/currenciesDenominations.js ***!
   \***********************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
@@ -713,7 +678,6 @@ var CURRENCIES_DENOMINATIONS = Object.freeze((_Object$freeze = {}, _defineProper
   \**************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "PAYMENT_METHODS": () => (/* binding */ PAYMENT_METHODS)
@@ -733,7 +697,6 @@ var PAYMENT_METHODS = Object.freeze({
   \*************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
@@ -755,7 +718,6 @@ Bank.prototype.constructor = Bank;
   \***************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
@@ -782,7 +744,6 @@ DenominationRecord.prototype.constructor = DenominationRecord;
   \********************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
@@ -806,7 +767,6 @@ MoneyRecord.prototype.constructor = MoneyRecord;
   \****************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
@@ -814,17 +774,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _constants_currencies__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! _constants/currencies */ "./resources/js/constants/currencies.js");
 /* harmony import */ var _constants_paymentMethods__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! _constants/paymentMethods */ "./resources/js/constants/paymentMethods.js");
 /* harmony import */ var _components_cash_register_data__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! _components/cash-register-data */ "./resources/js/components/cash-register-data/index.js");
-/* harmony import */ var _views_MoneyRecordModalView__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! _views/MoneyRecordModalView */ "./resources/js/views/MoneyRecordModalView.js");
-/* harmony import */ var _presenters_MoneyRecordModalPresenter__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! _presenters/MoneyRecordModalPresenter */ "./resources/js/presenters/MoneyRecordModalPresenter.js");
-/* harmony import */ var _components_money_record_table_MoneyRecordTable__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! _components/money-record-table/MoneyRecordTable */ "./resources/js/components/money-record-table/MoneyRecordTable.js");
-/* harmony import */ var _views_ForeignMoneyRecordModalView__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! _views/ForeignMoneyRecordModalView */ "./resources/js/views/ForeignMoneyRecordModalView.js");
-/* harmony import */ var _presenters_ForeignMoneyRecordModalPresenter__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! _presenters/ForeignMoneyRecordModalPresenter */ "./resources/js/presenters/ForeignMoneyRecordModalPresenter.js");
-/* harmony import */ var _components_money_record_table_ForeignMoneyRecordTable__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! _components/money-record-table/ForeignMoneyRecordTable */ "./resources/js/components/money-record-table/ForeignMoneyRecordTable.js");
-/* harmony import */ var _presenters_DenominationModalPresenter__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! _presenters/DenominationModalPresenter */ "./resources/js/presenters/DenominationModalPresenter.js");
-/* harmony import */ var _views_DenominationModalView__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! _views/DenominationModalView */ "./resources/js/views/DenominationModalView.js");
-/* harmony import */ var _presenters_SalePointModalPresenter__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! _presenters/SalePointModalPresenter */ "./resources/js/presenters/SalePointModalPresenter.js");
-/* harmony import */ var _views_SalePointModalView__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! _views/SalePointModalView */ "./resources/js/views/SalePointModalView.js");
-/* harmony import */ var _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! _utilities/decimalInput */ "./resources/js/utilities/decimalInput.js");
+/* harmony import */ var _store_index__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! _store/index */ "./resources/js/store/index.js");
+/* harmony import */ var _views_MoneyRecordModalView__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! _views/MoneyRecordModalView */ "./resources/js/views/MoneyRecordModalView.js");
+/* harmony import */ var _presenters_MoneyRecordModalPresenter__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! _presenters/MoneyRecordModalPresenter */ "./resources/js/presenters/MoneyRecordModalPresenter.js");
+/* harmony import */ var _components_money_record_table_MoneyRecordTable__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! _components/money-record-table/MoneyRecordTable */ "./resources/js/components/money-record-table/MoneyRecordTable.js");
+/* harmony import */ var _views_ForeignMoneyRecordModalView__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! _views/ForeignMoneyRecordModalView */ "./resources/js/views/ForeignMoneyRecordModalView.js");
+/* harmony import */ var _presenters_ForeignMoneyRecordModalPresenter__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! _presenters/ForeignMoneyRecordModalPresenter */ "./resources/js/presenters/ForeignMoneyRecordModalPresenter.js");
+/* harmony import */ var _components_money_record_table_ForeignMoneyRecordTable__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! _components/money-record-table/ForeignMoneyRecordTable */ "./resources/js/components/money-record-table/ForeignMoneyRecordTable.js");
+/* harmony import */ var _presenters_DenominationModalPresenter__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! _presenters/DenominationModalPresenter */ "./resources/js/presenters/DenominationModalPresenter.js");
+/* harmony import */ var _views_DenominationModalView__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! _views/DenominationModalView */ "./resources/js/views/DenominationModalView.js");
+/* harmony import */ var _presenters_SalePointModalPresenter__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! _presenters/SalePointModalPresenter */ "./resources/js/presenters/SalePointModalPresenter.js");
+/* harmony import */ var _views_SalePointModalView__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! _views/SalePointModalView */ "./resources/js/views/SalePointModalView.js");
+/* harmony import */ var _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! _utilities/decimalInput */ "./resources/js/utilities/decimalInput.js");
+
 
 
 
@@ -840,46 +802,49 @@ __webpack_require__.r(__webpack_exports__);
 
 
 /* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__() {
-  var bolivarRecordMoneyPresenter = new _presenters_MoneyRecordModalPresenter__WEBPACK_IMPORTED_MODULE_4__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.BOLIVAR, _constants_paymentMethods__WEBPACK_IMPORTED_MODULE_1__.PAYMENT_METHODS.CASH);
-  var bolivarRecordMoneyView = new _views_MoneyRecordModalView__WEBPACK_IMPORTED_MODULE_3__["default"](bolivarRecordMoneyPresenter);
+  _store_index__WEBPACK_IMPORTED_MODULE_3__.store.subscribe(function () {
+    console.log(_store_index__WEBPACK_IMPORTED_MODULE_3__.store.getState());
+  });
+  var bolivarRecordMoneyPresenter = new _presenters_MoneyRecordModalPresenter__WEBPACK_IMPORTED_MODULE_5__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.BOLIVAR, _constants_paymentMethods__WEBPACK_IMPORTED_MODULE_1__.PAYMENT_METHODS.CASH);
+  var bolivarRecordMoneyView = new _views_MoneyRecordModalView__WEBPACK_IMPORTED_MODULE_4__["default"](bolivarRecordMoneyPresenter);
   var liquidMoneyBsRegisterModal = document.querySelector('#liquid_money_bolivares');
-  var moneyRecordTable = new _components_money_record_table_MoneyRecordTable__WEBPACK_IMPORTED_MODULE_5__["default"]();
+  var moneyRecordTable = new _components_money_record_table_MoneyRecordTable__WEBPACK_IMPORTED_MODULE_6__["default"]();
   bolivarRecordMoneyView.init(liquidMoneyBsRegisterModal, 'liquid_money_bolivares', moneyRecordTable);
-  var dollarRecordMoneyPresenter = new _presenters_ForeignMoneyRecordModalPresenter__WEBPACK_IMPORTED_MODULE_7__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.DOLLAR, _constants_paymentMethods__WEBPACK_IMPORTED_MODULE_1__.PAYMENT_METHODS.CASH);
-  var dollarRecordMoneyView = new _views_ForeignMoneyRecordModalView__WEBPACK_IMPORTED_MODULE_6__["default"](dollarRecordMoneyPresenter);
+  var dollarRecordMoneyPresenter = new _presenters_ForeignMoneyRecordModalPresenter__WEBPACK_IMPORTED_MODULE_8__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.DOLLAR, _constants_paymentMethods__WEBPACK_IMPORTED_MODULE_1__.PAYMENT_METHODS.CASH);
+  var dollarRecordMoneyView = new _views_ForeignMoneyRecordModalView__WEBPACK_IMPORTED_MODULE_7__["default"](dollarRecordMoneyPresenter);
   var cashDollarRecordModal = document.querySelector('#liquid_money_dollars');
-  var dollarRecordTable = new _components_money_record_table_ForeignMoneyRecordTable__WEBPACK_IMPORTED_MODULE_8__["default"]();
+  var dollarRecordTable = new _components_money_record_table_ForeignMoneyRecordTable__WEBPACK_IMPORTED_MODULE_9__["default"]();
   dollarRecordMoneyView.init(cashDollarRecordModal, 'liquid_money_dollars', dollarRecordTable);
   var bsDenominationsModal = document.querySelector('#liquid_money_bolivares_denominations');
-  var bolivarDenominationModalPresenter = new _presenters_DenominationModalPresenter__WEBPACK_IMPORTED_MODULE_9__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.BOLIVAR, _constants_paymentMethods__WEBPACK_IMPORTED_MODULE_1__.PAYMENT_METHODS.CASH);
-  var bolivarDenominationModalView = new _views_DenominationModalView__WEBPACK_IMPORTED_MODULE_10__["default"](bolivarDenominationModalPresenter);
+  var bolivarDenominationModalPresenter = new _presenters_DenominationModalPresenter__WEBPACK_IMPORTED_MODULE_10__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.BOLIVAR, _constants_paymentMethods__WEBPACK_IMPORTED_MODULE_1__.PAYMENT_METHODS.CASH);
+  var bolivarDenominationModalView = new _views_DenominationModalView__WEBPACK_IMPORTED_MODULE_11__["default"](bolivarDenominationModalPresenter);
   bolivarDenominationModalView.init(bsDenominationsModal, 'liquid_money_bolivares_denominations');
   var dollarDenominationsModal = document.querySelector('#liquid_money_dollars_denominations');
-  var dollarDenominationModalPresenter = new _presenters_DenominationModalPresenter__WEBPACK_IMPORTED_MODULE_9__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.DOLLAR, _constants_paymentMethods__WEBPACK_IMPORTED_MODULE_1__.PAYMENT_METHODS.CASH);
-  var dollarDenominationModalView = new _views_DenominationModalView__WEBPACK_IMPORTED_MODULE_10__["default"](dollarDenominationModalPresenter);
+  var dollarDenominationModalPresenter = new _presenters_DenominationModalPresenter__WEBPACK_IMPORTED_MODULE_10__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.DOLLAR, _constants_paymentMethods__WEBPACK_IMPORTED_MODULE_1__.PAYMENT_METHODS.CASH);
+  var dollarDenominationModalView = new _views_DenominationModalView__WEBPACK_IMPORTED_MODULE_11__["default"](dollarDenominationModalPresenter);
   dollarDenominationModalView.init(dollarDenominationsModal, 'liquid_money_dollars_denominations');
   var salePointModal = document.querySelector('#point_sale_bs');
-  var salePointModalPresenter = new _presenters_SalePointModalPresenter__WEBPACK_IMPORTED_MODULE_11__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.BOLIVAR, _constants_paymentMethods__WEBPACK_IMPORTED_MODULE_1__.PAYMENT_METHODS.CASH);
-  var salePointModalView = new _views_SalePointModalView__WEBPACK_IMPORTED_MODULE_12__["default"](salePointModalPresenter);
+  var salePointModalPresenter = new _presenters_SalePointModalPresenter__WEBPACK_IMPORTED_MODULE_12__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.BOLIVAR, _constants_paymentMethods__WEBPACK_IMPORTED_MODULE_1__.PAYMENT_METHODS.CASH);
+  var salePointModalView = new _views_SalePointModalView__WEBPACK_IMPORTED_MODULE_13__["default"](salePointModalPresenter);
   salePointModalView.init(salePointModal, 'point_sale_bs');
-  var zelleRecordMoneyPresenter = new _presenters_ForeignMoneyRecordModalPresenter__WEBPACK_IMPORTED_MODULE_7__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.DOLLAR, _constants_paymentMethods__WEBPACK_IMPORTED_MODULE_1__.PAYMENT_METHODS.ZELLE);
-  var zelleRecordMoneyView = new _views_ForeignMoneyRecordModalView__WEBPACK_IMPORTED_MODULE_6__["default"](zelleRecordMoneyPresenter);
+  var zelleRecordMoneyPresenter = new _presenters_ForeignMoneyRecordModalPresenter__WEBPACK_IMPORTED_MODULE_8__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.DOLLAR, _constants_paymentMethods__WEBPACK_IMPORTED_MODULE_1__.PAYMENT_METHODS.ZELLE);
+  var zelleRecordMoneyView = new _views_ForeignMoneyRecordModalView__WEBPACK_IMPORTED_MODULE_7__["default"](zelleRecordMoneyPresenter);
   var zelleRecordModal = document.querySelector('#zelle_record');
-  var zelleRecordTable = new _components_money_record_table_ForeignMoneyRecordTable__WEBPACK_IMPORTED_MODULE_8__["default"]();
+  var zelleRecordTable = new _components_money_record_table_ForeignMoneyRecordTable__WEBPACK_IMPORTED_MODULE_9__["default"]();
   zelleRecordMoneyView.init(zelleRecordModal, 'zelle_record', zelleRecordTable); // // Cash register modal total input DOMs
 
   var totalLiquidMoneyBolivares = document.querySelector('#total_liquid_money_bolivares');
-  _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_13__.decimalInputs[_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.BOLIVAR].mask(totalLiquidMoneyBolivares);
+  _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_14__.decimalInputs[_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.BOLIVAR].mask(totalLiquidMoneyBolivares);
   var totalLiquidMoneyDollars = document.querySelector('#total_liquid_money_dollars');
-  _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_13__.decimalInputs[_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.DOLLAR].mask(totalLiquidMoneyDollars); // // Denomination modal total input DOMs
+  _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_14__.decimalInputs[_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.DOLLAR].mask(totalLiquidMoneyDollars); // // Denomination modal total input DOMs
 
   var totalbsDenominations = document.querySelector('#total_liquid_money_bolivares_denominations');
-  _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_13__.decimalInputs[_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.BOLIVAR].mask(totalbsDenominations);
+  _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_14__.decimalInputs[_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.BOLIVAR].mask(totalbsDenominations);
   var totaldollarDenominations = document.querySelector('#total_liquid_money_dollars_denominations');
-  _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_13__.decimalInputs[_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.DOLLAR].mask(totaldollarDenominations); // // Zelle total input DOMs
+  _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_14__.decimalInputs[_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.DOLLAR].mask(totaldollarDenominations); // // Zelle total input DOMs
 
   var totalZelleEl = document.querySelector('#total_zelle_record');
-  _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_13__.decimalInputs[_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.DOLLAR].mask(totalZelleEl);
+  _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_14__.decimalInputs[_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.DOLLAR].mask(totalZelleEl);
 }
 
 /***/ }),
@@ -890,7 +855,6 @@ __webpack_require__.r(__webpack_exports__);
   \***************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
@@ -984,7 +948,6 @@ DenominationModalPresenter.prototype.constructor = DenominationModalPresenter;
   \*********************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
@@ -1059,7 +1022,6 @@ ForeignMoneyRecordModalPresenter.prototype.constructor = ForeignMoneyRecordModal
   \**************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
@@ -1165,7 +1127,6 @@ MoneyRecordModalPresenter.prototype.constructor = MoneyRecordModalPresenter;
   \************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
@@ -1350,7 +1311,6 @@ SalePointModalPresenter.prototype.constructor = SalePointModalPresenter;
   \**********************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "getAllBanks": () => (/* binding */ getAllBanks)
@@ -1403,60 +1363,12 @@ var getAllBanks = /*#__PURE__*/function () {
 
 /***/ }),
 
-/***/ "./resources/js/utilities/decimalInput.js":
-/*!************************************************!*\
-  !*** ./resources/js/utilities/decimalInput.js ***!
-  \************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "decimalInputs": () => (/* binding */ decimalInputs)
-/* harmony export */ });
-/* harmony import */ var inputmask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! inputmask */ "./node_modules/inputmask/dist/inputmask.js");
-/* harmony import */ var inputmask__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(inputmask__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _constants_currencies__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! _constants/currencies */ "./resources/js/constants/currencies.js");
-var _decimalInputs;
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-var decimalMaskOptions = {
-  alias: 'decimal',
-  positionCaretOnClick: "radixFocus",
-  digits: 2,
-  radixPoint: ",",
-  _radixDance: true,
-  numericInput: true,
-  placeholder: "0",
-  definitions: {
-    "0": {
-      validator: "[0-9\uFF11-\uFF19]"
-    }
-  }
-};
-var decimalInputs = (_decimalInputs = {}, _defineProperty(_decimalInputs, _constants_currencies__WEBPACK_IMPORTED_MODULE_1__.CURRENCIES.BOLIVAR, new (inputmask__WEBPACK_IMPORTED_MODULE_0___default())(_objectSpread(_objectSpread({}, decimalMaskOptions), {}, {
-  suffix: _constants_currencies__WEBPACK_IMPORTED_MODULE_1__.SIGN[_constants_currencies__WEBPACK_IMPORTED_MODULE_1__.CURRENCIES.BOLIVAR]
-}))), _defineProperty(_decimalInputs, _constants_currencies__WEBPACK_IMPORTED_MODULE_1__.CURRENCIES.DOLLAR, new (inputmask__WEBPACK_IMPORTED_MODULE_0___default())(_objectSpread(_objectSpread({}, decimalMaskOptions), {}, {
-  suffix: _constants_currencies__WEBPACK_IMPORTED_MODULE_1__.SIGN[_constants_currencies__WEBPACK_IMPORTED_MODULE_1__.CURRENCIES.DOLLAR]
-}))), _decimalInputs);
-
-
-/***/ }),
-
 /***/ "./resources/js/utilities/mathUtilities.js":
 /*!*************************************************!*\
   !*** ./resources/js/utilities/mathUtilities.js ***!
   \*************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "formatAmount": () => (/* binding */ formatAmount)
@@ -1503,7 +1415,6 @@ var formatAmount = function formatAmount(amount) {
   \************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
@@ -1530,20 +1441,16 @@ var numericInput = inputmask__WEBPACK_IMPORTED_MODULE_0___default()("(999){+|1}"
   \*****************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var pubsub_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pubsub-js */ "./node_modules/pubsub-js/src/pubsub.js");
-/* harmony import */ var pubsub_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(pubsub_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _components_denominations_table__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! _components/denominations-table */ "./resources/js/components/denominations-table/index.js");
-
+/* harmony import */ var _components_denominations_table__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! _components/denominations-table */ "./resources/js/components/denominations-table/index.js");
 
 var DenominationModalViewPrototype = {
   init: function init(container, tableName) {
     var tableContainer = container.querySelector('table');
-    this.table = new _components_denominations_table__WEBPACK_IMPORTED_MODULE_1__["default"]();
+    this.table = new _components_denominations_table__WEBPACK_IMPORTED_MODULE_0__["default"]();
     this.table.init(tableContainer, tableName, this.presenter.currency);
     container.addEventListener("click", this.clickEventHandlerWrapper(this.presenter));
     container.addEventListener("keypress", this.keypressEventHandlerWrapper(this.presenter));
@@ -1591,7 +1498,6 @@ DenominationModalView.prototype.constructor = DenominationModalView;
   \***********************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
@@ -1625,7 +1531,6 @@ ForeignMoneyRecordModalView.prototype.constructor = ForeignMoneyRecordModalView;
   \****************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
@@ -1697,7 +1602,6 @@ MoneyRecordModalView.prototype.constructor = MoneyRecordModalView;
   \**************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
@@ -1745,373 +1649,6 @@ var SalePointModalView = function SalePointModalView(presenter) {
 SalePointModalView.prototype = SalePointModalViewPrototype;
 SalePointModalView.prototype.constructor = SalePointModalView;
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (SalePointModalView);
-
-/***/ }),
-
-/***/ "./node_modules/pubsub-js/src/pubsub.js":
-/*!**********************************************!*\
-  !*** ./node_modules/pubsub-js/src/pubsub.js ***!
-  \**********************************************/
-/***/ (function(module, exports, __webpack_require__) {
-
-/* module decorator */ module = __webpack_require__.nmd(module);
-/**
- * Copyright (c) 2010,2011,2012,2013,2014 Morgan Roderick http://roderick.dk
- * License: MIT - http://mrgnrdrck.mit-license.org
- *
- * https://github.com/mroderick/PubSubJS
- */
-
-(function (root, factory){
-    'use strict';
-
-    var PubSub = {};
-
-    if (root.PubSub) {
-        PubSub = root.PubSub;
-        console.warn("PubSub already loaded, using existing version");
-    } else {
-        root.PubSub = PubSub;
-        factory(PubSub);
-    }
-    // CommonJS and Node.js module support
-    if (true){
-        if (module !== undefined && module.exports) {
-            exports = module.exports = PubSub; // Node.js specific `module.exports`
-        }
-        exports.PubSub = PubSub; // CommonJS module 1.1.1 spec
-        module.exports = exports = PubSub; // CommonJS
-    }
-    // AMD support
-    /* eslint-disable no-undef */
-    else {}
-
-}(( typeof window === 'object' && window ) || this, function (PubSub){
-    'use strict';
-
-    var messages = {},
-        lastUid = -1,
-        ALL_SUBSCRIBING_MSG = '*';
-
-    function hasKeys(obj){
-        var key;
-
-        for (key in obj){
-            if ( Object.prototype.hasOwnProperty.call(obj, key) ){
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Returns a function that throws the passed exception, for use as argument for setTimeout
-     * @alias throwException
-     * @function
-     * @param { Object } ex An Error object
-     */
-    function throwException( ex ){
-        return function reThrowException(){
-            throw ex;
-        };
-    }
-
-    function callSubscriberWithDelayedExceptions( subscriber, message, data ){
-        try {
-            subscriber( message, data );
-        } catch( ex ){
-            setTimeout( throwException( ex ), 0);
-        }
-    }
-
-    function callSubscriberWithImmediateExceptions( subscriber, message, data ){
-        subscriber( message, data );
-    }
-
-    function deliverMessage( originalMessage, matchedMessage, data, immediateExceptions ){
-        var subscribers = messages[matchedMessage],
-            callSubscriber = immediateExceptions ? callSubscriberWithImmediateExceptions : callSubscriberWithDelayedExceptions,
-            s;
-
-        if ( !Object.prototype.hasOwnProperty.call( messages, matchedMessage ) ) {
-            return;
-        }
-
-        for (s in subscribers){
-            if ( Object.prototype.hasOwnProperty.call(subscribers, s)){
-                callSubscriber( subscribers[s], originalMessage, data );
-            }
-        }
-    }
-
-    function createDeliveryFunction( message, data, immediateExceptions ){
-        return function deliverNamespaced(){
-            var topic = String( message ),
-                position = topic.lastIndexOf( '.' );
-
-            // deliver the message as it is now
-            deliverMessage(message, message, data, immediateExceptions);
-
-            // trim the hierarchy and deliver message to each level
-            while( position !== -1 ){
-                topic = topic.substr( 0, position );
-                position = topic.lastIndexOf('.');
-                deliverMessage( message, topic, data, immediateExceptions );
-            }
-
-            deliverMessage(message, ALL_SUBSCRIBING_MSG, data, immediateExceptions);
-        };
-    }
-
-    function hasDirectSubscribersFor( message ) {
-        var topic = String( message ),
-            found = Boolean(Object.prototype.hasOwnProperty.call( messages, topic ) && hasKeys(messages[topic]));
-
-        return found;
-    }
-
-    function messageHasSubscribers( message ){
-        var topic = String( message ),
-            found = hasDirectSubscribersFor(topic) || hasDirectSubscribersFor(ALL_SUBSCRIBING_MSG),
-            position = topic.lastIndexOf( '.' );
-
-        while ( !found && position !== -1 ){
-            topic = topic.substr( 0, position );
-            position = topic.lastIndexOf( '.' );
-            found = hasDirectSubscribersFor(topic);
-        }
-
-        return found;
-    }
-
-    function publish( message, data, sync, immediateExceptions ){
-        message = (typeof message === 'symbol') ? message.toString() : message;
-
-        var deliver = createDeliveryFunction( message, data, immediateExceptions ),
-            hasSubscribers = messageHasSubscribers( message );
-
-        if ( !hasSubscribers ){
-            return false;
-        }
-
-        if ( sync === true ){
-            deliver();
-        } else {
-            setTimeout( deliver, 0 );
-        }
-        return true;
-    }
-
-    /**
-     * Publishes the message, passing the data to it's subscribers
-     * @function
-     * @alias publish
-     * @param { String } message The message to publish
-     * @param {} data The data to pass to subscribers
-     * @return { Boolean }
-     */
-    PubSub.publish = function( message, data ){
-        return publish( message, data, false, PubSub.immediateExceptions );
-    };
-
-    /**
-     * Publishes the message synchronously, passing the data to it's subscribers
-     * @function
-     * @alias publishSync
-     * @param { String } message The message to publish
-     * @param {} data The data to pass to subscribers
-     * @return { Boolean }
-     */
-    PubSub.publishSync = function( message, data ){
-        return publish( message, data, true, PubSub.immediateExceptions );
-    };
-
-    /**
-     * Subscribes the passed function to the passed message. Every returned token is unique and should be stored if you need to unsubscribe
-     * @function
-     * @alias subscribe
-     * @param { String } message The message to subscribe to
-     * @param { Function } func The function to call when a new message is published
-     * @return { String }
-     */
-    PubSub.subscribe = function( message, func ){
-        if ( typeof func !== 'function'){
-            return false;
-        }
-
-        message = (typeof message === 'symbol') ? message.toString() : message;
-
-        // message is not registered yet
-        if ( !Object.prototype.hasOwnProperty.call( messages, message ) ){
-            messages[message] = {};
-        }
-
-        // forcing token as String, to allow for future expansions without breaking usage
-        // and allow for easy use as key names for the 'messages' object
-        var token = 'uid_' + String(++lastUid);
-        messages[message][token] = func;
-
-        // return token for unsubscribing
-        return token;
-    };
-
-    PubSub.subscribeAll = function( func ){
-        return PubSub.subscribe(ALL_SUBSCRIBING_MSG, func);
-    };
-
-    /**
-     * Subscribes the passed function to the passed message once
-     * @function
-     * @alias subscribeOnce
-     * @param { String } message The message to subscribe to
-     * @param { Function } func The function to call when a new message is published
-     * @return { PubSub }
-     */
-    PubSub.subscribeOnce = function( message, func ){
-        var token = PubSub.subscribe( message, function(){
-            // before func apply, unsubscribe message
-            PubSub.unsubscribe( token );
-            func.apply( this, arguments );
-        });
-        return PubSub;
-    };
-
-    /**
-     * Clears all subscriptions
-     * @function
-     * @public
-     * @alias clearAllSubscriptions
-     */
-    PubSub.clearAllSubscriptions = function clearAllSubscriptions(){
-        messages = {};
-    };
-
-    /**
-     * Clear subscriptions by the topic
-     * @function
-     * @public
-     * @alias clearAllSubscriptions
-     * @return { int }
-     */
-    PubSub.clearSubscriptions = function clearSubscriptions(topic){
-        var m;
-        for (m in messages){
-            if (Object.prototype.hasOwnProperty.call(messages, m) && m.indexOf(topic) === 0){
-                delete messages[m];
-            }
-        }
-    };
-
-    /**
-       Count subscriptions by the topic
-     * @function
-     * @public
-     * @alias countSubscriptions
-     * @return { Array }
-    */
-    PubSub.countSubscriptions = function countSubscriptions(topic){
-        var m;
-        // eslint-disable-next-line no-unused-vars
-        var token;
-        var count = 0;
-        for (m in messages) {
-            if (Object.prototype.hasOwnProperty.call(messages, m) && m.indexOf(topic) === 0) {
-                for (token in messages[m]) {
-                    count++;
-                }
-                break;
-            }
-        }
-        return count;
-    };
-
-
-    /**
-       Gets subscriptions by the topic
-     * @function
-     * @public
-     * @alias getSubscriptions
-    */
-    PubSub.getSubscriptions = function getSubscriptions(topic){
-        var m;
-        var list = [];
-        for (m in messages){
-            if (Object.prototype.hasOwnProperty.call(messages, m) && m.indexOf(topic) === 0){
-                list.push(m);
-            }
-        }
-        return list;
-    };
-
-    /**
-     * Removes subscriptions
-     *
-     * - When passed a token, removes a specific subscription.
-     *
-	 * - When passed a function, removes all subscriptions for that function
-     *
-	 * - When passed a topic, removes all subscriptions for that topic (hierarchy)
-     * @function
-     * @public
-     * @alias subscribeOnce
-     * @param { String | Function } value A token, function or topic to unsubscribe from
-     * @example // Unsubscribing with a token
-     * var token = PubSub.subscribe('mytopic', myFunc);
-     * PubSub.unsubscribe(token);
-     * @example // Unsubscribing with a function
-     * PubSub.unsubscribe(myFunc);
-     * @example // Unsubscribing from a topic
-     * PubSub.unsubscribe('mytopic');
-     */
-    PubSub.unsubscribe = function(value){
-        var descendantTopicExists = function(topic) {
-                var m;
-                for ( m in messages ){
-                    if ( Object.prototype.hasOwnProperty.call(messages, m) && m.indexOf(topic) === 0 ){
-                        // a descendant of the topic exists:
-                        return true;
-                    }
-                }
-
-                return false;
-            },
-            isTopic    = typeof value === 'string' && ( Object.prototype.hasOwnProperty.call(messages, value) || descendantTopicExists(value) ),
-            isToken    = !isTopic && typeof value === 'string',
-            isFunction = typeof value === 'function',
-            result = false,
-            m, message, t;
-
-        if (isTopic){
-            PubSub.clearSubscriptions(value);
-            return;
-        }
-
-        for ( m in messages ){
-            if ( Object.prototype.hasOwnProperty.call( messages, m ) ){
-                message = messages[m];
-
-                if ( isToken && message[value] ){
-                    delete message[value];
-                    result = value;
-                    // tokens are unique, so we can just stop here
-                    break;
-                }
-
-                if (isFunction) {
-                    for ( t in message ){
-                        if (Object.prototype.hasOwnProperty.call(message, t) && message[t] === value){
-                            delete message[t];
-                            result = true;
-                        }
-                    }
-                }
-            }
-        }
-
-        return result;
-    };
-}));
-
 
 /***/ })
 

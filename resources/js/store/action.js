@@ -1,12 +1,11 @@
 import { store } from './index'
 
-
 export const STORE_DOLLAR_EXCHANGE_VALUE = 'STORE_DOLLAR_EXCHANGE_VALUE'
 
-function storeDollarExchange(value) {
-  return { type: STORE_DOLLAR_EXCHANGE_VALUE, value }
+function storeDollarExchange(dollarExchange = {}) {
+  return { type: STORE_DOLLAR_EXCHANGE_VALUE, dollarExchange }
 }
 
-const boundStoreDollarExchange = (value) => store.dispatch(storeDollarExchange(value))
+const boundStoreDollarExchange = (obj) => store.dispatch(storeDollarExchange(obj))
 
 export { boundStoreDollarExchange }

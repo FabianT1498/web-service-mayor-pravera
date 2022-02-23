@@ -1,5 +1,6 @@
-// work with sidebar
-var btn     = document.getElementById('sliderBtn'),
+export default (function(){
+    // work with sidebar
+    var btn     = document.getElementById('sliderBtn'),
     sideBar = document.getElementById('sideBar'),
     sideBarHideBtn = document.getElementById('sideBarHideBtn');
 
@@ -35,4 +36,5 @@ var btn     = document.getElementById('sliderBtn'),
             animate();
         };
     });
-// end with sidebar
+    // end with sidebar
+})()

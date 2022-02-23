@@ -1,6 +1,7 @@
-exports.alert = require("./alert.js");
-exports.dropdown = require("./dropdown");
-exports.name = require("./name.js");
-exports.navbar = require("./navbar");
-exports.num = require("./num.js");
-exports.sidebar = require("./sidebar.js");
+import { default as alert } from "./alert";
+import {default as dropdown } from './dropdown'
+import {default as navbar } from './navbar'
+import {default as sidebar } from './sidebar'
+import {default as dollarExchangeModal} from './dollarExchangeModal'
+
+export {alert, dropdown, navbar, sidebar, dollarExchangeModal}

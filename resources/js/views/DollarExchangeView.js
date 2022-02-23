@@ -1,19 +1,27 @@
-import { createStore } from 'redux';
-import { storeDollarExchange } from '_services/dollar-exchange';
 import { decimalInputs } from "_utilities/decimalInput";
 import { CURRENCIES } from '_constants/currencies'
+ 
 
-const DollarExchangeModalView = {
-    init(container){
+const DollarExchangeModalViewPrototype = {
+    init(){
+        const dollarExchangeButton = document.querySelector('#store_dollar_exchange_btn')
         const dollarExchangeInput = document.getElementById('dollar-exchange-bs-input');
         decimalInputs[CURRENCIES.BOLIVAR].mask(dollarExchangeInput)
-        container.addEventListener('click', clickEventHandlerWrapper(this.presenter, dollarExchangeInput))
+        dollarExchangeButton.addEventListener('click', this.clickEventHandlerWrapper(this.presenter, dollarExchangeInput))
     },
     clickEventHandlerWrapper(presenter, dollarExchangeInput){
         return (event) => {
-            presenter.clickOnModal({
-                bsExchange: dollarExchangeInput.value
-            });
+            presenter.clickOnStoreDollarExchangeVal(dollarExchangeInput.value);
         }
     },
 }
+
+function DollarExchangeModalView(presenter){
+    this.presenter = presenter;
+    this.presenter.setView(this)
+}
+
+DollarExchangeModalView.prototype = DollarExchangeModalViewPrototype;
+DollarExchangeModalView.prototype.constructor = DollarExchangeModalView;
+
+export default DollarExchangeModalView
