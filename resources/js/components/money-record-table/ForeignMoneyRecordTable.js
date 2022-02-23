@@ -37,10 +37,18 @@ const ForeignMoneyRecordTable = function(){
         </tr>
     `;
 
-    this.updateConvertionCol = function({rowID, formatedConvertion}){
+    this.updateConvertion = function({rowID, formatedConvertion}){
         const row = this.container.querySelector(`tr[data-id="${rowID}"]`);
         let columnData = row.querySelector('td[data-table="convertion-col"]');
         columnData.innerHTML = formatedConvertion
+    };
+
+    this.updateConvertionCol = function(formatedConvertion = []){
+        const tBody = this.container.querySelector('tbody')
+        let convertionCol = tBody.querySelectorAll('td[data-table="convertion-col"]');
+        convertionCol.forEach((el, index) => {
+            el.innerHTML = formatedConvertion[index]
+        })
     };
 
 

@@ -50,7 +50,8 @@ Route::group(['middleware' => ['auth']], function () {
 });
 
 Route::group(['middleware' => ['auth', 'jsonify']], function() {
-    Route::post('dolar_exchange', [DollarExchangeController::class, 'store']);
+    Route::post('dollar_exchange', [DollarExchangeController::class, 'store']);
+    Route::get('dollar_exchange', [DollarExchangeController::class, 'get']);
 
     Route::get('banks', [BankController::class, 'getAll']);
 });

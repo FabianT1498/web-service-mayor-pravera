@@ -1,11 +1,14 @@
 import MoneyRecordModalView from './MoneyRecordModalView'
-import ForeignMoneyRecordTable from '_components/money-record-table/ForeignMoneyRecordTable'
 
 const ForeignMoneyRecordModalView = function(presenter) {
     MoneyRecordModalView.call(this, presenter);
 
-    this.updateConvertionCol = function(obj){
-        this.table.updateConvertionCol(obj)
+    this.updateConvertion = function(obj){
+        this.table.updateConvertion(obj)
+    }
+
+    this.updateConvertionCol = function(convertions){
+        this.table.updateConvertionCol(convertions)
     }
 
     this.init = function(container, name, table){

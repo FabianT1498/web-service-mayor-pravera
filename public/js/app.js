@@ -7173,13 +7173,18 @@ DollarExchangeModalPresenter.prototype.constructor = DollarExchangeModalPresente
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "postDollarExchange": () => (/* binding */ postDollarExchange)
+/* harmony export */   "postDollarExchange": () => (/* binding */ postDollarExchange),
+/* harmony export */   "getDollarExchange": () => (/* binding */ getDollarExchange)
 /* harmony export */ });
 /* harmony import */ var _utilities_axiosClient__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utilities/axiosClient */ "./resources/js/utilities/axiosClient.js");
 
 
 var postDollarExchange = function postDollarExchange(obj) {
-  return asyncFunction(_utilities_axiosClient__WEBPACK_IMPORTED_MODULE_0__["default"].post('/dolar_exchange', obj));
+  return asyncFunction(_utilities_axiosClient__WEBPACK_IMPORTED_MODULE_0__["default"].post('/dollar_exchange', obj));
+};
+
+var getDollarExchange = function getDollarExchange() {
+  return asyncFunction(_utilities_axiosClient__WEBPACK_IMPORTED_MODULE_0__["default"].get('/dollar_exchange'));
 };
 
 var asyncFunction = function asyncFunction(promise) {
@@ -7221,8 +7226,6 @@ function storeDollarExchange() {
 var boundStoreDollarExchange = function boundStoreDollarExchange(obj) {
   return _index__WEBPACK_IMPORTED_MODULE_0__.store.dispatch(storeDollarExchange(obj));
 };
-
-
 
 /***/ }),
 
@@ -7269,7 +7272,8 @@ var initialState = {
   dollarExchange: {
     value: 0,
     createdAt: ''
-  }
+  },
+  lastAction: ''
 };
 var reducer = function reducer() {
   var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
@@ -7278,7 +7282,8 @@ var reducer = function reducer() {
   switch (action.type) {
     case _action__WEBPACK_IMPORTED_MODULE_0__.STORE_DOLLAR_EXCHANGE_VALUE:
       return _objectSpread(_objectSpread({}, state), {}, {
-        dollarExchange: _objectSpread(_objectSpread({}, state.dollarExchange), action.dollarExchange)
+        dollarExchange: _objectSpread(_objectSpread({}, state.dollarExchange), action.dollarExchange),
+        lastAction: action.type
       });
 
     default:

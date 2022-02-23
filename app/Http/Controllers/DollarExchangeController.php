@@ -6,6 +6,9 @@ use App\Http\Requests\StoreDollarExchangeRequest;
 use App\Models\DollarExchange;
 use App\Http\Resources\DollarExchangeResource;
 
+use App\Repositories\DollarExchangeRepository;
+
+
 
 class DollarExchangeController extends Controller
 {
@@ -20,5 +23,10 @@ class DollarExchangeController extends Controller
 
         return $this->jsonResponse([], 500);
 
+    }
+
+    public function get(DollarExchangeRepository $dollar_repo)
+    {  
+        return new DollarExchangeResource($dollar_repo->getLast());
     }
 }

@@ -6,6 +6,4 @@ function storeDollarExchange(dollarExchange = {}) {
   return { type: STORE_DOLLAR_EXCHANGE_VALUE, dollarExchange }
 }
 
-const boundStoreDollarExchange = (obj) => store.dispatch(storeDollarExchange(obj))
-
-export { boundStoreDollarExchange }
+export const boundStoreDollarExchange = (obj) => store.dispatch(storeDollarExchange(obj))
