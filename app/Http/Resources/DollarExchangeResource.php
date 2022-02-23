@@ -14,6 +14,10 @@ class DollarExchangeResource extends JsonResource
      */
     public function toArray($request)
     {
+        if (is_null($this->resource)){
+            return ['data' => null];
+        }
+
         return [
             'bs_exchange' => $this->bs_exchange,
             'created_at' => $this->created_at,

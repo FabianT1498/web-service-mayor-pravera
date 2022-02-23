@@ -1,11 +1,9 @@
+import toastr  from 'toastr';
+
 import { CURRENCIES} from '_constants/currencies';
 import { PAYMENT_METHODS } from '_constants/paymentMethods';
 
 import CashRegisterData from '_components/cash-register-data'
-
-import { boundStoreDollarExchange } from '_store/action'
-
-import { getDollarExchange} from '_services/dollar-exchange';
 
 import MoneyRecordModalView from '_views/MoneyRecordModalView'
 import MoneyRecordModalPresenter from '_presenters/MoneyRecordModalPresenter'
@@ -24,26 +22,6 @@ import SalePointModalView from '_views/SalePointModalView'
 import {decimalInputs} from '_utilities/decimalInput';
 
 export default function(){
-
-    (function(){
-        getDollarExchange()
-            .then(res => {
-                let data = res.data.data;
-
-                if (!data){
-                    console.log('ingrese un valor para la tasa')
-                }
-
-                let dollarExchange = {
-                    value: data.bs_exchange,
-                    createdAt: data.created_at
-                }
-                boundStoreDollarExchange(dollarExchange)
-            })
-            .catch(err => {
-                console.log(err)
-            })
-    })()
 
     let bolivarRecordMoneyPresenter = new MoneyRecordModalPresenter(CURRENCIES.BOLIVAR, PAYMENT_METHODS.CASH);
     let bolivarRecordMoneyView = new MoneyRecordModalView(bolivarRecordMoneyPresenter);

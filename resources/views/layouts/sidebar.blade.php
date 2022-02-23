@@ -48,7 +48,7 @@
     </div>
     <!-- end sidebar content -->
 
-    <x-setup-modal />
+    <x-dollar-exchange-modal />
     
     </div>
   <!-- end sidbar -->

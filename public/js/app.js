@@ -5549,9 +5549,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((function () {
+  var container = document.querySelector('#dollar-exchange-modal');
   var dollarExchangeModalPresenter = new _presenters_DollarExchangeModalPresenter__WEBPACK_IMPORTED_MODULE_0__["default"]();
   var dollarExchangeModalView = new _views_DollarExchangeView__WEBPACK_IMPORTED_MODULE_1__["default"](dollarExchangeModalPresenter);
-  dollarExchangeModalView.init();
+  dollarExchangeModalView.init(container);
 })());
 
 /***/ }),
@@ -7123,11 +7124,18 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
 var DollarExchangeModalPresenterPrototype = {
   clickOnStoreDollarExchangeVal: function clickOnStoreDollarExchangeVal(bsExchange) {
     this.storeNewDollarExchangeValue(bsExchange);
   },
   storeNewDollarExchangeValue: function storeNewDollarExchangeValue(value) {
+    var _this = this;
+
+    if (parseFloat(value) <= 0) {
+      this.view.showErrorMessage('La tasa del dolar debe ser mayor a cero');
+    }
+
     (0,_services_dollar_exchange__WEBPACK_IMPORTED_MODULE_0__.postDollarExchange)({
       'bs_exchange': value
     }).then(function (res) {
@@ -7143,6 +7151,12 @@ var DollarExchangeModalPresenterPrototype = {
         toggleModal('dollar-exchange-modal', false); // Change value in global state
 
         (0,_store_action__WEBPACK_IMPORTED_MODULE_1__.boundStoreDollarExchange)(dollarExchange);
+
+        if (_this.closeBtnDisabled) {
+          _this.view.toggleCloseButtonState();
+
+          _this.closeBtnDisabled = false;
+        }
       }
     })["catch"](function (err) {
       console.log(err);
@@ -7151,11 +7165,40 @@ var DollarExchangeModalPresenterPrototype = {
   },
   setView: function setView(view) {
     this.view = view;
+  },
+  init: function init() {
+    var _this2 = this;
+
+    if (!this.view) {
+      return;
+    }
+
+    (0,_services_dollar_exchange__WEBPACK_IMPORTED_MODULE_0__.getDollarExchange)().then(function (res) {
+      var data = res.data.data;
+
+      if (!data && _this2.view) {
+        _this2.view.showErrorMessage('Por favor ingresa una tasa para continuar');
+
+        _this2.view.toggleCloseButtonState();
+
+        _this2.closeBtnDisabled = true;
+        return;
+      }
+
+      var dollarExchange = {
+        value: data.bs_exchange,
+        createdAt: data.created_at
+      };
+      (0,_store_action__WEBPACK_IMPORTED_MODULE_1__.boundStoreDollarExchange)(dollarExchange);
+    })["catch"](function (err) {
+      console.log(err);
+    });
   }
 };
 
 function DollarExchangeModalPresenter() {
   this.view = null;
+  this.closeBtnDisabled = false;
 }
 
 DollarExchangeModalPresenter.prototype = DollarExchangeModalPresenterPrototype;
@@ -7384,22 +7427,34 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var DollarExchangeModalViewPrototype = {
-  init: function init() {
+  init: function init(container) {
     var dollarExchangeButton = document.querySelector('#store_dollar_exchange_btn');
     var dollarExchangeInput = document.getElementById('dollar-exchange-bs-input');
     _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_0__.decimalInputs[_constants_currencies__WEBPACK_IMPORTED_MODULE_1__.CURRENCIES.BOLIVAR].mask(dollarExchangeInput);
     dollarExchangeButton.addEventListener('click', this.clickEventHandlerWrapper(this.presenter, dollarExchangeInput));
+    this.container = container;
   },
   clickEventHandlerWrapper: function clickEventHandlerWrapper(presenter, dollarExchangeInput) {
     return function (event) {
       presenter.clickOnStoreDollarExchangeVal(dollarExchangeInput.value);
     };
+  },
+  showErrorMessage: function showErrorMessage(message) {
+    var alertMessage = this.container.querySelector('#dollar-exchange-message');
+    alertMessage.classList.toggle('hidden');
+    alertMessage.innerText = message;
+  },
+  toggleCloseButtonState: function toggleCloseButtonState() {
+    var closeBtn = this.container.querySelector('button[data-modal-toggle="dollar-exchange-modal"]');
+    closeBtn.classList.toggle('hover:text-gray-900');
+    closeBtn.disabled = !closeBtn.disabled;
   }
 };
 
 function DollarExchangeModalView(presenter) {
   this.presenter = presenter;
   this.presenter.setView(this);
+  this.presenter.init();
 }
 
 DollarExchangeModalView.prototype = DollarExchangeModalViewPrototype;

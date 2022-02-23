@@ -65,10 +65,10 @@
 
         <div class="w-10/12 grid gap-4 grid-cols-[150px_auto_150px_auto] mb-8 mx-auto items-center">
             <x-label :value="__('Fecha de registro de la última tasa: ')" />
-            <p id="last-dollar-exchange-bs-date">{{ $dollar_exchange?->created_at }}</p>
+            <p id="last-dollar-exchange-bs-date">{{ $dollar_exchange?->created_at ?? 'No ha sido registrada ninguna tasa' }}</p>
 
             <x-label class="w-56" :value="__('Cotización del $:')" />
-            <p id="last-dollar-exchange-bs-label">{{ $dollar_exchange?->bs_exchange }} Bs.S</p>
+            <p id="last-dollar-exchange-bs-label">{{ $dollar_exchange?->bs_exchange ?? 0 }} Bs.S</p>
                             
 
             <!-- Cash on liquid input (dollars) -->
@@ -108,20 +108,25 @@
 
         <div class="w-10/12"><h3 class="h3 text-center mb-8">Ingresos en punto de venta</h3></div>
 
-        <div class="w-10/12 grid gap-4 grid-cols-[150px_50px_150px_auto] mb-8 mx-auto items-center">
-             <!-- Cash on punto de venta (bs) -->
-            <x-label for="debit_card_payment_bs" :value="__('Registros del punto de venta:')" />
-            <x-button 
-                class="flex justify-center rounded-full h-8 w-8"
-                type="button"
-                :modalID="__('point_sale_bs')"
-            >
-                <i class="fas fa-plus text-white"></i>
-            </x-button>
+        <div class="w-10/12 flex mb-8 mx-auto items-center justify-between">
+            <div class="flex items-center">
+                <!-- Cash on punto de venta (bs) -->
+               <x-label for="debit_card_payment_bs" :value="__('Registros del punto de venta:')" />
+               <x-button 
+                   class="ml-4"
+                   type="button"
+                   :modalID="__('point_sale_bs')"
+                   :variation="__('rounded')"
+               >
+                   Ver
+               </x-button>
+            </div>
             
+            <div class="flex items-center basis-2/3 justify-center">
+                <x-label for="point_sale_dollar" :value="__('Total de $ en Punto:')" />
+                <x-input placeholder="0.00" id="point_sale_dollar" class="block ml-4" type="text" name="point_sale_dollar" :value="old('point_sale_dollar')"/>
+            </div>
             <!-- Cash on punto de venta ($) -->
-            <x-label for="debit_card_payment_dollar" :value="__('Total de $ en Punto:')" />
-            <x-input data-currency="amount-$" placeholder="0.00" id="debit_card_payment_dollar" class="block ml-4" type="text" name="debit_card_payment_dollar" :value="old('debit_card_payment_dollar')" autofocus />
         </div>
 
         <div class="w-10/12"><h3 class="h3 text-center mb-8">Ingresos en Zelle</h3></div>
@@ -137,7 +142,7 @@
         </div>
 
         <div class="w-10/12 flex mx-auto justify-end pt-8">
-            <x-button>
+            <x-button :variation="__('rounded')">
                 {{ __('Continuar') }}
             </x-button>
         </div>

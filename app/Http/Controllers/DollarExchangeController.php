@@ -27,6 +27,8 @@ class DollarExchangeController extends Controller
 
     public function get(DollarExchangeRepository $dollar_repo)
     {  
-        return new DollarExchangeResource($dollar_repo->getLast());
+        $model = $dollar_repo->getLast();
+
+        return new DollarExchangeResource($model);
     }
 }

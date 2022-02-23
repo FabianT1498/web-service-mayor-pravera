@@ -21,7 +21,7 @@
                             <div class="my-8 border-solid pb-2 border-b-2 mx-auto border-gray-300 w-2/3">
                                 <p class="text-center ">Actualizar el valor de la tasa</p>
                             </div>
-                            <div class="flex items-center justify-around">
+                            <div class="flex items-center justify-around mb-8">
                                 <input 
                                     type="text"
                                     placeholder="0.00 Bs.S"
@@ -33,6 +33,7 @@
                                     {{ __('Actualizar') }}
                                 </x-button>      
                             </div>
+                            <p id="dollar-exchange-message" class="hidden text-red-700 font-semibold text-center"></p>
                         </div>
                     </div>
                 </div>
