@@ -16,8 +16,8 @@
                 <div class="inline-block min-w-full align-middle h-full">
                     <div class="overflow-hidden bg-gray-50 h-full">
                         <div class="p-8">
-                            <p>Último valor de la tasa: <span class="font-semibold">{{ $dollar_exchange?->bs_exchange ?? 0 }} Bs.S</span></p>
-                            <p>Fecha de registro: {!! $dollar_exchange?->created_at ?? '<span class="font-bold">Ninguna registrada</span>' !!}</p>
+                            <p>Último valor de la tasa: <span id="dollar_exchange_value_bs" class="font-bold">{{ $dollar_exchange?->bs_exchange ?? 0 }} Bs.S</span></p>
+                            <p>Fecha de registro: <span id="dollar_exchange_date_bs" class="font-bold">{{ $dollar_exchange?->created_at ?? 'Ninguna registrada' }}<span></p>
                             <div class="my-8 border-solid pb-2 border-b-2 mx-auto border-gray-300 w-2/3">
                                 <p class="text-center ">Actualizar el valor de la tasa</p>
                             </div>
@@ -29,11 +29,11 @@
                                     value={{ $dollar_exchange?->bs_exchange ?? 0 }}
                                     class="w-36 rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                 >
-                                <x-button type="button" id="store_dollar_exchange_btn" class="basis-1/5">
-                                    {{ __('Actualizar') }}
+                                <x-button type="button" id="store_dollar_exchange_btn" class="basis-1/3 justify-center">
+                                    {{ __('Guardar') }}
                                 </x-button>      
                             </div>
-                            <p id="dollar-exchange-message" class="hidden text-red-700 font-semibold text-center"></p>
+                            <p id="dollar-exchange-message" class="hidden font-semibold text-center"></p>
                         </div>
                     </div>
                 </div>

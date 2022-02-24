@@ -29,10 +29,9 @@ class StoreDollarExchangeRequest extends FormRequest
 
         $rules = [
             'bs_exchange' => [
-                'json',
                 'bail',
                 'required',
-                'gte:0',
+                'gt:0',
             ],
         ];
 

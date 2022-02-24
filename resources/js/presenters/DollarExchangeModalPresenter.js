@@ -3,16 +3,26 @@ import { boundStoreDollarExchange } from '_store/action'
 
 import { getDollarExchange } from '_services/dollar-exchange';
 
-import toastr  from 'toastr';
+import { ERROR, SUCCESS } from '_constants/message-status'
+
+import { formatAmount } from '_utilities/mathUtilities'
+
 
 const DollarExchangeModalPresenterPrototype = {
     clickOnStoreDollarExchangeVal(bsExchange){
         this.storeNewDollarExchangeValue(bsExchange)
     },
     storeNewDollarExchangeValue: function(value){
-        if (parseFloat(value) <= 0){
-            this.view.showErrorMessage('La tasa del dolar debe ser mayor a cero')
+        let amountConverted = formatAmount(value)
+        this.view.hideMessage();
+
+        if (amountConverted <= 0){
+            this.message = 'La tasa del dolar debe ser mayor a cero'
+            this.view.showMessage(this.message, ERROR)
+            return;
         }
+
+        this.view.showLoading();
 
         postDollarExchange({'bs_exchange': value})
             .then(res => {
@@ -25,22 +35,25 @@ const DollarExchangeModalPresenterPrototype = {
                     }
     
                     // Show modal to succesfully value store
-                    const message = 'La tasa del dolar ha sido cambiada con exito'
-                    toastr.success(message);
-                    toggleModal('dollar-exchange-modal', false);
+                    this.message = 'La tasa del dolar ha sido cambiada con exito'
+                    this.view.showMessage(this.message, SUCCESS)
                     
                     // Change value in global state
                     boundStoreDollarExchange(dollarExchange)
+                    this.view.hideLoading();
 
                     if (this.closeBtnDisabled){
-                        this.view.toggleCloseButtonState();
+                        this.view.unlockCloseBtn();
                         this.closeBtnDisabled = false
                     }
+
+                    this.view.updateDollarData(dollarExchange)                    
                 }
             })
             .catch(err => {
-                console.log(err)
-                toastr.error('No se pudo guardar el valor de la tasa del dolar');
+                console.log(err);
+                // this.message = 'No se pudo guardar el valor de la tasa'
+                // this.view.showMessage(this.message, ERROR)
             })
     },
     setView(view){
@@ -56,8 +69,10 @@ const DollarExchangeModalPresenterPrototype = {
                 let data = res.data.data;
             
                 if (!data && this.view){
-                    this.view.showErrorMessage('Por favor ingresa una tasa para continuar')
-                    this.view.toggleCloseButtonState();
+                    this.view.showModal()
+                    this.message = 'Por favor ingresa una tasa para continuar'
+                    this.view.showMessage(this.message, ERROR)
+                    this.view.blockCloseBtn();
                     this.closeBtnDisabled = true
                     return;
                 }
@@ -77,6 +92,7 @@ const DollarExchangeModalPresenterPrototype = {
 function DollarExchangeModalPresenter(){
     this.view = null
     this.closeBtnDisabled = false;
+    this.message = '';
 }
 
 DollarExchangeModalPresenter.prototype = DollarExchangeModalPresenterPrototype
