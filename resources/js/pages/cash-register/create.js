@@ -1,9 +1,10 @@
-import toastr  from 'toastr';
-
-import { CURRENCIES} from '_constants/currencies';
+import { CURRENCIES, SIGN as CURRENCY_SIGN_MAP} from '_constants/currencies';
 import { PAYMENT_METHODS } from '_constants/paymentMethods';
 
 import CashRegisterData from '_components/cash-register-data'
+
+import { store } from '_store'
+import { STORE_DOLLAR_EXCHANGE_VALUE } from '_store/action'
 
 import MoneyRecordModalView from '_views/MoneyRecordModalView'
 import MoneyRecordModalPresenter from '_presenters/MoneyRecordModalPresenter'
@@ -21,56 +22,109 @@ import SalePointModalView from '_views/SalePointModalView'
 
 import {decimalInputs} from '_utilities/decimalInput';
 
-export default function(){
+export default {
+    totalInputDOMS: {
+        liquidMoneyBs: document.querySelector('#total_liquid_money_bolivares'),
+        liquidMoneyDollar: document.querySelector('#total_liquid_money_dollars'),
+        denominationsBs: document.querySelector('#total_liquid_money_bolivares_denominations'),
+        denominationsDollar: document.querySelector('#total_liquid_money_dollars_denominations'),
+        zelleDollar: document.querySelector('#total_zelle_record'),
+    },
+    proxy: null,
+    setTotalLiquidMoneyBs(total){
+        this.proxy.liquidMoneyBs = total
+    },
+    setTotalLiquidMoneyDollar(total){
+        this.proxy.liquidMoneyDollar = total
+    },
+    setTotalDenominationBs(total){
+        this.proxy.denominationsBs = total
+    },
+    setTotalDenominationDollar(total){
+        this.proxy.denominationsDollar = total
+    },
+    setTotalZelleDollar(total){
+        this.proxy.zelleDollar = total
+    },
+    setPropWrapper(fn){
+        return fn.bind(this)
+    },
+    init(){
 
-    let bolivarRecordMoneyPresenter = new MoneyRecordModalPresenter(CURRENCIES.BOLIVAR, PAYMENT_METHODS.CASH);
-    let bolivarRecordMoneyView = new MoneyRecordModalView(bolivarRecordMoneyPresenter);
-    let liquidMoneyBsRegisterModal = document.querySelector('#liquid_money_bolivares');
-    let moneyRecordTable = new MoneyRecordTable()
-    bolivarRecordMoneyView.init(liquidMoneyBsRegisterModal, 'liquid_money_bolivares', moneyRecordTable)
+        let cashRegisterContainer = document.querySelector('#cash_register_data')
+        let cashRegister = new CashRegisterData()
+        cashRegister.init(cashRegisterContainer)
 
-    let dollarRecordMoneyPresenter = new ForeignMoneyRecordModalPresenter(CURRENCIES.DOLLAR, PAYMENT_METHODS.CASH);
-    let dollarRecordMoneyView = new ForeignMoneyRecordModalView(dollarRecordMoneyPresenter);
-    let cashDollarRecordModal = document.querySelector('#liquid_money_dollars');
-    let dollarRecordTable = new ForeignMoneyRecordTable()
-    dollarRecordMoneyView.init(cashDollarRecordModal, 'liquid_money_dollars', dollarRecordTable)
+        let liquidMoneyBsRegisterModal = document.querySelector('#liquid_money_bolivares');
+        let bolivarRecordMoneyPresenter = new MoneyRecordModalPresenter(CURRENCIES.BOLIVAR, PAYMENT_METHODS.CASH, this.setPropWrapper(this.setTotalLiquidMoneyBs));
+        let bolivarRecordMoneyView = new MoneyRecordModalView(bolivarRecordMoneyPresenter);
+        let moneyRecordTable = new MoneyRecordTable()
+        bolivarRecordMoneyView.init(liquidMoneyBsRegisterModal, 'liquid_money_bolivares', moneyRecordTable)
+        
+        let cashDollarRecordModal = document.querySelector('#liquid_money_dollars');
+        let dollarRecordMoneyPresenter = new ForeignMoneyRecordModalPresenter(CURRENCIES.DOLLAR, PAYMENT_METHODS.CASH, this.setPropWrapper(this.setTotalLiquidMoneyDollar));
+        let dollarRecordMoneyView = new ForeignMoneyRecordModalView(dollarRecordMoneyPresenter);
+        let dollarRecordTable = new ForeignMoneyRecordTable()
+        dollarRecordMoneyView.init(cashDollarRecordModal, 'liquid_money_dollars', dollarRecordTable)
 
-    let bsDenominationsModal = document.querySelector('#liquid_money_bolivares_denominations');
-    let bolivarDenominationModalPresenter = new DenominationModalPresenter(CURRENCIES.BOLIVAR, PAYMENT_METHODS.CASH)
-    let bolivarDenominationModalView = new DenominationModalView(bolivarDenominationModalPresenter);
-    bolivarDenominationModalView.init(bsDenominationsModal, 'liquid_money_bolivares_denominations');
+        let bsDenominationsModal = document.querySelector('#liquid_money_bolivares_denominations');
+        let bolivarDenominationModalPresenter = new DenominationModalPresenter(CURRENCIES.BOLIVAR, PAYMENT_METHODS.CASH, this.setPropWrapper(this.setTotalDenominationBs))
+        let bolivarDenominationModalView = new DenominationModalView(bolivarDenominationModalPresenter);
+        bolivarDenominationModalView.init(bsDenominationsModal, 'liquid_money_bolivares_denominations');
 
-    let dollarDenominationsModal = document.querySelector('#liquid_money_dollars_denominations');
-    let dollarDenominationModalPresenter = new DenominationModalPresenter(CURRENCIES.DOLLAR, PAYMENT_METHODS.CASH)
-    let dollarDenominationModalView = new DenominationModalView(dollarDenominationModalPresenter);
-    dollarDenominationModalView.init(dollarDenominationsModal, 'liquid_money_dollars_denominations');
+        let dollarDenominationsModal = document.querySelector('#liquid_money_dollars_denominations');
+        let dollarDenominationModalPresenter = new DenominationModalPresenter(CURRENCIES.DOLLAR, PAYMENT_METHODS.CASH, this.setPropWrapper(this.setTotalDenominationDollar))
+        let dollarDenominationModalView = new DenominationModalView(dollarDenominationModalPresenter);
+        dollarDenominationModalView.init(dollarDenominationsModal, 'liquid_money_dollars_denominations');
 
-    let salePointModal = document.querySelector('#point_sale_bs');
-    let salePointModalPresenter = new SalePointModalPresenter(CURRENCIES.BOLIVAR, PAYMENT_METHODS.CASH)
-    let salePointModalView = new SalePointModalView(salePointModalPresenter);
-    salePointModalView.init(salePointModal, 'point_sale_bs');
+        let salePointModal = document.querySelector('#point_sale_bs');
+        let salePointModalPresenter = new SalePointModalPresenter(CURRENCIES.BOLIVAR, PAYMENT_METHODS.CASH)
+        let salePointModalView = new SalePointModalView(salePointModalPresenter);
+        salePointModalView.init(salePointModal, 'point_sale_bs');
 
-    let zelleRecordMoneyPresenter = new ForeignMoneyRecordModalPresenter(CURRENCIES.DOLLAR, PAYMENT_METHODS.ZELLE);
-    let zelleRecordMoneyView = new ForeignMoneyRecordModalView(zelleRecordMoneyPresenter);
-    let zelleRecordModal = document.querySelector('#zelle_record');
-    let zelleRecordTable = new ForeignMoneyRecordTable()
-    zelleRecordMoneyView.init(zelleRecordModal, 'zelle_record', zelleRecordTable)
+        let zelleRecordModal = document.querySelector('#zelle_record');
+        let zelleRecordMoneyPresenter = new ForeignMoneyRecordModalPresenter(CURRENCIES.DOLLAR, PAYMENT_METHODS.ZELLE, this.setPropWrapper(this.setTotalZelleDollar));
+        let zelleRecordMoneyView = new ForeignMoneyRecordModalView(zelleRecordMoneyPresenter);
+        let zelleRecordTable = new ForeignMoneyRecordTable()
+        zelleRecordMoneyView.init(zelleRecordModal, 'zelle_record', zelleRecordTable)
 
-    // // Cash register modal total input DOMs
-    let totalLiquidMoneyBolivares = document.querySelector('#total_liquid_money_bolivares');
-    decimalInputs[CURRENCIES.BOLIVAR].mask(totalLiquidMoneyBolivares);
+        // // Cash register modal total input DOMs
+        decimalInputs[CURRENCIES.BOLIVAR].mask(this.totalInputDOMS.liquidMoneyBs);
+        decimalInputs[CURRENCIES.DOLLAR].mask(this.totalInputDOMS.liquidMoneyDollar);
 
-    let totalLiquidMoneyDollars = document.querySelector('#total_liquid_money_dollars');
-    decimalInputs[CURRENCIES.DOLLAR].mask(totalLiquidMoneyDollars);
+        // // Denomination modal total input DOMs
+        decimalInputs[CURRENCIES.BOLIVAR].mask(this.totalInputDOMS.denominationsBs);
+        
+        decimalInputs[CURRENCIES.DOLLAR].mask(this.totalInputDOMS.denominationsDollar);
 
-    // // Denomination modal total input DOMs
-    let totalbsDenominations = document.querySelector('#total_liquid_money_bolivares_denominations');
-    decimalInputs[CURRENCIES.BOLIVAR].mask(totalbsDenominations);
-    
-    let totaldollarDenominations = document.querySelector('#total_liquid_money_dollars_denominations');
-    decimalInputs[CURRENCIES.DOLLAR].mask(totaldollarDenominations);
+        // // Zelle total input DOMs
+        decimalInputs[CURRENCIES.DOLLAR].mask(this.totalInputDOMS.zelleDollar);
 
-    // // Zelle total input DOMs
-    let totalZelleEl = document.querySelector('#total_zelle_record');
-    decimalInputs[CURRENCIES.DOLLAR].mask(totalZelleEl);
+        let handlerWrapper = () => {
+            let self = this;
+            return {
+                set: function(target, key, value) {
+                    target[key] = value;
+                    self.totalInputDOMS[key].value = value
+                    return true;
+                },
+            }
+        }
+
+        let keys = Object.keys(this.totalInputDOMS).reduce((obj, key) => {
+            obj[key] = 0;
+            return obj;
+        }, {})
+
+        this.proxy = new Proxy(keys, handlerWrapper())
+
+        store.subscribe(() => {
+            let state = store.getState();
+        
+            if (state.lastAction === STORE_DOLLAR_EXCHANGE_VALUE ){
+                document.querySelector('p[data-dollar-exchange="dollar_exchange_date"]').innerText = state.dollarExchange.createdAt
+                document.querySelector('p[data-dollar-exchange="dollar_exchange_value"]').innerText = `${state.dollarExchange.value} ${CURRENCY_SIGN_MAP[CURRENCIES.BOLIVAR]}`
+            }
+        })
+    }
 }

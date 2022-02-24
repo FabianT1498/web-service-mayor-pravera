@@ -12,7 +12,7 @@ const DenominationModalPresenterPrototype = {
           
         	if (modaToggleID){ // Checking if it's closing the modal
 				const total = this.denominationRecord.getAll().reduce((acc, curr) => acc + curr.total, 0)
-				console.log(total)
+				this.setTotalAmount(total)
         	}
       	}
    },
@@ -51,10 +51,11 @@ const DenominationModalPresenterPrototype = {
 	}
 }
 
-const DenominationModalPresenter = function (currency, method){
+const DenominationModalPresenter = function (currency, method, setTotalAmount){
    	this.view = null;
 	this.currency = currency;
 	this.method = method;
+	this.setTotalAmount = setTotalAmount;
 
 	let denominationRecord = CURRENCIES_DENOMINATIONS[currency].map((el, index) => new DenominationRecord(currency, el, 0, 0, index))
 	this.denominationRecord = new DenominationRecordCollection(denominationRecord)

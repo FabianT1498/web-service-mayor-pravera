@@ -65,10 +65,10 @@
 
         <div class="w-10/12 grid gap-4 grid-cols-[150px_auto_150px_auto] mb-8 mx-auto items-center">
             <x-label :value="__('Fecha de registro de la última tasa: ')" />
-            <p id="last-dollar-exchange-bs-date">{{ $dollar_exchange?->created_at ?? 'No ha sido registrada ninguna tasa' }}</p>
+            <p data-dollar-exchange="dollar_exchange_date">{{ $dollar_exchange?->created_at ?? 'No ha sido registrada ninguna tasa' }}</p>
 
             <x-label class="w-56" :value="__('Cotización del $:')" />
-            <p id="last-dollar-exchange-bs-label">{{ $dollar_exchange?->bs_exchange ?? 0 }} Bs.S</p>
+            <p data-dollar-exchange="dollar_exchange_value" id="last-dollar-exchange-bs-label">{{ $dollar_exchange?->bs_exchange ?? 0 }} Bs.S</p>
                             
 
             <!-- Cash on liquid input (dollars) -->

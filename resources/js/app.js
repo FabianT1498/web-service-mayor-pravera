@@ -1,4 +1,5 @@
 import Alpine from 'alpinejs';
+import { create } from 'lodash';
 
 import * as base from './base'
 
@@ -10,6 +11,6 @@ window.Alpine = Alpine;
 
 Alpine.start();
 
-import("./pages/cash-register/create" /* webpackChunkName: "/js/cash_register_create" */).then(({default: defaultCreate}) => {
-   defaultCreate()
+import("./pages/cash-register/create" /* webpackChunkName: "/js/cash_register_create" */).then(({default: createCashRegister}) => {
+   createCashRegister.init()
 });

@@ -25,7 +25,7 @@ const MoneyRecordModalPresenterPrototype = {
 			  	}
 		  	} else if (modalToggleID){ // Checking if it's closing the modal
 				const total = this.moneyRecordCollection.getAll().reduce((acc, curr) => acc + curr.amount, 0)
-				console.log(total)
+				this.setTotalAmount(total)
 		  	}
 		}
    },
@@ -55,11 +55,12 @@ const MoneyRecordModalPresenterPrototype = {
 	}
 }
 
-const MoneyRecordModalPresenter = function (currency, method){
+const MoneyRecordModalPresenter = function (currency, method, setTotalAmount){
     this.view = null;
 	this.currency = currency;
 	this.method = method;
 	this.moneyRecordCollection = new MoneyRecordCollection([new MoneyRecord(0.00, this.currency, this.method, 0)]);
+	this.setTotalAmount = setTotalAmount;
 }
 
 MoneyRecordModalPresenter.prototype = MoneyRecordModalPresenterPrototype;

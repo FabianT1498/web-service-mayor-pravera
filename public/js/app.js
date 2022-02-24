@@ -5486,7 +5486,10 @@ module.exports = {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var alpinejs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! alpinejs */ "./node_modules/alpinejs/dist/module.esm.js");
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./base */ "./resources/js/base/index.js");
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./base */ "./resources/js/base/index.js");
+
 
 
 
@@ -5498,8 +5501,8 @@ __webpack_require__(/*! ./external */ "./resources/js/external/index.js"); // re
 window.Alpine = alpinejs__WEBPACK_IMPORTED_MODULE_0__["default"];
 alpinejs__WEBPACK_IMPORTED_MODULE_0__["default"].start();
 __webpack_require__.e(/*! import() | ../../js/cash_register_create */ "/js/cash_register_create").then(__webpack_require__.bind(__webpack_require__, /*! ./pages/cash-register/create */ "./resources/js/pages/cash-register/create.js")).then(function (_ref) {
-  var defaultCreate = _ref["default"];
-  defaultCreate();
+  var createCashRegister = _ref["default"];
+  createCashRegister.init();
 });
 
 /***/ }),
@@ -32845,13 +32848,6 @@ module.exports = JSON.parse('{"_from":"axios@^0.21","_id":"axios@0.21.4","_inBun
 /******/ 	__webpack_require__.m = __webpack_modules__;
 /******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/amd define */
-/******/ 	(() => {
-/******/ 		__webpack_require__.amdD = function () {
-/******/ 			throw new Error('define cannot be used indirect');
-/******/ 		};
-/******/ 	})();
-/******/ 	
 /******/ 	/* webpack/runtime/chunk loaded */
 /******/ 	(() => {
 /******/ 		var deferred = [];
