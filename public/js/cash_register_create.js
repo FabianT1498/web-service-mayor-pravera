@@ -818,7 +818,8 @@ __webpack_require__.r(__webpack_exports__);
     liquidMoneyDollar: document.querySelector('#total_liquid_money_dollars'),
     denominationsBs: document.querySelector('#total_liquid_money_bolivares_denominations'),
     denominationsDollar: document.querySelector('#total_liquid_money_dollars_denominations'),
-    zelleDollar: document.querySelector('#total_zelle_record')
+    zelleDollar: document.querySelector('#total_zelle_record'),
+    pointSaleDollar: document.querySelector('#point_sale_dollar')
   },
   proxy: null,
   setTotalLiquidMoneyBs: function setTotalLiquidMoneyBs(total) {
@@ -880,6 +881,7 @@ __webpack_require__.r(__webpack_exports__);
     _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_15__.decimalInputs[_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.DOLLAR].mask(this.totalInputDOMS.denominationsDollar); // // Zelle total input DOMs
 
     _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_15__.decimalInputs[_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.DOLLAR].mask(this.totalInputDOMS.zelleDollar);
+    _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_15__.decimalInputs[_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.DOLLAR].mask(this.totalInputDOMS.pointSaleDollar);
 
     var handlerWrapper = function handlerWrapper() {
       var self = _this;
@@ -1162,6 +1164,13 @@ var MoneyRecordModalPresenterPrototype = {
 
     if (key === 13 || key === 'Enter') {
       // Handle new table's row creation
+      var amount = (0,_utilities_mathUtilities__WEBPACK_IMPORTED_MODULE_2__.formatAmount)(target.value);
+
+      if (amount <= 0) {
+        // If target value is zero, then don't to create a new row
+        return;
+      }
+
       var moneyRecord = new _models_moneyRecord__WEBPACK_IMPORTED_MODULE_1__["default"](0, this.currency, this.method);
       moneyRecord = this.moneyRecordCollection.pushElement(moneyRecord);
       this.view.addRow(_objectSpread(_objectSpread({}, moneyRecord), {}, {

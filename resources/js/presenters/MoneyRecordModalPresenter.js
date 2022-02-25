@@ -31,6 +31,12 @@ const MoneyRecordModalPresenterPrototype = {
    },
    keyPressedOnModal({target, key}){
    		if (key === 13 || key === 'Enter'){ // Handle new table's row creation
+			let amount = formatAmount(target.value);
+			
+			if (amount <= 0){ // If target value is zero, then don't to create a new row
+				return;
+			}
+
    			let moneyRecord = new MoneyRecord(0, this.currency, this.method);
    			moneyRecord = this.moneyRecordCollection.pushElement(moneyRecord)
             this.view.addRow({ ...moneyRecord, total: this.moneyRecordCollection.getLength()});

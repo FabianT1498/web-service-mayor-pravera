@@ -29,6 +29,7 @@ export default {
         denominationsBs: document.querySelector('#total_liquid_money_bolivares_denominations'),
         denominationsDollar: document.querySelector('#total_liquid_money_dollars_denominations'),
         zelleDollar: document.querySelector('#total_zelle_record'),
+        pointSaleDollar: document.querySelector('#point_sale_dollar')
     },
     proxy: null,
     setTotalLiquidMoneyBs(total){
@@ -99,6 +100,8 @@ export default {
 
         // // Zelle total input DOMs
         decimalInputs[CURRENCIES.DOLLAR].mask(this.totalInputDOMS.zelleDollar);
+
+        decimalInputs[CURRENCIES.DOLLAR].mask(this.totalInputDOMS.pointSaleDollar);
 
         let handlerWrapper = () => {
             let self = this;
