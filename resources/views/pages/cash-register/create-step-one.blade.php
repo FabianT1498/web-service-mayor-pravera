@@ -75,34 +75,35 @@
             <x-label :value="__('Total de $ en efectivo:')" />
             <x-input-with-button 
                 :inputID="__('total_dollar_cash')"
-                :modalID="__('dollar_cash_record_modal')"
+                :modalID="__('dollar_cash_record')"
+                :currencySign="__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))"
                 name="total_dollar_cash"
                 type="text"
             />
             
             <x-label for="liquid_money_dollars_total" :value="__('Total de billetes($) :')" />
             <x-input-with-button 
-                :inputID="__('total_dollar_denomination')"
-                :modalID="__('liquid_money_dollars_denominations')"
-                name="total_liquid_money_dollars_denominations"
+                :inputID="__('total_dollar_denominations')"
+                :modalID="__('dollar_denominations_record')"
+                name="total_dollar_denominations"
                 type="text"
             />
 
             <!-- Cash on liquid input (bolivares) -->
             <x-label :value="__('Total de Bs.S en efectivo:')" />
             <x-input-with-button 
-                :inputID="__('total_liquid_money_bolivares')"
-                :modalID="__('liquid_money_bolivares')"
-                :currency="__('Bs.S')"
-                name="total_liquid_money_bs"
+                :inputID="__('total_bs_cash')"
+                :modalID="__('bs_cash_record')"
+                :currencySign="__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))"
+                name="total_bs_cash"
                 type="text"
             />
             <x-label  :value="__('Total de billetes(Bs.S) :')" />
             <x-input-with-button 
-                :inputID="__('total_liquid_money_bolivares_denominations')"
-                :modalID="__('liquid_money_bolivares_denominations')"
-                :currency="__('Bs.S')"
-                name="total_liquid_money_bs_denominations"
+                :inputID="__('total_bs_denominations')"
+                :modalID="__('bs_denominations_record')"
+                :currencySign="__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))"
+                name="total_bs_denominations"
                 type="text"
             />
         </div>
@@ -116,7 +117,7 @@
                <x-input-with-button 
                     :inputID="__('total_point_sale_bs')"
                     :modalID="__('point_sale_bs')"
-                    :currency="__('Bs.S')"
+                    :currency="__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))"
                     name="total_point_sale_bs"
                     type="text"
                 />
@@ -126,7 +127,7 @@
                 <x-label for="point_sale_dollar" :value="__('Total de $ en Punto de venta internacional:')" />
                 <x-input
                     placeholder="{{'0.00 ' . config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR'))}}" 
-                    id="point_sale_dollar" 
+                    id="total_point_sale_dollar" 
                     class="block ml-4" 
                     type="text"
                     name="total_point_sale_dollar" 
@@ -141,9 +142,9 @@
         <div class="w-10/12 grid gap-4 grid-cols-[150px_auto] mb-8 mx-auto items-center">
             <x-label :value="__('Total en Zelle:')" />
             <x-input-with-button 
-                :inputID="__('total_zelle_record')"
+                :inputID="__('total_zelle')"
                 :modalID="__('zelle_record')"
-                name="total_zelle_record"
+                name="total_zelle"
                 type="text"
             />
         </div>
@@ -160,21 +161,23 @@
         />
         
         <x-modal-input-list 
-            :modalID="__('liquid_money_dollars')"
+            :modalID="__('dollar_cash_record')"
             :currency="config('constants.CURRENCIES.DOLLAR')"
-        />
-        <x-modal-input-denominations 
-            :modalID="__('liquid_money_dollars_denominations')"
-            :denominations="['0.50', '1', '2', '5', '10', '20','50', '100']"
         />
 
         <x-modal-input-list 
-            :modalID="__('liquid_money_bolivares')"
+            :modalID="__('bs_cash_record')"
             :currency="config('constants.CURRENCIES.BOLIVAR')"
             :isBolivar="true"
         />
+        
         <x-modal-input-denominations 
-            :modalID="__('liquid_money_bolivares_denominations')"
+            :modalID="__('dollar_denominations_record')"
+            :denominations="['0.50', '1', '2', '5', '10', '20','50', '100']"
+        />
+
+        <x-modal-input-denominations 
+            :modalID="__('dollar_denominations_record')"
             :denominations="['0.50', '1', '2', '5', '10', '20', '50','100', '200', '500']"
             :currency="__('Bs.S')"
         />

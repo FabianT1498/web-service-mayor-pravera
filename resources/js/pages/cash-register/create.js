@@ -24,12 +24,12 @@ import {decimalInputs} from '_utilities/decimalInput';
 
 export default {
     totalInputDOMS: {
-        liquidMoneyBs: document.querySelector('#total_liquid_money_bolivares'),
-        liquidMoneyDollar: document.querySelector('#total_liquid_money_dollars'),
-        denominationsBs: document.querySelector('#total_liquid_money_bolivares_denominations'),
-        denominationsDollar: document.querySelector('#total_liquid_money_dollars_denominations'),
-        zelleDollar: document.querySelector('#total_zelle_record'),
-        pointSaleDollar: document.querySelector('#point_sale_dollar'),
+        liquidMoneyBs: document.querySelector('#total_bs_cash'),
+        liquidMoneyDollar: document.querySelector('#total_dollar_cash'),
+        denominationsBs: document.querySelector('#total_bs_denominations'),
+        denominationsDollar: document.querySelector('#total_dollar_denominations'),
+        zelleDollar: document.querySelector('#total_zelle'),
+        pointSaleDollar: document.querySelector('#total_point_sale_dollar'),
         pointSaleBs: document.querySelector('#total_point_sale_bs')
     },
     proxy: null,
@@ -60,13 +60,13 @@ export default {
         let cashRegister = new CashRegisterData()
         cashRegister.init(cashRegisterContainer)
 
-        let liquidMoneyBsRegisterModal = document.querySelector('#liquid_money_bolivares');
+        let liquidMoneyBsRegisterModal = document.querySelector('#bs_cash_record');
         let bolivarRecordMoneyPresenter = new MoneyRecordModalPresenter(CURRENCIES.BOLIVAR, PAYMENT_METHODS.CASH, this.setPropWrapper(this.setTotalLiquidMoneyBs));
         let bolivarRecordMoneyView = new MoneyRecordModalView(bolivarRecordMoneyPresenter);
         let moneyRecordTable = new MoneyRecordTable()
         bolivarRecordMoneyView.init(liquidMoneyBsRegisterModal, 'liquid_money_bolivares', moneyRecordTable)
         
-        let cashDollarRecordModal = document.querySelector('#liquid_money_dollars');
+        let cashDollarRecordModal = document.querySelector('#dollar_cash_record');
         let dollarRecordMoneyPresenter = new ForeignMoneyRecordModalPresenter(CURRENCIES.DOLLAR, PAYMENT_METHODS.CASH, this.setPropWrapper(this.setTotalLiquidMoneyDollar));
         let dollarRecordMoneyView = new ForeignMoneyRecordModalView(dollarRecordMoneyPresenter);
         let dollarRecordTable = new ForeignMoneyRecordTable()
