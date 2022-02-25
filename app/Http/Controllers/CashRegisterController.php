@@ -81,6 +81,8 @@ class CashRegisterController extends Controller
 
     public function postCreateStepOne(StoreCashRegisterStepOneRequest $request)
     {
+        return var_dump($request->validated());
+        
         $validated = $request->validated();
         $date =  Date::now()->format('d-m-Y');
 

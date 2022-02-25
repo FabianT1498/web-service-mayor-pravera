@@ -51,6 +51,7 @@
                                             name={{ $modalID . "[]" }} 
                                             class="w-36 rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                             placeholder={{ "0.00" . config("constants.CURRENCY_SIGNS." . $currency) }}
+                                            value="0"
                                         >
                                         </td>
                                     @if(!$isBolivar)

@@ -652,7 +652,7 @@ var SalePointTable = function SalePointTable() {
   };
 
   this.getInputTemplate = function (id, type) {
-    return "\n        <input type=\"text\" data-point-sale-type=\"".concat(type, "\" placeholder=\"0.00 ").concat(_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.SIGN[_this.currency], "\" id=\"").concat(_this.name, "_").concat(type, "_").concat(id, "\" name=\"").concat(_this.name, "_").concat(type, "[]\" class=\"w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50\">\n    ");
+    return "\n        <input type=\"text\" data-point-sale-type=\"".concat(type, "\" value=\"0\" placeholder=\"0.00 ").concat(_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.SIGN[_this.currency], "\" id=\"").concat(_this.name, "_").concat(type, "_").concat(id, "\" name=\"").concat(_this.name, "_").concat(type, "[]\" class=\"w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50\">\n    ");
   };
 
   this.getTableRowTemplate = function (id, availableBanks, currentBank, total) {

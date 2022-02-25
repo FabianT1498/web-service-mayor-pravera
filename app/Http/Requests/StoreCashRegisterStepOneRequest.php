@@ -33,32 +33,34 @@ class StoreCashRegisterStepOneRequest extends FormRequest
 
         $date_format = 'd-m-Y';
 
+        $total_rules= ['required', 'gte:0'];
+
         $rules = [
-            'cash_register_id' => [
-                'required',
-                'exists:saint_db.SSUSRS,CodUsua',
-            ],
-            'liquid_money_dollars' => [
+            // 'cash_register_id' => [
+            //     'required',
+            //     'exists:saint_db.SSUSRS,CodUsua',
+            // ],
+            'total_liquid_money_dollars' => [
                 'bail',
-                'required',
-                'gte:0',
-                new NonZeroTotalSum,
+                ...$total_rules
             ],
-            'liquid_money_bs' => [
-                'required',
-                'gte:0',
+            'total_liquid_money_bs' => [
+                ...$total_rules
             ],
-            'payment_zelle' => [
-                'required',
-                'gte:0',
+            'total_liquid_money_dollars_denominations' => [
+                ...$total_rules
             ],
-            'debit_card_payment_bs' => [
-                'required',
-                'gte:0',
+            'total_liquid_money_bs_denominations' => [
+                ...$total_rules
             ],
-            'debit_card_payment_dollar' => [
-                'required',
-                'gte:0',
+            'total_point_sale_dollar' => [
+                ...$total_rules
+            ], 
+            'total_point_sale_bs' => [
+                ...$total_rules
+            ],
+            'total_zelle_record' => [
+                ...$total_rules
             ]
         ];
 
@@ -86,16 +88,18 @@ class StoreCashRegisterStepOneRequest extends FormRequest
     {
         
         $inputs = [
-            'total_liquid_money_dollars' => $this->formatAmount($this->liquid_money_dollars),
-            'total_liquid_money_bolivares' => $this->formatAmount($this->liquid_money_bs),
-            'total_liquid_money_dollars_denominations' => $this->formatAmount($this->payment_zelle),
-            'total_liquid_money_bolivares_denominations' => $this->formatAmount($this->debit_card_payment_bs),
-            'total_point_sale_dollar' => $this->formatAmount($this->debit_card_payment_dollar),
+            'total_liquid_money_dollars' => $this->formatAmount($this->total_liquid_money_dollars),
+            'total_liquid_money_bs' => $this->formatAmount($this->total_liquid_money_bs),
+            'total_liquid_money_dollars_denominations' => $this->formatAmount($this->total_liquid_money_dollars_denominations),
+            'total_liquid_money_bs_denominations' => $this->formatAmount($this->total_liquid_money_bs_denominations),
+            'total_point_sale_dollar' => $this->formatAmount($this->total_point_sale_dollar),
+            'total_point_sale_bs' => $this->formatAmount($this->total_point_sale_bs),
+            'total_zelle_record' => $this->formatAmount($this->total_zelle_record)
         ];
 
-        if (isset($this->new_cash_register_worker)){
-            $inputs += ['new_cash_register_worker' => ucwords($this->new_cash_register_worker)];
-        }
+        // if (isset($this->new_cash_register_worker)){
+        //     $inputs += ['new_cash_register_worker' => ucwords($this->new_cash_register_worker)];
+        // }
         
         $this->merge($inputs);
     }

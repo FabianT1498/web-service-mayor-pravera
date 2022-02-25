@@ -74,14 +74,15 @@
             <!-- Cash on liquid input (dollars) -->
             <x-label :value="__('Total de $ en efectivo:')" />
             <x-input-with-button 
-                :inputID="__('total_liquid_money_dollars')"
-                :modalID="__('liquid_money_dollars')"
-                name="total_liquid_money_dollars"
+                :inputID="__('total_dollar_cash')"
+                :modalID="__('dollar_cash_record_modal')"
+                name="total_dollar_cash"
                 type="text"
             />
+            
             <x-label for="liquid_money_dollars_total" :value="__('Total de billetes($) :')" />
             <x-input-with-button 
-                :inputID="__('total_liquid_money_dollars_denominations')"
+                :inputID="__('total_dollar_denomination')"
                 :modalID="__('liquid_money_dollars_denominations')"
                 name="total_liquid_money_dollars_denominations"
                 type="text"
@@ -93,7 +94,7 @@
                 :inputID="__('total_liquid_money_bolivares')"
                 :modalID="__('liquid_money_bolivares')"
                 :currency="__('Bs.S')"
-                name="total_liquid_money_bolivares"
+                name="total_liquid_money_bs"
                 type="text"
             />
             <x-label  :value="__('Total de billetes(Bs.S) :')" />
@@ -101,7 +102,7 @@
                 :inputID="__('total_liquid_money_bolivares_denominations')"
                 :modalID="__('liquid_money_bolivares_denominations')"
                 :currency="__('Bs.S')"
-                name="total_liquid_money_bolivares_denominations"
+                name="total_liquid_money_bs_denominations"
                 type="text"
             />
         </div>
@@ -122,8 +123,15 @@
             </div>
             
             <div class="flex items-center basis-2/3 justify-center">
-                <x-label for="point_sale_dollar" :value="__('Total de $ en Punto:')" />
-                <x-input placeholder="{{'0.00 ' . config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR'))}}" id="point_sale_dollar" class="block ml-4" type="text" name="total_point_sale_dollar" :value="old('point_sale_dollar')"/>
+                <x-label for="point_sale_dollar" :value="__('Total de $ en Punto de venta internacional:')" />
+                <x-input
+                    placeholder="{{'0.00 ' . config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR'))}}" 
+                    id="point_sale_dollar" 
+                    class="block ml-4" 
+                    type="text"
+                    name="total_point_sale_dollar" 
+                    :value="old('point_sale_dollar') ?? '0'"
+                />
             </div>
             <!-- Cash on punto de venta ($) -->
         </div>

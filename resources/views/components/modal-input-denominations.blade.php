@@ -37,7 +37,8 @@
                                                 data-denomination={{ $denomination }}
                                                 type="text"
                                                 min="0"
-                                                name={{ 'total_amount_liquid_money[' . $modalID . '][' . $denomination . ']' }} 
+                                                name={{ $modalID . '[' . $denomination . ']' }} 
+                                                value="0"
                                                 class="w-36 rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                             >
                                                 

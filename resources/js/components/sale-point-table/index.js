@@ -74,7 +74,7 @@ const SalePointTable = function(){
     }
 
     this.getInputTemplate = (id, type) => `
-        <input type="text" data-point-sale-type="${type}" placeholder="0.00 ${CURRENCY_SYMBOLS_MAP[this.currency]}" id="${this.name}_${type}_${id}" name="${this.name}_${type}[]" class="w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+        <input type="text" data-point-sale-type="${type}" value="0" placeholder="0.00 ${CURRENCY_SYMBOLS_MAP[this.currency]}" id="${this.name}_${type}_${id}" name="${this.name}_${type}[]" class="w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
     `
 
     this.getTableRowTemplate = (id, availableBanks, currentBank, total) => `
