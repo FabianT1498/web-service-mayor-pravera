@@ -1,4 +1,5 @@
 import { SIGN as CURRENCY_SYMBOLS_MAP, CURRENCIES} from '_constants/currencies';
+import POINT_SALE_TYPE from '_constants/point-sale-type'
 
 import {decimalInputs} from '_utilities/decimalInput';
 
@@ -73,7 +74,7 @@ const SalePointTable = function(){
     }
 
     this.getInputTemplate = (id, type) => `
-        <input type="text" placeholder="0.00 ${CURRENCY_SYMBOLS_MAP[this.currency]}" id="${this.name}_${type}_${id}" name="${this.name}_${type}[]" class="w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+        <input type="text" data-point-sale-type="${type}" placeholder="0.00 ${CURRENCY_SYMBOLS_MAP[this.currency]}" id="${this.name}_${type}_${id}" name="${this.name}_${type}[]" class="w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
     `
 
     this.getTableRowTemplate = (id, availableBanks, currentBank, total) => `
@@ -86,10 +87,10 @@ const SalePointTable = function(){
                 </select>
             </td>
             <td class="pl-3 py-4 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                ${ this.getInputTemplate(id, 'debit') }
+                ${ this.getInputTemplate(id, POINT_SALE_TYPE.DEBIT) }
             </td>
             <td data-table="convertion-col" class="pl-3 py-4 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                ${ this.getInputTemplate(id, 'credit') }
+                ${ this.getInputTemplate(id, POINT_SALE_TYPE.CREDIT) }
             </td>
             <td class="py-4 pl-3 text-sm text-center font-medium whitespace-nowrap">
                 <button data-modal="delete" type="button" class="bg-red-600 flex justify-center w-6 h-6 items-center transition-colors duration-150 rounded-full shadow-lg hover:bg-red-500">

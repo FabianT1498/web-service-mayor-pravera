@@ -8,6 +8,9 @@ const SalePointModalViewPrototype = {
 
         container.addEventListener("click", this.clickEventHandlerWrapper(this.presenter));
         container.addEventListener('change', this.changeEventHandlerWrapper(this.presenter));
+        container.addEventListener("keypress", this.keyPressEventHandlerWrapper(this.presenter))
+        container.addEventListener("keydown", this.keyDownEventHandlerWrapper(this.presenter));
+
     },
     addRow(obj){
         this.table.addRow(obj);
@@ -30,6 +33,23 @@ const SalePointModalViewPrototype = {
             presenter.changeOnModal({
                 target: event.target
             })
+        }
+    },
+    keyPressEventHandlerWrapper(presenter){
+        return (event) => {
+            event.preventDefault();
+            presenter.keyPressedOnModal({
+                target: event.target,
+                key: event.key || event.keyCode
+            })
+        }
+    },
+    keyDownEventHandlerWrapper(presenter){
+        return (event) => {
+            this.presenter.keyDownOnModal({
+                target: event.target,
+                key: event.key || event.keyCode
+            });
         }
     }
 }

@@ -29,6 +29,8 @@ class StoreCashRegisterStepOneRequest extends FormRequest
      */
     public function rules()
     {
+        return var_dump($this->all());
+
         $date_format = 'd-m-Y';
 
         $rules = [
@@ -82,19 +84,18 @@ class StoreCashRegisterStepOneRequest extends FormRequest
      */
     protected function prepareForValidation()
     {
-        var_dump($this->all());
-
+        
         $inputs = [
-            'liquid_money_dollars' => $this->formatAmount($this->liquid_money_dollars),
-            'liquid_money_bs' => $this->formatAmount($this->liquid_money_bs),
-            'payment_zelle' => $this->formatAmount($this->payment_zelle),
-            'debit_card_payment_bs' => $this->formatAmount($this->debit_card_payment_bs),
-            'debit_card_payment_dollar' => $this->formatAmount($this->debit_card_payment_dollar),
+            'total_liquid_money_dollars' => $this->formatAmount($this->liquid_money_dollars),
+            'total_liquid_money_bolivares' => $this->formatAmount($this->liquid_money_bs),
+            'total_liquid_money_dollars_denominations' => $this->formatAmount($this->payment_zelle),
+            'total_liquid_money_bolivares_denominations' => $this->formatAmount($this->debit_card_payment_bs),
+            'total_point_sale_dollar' => $this->formatAmount($this->debit_card_payment_dollar),
         ];
 
-        // if (isset($this->new_cash_register_worker)){
-        //     $inputs += ['new_cash_register_worker' => ucwords($this->new_cash_register_worker)];
-        // }
+        if (isset($this->new_cash_register_worker)){
+            $inputs += ['new_cash_register_worker' => ucwords($this->new_cash_register_worker)];
+        }
         
         $this->merge($inputs);
     }

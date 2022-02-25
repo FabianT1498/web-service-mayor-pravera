@@ -69,7 +69,8 @@ var CollectionPrototype = {
   }
 };
 
-var Collection = function Collection(elements) {
+var Collection = function Collection() {
+  var elements = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   this.elements = elements;
 };
 
@@ -203,6 +204,49 @@ ObjectCollection.prototype.constructor = ObjectCollection;
 
 /***/ }),
 
+/***/ "./resources/js/collections/poinSaleCollection.js":
+/*!********************************************************!*\
+  !*** ./resources/js/collections/poinSaleCollection.js ***!
+  \********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _objectCollection__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./objectCollection */ "./resources/js/collections/objectCollection.js");
+
+
+var PointSaleCollection = function PointSaleCollection() {
+  var elements = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+  _objectCollection__WEBPACK_IMPORTED_MODULE_0__["default"].call(this, elements);
+
+  this.removeElementByBankID = function (bank) {
+    var index = this.elements.findIndex(function (val) {
+      return val.bank.id === bank.id;
+    });
+
+    if (index === -1) {
+      return false;
+    }
+
+    this.elements.splice(index, 1);
+    return true;
+  };
+
+  this.getIndexByBankID = function (bank) {
+    return this.elements.findIndex(function (val) {
+      return val.bank.id === bank.id;
+    });
+  };
+};
+
+PointSaleCollection.prototype = Object.create(_objectCollection__WEBPACK_IMPORTED_MODULE_0__["default"].prototype);
+PointSaleCollection.prototype.constructor = PointSaleCollection;
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (PointSaleCollection);
+
+/***/ }),
+
 /***/ "./resources/js/components/cash-register-data/index.js":
 /*!*************************************************************!*\
   !*** ./resources/js/components/cash-register-data/index.js ***!
@@ -221,7 +265,9 @@ var CashRegisterDataPrototype = {
    * @constructor
    */
   init: function init(container) {
-    container.addEventListener("change", this.changeEventHandlerWrapper(container));
+    var _container$querySelec;
+
+    (_container$querySelec = container.querySelector('#cash_register_worker_exist_check')) === null || _container$querySelec === void 0 ? void 0 : _container$querySelec.addEventListener("change", this.changeEventHandlerWrapper(container));
   },
   changeEventHandlerWrapper: function changeEventHandlerWrapper(container) {
     return function (event) {
@@ -232,8 +278,9 @@ var CashRegisterDataPrototype = {
         var _newCashRegisterWorke;
 
         newCashRegisterWorkerContainer.classList.toggle('hidden');
-        workersSelectEl.disabled = !workersSelectEl.disabled;
         newCashRegisterWorkerContainer === null || newCashRegisterWorkerContainer === void 0 ? void 0 : (_newCashRegisterWorke = newCashRegisterWorkerContainer.lastElementChild) === null || _newCashRegisterWorke === void 0 ? void 0 : _newCashRegisterWorke.toggleAttribute('required');
+        workersSelectEl.disabled = !workersSelectEl.disabled;
+        workersSelectEl.toggleAttribute('required');
 
         if (workersSelectEl.disabled) {
           workersSelectEl.selectedIndex = "0";
@@ -502,7 +549,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _constants_currencies__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! _constants/currencies */ "./resources/js/constants/currencies.js");
-/* harmony import */ var _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! _utilities/decimalInput */ "./resources/js/utilities/decimalInput.js");
+/* harmony import */ var _constants_point_sale_type__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! _constants/point-sale-type */ "./resources/js/constants/point-sale-type.js");
+/* harmony import */ var _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! _utilities/decimalInput */ "./resources/js/utilities/decimalInput.js");
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -514,6 +562,7 @@ function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symb
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 
 
 
@@ -544,9 +593,9 @@ var SalePointTable = function SalePointTable() {
     var input_debit = tBody.querySelector("#".concat(_this.name, "_debit_").concat(newID));
     var input_credit = tBody.querySelector("#".concat(_this.name, "_credit_").concat(newID));
 
-    _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_1__.decimalInputs[_this.currency].mask(input_debit);
+    _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_2__.decimalInputs[_this.currency].mask(input_debit);
 
-    _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_1__.decimalInputs[_this.currency].mask(input_credit);
+    _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_2__.decimalInputs[_this.currency].mask(input_credit);
 
     if (prevIDArr.length > 0) {
       var selectors = getBankSelectSelectors(prevIDArr);
@@ -603,13 +652,13 @@ var SalePointTable = function SalePointTable() {
   };
 
   this.getInputTemplate = function (id, type) {
-    return "\n        <input type=\"text\" placeholder=\"0.00 ".concat(_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.SIGN[_this.currency], "\" id=\"").concat(_this.name, "_").concat(type, "_").concat(id, "\" name=\"").concat(_this.name, "_").concat(type, "[]\" class=\"w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50\">\n    ");
+    return "\n        <input type=\"text\" data-point-sale-type=\"".concat(type, "\" placeholder=\"0.00 ").concat(_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.SIGN[_this.currency], "\" id=\"").concat(_this.name, "_").concat(type, "_").concat(id, "\" name=\"").concat(_this.name, "_").concat(type, "[]\" class=\"w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50\">\n    ");
   };
 
   this.getTableRowTemplate = function (id, availableBanks, currentBank, total) {
     return "\n        <tr class=\"hover:bg-gray-100 dark:hover:bg-gray-700\" data-id=".concat(id, ">\n            <td data-table=\"num-col\" class=\"py-4 pl-6 text-sm font-medium text-center text-gray-900 whitespace-nowrap dark:text-white\">").concat(total, "</td>\n            <td class=\"pl-3 py-4 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white\">\n                <select class=\"w-full form-select\" name=\"point_sale_bs_bank[]\">\n                    <option value=\"").concat(currentBank, "\">").concat(currentBank, "</option>\n                    ").concat(availableBanks.map(function (el) {
       return "<option value=\"".concat(el, "\">").concat(el, "</option>");
-    }).join(''), "\n                </select>\n            </td>\n            <td class=\"pl-3 py-4 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white\">\n                ").concat(_this.getInputTemplate(id, 'debit'), "\n            </td>\n            <td data-table=\"convertion-col\" class=\"pl-3 py-4 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white\">\n                ").concat(_this.getInputTemplate(id, 'credit'), "\n            </td>\n            <td class=\"py-4 pl-3 text-sm text-center font-medium whitespace-nowrap\">\n                <button data-modal=\"delete\" type=\"button\" class=\"bg-red-600 flex justify-center w-6 h-6 items-center transition-colors duration-150 rounded-full shadow-lg hover:bg-red-500\">\n                    <i class=\"fas fa-times  text-white\"></i>                        \n                </button>\n            </td>\n        </tr>\n    ");
+    }).join(''), "\n                </select>\n            </td>\n            <td class=\"pl-3 py-4 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white\">\n                ").concat(_this.getInputTemplate(id, _constants_point_sale_type__WEBPACK_IMPORTED_MODULE_1__["default"].DEBIT), "\n            </td>\n            <td data-table=\"convertion-col\" class=\"pl-3 py-4 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white\">\n                ").concat(_this.getInputTemplate(id, _constants_point_sale_type__WEBPACK_IMPORTED_MODULE_1__["default"].CREDIT), "\n            </td>\n            <td class=\"py-4 pl-3 text-sm text-center font-medium whitespace-nowrap\">\n                <button data-modal=\"delete\" type=\"button\" class=\"bg-red-600 flex justify-center w-6 h-6 items-center transition-colors duration-150 rounded-full shadow-lg hover:bg-red-500\">\n                    <i class=\"fas fa-times  text-white\"></i>                        \n                </button>\n            </td>\n        </tr>\n    ");
   };
 
   this.isContainerDefined = function () {
@@ -700,6 +749,24 @@ var PAYMENT_METHODS = Object.freeze({
 
 /***/ }),
 
+/***/ "./resources/js/constants/point-sale-type.js":
+/*!***************************************************!*\
+  !*** ./resources/js/constants/point-sale-type.js ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+var POINT_SALE_TYPE = Object.freeze({
+  DEBIT: 'debit',
+  CREDIT: 'credit'
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (POINT_SALE_TYPE);
+
+/***/ }),
+
 /***/ "./resources/js/models/Bank.js":
 /*!*************************************!*\
   !*** ./resources/js/models/Bank.js ***!
@@ -744,6 +811,34 @@ var DenominationRecord = function DenominationRecord(currency, denomination) {
 
 DenominationRecord.prototype.constructor = DenominationRecord;
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (DenominationRecord);
+
+/***/ }),
+
+/***/ "./resources/js/models/PointSaleRecord.js":
+/*!************************************************!*\
+  !*** ./resources/js/models/PointSaleRecord.js ***!
+  \************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _Bank__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Bank */ "./resources/js/models/Bank.js");
+
+
+var PointSaleRecord = function PointSaleRecord(currency) {
+  var total = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+  var bank = arguments.length > 2 ? arguments[2] : undefined;
+  var id = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+  this.id = id;
+  this.total = total;
+  this.currency = currency;
+  this.bank = bank instanceof _Bank__WEBPACK_IMPORTED_MODULE_0__["default"] ? bank : null;
+};
+
+PointSaleRecord.prototype.constructor = PointSaleRecord;
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (PointSaleRecord);
 
 /***/ }),
 
@@ -819,7 +914,8 @@ __webpack_require__.r(__webpack_exports__);
     denominationsBs: document.querySelector('#total_liquid_money_bolivares_denominations'),
     denominationsDollar: document.querySelector('#total_liquid_money_dollars_denominations'),
     zelleDollar: document.querySelector('#total_zelle_record'),
-    pointSaleDollar: document.querySelector('#point_sale_dollar')
+    pointSaleDollar: document.querySelector('#point_sale_dollar'),
+    pointSaleBs: document.querySelector('#total_point_sale_bs')
   },
   proxy: null,
   setTotalLiquidMoneyBs: function setTotalLiquidMoneyBs(total) {
@@ -836,6 +932,9 @@ __webpack_require__.r(__webpack_exports__);
   },
   setTotalZelleDollar: function setTotalZelleDollar(total) {
     this.proxy.zelleDollar = total;
+  },
+  setTotalPointSaleBs: function setTotalPointSaleBs(total) {
+    this.proxy.pointSaleBs = total;
   },
   setPropWrapper: function setPropWrapper(fn) {
     return fn.bind(this);
@@ -865,7 +964,7 @@ __webpack_require__.r(__webpack_exports__);
     var dollarDenominationModalView = new _views_DenominationModalView__WEBPACK_IMPORTED_MODULE_12__["default"](dollarDenominationModalPresenter);
     dollarDenominationModalView.init(dollarDenominationsModal, 'liquid_money_dollars_denominations');
     var salePointModal = document.querySelector('#point_sale_bs');
-    var salePointModalPresenter = new _presenters_SalePointModalPresenter__WEBPACK_IMPORTED_MODULE_13__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.BOLIVAR, _constants_paymentMethods__WEBPACK_IMPORTED_MODULE_1__.PAYMENT_METHODS.CASH);
+    var salePointModalPresenter = new _presenters_SalePointModalPresenter__WEBPACK_IMPORTED_MODULE_13__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.BOLIVAR, this.setPropWrapper(this.setTotalPointSaleBs));
     var salePointModalView = new _views_SalePointModalView__WEBPACK_IMPORTED_MODULE_14__["default"](salePointModalPresenter);
     salePointModalView.init(salePointModal, 'point_sale_bs');
     var zelleRecordModal = document.querySelector('#zelle_record');
@@ -880,8 +979,10 @@ __webpack_require__.r(__webpack_exports__);
     _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_15__.decimalInputs[_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.BOLIVAR].mask(this.totalInputDOMS.denominationsBs);
     _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_15__.decimalInputs[_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.DOLLAR].mask(this.totalInputDOMS.denominationsDollar); // // Zelle total input DOMs
 
-    _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_15__.decimalInputs[_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.DOLLAR].mask(this.totalInputDOMS.zelleDollar);
+    _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_15__.decimalInputs[_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.DOLLAR].mask(this.totalInputDOMS.zelleDollar); // Point sale input DOMS
+
     _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_15__.decimalInputs[_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.DOLLAR].mask(this.totalInputDOMS.pointSaleDollar);
+    _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_15__.decimalInputs[_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.BOLIVAR].mask(this.totalInputDOMS.pointSaleBs);
 
     var handlerWrapper = function handlerWrapper() {
       var self = _this;
@@ -1228,14 +1329,28 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _app_collections_bankCollection__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! _app/collections/bankCollection */ "./resources/js/collections/bankCollection.js");
-/* harmony import */ var _services_banks__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! _services/banks */ "./resources/js/services/banks/index.js");
-/* harmony import */ var _models_Bank__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! _models/Bank */ "./resources/js/models/Bank.js");
+/* harmony import */ var _collections_poinSaleCollection__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! _collections/poinSaleCollection */ "./resources/js/collections/poinSaleCollection.js");
+/* harmony import */ var _collections_bankCollection__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! _collections/bankCollection */ "./resources/js/collections/bankCollection.js");
+/* harmony import */ var _services_banks__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! _services/banks */ "./resources/js/services/banks/index.js");
+/* harmony import */ var _constants_point_sale_type__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! _constants/point-sale-type */ "./resources/js/constants/point-sale-type.js");
+/* harmony import */ var _utilities_mathUtilities__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! _utilities/mathUtilities */ "./resources/js/utilities/mathUtilities.js");
+/* harmony import */ var _models_PointSaleRecord__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! _models/PointSaleRecord */ "./resources/js/models/PointSaleRecord.js");
+/* harmony import */ var _models_Bank__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! _models/Bank */ "./resources/js/models/Bank.js");
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+
 
 
 
@@ -1247,63 +1362,79 @@ var SalePointModalPresenterPrototype = {
 
     if (button && button.tagName === 'BUTTON') {
       var action = button.getAttribute('data-modal');
+      var modalToggleID = button.getAttribute('data-modal-toggle');
 
-      if (!action) {
-        return;
-      }
+      if (action) {
+        if (action === 'add') {
+          if (this.banks.length === 0) {
+            return;
+          }
 
-      if (action === 'add') {
-        if (this.banks.length === 0) {
-          return;
-        }
+          var idArr = [];
+          var bank = new _models_Bank__WEBPACK_IMPORTED_MODULE_7__["default"](this.banks.shift());
 
-        var idArr = [];
-        var bank = new _models_Bank__WEBPACK_IMPORTED_MODULE_3__["default"](this.banks.shift());
+          if (this.selectedBanks.getLength() > 0) {
+            idArr = this.selectedBanks.getAll().map(function (el) {
+              return el.id;
+            });
+            bank = this.selectedBanks.pushElement(bank);
+          } else {
+            bank = this.selectedBanks.pushElement(bank);
+          } // Add point sale records to collection
 
-        if (this.selectedBanks.getLength() > 0) {
-          idArr = this.selectedBanks.getAll().map(function (el) {
+
+          this.pointSaleDebit.pushElement(new _models_PointSaleRecord__WEBPACK_IMPORTED_MODULE_6__["default"](this.currency, 0, bank));
+          this.pointSaleCredit.pushElement(new _models_PointSaleRecord__WEBPACK_IMPORTED_MODULE_6__["default"](this.currency, 0, bank));
+          this.view.addRow({
+            prevIDArr: idArr,
+            newID: bank.id,
+            currentBank: bank.name,
+            availableBanks: this.banks,
+            totalElements: this.selectedBanks.getLength()
+          });
+        } else if (action === 'delete') {
+          var row = button.closest('tr');
+          var id = row ? parseInt(row.getAttribute('data-id')) : null;
+
+          var _bank = this.selectedBanks.getElementByID(id);
+
+          if (_bank === undefined) {
+            return false;
+          }
+
+          this.pointSaleDebit.removeElementByBankID(_bank);
+          this.pointSaleCredit.removeElementByBankID(_bank);
+          this.selectedBanks.removeElementByID(id);
+          this.banks.push(_bank.name);
+
+          var _idArr = this.selectedBanks.getAll().map(function (el) {
             return el.id;
           });
-          bank = this.selectedBanks.pushElement(bank);
-        } else {
-          bank = this.selectedBanks.pushElement(bank);
+
+          this.view.deleteRow({
+            prevIDArr: _idArr,
+            deleteID: id,
+            availableBanks: this.banks,
+            totalElements: this.selectedBanks.getLength()
+          });
         }
-
-        this.view.addRow({
-          prevIDArr: idArr,
-          newID: bank.id,
-          currentBank: bank.name,
-          availableBanks: this.banks,
-          totalElements: this.selectedBanks.getLength()
-        });
-      } else if (action === 'delete') {
-        var row = button.closest('tr');
-        var id = row ? parseInt(row.getAttribute('data-id')) : null;
-
-        var _bank = this.selectedBanks.getElementByID(id);
-
-        if (_bank === undefined) {
-          return false;
-        }
-
-        this.selectedBanks.removeElementByID(id);
-        this.banks.push(_bank.name);
-
-        var _idArr = this.selectedBanks.getAll().map(function (el) {
-          return el.id;
-        });
-
-        this.view.deleteRow({
-          prevIDArr: _idArr,
-          deleteID: id,
-          availableBanks: this.banks,
-          totalElements: this.selectedBanks.getLength()
-        });
+      } else if (modalToggleID) {
+        var totalCredit = this.pointSaleCredit.getAll().reduce(function (acc, curr) {
+          return acc + curr.total;
+        }, 0);
+        var totalDebit = this.pointSaleDebit.getAll().reduce(function (acc, curr) {
+          return acc + curr.total;
+        }, 0);
+        this.setTotalAmount(totalCredit + totalDebit);
       }
     }
   },
   changeOnModal: function changeOnModal(_ref2) {
     var target = _ref2.target;
+
+    if (target.tagName !== 'SELECT') {
+      return;
+    }
 
     if (this.banks.length === 0) {
       return;
@@ -1327,8 +1458,19 @@ var SalePointModalPresenterPrototype = {
       var indexOld = this.selectedBanks.getIndexByID(id);
       this.selectedBanks.setElementAtIndex(indexOld, {
         name: newSelectedValue
+      }); // indexOld it's the same to pointSaleDebit and pointSaleCredit
+
+      this.pointSaleCredit.setElementAtIndex(indexOld, {
+        bank: _objectSpread(_objectSpread({}, bank), {}, {
+          name: newSelectedValue
+        })
       });
-      console.log(this.selectedBanks.getAll());
+      this.pointSaleDebit.setElementAtIndex(indexOld, {
+        bank: _objectSpread(_objectSpread({}, bank), {}, {
+          name: newSelectedValue
+        })
+      });
+      console.log(this.pointSaleCredit.getElementByIndex(indexOld));
       this.view.changeSelect({
         prevIDArr: this.selectedBanks.getAll().map(function (el) {
           return el.id;
@@ -1337,18 +1479,57 @@ var SalePointModalPresenterPrototype = {
       });
     }
   },
+  keyPressedOnModal: function keyPressedOnModal(_ref3) {
+    var target = _ref3.target,
+        key = _ref3.key;
+
+    if (isFinite(key)) {
+      var id = target.closest('tr').getAttribute('data-id');
+      var type = target.getAttribute('data-point-sale-type');
+      this.updatePointSaleRecord(parseInt(id), type, target.value);
+    }
+  },
+  keyDownOnModal: function keyDownOnModal(_ref4) {
+    var target = _ref4.target,
+        key = _ref4.key;
+
+    if (key === 8 || key === 'Backspace') {
+      var id = target.closest('tr').getAttribute('data-id');
+      var type = target.getAttribute('data-point-sale-type');
+      this.updatePointSaleRecord(parseInt(id), type, target.value);
+    }
+  },
+  updatePointSaleRecord: function updatePointSaleRecord(id, type, inputValue) {
+    var index = this.selectedBanks.getIndexByID(id);
+    var value = (0,_utilities_mathUtilities__WEBPACK_IMPORTED_MODULE_5__.formatAmount)(inputValue);
+
+    if (type === _constants_point_sale_type__WEBPACK_IMPORTED_MODULE_4__["default"].DEBIT) {
+      this.pointSaleDebit.setElementAtIndex(index, {
+        total: value
+      });
+      console.log(this.pointSaleDebit.getElementByIndex(index));
+    } else if (type === _constants_point_sale_type__WEBPACK_IMPORTED_MODULE_4__["default"].CREDIT) {
+      this.pointSaleCredit.setElementAtIndex(index, {
+        total: value
+      });
+      console.log(this.pointSaleCredit.getElementByIndex(index));
+    }
+  },
   setView: function setView(view) {
     this.view = view;
   }
 };
 
-var SalePointModalPresenter = function SalePointModalPresenter(currency) {
+var SalePointModalPresenter = function SalePointModalPresenter(currency, setTotalAmount) {
   var _this = this;
 
   this.view = null;
   this.currency = currency;
   this.banks = [];
-  this.selectedBanks = new _app_collections_bankCollection__WEBPACK_IMPORTED_MODULE_1__["default"]();
+  this.setTotalAmount = setTotalAmount;
+  this.selectedBanks = new _collections_bankCollection__WEBPACK_IMPORTED_MODULE_2__["default"]();
+  this.pointSaleDebit = new _collections_poinSaleCollection__WEBPACK_IMPORTED_MODULE_1__["default"]();
+  this.pointSaleCredit = new _collections_poinSaleCollection__WEBPACK_IMPORTED_MODULE_1__["default"]();
   fetchInitialData().then(function (res) {
     _this.banks = res.banks;
   })["catch"](function (err) {
@@ -1368,7 +1549,7 @@ var SalePointModalPresenter = function SalePointModalPresenter(currency) {
             case 0:
               _context.prev = 0;
               _context.next = 3;
-              return (0,_services_banks__WEBPACK_IMPORTED_MODULE_2__.getAllBanks)();
+              return (0,_services_banks__WEBPACK_IMPORTED_MODULE_3__.getAllBanks)();
 
             case 3:
               banks = _context.sent;
@@ -1666,6 +1847,8 @@ var SalePointModalViewPrototype = {
     this.table.init(tableContainer, this.name, this.presenter.currency);
     container.addEventListener("click", this.clickEventHandlerWrapper(this.presenter));
     container.addEventListener('change', this.changeEventHandlerWrapper(this.presenter));
+    container.addEventListener("keypress", this.keyPressEventHandlerWrapper(this.presenter));
+    container.addEventListener("keydown", this.keyDownEventHandlerWrapper(this.presenter));
   },
   addRow: function addRow(obj) {
     this.table.addRow(obj);
@@ -1687,6 +1870,25 @@ var SalePointModalViewPrototype = {
     return function (event) {
       presenter.changeOnModal({
         target: event.target
+      });
+    };
+  },
+  keyPressEventHandlerWrapper: function keyPressEventHandlerWrapper(presenter) {
+    return function (event) {
+      event.preventDefault();
+      presenter.keyPressedOnModal({
+        target: event.target,
+        key: event.key || event.keyCode
+      });
+    };
+  },
+  keyDownEventHandlerWrapper: function keyDownEventHandlerWrapper(presenter) {
+    var _this = this;
+
+    return function (event) {
+      _this.presenter.keyDownOnModal({
+        target: event.target,
+        key: event.key || event.keyCode
       });
     };
   }

@@ -29,7 +29,8 @@ export default {
         denominationsBs: document.querySelector('#total_liquid_money_bolivares_denominations'),
         denominationsDollar: document.querySelector('#total_liquid_money_dollars_denominations'),
         zelleDollar: document.querySelector('#total_zelle_record'),
-        pointSaleDollar: document.querySelector('#point_sale_dollar')
+        pointSaleDollar: document.querySelector('#point_sale_dollar'),
+        pointSaleBs: document.querySelector('#total_point_sale_bs')
     },
     proxy: null,
     setTotalLiquidMoneyBs(total){
@@ -46,6 +47,9 @@ export default {
     },
     setTotalZelleDollar(total){
         this.proxy.zelleDollar = total
+    },
+    setTotalPointSaleBs(total){
+        this.proxy.pointSaleBs = total
     },
     setPropWrapper(fn){
         return fn.bind(this)
@@ -79,7 +83,7 @@ export default {
         dollarDenominationModalView.init(dollarDenominationsModal, 'liquid_money_dollars_denominations');
 
         let salePointModal = document.querySelector('#point_sale_bs');
-        let salePointModalPresenter = new SalePointModalPresenter(CURRENCIES.BOLIVAR, PAYMENT_METHODS.CASH)
+        let salePointModalPresenter = new SalePointModalPresenter(CURRENCIES.BOLIVAR, this.setPropWrapper(this.setTotalPointSaleBs))
         let salePointModalView = new SalePointModalView(salePointModalPresenter);
         salePointModalView.init(salePointModal, 'point_sale_bs');
 
@@ -95,13 +99,14 @@ export default {
 
         // // Denomination modal total input DOMs
         decimalInputs[CURRENCIES.BOLIVAR].mask(this.totalInputDOMS.denominationsBs);
-        
         decimalInputs[CURRENCIES.DOLLAR].mask(this.totalInputDOMS.denominationsDollar);
 
         // // Zelle total input DOMs
         decimalInputs[CURRENCIES.DOLLAR].mask(this.totalInputDOMS.zelleDollar);
 
+        // Point sale input DOMS
         decimalInputs[CURRENCIES.DOLLAR].mask(this.totalInputDOMS.pointSaleDollar);
+        decimalInputs[CURRENCIES.BOLIVAR].mask(this.totalInputDOMS.pointSaleBs);
 
         let handlerWrapper = () => {
             let self = this;

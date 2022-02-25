@@ -32,7 +32,7 @@ const CollectionPrototype = {
     },
 }
 
-const Collection = function (elements){
+const Collection = function (elements = []){
     this.elements = elements;
 }
 

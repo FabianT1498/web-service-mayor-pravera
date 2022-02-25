@@ -111,20 +111,19 @@
         <div class="w-10/12 flex mb-8 mx-auto items-center justify-between">
             <div class="flex items-center">
                 <!-- Cash on punto de venta (bs) -->
-               <x-label for="debit_card_payment_bs" :value="__('Registros del punto de venta:')" />
-               <x-button 
-                   class="ml-4"
-                   type="button"
-                   :modalID="__('point_sale_bs')"
-                   :variation="__('rounded')"
-               >
-                   Ver
-               </x-button>
+               <x-label for="debit_card_payment_bs" :value="__('Total en punto de venta Bs:')" />
+               <x-input-with-button 
+                    :inputID="__('total_point_sale_bs')"
+                    :modalID="__('point_sale_bs')"
+                    :currency="__('Bs.S')"
+                    name="total_point_sale_bs"
+                    type="text"
+                />
             </div>
             
             <div class="flex items-center basis-2/3 justify-center">
                 <x-label for="point_sale_dollar" :value="__('Total de $ en Punto:')" />
-                <x-input placeholder="0.00" id="point_sale_dollar" class="block ml-4" type="text" name="point_sale_dollar" :value="old('point_sale_dollar')"/>
+                <x-input placeholder="{{'0.00 ' . config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR'))}}" id="point_sale_dollar" class="block ml-4" type="text" name="total_point_sale_dollar" :value="old('point_sale_dollar')"/>
             </div>
             <!-- Cash on punto de venta ($) -->
         </div>
