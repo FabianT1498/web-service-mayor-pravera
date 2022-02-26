@@ -4,7 +4,7 @@ const SalePointModalViewPrototype = {
     init(container, tableName){
         const tableContainer = container.querySelector('table')
         this.table = new SalePointTable();
-        this.table.init(tableContainer, this.name, this.presenter.currency);
+        this.table.init(tableContainer, tableName, this.presenter.currency);
 
         container.addEventListener("click", this.clickEventHandlerWrapper(this.presenter));
         container.addEventListener('change', this.changeEventHandlerWrapper(this.presenter));

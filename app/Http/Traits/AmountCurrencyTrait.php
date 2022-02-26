@@ -16,17 +16,21 @@ trait AmountCurrencyTrait {
             return 0;
         }
 
-        $number = explode(' ', $amount)[0];
-        $arr = explode(',', $number);
+        $arrAmount = explode(' ', $amount);
+        $number = $arrAmount[0];
         
-        $integer = $arr["0"] ?? null;
-        $decimal = $arr["1"] ?? null;
+        $arrNumber = explode(',', $number);
         
-        $formated_integer = implode(explode(".", $integer));
-        
-        $number_string = $formated_integer . '.' . $decimal . 'El';
-        $float_number = floatval($number_string);
+        $integer = $arrNumber["0"] ?? null;
+        $decimal = $arrNumber["1"] ?? null;
 
-        return $float_number;
+        if (is_null($decimal) && is_numeric($integer)){
+            return intval($integer);
+        } else if (is_numeric($integer) && is_numeric($decimal)){
+            $number_string = $integer . '.' . $decimal . 'El';
+            return floatval($number_string);
+        }
+        
+        return config('constants.BAD_FORMATTED_AMOUNT', -1);
     }
 }

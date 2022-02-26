@@ -18,6 +18,7 @@ const SalePointTable = function(){
         }
 
         const tBody = this.container.querySelector(`tbody`);
+
         tBody.insertAdjacentHTML('beforeend', this.getTableRowTemplate(newID, availableBanks, currentBank, totalElements));
 
         const input_debit = tBody.querySelector(`#${this.name}_debit_${newID}`);
@@ -81,7 +82,7 @@ const SalePointTable = function(){
         <tr class="hover:bg-gray-100 dark:hover:bg-gray-700" data-id=${id}>
             <td data-table="num-col" class="py-4 pl-6 text-sm font-medium text-center text-gray-900 whitespace-nowrap dark:text-white">${total}</td>
             <td class="pl-3 py-4 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                <select class="w-full form-select" name="point_sale_bs_bank[]">
+                <select class="w-full form-select" name="${this.name}_bank[]">
                     <option value="${currentBank}">${currentBank}</option>
                     ${availableBanks.map(el => `<option value="${el}">${el}</option>`).join('')}
                 </select>

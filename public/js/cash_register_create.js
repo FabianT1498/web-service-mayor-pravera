@@ -656,7 +656,7 @@ var SalePointTable = function SalePointTable() {
   };
 
   this.getTableRowTemplate = function (id, availableBanks, currentBank, total) {
-    return "\n        <tr class=\"hover:bg-gray-100 dark:hover:bg-gray-700\" data-id=".concat(id, ">\n            <td data-table=\"num-col\" class=\"py-4 pl-6 text-sm font-medium text-center text-gray-900 whitespace-nowrap dark:text-white\">").concat(total, "</td>\n            <td class=\"pl-3 py-4 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white\">\n                <select class=\"w-full form-select\" name=\"point_sale_bs_bank[]\">\n                    <option value=\"").concat(currentBank, "\">").concat(currentBank, "</option>\n                    ").concat(availableBanks.map(function (el) {
+    return "\n        <tr class=\"hover:bg-gray-100 dark:hover:bg-gray-700\" data-id=".concat(id, ">\n            <td data-table=\"num-col\" class=\"py-4 pl-6 text-sm font-medium text-center text-gray-900 whitespace-nowrap dark:text-white\">").concat(total, "</td>\n            <td class=\"pl-3 py-4 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white\">\n                <select class=\"w-full form-select\" name=\"").concat(_this.name, "_bank[]\">\n                    <option value=\"").concat(currentBank, "\">").concat(currentBank, "</option>\n                    ").concat(availableBanks.map(function (el) {
       return "<option value=\"".concat(el, "\">").concat(el, "</option>");
     }).join(''), "\n                </select>\n            </td>\n            <td class=\"pl-3 py-4 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white\">\n                ").concat(_this.getInputTemplate(id, _constants_point_sale_type__WEBPACK_IMPORTED_MODULE_1__["default"].DEBIT), "\n            </td>\n            <td data-table=\"convertion-col\" class=\"pl-3 py-4 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white\">\n                ").concat(_this.getInputTemplate(id, _constants_point_sale_type__WEBPACK_IMPORTED_MODULE_1__["default"].CREDIT), "\n            </td>\n            <td class=\"py-4 pl-3 text-sm text-center font-medium whitespace-nowrap\">\n                <button data-modal=\"delete\" type=\"button\" class=\"bg-red-600 flex justify-center w-6 h-6 items-center transition-colors duration-150 rounded-full shadow-lg hover:bg-red-500\">\n                    <i class=\"fas fa-times  text-white\"></i>                        \n                </button>\n            </td>\n        </tr>\n    ");
   };
@@ -1844,7 +1844,7 @@ var SalePointModalViewPrototype = {
   init: function init(container, tableName) {
     var tableContainer = container.querySelector('table');
     this.table = new _components_sale_point_table__WEBPACK_IMPORTED_MODULE_0__["default"]();
-    this.table.init(tableContainer, this.name, this.presenter.currency);
+    this.table.init(tableContainer, tableName, this.presenter.currency);
     container.addEventListener("click", this.clickEventHandlerWrapper(this.presenter));
     container.addEventListener('change', this.changeEventHandlerWrapper(this.presenter));
     container.addEventListener("keypress", this.keyPressEventHandlerWrapper(this.presenter));

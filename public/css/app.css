@@ -2031,16 +2031,16 @@ div.code-toolbar .toolbar button:hover {
   max-width: 72rem;
 }
 
-.max-w-7xl{
-  max-width: 80rem;
-}
-
 .max-w-xl{
   max-width: 36rem;
 }
 
 .max-w-lg{
   max-width: 32rem;
+}
+
+.max-w-7xl{
+  max-width: 80rem;
 }
 
 .flex-1{
@@ -2546,11 +2546,6 @@ div.code-toolbar .toolbar button:hover {
   padding-bottom: 0.75rem;
 }
 
-.py-12{
-  padding-top: 3rem;
-  padding-bottom: 3rem;
-}
-
 .px-3{
   padding-left: 0.75rem;
   padding-right: 0.75rem;
@@ -2564,6 +2559,11 @@ div.code-toolbar .toolbar button:hover {
 .py-6{
   padding-top: 1.5rem;
   padding-bottom: 1.5rem;
+}
+
+.py-12{
+  padding-top: 3rem;
+  padding-bottom: 3rem;
 }
 
 .py-2\.5{
@@ -2701,12 +2701,12 @@ div.code-toolbar .toolbar button:hover {
   line-height: 1.75rem;
 }
 
-.leading-tight{
-  line-height: 1.25;
-}
-
 .leading-none{
   line-height: 1;
+}
+
+.leading-tight{
+  line-height: 1.25;
 }
 
 .leading-6{
