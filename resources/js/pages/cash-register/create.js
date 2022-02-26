@@ -64,23 +64,23 @@ export default {
         let bolivarRecordMoneyPresenter = new MoneyRecordModalPresenter(CURRENCIES.BOLIVAR, PAYMENT_METHODS.CASH, this.setPropWrapper(this.setTotalLiquidMoneyBs));
         let bolivarRecordMoneyView = new MoneyRecordModalView(bolivarRecordMoneyPresenter);
         let moneyRecordTable = new MoneyRecordTable()
-        bolivarRecordMoneyView.init(liquidMoneyBsRegisterModal, 'liquid_money_bolivares', moneyRecordTable)
+        bolivarRecordMoneyView.init(liquidMoneyBsRegisterModal, 'bs_cash_record', moneyRecordTable)
         
         let cashDollarRecordModal = document.querySelector('#dollar_cash_record');
         let dollarRecordMoneyPresenter = new ForeignMoneyRecordModalPresenter(CURRENCIES.DOLLAR, PAYMENT_METHODS.CASH, this.setPropWrapper(this.setTotalLiquidMoneyDollar));
         let dollarRecordMoneyView = new ForeignMoneyRecordModalView(dollarRecordMoneyPresenter);
         let dollarRecordTable = new ForeignMoneyRecordTable()
-        dollarRecordMoneyView.init(cashDollarRecordModal, 'liquid_money_dollars', dollarRecordTable)
+        dollarRecordMoneyView.init(cashDollarRecordModal, 'dollar_cash_record', dollarRecordTable)
 
-        let bsDenominationsModal = document.querySelector('#liquid_money_bolivares_denominations');
+        let bsDenominationsModal = document.querySelector('#bs_denominations_record');
         let bolivarDenominationModalPresenter = new DenominationModalPresenter(CURRENCIES.BOLIVAR, PAYMENT_METHODS.CASH, this.setPropWrapper(this.setTotalDenominationBs))
         let bolivarDenominationModalView = new DenominationModalView(bolivarDenominationModalPresenter);
-        bolivarDenominationModalView.init(bsDenominationsModal, 'liquid_money_bolivares_denominations');
+        bolivarDenominationModalView.init(bsDenominationsModal, 'bs_denominations_record');
 
-        let dollarDenominationsModal = document.querySelector('#liquid_money_dollars_denominations');
+        let dollarDenominationsModal = document.querySelector('#dollar_denominations_record');
         let dollarDenominationModalPresenter = new DenominationModalPresenter(CURRENCIES.DOLLAR, PAYMENT_METHODS.CASH, this.setPropWrapper(this.setTotalDenominationDollar))
         let dollarDenominationModalView = new DenominationModalView(dollarDenominationModalPresenter);
-        dollarDenominationModalView.init(dollarDenominationsModal, 'liquid_money_dollars_denominations');
+        dollarDenominationModalView.init(dollarDenominationsModal, 'dollar_denominations_record');
 
         let salePointModal = document.querySelector('#point_sale_bs');
         let salePointModalPresenter = new SalePointModalPresenter(CURRENCIES.BOLIVAR, this.setPropWrapper(this.setTotalPointSaleBs))

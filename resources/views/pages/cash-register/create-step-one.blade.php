@@ -177,7 +177,7 @@
         />
 
         <x-modal-input-denominations 
-            :modalID="__('dollar_denominations_record')"
+            :modalID="__('bs_denominations_record')"
             :denominations="['0.50', '1', '2', '5', '10', '20', '50','100', '200', '500']"
             :currency="__('Bs.S')"
         />

@@ -909,12 +909,12 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   totalInputDOMS: {
-    liquidMoneyBs: document.querySelector('#total_liquid_money_bolivares'),
-    liquidMoneyDollar: document.querySelector('#total_liquid_money_dollars'),
-    denominationsBs: document.querySelector('#total_liquid_money_bolivares_denominations'),
-    denominationsDollar: document.querySelector('#total_liquid_money_dollars_denominations'),
-    zelleDollar: document.querySelector('#total_zelle_record'),
-    pointSaleDollar: document.querySelector('#point_sale_dollar'),
+    liquidMoneyBs: document.querySelector('#total_bs_cash'),
+    liquidMoneyDollar: document.querySelector('#total_dollar_cash'),
+    denominationsBs: document.querySelector('#total_bs_denominations'),
+    denominationsDollar: document.querySelector('#total_dollar_denominations'),
+    zelleDollar: document.querySelector('#total_zelle'),
+    pointSaleDollar: document.querySelector('#total_point_sale_dollar'),
     pointSaleBs: document.querySelector('#total_point_sale_bs')
   },
   proxy: null,
@@ -945,24 +945,24 @@ __webpack_require__.r(__webpack_exports__);
     var cashRegisterContainer = document.querySelector('#cash_register_data');
     var cashRegister = new _components_cash_register_data__WEBPACK_IMPORTED_MODULE_2__["default"]();
     cashRegister.init(cashRegisterContainer);
-    var liquidMoneyBsRegisterModal = document.querySelector('#liquid_money_bolivares');
+    var liquidMoneyBsRegisterModal = document.querySelector('#bs_cash_record');
     var bolivarRecordMoneyPresenter = new _presenters_MoneyRecordModalPresenter__WEBPACK_IMPORTED_MODULE_6__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.BOLIVAR, _constants_paymentMethods__WEBPACK_IMPORTED_MODULE_1__.PAYMENT_METHODS.CASH, this.setPropWrapper(this.setTotalLiquidMoneyBs));
     var bolivarRecordMoneyView = new _views_MoneyRecordModalView__WEBPACK_IMPORTED_MODULE_5__["default"](bolivarRecordMoneyPresenter);
     var moneyRecordTable = new _components_money_record_table_MoneyRecordTable__WEBPACK_IMPORTED_MODULE_7__["default"]();
-    bolivarRecordMoneyView.init(liquidMoneyBsRegisterModal, 'liquid_money_bolivares', moneyRecordTable);
-    var cashDollarRecordModal = document.querySelector('#liquid_money_dollars');
+    bolivarRecordMoneyView.init(liquidMoneyBsRegisterModal, 'bs_cash_record', moneyRecordTable);
+    var cashDollarRecordModal = document.querySelector('#dollar_cash_record');
     var dollarRecordMoneyPresenter = new _presenters_ForeignMoneyRecordModalPresenter__WEBPACK_IMPORTED_MODULE_9__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.DOLLAR, _constants_paymentMethods__WEBPACK_IMPORTED_MODULE_1__.PAYMENT_METHODS.CASH, this.setPropWrapper(this.setTotalLiquidMoneyDollar));
     var dollarRecordMoneyView = new _views_ForeignMoneyRecordModalView__WEBPACK_IMPORTED_MODULE_8__["default"](dollarRecordMoneyPresenter);
     var dollarRecordTable = new _components_money_record_table_ForeignMoneyRecordTable__WEBPACK_IMPORTED_MODULE_10__["default"]();
-    dollarRecordMoneyView.init(cashDollarRecordModal, 'liquid_money_dollars', dollarRecordTable);
-    var bsDenominationsModal = document.querySelector('#liquid_money_bolivares_denominations');
+    dollarRecordMoneyView.init(cashDollarRecordModal, 'dollar_cash_record', dollarRecordTable);
+    var bsDenominationsModal = document.querySelector('#bs_denominations_record');
     var bolivarDenominationModalPresenter = new _presenters_DenominationModalPresenter__WEBPACK_IMPORTED_MODULE_11__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.BOLIVAR, _constants_paymentMethods__WEBPACK_IMPORTED_MODULE_1__.PAYMENT_METHODS.CASH, this.setPropWrapper(this.setTotalDenominationBs));
     var bolivarDenominationModalView = new _views_DenominationModalView__WEBPACK_IMPORTED_MODULE_12__["default"](bolivarDenominationModalPresenter);
-    bolivarDenominationModalView.init(bsDenominationsModal, 'liquid_money_bolivares_denominations');
-    var dollarDenominationsModal = document.querySelector('#liquid_money_dollars_denominations');
+    bolivarDenominationModalView.init(bsDenominationsModal, 'bs_denominations_record');
+    var dollarDenominationsModal = document.querySelector('#dollar_denominations_record');
     var dollarDenominationModalPresenter = new _presenters_DenominationModalPresenter__WEBPACK_IMPORTED_MODULE_11__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.DOLLAR, _constants_paymentMethods__WEBPACK_IMPORTED_MODULE_1__.PAYMENT_METHODS.CASH, this.setPropWrapper(this.setTotalDenominationDollar));
     var dollarDenominationModalView = new _views_DenominationModalView__WEBPACK_IMPORTED_MODULE_12__["default"](dollarDenominationModalPresenter);
-    dollarDenominationModalView.init(dollarDenominationsModal, 'liquid_money_dollars_denominations');
+    dollarDenominationModalView.init(dollarDenominationsModal, 'dollar_denominations_record');
     var salePointModal = document.querySelector('#point_sale_bs');
     var salePointModalPresenter = new _presenters_SalePointModalPresenter__WEBPACK_IMPORTED_MODULE_13__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.BOLIVAR, this.setPropWrapper(this.setTotalPointSaleBs));
     var salePointModalView = new _views_SalePointModalView__WEBPACK_IMPORTED_MODULE_14__["default"](salePointModalPresenter);
