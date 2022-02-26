@@ -14,3 +14,7 @@ Alpine.start();
 import("./pages/cash-register/create" /* webpackChunkName: "/js/cash_register_create" */).then(({default: createCashRegister}) => {
    createCashRegister.init()
 });
+
+import Icon from './../assets/LOGO ISOTIPO.svg';
+
+img.source = Icon; // '/assets/icon.svg'

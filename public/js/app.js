@@ -5489,6 +5489,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
 /* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./base */ "./resources/js/base/index.js");
+/* harmony import */ var _assets_LOGO_ISOTIPO_svg__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../assets/LOGO ISOTIPO.svg */ "./resources/assets/LOGO ISOTIPO.svg");
 
 
 
@@ -5504,6 +5505,8 @@ __webpack_require__.e(/*! import() | ../../js/cash_register_create */ "/js/cash_
   var createCashRegister = _ref["default"];
   createCashRegister.init();
 });
+
+img.source = _assets_LOGO_ISOTIPO_svg__WEBPACK_IMPORTED_MODULE_3__; // '/assets/icon.svg'
 
 /***/ }),
 
@@ -32731,6 +32734,17 @@ try {
   }
 }
 
+
+/***/ }),
+
+/***/ "./resources/assets/LOGO ISOTIPO.svg":
+/*!*******************************************!*\
+  !*** ./resources/assets/LOGO ISOTIPO.svg ***!
+  \*******************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+module.exports = __webpack_require__.p + "9ee2642f661f4d02.svg";
 
 /***/ }),
 
