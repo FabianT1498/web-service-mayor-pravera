@@ -8,22 +8,26 @@ const MoneyRecordModalPresenterPrototype = {
 		const button = target.closest('button');
 
 		if(button && button.tagName === 'BUTTON'){
-		  const rowID = button.getAttribute('data-del-row');
-		  const modalToggleID = button.getAttribute('data-modal-toggle');
-		  
-		  if (rowID){ // Delete a row
-			  	if (this.moneyRecordCollection.getLength() === 1){
-			  		// Clean the remaining row
-					this.moneyRecordCollection.setElementAtIndex(0, {amount: 0})
-			  		let record = this.moneyRecordCollection.getElementByIndex(0);
-			  		this.view.resetLastInput(record.id);
-			  	} else {
-			  		// Delete the entry with the id
-			  		let id = parseInt(rowID);
-			  		this.moneyRecordCollection.removeElementByID(id);
-			  		this.view.deleteRow(rowID)
-			  	}
-		  	} else if (modalToggleID){ // Checking if it's closing the modal
+			const action = button.getAttribute('data-modal');
+		  	const modalToggleID = button.getAttribute('data-modal-toggle');
+			
+			if (action){
+				if (action === 'add'){
+					if (this.moneyRecordCollection.getAll().findIndex((el) => el.amount === 0) !== -1){ // Check If there's a zero value
+						return;
+					}
+
+					let moneyRecord = new MoneyRecord(0, this.currency, this.method);
+					moneyRecord = this.moneyRecordCollection.pushElement(moneyRecord)
+					this.view.addRow({ ...moneyRecord, total: this.moneyRecordCollection.getLength()});
+				} else if(action === 'remove') { // Remove element
+					const rowID = button.getAttribute('data-del-row');
+					let id = parseInt(rowID);
+					this.moneyRecordCollection.removeElementByID(id);
+					this.view.deleteRow(rowID)
+				}
+			}
+		  	else if (modalToggleID){ // Checking if it's closing the modal
 				const total = this.moneyRecordCollection.getAll().reduce((acc, curr) => acc + curr.amount, 0)
 				this.setTotalAmount(total)
 		  	}
@@ -31,9 +35,8 @@ const MoneyRecordModalPresenterPrototype = {
    },
    keyPressedOnModal({target, key}){
    		if (key === 13 || key === 'Enter'){ // Handle new table's row creation
-			let amount = formatAmount(target.value);
 			
-			if (amount <= 0){ // If target value is zero, then don't to create a new row
+			if (this.moneyRecordCollection.getAll().findIndex((el) => el.amount === 0) !== -1){ // Check If there's a zero value
 				return;
 			}
 
@@ -65,7 +68,7 @@ const MoneyRecordModalPresenter = function (currency, method, setTotalAmount){
     this.view = null;
 	this.currency = currency;
 	this.method = method;
-	this.moneyRecordCollection = new MoneyRecordCollection([new MoneyRecord(0.00, this.currency, this.method, 0)]);
+	this.moneyRecordCollection = new MoneyRecordCollection();
 	this.setTotalAmount = setTotalAmount;
 }
 

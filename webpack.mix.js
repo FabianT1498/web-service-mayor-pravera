@@ -20,6 +20,9 @@ mix
         require('autoprefixer'),
     ])
     .webpackConfig({
+        output: {
+          assetModuleFilename: 'images/[hash][ext][query]'
+        },
         resolve,
         module: {
             rules: [

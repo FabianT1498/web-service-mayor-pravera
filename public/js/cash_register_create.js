@@ -402,7 +402,7 @@ var ForeignMoneyRecordTable = function ForeignMoneyRecordTable() {
   };
 
   this.getTableRowTemplate = function (id, total) {
-    return "\n        <tr class=\"hover:bg-gray-100 dark:hover:bg-gray-700\" data-id=".concat(id, ">\n            <td data-table=\"num-col\" class=\"py-4 pl-6 pr-3 text-sm font-medium text-center text-gray-900 whitespace-nowrap dark:text-white\">").concat(total, "</td>\n            <td class=\"py-4 pl-3 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white\">\n                ").concat(_this.getInputTemplate(id), "\n            </td>\n            <td data-table=\"convertion-col\" class=\"py-4 px-6 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white\">\n                0.00 ").concat(_constants_currencies__WEBPACK_IMPORTED_MODULE_1__.SIGN[_constants_currencies__WEBPACK_IMPORTED_MODULE_1__.CURRENCIES.BOLIVAR], "\n            </td>\n            <td class=\"py-4 pr-6 text-sm text-center font-medium whitespace-nowrap\">\n                <button data-del-row=\"").concat(id, "\" type=\"button\" class=\"bg-red-600 flex justify-center w-6 h-6 items-center transition-colors duration-150 rounded-full shadow-lg hover:bg-red-500\">\n                    <i class=\"fas fa-times  text-white\"></i>                        \n                </button>\n            </td>\n        </tr>\n    ");
+    return "\n        <tr class=\"hover:bg-gray-100 dark:hover:bg-gray-700\" data-id=".concat(id, ">\n            <td data-table=\"num-col\" class=\"py-4 pl-6 pr-3 text-sm font-medium text-center text-gray-900 whitespace-nowrap dark:text-white\">").concat(total, "</td>\n            <td class=\"py-4 pl-3 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white\">\n                ").concat(_this.getInputTemplate(id), "\n            </td>\n            <td data-table=\"convertion-col\" class=\"py-4 px-6 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white\">\n                0.00 ").concat(_constants_currencies__WEBPACK_IMPORTED_MODULE_1__.SIGN[_constants_currencies__WEBPACK_IMPORTED_MODULE_1__.CURRENCIES.BOLIVAR], "\n            </td>\n            <td class=\"py-4 pl-3 pr-6 text-sm text-center font-medium whitespace-nowrap\">\n                <button data-del-row=\"").concat(id, "\" data-modal=\"remove\" type=\"button\" class=\"bg-red-600 flex justify-center w-6 h-6 items-center transition-colors duration-150 rounded-full shadow-lg hover:bg-red-500\">\n                    <i class=\"fas fa-times  text-white\"></i>                        \n                </button>\n            </td>\n        </tr>\n    ");
   };
 
   this.updateConvertion = function (_ref) {
@@ -465,7 +465,6 @@ var MoneyRecordTablePrototype = {
       return false;
     }
 
-    this.setInitialMask();
     return true;
   },
   addRow: function addRow(_ref) {
@@ -507,19 +506,10 @@ var MoneyRecordTablePrototype = {
     return "\n        <input type=\"text\" placeholder=\"0.00 ".concat(_constants_currencies__WEBPACK_IMPORTED_MODULE_1__.SIGN[this.currency], "\" id=\"").concat(this.tableName, "_").concat(id, "\" name=\"").concat(this.tableName, "[]\" class=\"w-36 rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50\">");
   },
   getTableRowTemplate: function getTableRowTemplate(id, total) {
-    return "\n            <tr class=\"hover:bg-gray-100 dark:hover:bg-gray-700\" data-id=".concat(id, ">\n                <td data-table=\"num-col\" class=\"py-4 pl-6 pr-3 text-sm font-medium text-center text-gray-900 whitespace-nowrap dark:text-white\">").concat(total, "</td>\n                <td class=\"py-4 pl-3 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white\">\n                    ").concat(this.getInputTemplate(id), "\n                </td>\n                <td class=\"py-4 pr-6 text-sm text-center font-medium whitespace-nowrap\">\n                    <button data-del-row=\"").concat(id, "\" type=\"button\" class=\"bg-red-600 flex justify-center w-6 h-6 items-center transition-colors duration-150 rounded-full shadow-lg hover:bg-red-500\">\n                        <i class=\"fas fa-times  text-white\"></i>                        \n                    </button>\n                </td>\n            </tr>\n        ");
+    return "\n            <tr class=\"hover:bg-gray-100 dark:hover:bg-gray-700\" data-id=".concat(id, ">\n                <td data-table=\"num-col\" class=\"py-4 pl-6 pr-3 text-sm font-medium text-center text-gray-900 whitespace-nowrap dark:text-white\">").concat(total, "</td>\n                <td class=\"py-4 pl-3 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white\">\n                    ").concat(this.getInputTemplate(id), "\n                </td>\n                <td class=\"py-4 pl-3 pr-6 text-sm text-center font-medium whitespace-nowrap\">\n                    <button data-modal=\"remove\" data-del-row=\"").concat(id, "\" type=\"button\" class=\"bg-red-600 flex justify-center w-6 h-6 items-center transition-colors duration-150 rounded-full shadow-lg hover:bg-red-500\">\n                        <i class=\"fas fa-times  text-white\"></i>                        \n                    </button>\n                </td>\n            </tr>\n        ");
   },
   isContainerDefined: function isContainerDefined() {
     return this.container !== null;
-  },
-  setInitialMask: function setInitialMask() {
-    if (!this.isContainerDefined()) {
-      return;
-    }
-
-    var tBody = this.container.querySelector('tbody');
-    var input = tBody.querySelector('input');
-    _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_0__.decimalInputs[this.currency].mask(input);
   },
   updateTableIDColumn: function updateTableIDColumn(container) {
     var colsID = container.querySelectorAll("td[data-table=\"num-col\"]");
@@ -1232,20 +1222,26 @@ var MoneyRecordModalPresenterPrototype = {
     var button = target.closest('button');
 
     if (button && button.tagName === 'BUTTON') {
-      var rowID = button.getAttribute('data-del-row');
+      var action = button.getAttribute('data-modal');
       var modalToggleID = button.getAttribute('data-modal-toggle');
 
-      if (rowID) {
-        // Delete a row
-        if (this.moneyRecordCollection.getLength() === 1) {
-          // Clean the remaining row
-          this.moneyRecordCollection.setElementAtIndex(0, {
-            amount: 0
-          });
-          var record = this.moneyRecordCollection.getElementByIndex(0);
-          this.view.resetLastInput(record.id);
-        } else {
-          // Delete the entry with the id
+      if (action) {
+        if (action === 'add') {
+          if (this.moneyRecordCollection.getAll().findIndex(function (el) {
+            return el.amount === 0;
+          }) !== -1) {
+            // Check If there's a zero value
+            return;
+          }
+
+          var moneyRecord = new _models_moneyRecord__WEBPACK_IMPORTED_MODULE_1__["default"](0, this.currency, this.method);
+          moneyRecord = this.moneyRecordCollection.pushElement(moneyRecord);
+          this.view.addRow(_objectSpread(_objectSpread({}, moneyRecord), {}, {
+            total: this.moneyRecordCollection.getLength()
+          }));
+        } else if (action === 'remove') {
+          // Remove element
+          var rowID = button.getAttribute('data-del-row');
           var id = parseInt(rowID);
           this.moneyRecordCollection.removeElementByID(id);
           this.view.deleteRow(rowID);
@@ -1265,10 +1261,10 @@ var MoneyRecordModalPresenterPrototype = {
 
     if (key === 13 || key === 'Enter') {
       // Handle new table's row creation
-      var amount = (0,_utilities_mathUtilities__WEBPACK_IMPORTED_MODULE_2__.formatAmount)(target.value);
-
-      if (amount <= 0) {
-        // If target value is zero, then don't to create a new row
+      if (this.moneyRecordCollection.getAll().findIndex(function (el) {
+        return el.amount === 0;
+      }) !== -1) {
+        // Check If there's a zero value
         return;
       }
 
@@ -1307,7 +1303,7 @@ var MoneyRecordModalPresenter = function MoneyRecordModalPresenter(currency, met
   this.view = null;
   this.currency = currency;
   this.method = method;
-  this.moneyRecordCollection = new _collections_moneyRecordCollection__WEBPACK_IMPORTED_MODULE_0__["default"]([new _models_moneyRecord__WEBPACK_IMPORTED_MODULE_1__["default"](0.00, this.currency, this.method, 0)]);
+  this.moneyRecordCollection = new _collections_moneyRecordCollection__WEBPACK_IMPORTED_MODULE_0__["default"]();
   this.setTotalAmount = setTotalAmount;
 };
 

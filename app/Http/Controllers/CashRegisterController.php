@@ -81,33 +81,55 @@ class CashRegisterController extends Controller
 
     public function postCreateStepOne(StoreCashRegisterStepOneRequest $request)
     {
-        return var_dump($request->validated());
-        
         $validated = $request->validated();
-        $date =  Date::now()->format('d-m-Y');
+        
+        // $date =  Date::now()->format('d-m-Y');
 
-        $validated += ["date" => $date];
+        // $validated += ["date" => $date];
 
-        if (array_key_exists('new_cash_register_worker', $validated)){
-            $worker = new Worker(array(
-                'name' => $validated['new_cash_register_worker']
-            ));
+        // if (array_key_exists('new_cash_register_worker', $validated)){
+        //     $worker = new Worker(array(
+        //         'name' => $validated['new_cash_register_worker']
+        //     ));
             
-            $worker->save();
+        //     $worker->save();
 
-            unset($validated['new_cash_register_worker']);
-            array_merge($validated, array('cash_register_worker' => $worker->id));
+        //     unset($validated['new_cash_register_worker']);
+        //     array_merge($validated, array('cash_register_worker' => $worker->id));
+        // }
+
+        if (array_key_exists('dollar_cash_record', $validated)){
+            
         }
 
-        if(empty($request->session()->get('cash_register'))){
-            $cash_register = new CashRegister();
-            $cash_register->fill($validated);
-            $request->session()->put('cash_register', $cash_register);
-        }else{
-            $cash_register = $request->session()->get('cash_register');
-            $cash_register->fill($validated);
-            $request->session()->put('cash_register', $cash_register);
+        if (array_key_exists('bs_cash_record', $validated)){
+            
         }
+
+        if (array_key_exists('dollar_denominations_record', $validated)){
+            
+        }
+
+        if (array_key_exists('bs_denominations_record', $validated)){
+            
+        }
+        
+        if (array_key_exists('point_sale_bs_record', $validated)){
+            
+        }
+
+        if (array_key_exists('zelle_record', $validated)){
+            
+        }
+        
+        $cash_register = new CashRegister();
+        $cash_register->fill($validated);
+        $request->session()->put('cash_register', $cash_register);
+
+        $cash_register = $request->session()->get('cash_register');
+        $cash_register->fill($validated);
+        $request->session()->put('cash_register', $cash_register);
+        
 
         return redirect()->route('cash_register_step_two.create');
     }

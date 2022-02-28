@@ -12,7 +12,6 @@ const MoneyRecordTablePrototype = {
             return false;
         }
 
-        this.setInitialMask()
         return true;
     },
     addRow ({id, total}){
@@ -60,8 +59,8 @@ const MoneyRecordTablePrototype = {
                 <td class="py-4 pl-3 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white">
                     ${ this.getInputTemplate(id) }
                 </td>
-                <td class="py-4 pr-6 text-sm text-center font-medium whitespace-nowrap">
-                    <button data-del-row="${id}" type="button" class="bg-red-600 flex justify-center w-6 h-6 items-center transition-colors duration-150 rounded-full shadow-lg hover:bg-red-500">
+                <td class="py-4 pl-3 pr-6 text-sm text-center font-medium whitespace-nowrap">
+                    <button data-modal="remove" data-del-row="${id}" type="button" class="bg-red-600 flex justify-center w-6 h-6 items-center transition-colors duration-150 rounded-full shadow-lg hover:bg-red-500">
                         <i class="fas fa-times  text-white"></i>                        
                     </button>
                 </td>
@@ -70,15 +69,6 @@ const MoneyRecordTablePrototype = {
     },
     isContainerDefined(){
         return this.container !== null
-    },
-    setInitialMask(){
-        if (!this.isContainerDefined()){
-            return;
-        }
-        
-        const tBody = this.container.querySelector('tbody');
-        let input = tBody.querySelector('input');
-        decimalInputs[this.currency].mask(input);
     },
     updateTableIDColumn(container){
         const colsID = container.querySelectorAll(`td[data-table="num-col"]`);

@@ -29,8 +29,8 @@ const ForeignMoneyRecordTable = function(){
             <td data-table="convertion-col" class="py-4 px-6 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">
                 0.00 ${CURRENCY_SYMBOLS_MAP[CURRENCIES.BOLIVAR]}
             </td>
-            <td class="py-4 pr-6 text-sm text-center font-medium whitespace-nowrap">
-                <button data-del-row="${id}" type="button" class="bg-red-600 flex justify-center w-6 h-6 items-center transition-colors duration-150 rounded-full shadow-lg hover:bg-red-500">
+            <td class="py-4 pl-3 pr-6 text-sm text-center font-medium whitespace-nowrap">
+                <button data-del-row="${id}" data-modal="remove" type="button" class="bg-red-600 flex justify-center w-6 h-6 items-center transition-colors duration-150 rounded-full shadow-lg hover:bg-red-500">
                     <i class="fas fa-times  text-white"></i>                        
                 </button>
             </td>

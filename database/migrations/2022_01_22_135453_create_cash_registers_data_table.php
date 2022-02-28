@@ -13,18 +13,14 @@ class CreateCashRegistersTable extends Migration
      */
     public function up()
     {
-        Schema::connection('caja_mayorista')->create('cash_registers', function (Blueprint $table) {
+        Schema::connection('caja_mayorista')->create('cash_registers_data', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id')->unsigned();
-            $table->date('date');
-            $table->string('cash_register_id');
-            $table->integer('cash_register_worker');
-            $table->float('liquid_money_dollars');
-            $table->float('liquid_money_bs');
-            $table->float('payment_zelle');
-            $table->float('debit_card_payment_bs');
-            $table->float('debit_card_payment_dollar');
-
+            $table->string('cash_register_user');
+            $table->string('worker_name');
+            $table->enum('status', ['EN EDICION', 'COMPLETADO']);
+            $table->timestamp('created_at');
+        
             $table->foreign('user_id')->references('id')->on('users');
         });
     }
@@ -36,6 +32,6 @@ class CreateCashRegistersTable extends Migration
      */
     public function down()
     {
-        Schema::connection('caja_mayorista')->dropIfExists('cash_registers');
+        Schema::connection('caja_mayorista')->dropIfExists('cash_registers_data');
     }
 }
