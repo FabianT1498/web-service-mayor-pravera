@@ -8,8 +8,19 @@ use Illuminate\Support\Facades\DB;
 
 use App\Models\CashRegister;
 use App\Models\Worker;
-use App\Http\Requests\StoreCashRegisterStepOneRequest;
+use App\Models\CashRegisterData;
+use App\Models\DollarCashRecord;
+use App\Models\BsCashRecord;
+use App\Models\BsDenominationRecord;
+use App\Models\DollarDenominationRecord;
+use App\Models\PointSaleBsRecord;
+use App\Models\PointSaleDollarRecord;
+use App\Models\ZelleRecord;
 
+
+use App\Http\Requests\StoreCashRegisterStepOneRequest;
+use App\Models\DollarExchange;
+use Illuminate\Support\Facades\Auth;
 
 class CashRegisterController extends Controller
 {
@@ -52,23 +63,19 @@ class CashRegisterController extends Controller
     {  
         $date =  Date::now()->format('d-m-Y');
 
-        // $cash_registers_id = DB::connection('saint_db')->table('SSUSRS')
-        //     ->select('CodUsua as cash_register_id')
-        //     ->where("CodUsua", "LIKE", "CAJA%")
-        //     ->where("CodUsua", "=", "DELIVERY", 'or')
-        //     ->get();
+        $cash_registers_id = DB::connection('saint_db')->table('SSUSRS')
+            ->select('CodUsua as cash_register_id')
+            ->where("CodUsua", "LIKE", "CAJA%")
+            ->where("CodUsua", "=", "DELIVERY", 'or')
+            ->get();
 
         $cash_register_workers = DB::table('workers')
             ->select()
             ->get();
 
-        // $cash_registers_id_arr = $cash_registers_id->map(function($item, $key) {
-        //     return (object) array("key" => $item->cash_register_id, "value" => $item->cash_register_id);
-        // });
-
-        $cash_registers_id_arr = [
-            (object) array('key' => 'Caja 1', 'value' => 'Caja 1'),
-        ];
+        $cash_registers_id_arr = $cash_registers_id->map(function($item, $key) {
+            return (object) array("key" => $item->cash_register_id, "value" => $item->cash_register_id);
+        });
 
         $cash_registers_workers_id_arr = $cash_register_workers->map(function($item, $key) {
             return (object) array("key" => $item->id, "value" => $item->name);
@@ -82,54 +89,96 @@ class CashRegisterController extends Controller
     public function postCreateStepOne(StoreCashRegisterStepOneRequest $request)
     {
         $validated = $request->validated();
+
+        $date =  Date::now()->format('d-m-Y');
+
+        $validated += ["date" => $date];
+
+        if (array_key_exists('new_cash_register_worker', $validated)){
+            $worker = new Worker(array('name' => $validated['new_cash_register_worker']));
+            $worker->save();
+            array_merge($validated, array('cash_register_worker' => $worker->id));
+        }
+
+        $cash_register_data = new CashRegisterData($validated, Auth::id());
         
-        // $date =  Date::now()->format('d-m-Y');
-
-        // $validated += ["date" => $date];
-
-        // if (array_key_exists('new_cash_register_worker', $validated)){
-        //     $worker = new Worker(array(
-        //         'name' => $validated['new_cash_register_worker']
-        //     ));
+        if ($cash_register_data->save()){
+            if (array_key_exists('dollar_cash_record', $validated)){
+                $data = array_map(function($value) use ($cash_register_data){
+                    return array('amount' => $value, 'cash_register_data_id' => $cash_register_data->id);
+                }, $validated['dollar_cash_record']);
+                DollarCashRecord::insert($data);
+            }
+    
+            if (array_key_exists('bs_cash_record', $validated)){
+                $data = array_map(function($value) use ($cash_register_data){
+                    return array('amount' => $value, 'cash_register_data_id' => $cash_register_data->id);
+                }, $validated['dollar_cash_record']);
+                BsCashRecord::insert($data);
+            }
+    
+            if (array_key_exists('dollar_denominations_record', $validated)){
+                $data = array_map(function($quantity, $denomination) use ($cash_register_data){
+                    return array(
+                        'quantity' => $quantity,
+                        'denomination' => floatval($denomination . 'El'),
+                        'cash_register_data_id' => $cash_register_data->id
+                    );
+                }, $validated['dollar_denominations_record'], array_keys($validated['dollar_denominations_record']));
+                DollarDenominationRecord::insert($data);
+            }
+    
+            if (array_key_exists('bs_denominations_record', $validated)){
+                $data = array_map(function($quantity, $denomination) use ($cash_register_data){
+                    return array(
+                        'quantity' => $quantity,
+                        'denomination' => floatval($denomination . 'El'),
+                        'cash_register_data_id' => $cash_register_data->id
+                    );
+                }, $validated['bs_denominations_record'], array_keys($validated['bs_denominations_record']));
+                BsDenominationRecord::insert($data);
+            }
             
-        //     $worker->save();
+            if (array_key_exists('point_sale_bs_bank', $validated)){
 
-        //     unset($validated['new_cash_register_worker']);
-        //     array_merge($validated, array('cash_register_worker' => $worker->id));
-        // }
+                $credit_data = array_map(function($amount, $bank) use ($cash_register_data, $date){
+                    return array(
+                        'amount' => $amount,
+                        'type' => "CREDIT",
+                        'cash_register_data_id' => $cash_register_data->id,
+                        'bank_name' => $bank
+                    );
+                }, $validated['point_sale_bs_credit'], $validated['point_sale_bs_bank']);
 
-        if (array_key_exists('dollar_cash_record', $validated)){
-            
+                $debit_data = array_map(function($amount, $bank) use ($cash_register_data, $date){
+                    return array(
+                        'amount' => $amount,
+                        'type' => "DEBIT",
+                        'cash_register_data_id' => $cash_register_data->id,
+                        'bank_name' => $bank
+                    );
+                }, $validated['point_sale_bs_debit'], $validated['point_sale_bs_bank']);
+
+                $data = array_merge($credit_data, $debit_data);
+
+                PointSaleBsRecord::insert($data);
+            }
+
+            if (array_key_exists('total_point_sale_dollar', $validated)){
+                $data = [
+                    'amount' => $validated['total_point_sale_dollar'],
+                    'cash_register_data_id' => $cash_register_data->id
+                ];
+                PointSaleDollarRecord::insert($data);
+            }
+    
+            if (array_key_exists('zelle_record', $validated)){
+                $data = array_map(function($value) use ($cash_register_data){
+                    return array('amount' => $value, 'cash_register_data_id' => $cash_register_data->id);
+                }, $validated['zelle_record']);
+                ZelleRecord::insert($data);
+            }
         }
-
-        if (array_key_exists('bs_cash_record', $validated)){
-            
-        }
-
-        if (array_key_exists('dollar_denominations_record', $validated)){
-            
-        }
-
-        if (array_key_exists('bs_denominations_record', $validated)){
-            
-        }
-        
-        if (array_key_exists('point_sale_bs_record', $validated)){
-            
-        }
-
-        if (array_key_exists('zelle_record', $validated)){
-            
-        }
-        
-        $cash_register = new CashRegister();
-        $cash_register->fill($validated);
-        $request->session()->put('cash_register', $cash_register);
-
-        $cash_register = $request->session()->get('cash_register');
-        $cash_register->fill($validated);
-        $request->session()->put('cash_register', $cash_register);
-        
 
         return redirect()->route('cash_register_step_two.create');
     }

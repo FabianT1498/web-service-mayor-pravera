@@ -13,6 +13,7 @@ const CashRegisterDataPrototype = {
     changeEventHandlerWrapper(container){
         return (event) => {
             
+            event.target.value = event.target.value === "0" ? "1" : "0"
             let workersSelectEl = container.querySelector('#cash_register_worker');
             let newCashRegisterWorkerContainer = container.querySelector('#new_cash_register_worker_container');
             

@@ -16,10 +16,10 @@ class CreateDollarCashRecords extends Migration
         Schema::connection('caja_mayorista')->create('dollar_cash_records', function (Blueprint $table) {
             $table->id();
             $table->float('amount');
-            $table->bigInteger('cash_register_data_id');
+            $table->unsignedBigInteger('cash_register_data_id');
       
         
-            $table->foreign('cash_registers_data_id')->references('id')->on('cash_registers_data');
+            $table->foreign('cash_register_data_id')->references('id')->on('cash_register_data');
         });
     }
 

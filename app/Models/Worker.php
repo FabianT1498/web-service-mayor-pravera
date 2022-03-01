@@ -14,8 +14,7 @@ class Worker extends Model
 
     public function __construct(array $attributes = array()){
         parent::__construct($attributes);
-
-        $this->name = array_key_exists('name', $attributes) ? $attributes['name'] : '';
+        $this->name = key_exists('name', $attributes) ? $attributes['name'] : '';
     }
 
     

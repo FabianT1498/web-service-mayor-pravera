@@ -16,11 +16,11 @@ class CreateBsDenominationRecords extends Migration
         Schema::connection('caja_mayorista')->create('bs_denomination_records', function (Blueprint $table) {
             $table->id();
             $table->integer('quantity');
-            $table->bigInteger('cash_register_data_id');
-            $table->integer('denominations_id');
+            $table->unsignedBigInteger('cash_register_data_id');
+            $table->float('denomination');
         
-            $table->foreign('cash_registers_data_id')->references('id')->on('cash_registers_data');
-            $table->foreign('denominations_id')->references('id')->on('denominations');
+            $table->foreign('cash_register_data_id')->references('id')->on('cash_register_data');
+            // $table->foreign('denominations_id')->references('id')->on('denominations');
         });
     }
 

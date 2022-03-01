@@ -4,8 +4,10 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\App;
 
 use App\Repositories\DollarExchangeRepository;
+
 
 
 class DollarExchangeServiceProvider extends ServiceProvider
@@ -30,7 +32,8 @@ class DollarExchangeServiceProvider extends ServiceProvider
      */
     public function boot(DollarExchangeRepository $dollar_repo)
     {
-        //
-        View::share('dollar_exchange', $dollar_repo->getLast());
+        if (!App::runningInConsole()) {
+            View::share('dollar_exchange', $dollar_repo->getLast()); 
+        }
     }
 }

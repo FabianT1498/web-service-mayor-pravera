@@ -16,11 +16,9 @@ class CreatePointSaleDollarRecords extends Migration
         Schema::connection('caja_mayorista')->create('point_sale_dollar_records', function (Blueprint $table) {
             $table->id('id');
             $table->float('amount');
-            $table->string('point_sale_user');
-            $table->timestamp('completed_at');
-            $table->bigInteger('cash_register_data_id');
+            $table->unsignedBigInteger('cash_register_data_id');
             
-            $table->foreign('cash_registers_data_id')->references('id')->on('cash_registers_data');
+            $table->foreign('cash_register_data_id')->references('id')->on('cash_register_data');
         });
     }
 

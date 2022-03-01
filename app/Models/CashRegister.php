@@ -16,14 +16,14 @@ class CashRegister extends Model
 	];
 
     protected $fillable = [
-        'date',
-        'cash_register_id',
-        'cash_register_worker',
-        'liquid_money_dollars',
-        'liquid_money_bs',
-        'payment_zelle',
-        'debit_card_payment_bs',
-        'debit_card_payment_dollar'
+        'id',
+        'total_dollar_cash',
+        'total_bs_cash',
+        'total_dollar_denominations',
+        'total_bs_denominations',
+        'total_point_sale_bs',
+        'total_point_sale_dollar',
+        'total_zelle',
     ];
     
 }

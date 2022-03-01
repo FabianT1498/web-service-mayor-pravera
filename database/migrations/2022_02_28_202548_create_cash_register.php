@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCashRegisters extends Migration
+class CreateCashRegister extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class CreateCashRegisters extends Migration
      */
     public function up()
     {
-        Schema::connection('caja_mayorista')->create('cash_registers', function (Blueprint $table) {
-            $table->bigInteger('id');
+        Schema::connection('caja_mayorista')->create('cash_register', function (Blueprint $table) {
+            $table->unsignedBigInteger('id');
             $table->float('total_dollar_cash');
             $table->float('total_bs_cash');
             $table->float('total_dollar_denominations');
@@ -23,7 +23,7 @@ class CreateCashRegisters extends Migration
             $table->float('total_point_sale_dollar');
             $table->float('total_zelle');
         
-            $table->foreign('id')->references('id')->on('cash_registers_data');
+            $table->foreign('id')->references('id')->on('cash_register_data');
         });
     }
 
@@ -34,6 +34,6 @@ class CreateCashRegisters extends Migration
      */
     public function down()
     {
-        Schema::connection('caja_mayorista')->dropIfExists('cash_registers');
+        Schema::connection('caja_mayorista')->dropIfExists('cash_register');
     }
 }

@@ -14,7 +14,7 @@ class CreateDenominations extends Migration
     public function up()
     {
         Schema::connection('caja_mayorista')->create('denominations', function (Blueprint $table) {
-            $table->id();
+            $table->unsignedInteger('id', true);
             $table->string('currency', 20);
             $table->float('denomination');
         });

@@ -271,6 +271,7 @@ var CashRegisterDataPrototype = {
   },
   changeEventHandlerWrapper: function changeEventHandlerWrapper(container) {
     return function (event) {
+      event.target.value = event.target.value === "0" ? "1" : "0";
       var workersSelectEl = container.querySelector('#cash_register_worker');
       var newCashRegisterWorkerContainer = container.querySelector('#new_cash_register_worker_container');
 
