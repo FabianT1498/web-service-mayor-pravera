@@ -8,7 +8,7 @@ use App\Http\Traits\AmountCurrencyTrait;
 use App\Rules\BadFormattedAmount;
 
 
-class StoreCashRegisterStepOneRequest extends FormRequest
+class StoreCashRegisterRequest extends FormRequest
 {
     use AmountCurrencyTrait;
     

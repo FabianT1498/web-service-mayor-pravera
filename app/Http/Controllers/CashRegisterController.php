@@ -18,7 +18,9 @@ use App\Models\PointSaleDollarRecord;
 use App\Models\ZelleRecord;
 
 
-use App\Http\Requests\StoreCashRegisterStepOneRequest;
+use App\Http\Requests\StoreCashRegisterRequest;
+use App\Http\Requests\GetCashRegisterRequest;
+
 use App\Models\DollarExchange;
 use Illuminate\Support\Facades\Auth;
 
@@ -59,7 +61,7 @@ class CashRegisterController extends Controller
         });
     }
 
-    public function createStepOne()
+    public function create()
     {  
         $date =  Date::now()->format('d-m-Y');
 
@@ -83,10 +85,10 @@ class CashRegisterController extends Controller
 
         $data = compact('date', 'cash_registers_id_arr', 'cash_registers_workers_id_arr');
 
-        return $this->getTableSummaryView('pages.cash-register.create-step-one', $data);
+        return $this->getTableSummaryView('pages.cash-register.create', $data);
     }
 
-    public function postCreateStepOne(StoreCashRegisterStepOneRequest $request)
+    public function store(StoreCashRegisterRequest $request)
     {
         $validated = $request->validated();
 
@@ -178,28 +180,26 @@ class CashRegisterController extends Controller
                 }, $validated['zelle_record']);
                 ZelleRecord::insert($data);
             }
+
+            toastr()->success('Success Message');
+            return redirect()->route('cash_register.create');
         }
 
-        return redirect()->route('cash_register_step_two.create');
     }
 
-    public function createStepTwo(Request $request)
+    public function dollarCashDetails(GetCashRegisterRequest $request)
     {
-        $cash_register = $this->getSessionCashRegisterData($request);
-        $sub_route = $this->substring_sub_route_prev_url('cash-register');
+        $cash_register_data = CashRegisterData::find($request->validated('id'));
 
-        if (!$this->contains_step_route($sub_route) || is_null($cash_register)){
-            return redirect()->route('cash_register_step_one.create');
-        }
-        
         $title = "Facturas de dolares en efectivo";
         $columns = ["id", "Monto"];
 
         // ( TipoFac = B )En esta categoria esta tanto pagos en dolares en efectivo, zelle y punto internacional
         $bills = DB::connection('saint_db')->table('SAFACT')
             ->select(['NumeroD as id', 'Monto as amount'])
-            ->where('CodUsua', '=', $cash_register->cash_register_id)
+            ->where('CodUsua', '=', $cash_register_data->cash_register_user)
             ->where('TipoFac', '=', 'B')
+            ->whereNotIn('')
             ->whereDate('FechaE', '=', Date::now()->format('d-m-Y'))
             ->orderBy('FechaE', 'desc')
             ->paginate(10);
@@ -460,16 +460,5 @@ class CashRegisterController extends Controller
         $data = compact('cash_register', 'columns', 'bills', 'sum_amount', 'title');
 
         return $this->getTableSummaryView('pages.cash-register.create-step-nine', $data);
-    }
-
-    public function store(Request $request)
-    {
-        $cash_register = $this->getSessionCashRegisterData($request);
-
-        $cash_register->save();
-
-        $request->session()->forget('cash_register');
-
-        return redirect()->route('dashboard');
     }
 }

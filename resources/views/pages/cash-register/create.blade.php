@@ -10,7 +10,7 @@
             {{ $error }}
         </li>
     @endforeach
-    <form id="form" autocomplete="off" method="POST" action="{{ route('cash_register_step_one.post') }}">
+    <form id="form" autocomplete="off" method="POST" action="{{ route('cash_register.store') }}">
         @csrf
         <div class="w-10/12"><h3 class="h3 text-center mb-4">Datos de la caja</h3></div>
 
@@ -151,8 +151,9 @@
 
         <div class="w-10/12 flex mx-auto justify-end pt-8">
             <x-button :variation="__('rounded')">
-                {{ __('Continuar') }}
+                {{ __('Guardar') }}
             </x-button>
+            
         </div>
 
         <x-modal-input-list 
