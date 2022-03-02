@@ -31,10 +31,12 @@ Route::group(['middleware' => ['auth']], function () {
     // Cash register worker routes
     Route::get('cash_register_worker/create', [CashRegisterWorkerController::class, 'create'])->name('cash_register_worker.create');
     Route::post('cash_register_worker/store', [CashRegisterWorkerController::class, 'store'])->name('cash_register_worker.store');
+    
 
     // Cash register routes
     Route::get('cash_register', [CashRegisterController::class, 'create'])->name('cash_register.create');
     Route::post('cash_register', [CashRegisterController::class, 'store'])->name('cash_register.store');
+    Route::get('cash_register/edit/{id}', [CashRegisterController::class, 'edit'])->name('cash_register.edit');
         
     // Route::get('cash_register/dollar-cash-detail', [CashRegisterController::class, 'createStepTwo'])->name('cash_register_step_two.create');
     // Route::get('cash_register/create-step-three', [CashRegisterController::class, 'createStepThree'])->name('cash_register_step_three.create');
@@ -52,7 +54,7 @@ Route::group(['middleware' => ['auth']], function () {
 Route::group(['middleware' => ['auth', 'jsonify']], function() {
     Route::post('dollar_exchange', [DollarExchangeController::class, 'store']);
     Route::get('dollar_exchange', [DollarExchangeController::class, 'get']);
-
+    
     Route::get('banks', [BankController::class, 'getAll']);
 });
 

@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests;
 
-use App\Http\Requests\Api\FormRequest;
+use Illuminate\Http\Request;
+use App\Models\CashRegisterData;
 
-class GetCashRegisterRequest extends FormRequest
+class GetCashRegisterRequest extends Request
 {
    
     /**
@@ -14,23 +15,9 @@ class GetCashRegisterRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        
+        $cash_register_data = CashRegisterData::find($this->route('id'));
+
+        return (!is_null($cash_register_data) && $cash_register_data->status === "EN EDICION");
     }
-
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
-    public function rules()
-    {
-
-        $rules = [
-            'id' => [
-                'exists:cash_register_data,id'
-            ],
-        ];
-
-        return $rules;
-    }   
 }

@@ -1,9 +1,5 @@
 @extends('layouts.app')
 
-@section('js')
-    <script src="{{ asset('js/cash_register_create.js') }}" defer></script>
-@endsection
-
 @section('main')
     @foreach ($errors->all() as $error)
         <li>
@@ -18,7 +14,7 @@
             <!-- Cash register date -->
         
             <x-label for="date" :value="__('Fecha')" />
-            <x-input type="text" :value="__($date)" readonly />
+            <x-input type="text" :value="$cash_register_data->date" readonly />
             
             <!-- Cash register number-->
             <x-label for="cash_register" :value="__('Caja')" />
@@ -26,8 +22,8 @@
                 :options="$cash_registers_id_arr" 
                 :defaultOptTitle="__('Seleccione la caja')"
                 id="cash_register_id"
-                :name="__('cash_register_user')" 
-                :value="old('cash_register_user')" 
+                :name="__('cash_register_id')" 
+                :value="old('cash_register_id') ? old('cash_register_id') : $cash_register_data->cash_register_user" 
                 required  
             />
             
@@ -37,7 +33,7 @@
                 :options="$cash_registers_workers_id_arr"
                 :defaultOptTitle="__('Seleccione el cajero/a')"
                 :name="__('worker_id')" 
-                :value="old('worker_id')"
+                :value="old('worker_id') ? old('worker_id') : $cash_register_data->worker_id"
                 required 
             />
 
@@ -157,34 +153,42 @@
         </div>
 
         <x-modal-input-list 
-            :modalID="__('zelle_record')"
-            :currency="config('constants.CURRENCIES.DOLLAR')"
-        />
-        
-        <x-modal-input-list 
             :modalID="__('dollar_cash_record')"
             :currency="config('constants.CURRENCIES.DOLLAR')"
+            :records="$dollar_cash_records"
         />
 
         <x-modal-input-list 
             :modalID="__('bs_cash_record')"
             :currency="config('constants.CURRENCIES.BOLIVAR')"
             :isBolivar="true"
+            :records="$bs_cash_records"
         />
         
         <x-modal-input-denominations 
             :modalID="__('dollar_denominations_record')"
             :denominations="['0.50', '1', '2', '5', '10', '20','50', '100']"
+            :records="$dollar_denomination_records"
         />
 
         <x-modal-input-denominations 
             :modalID="__('bs_denominations_record')"
             :denominations="['0.50', '1', '2', '5', '10', '20', '50','100', '200', '500']"
             :currency="__('Bs.S')"
+            :records="$bs_denomination_records"
         />
 
         <x-modal-point-sale-list
             :modalID="__('point_sale_bs')"
+            :selectedBanks="$point_sale_bs_banks"
+            :records="$point_sale_bs_records"
+            :remainingBanks="$point_sale_bs_remaining_banks"
+        />
+
+        <x-modal-input-list 
+            :modalID="__('zelle_record')"
+            :currency="config('constants.CURRENCIES.DOLLAR')"
+            :records="$zelle_records"
         />
     </form>
 @endsection

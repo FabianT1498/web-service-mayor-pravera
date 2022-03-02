@@ -34,14 +34,14 @@ class StoreCashRegisterRequest extends FormRequest
         $total_rules = ['required', new BadFormattedAmount, 'gt:0'];
 
         $rules = [
-            'cash_register_id' => ['required', 'exists:saint_db.SSUSRS,CodUsua']
+            'cash_register_user' => ['required', 'exists:saint_db.SSUSRS,CodUsua']
         ];
 
         if ($this->has('new_cash_register_worker')
                 && !empty($this->new_cash_register_worker)){
             $rules['new_cash_register_worker'] = ['required', 'unique:caja_mayorista.workers,name', 'max:100'];
         } else {
-            $rules['cash_register_worker'] = ['required', 'exists:workers,id'];
+            $rules['worker_id'] = ['required', 'exists:workers,id'];
         }
 
         if (count($this->dollar_cash_record) > 0){

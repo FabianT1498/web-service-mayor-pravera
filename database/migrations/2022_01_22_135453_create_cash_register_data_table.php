@@ -17,12 +17,13 @@ class CreateCashRegisterDataTable extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id')->unsigned();
             $table->string('cash_register_user');
-            $table->string('worker_name');
+            $table->unsignedBigInteger('worker_id');
             $table->enum('status', ['EN EDICION', 'COMPLETADO']);
             $table->timestamp('date');
             $table->timestamps();
      
             $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('worker_id')->references('id')->on('workers');
         });
     }
 

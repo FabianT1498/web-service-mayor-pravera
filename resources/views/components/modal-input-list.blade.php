@@ -1,4 +1,4 @@
-@props(['modalID' => '', 'currency' => '', 'isBolivar' => false])
+@props(['modalID' => '', 'currency' => '', 'isBolivar' => false, 'records' => []])
 
 @php
     $bolivar = config("constants.CURRENCIES.BOLIVAR");
@@ -7,7 +7,7 @@
 
 <!-- Main modal -->
 <div id={{ $modalID }} data-currency={{ $currency }} aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed h-108 right-0 left-0 top-4 z-50 justify-center items-center md:h-full md:inset-0">
-    <div class="flex flex-col relative px-4 w-full max-w-md h-full">
+    <div class="flex flex-col relative px-4 w-full h-full {{ !$isBolivar ? "max-w-xl" : "max-w-md" }}">
          <!-- Modal header -->
          <div class="sticky top-0 flex justify-between items-start p-5 rounded-t border-b dark:border-gray-600 bg-gray-200">
             <h3 class="text-xl font-semibold text-gray-900 lg:text-2xl dark:text-white">
@@ -44,6 +44,31 @@
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                                @foreach($records as $key => $record)
+                                    <tr class="hover:bg-gray-100 dark:hover:bg-gray-700" data-id="$key">
+                                        <td data-table="num-col" class="py-4 pl-6 pr-3 text-sm font-medium text-center text-gray-900 whitespace-nowrap dark:text-white">{{ $key + 1}}</td>
+                                        <td class="py-4 pl-3 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white">
+                                            <input 
+                                                type="text"
+                                                placeholder="0.00 {{$currency_sign}}"
+                                                id="{{ $modalID . "_" . $key }}" 
+                                                name="{{$modalID . "[" . $record->id . "]" }}" 
+                                                class="w-36 rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                                value="{{ $record->amount }}"
+                                            >
+                                        </td>
+                                        @if(!$isBolivar)
+                                            <td data-table="convertion-col" class="py-4 px-6 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                                {{ (($dollar_exchange?->bs_exchange ?? 0) * $record->amount) . " " . config("constants.CURRENCY_SIGNS." . $bolivar) }}
+                                            </td>
+                                        @endif
+                                        <td class="py-4 pl-3 pr-6 text-sm text-center font-medium whitespace-nowrap">
+                                            <button data-modal="remove" data-del-row="$key" type="button" class="bg-red-600 flex justify-center w-6 h-6 items-center transition-colors duration-150 rounded-full shadow-lg hover:bg-red-500">
+                                                <i class="fas fa-times  text-white"></i>                        
+                                            </button>
+                                        </td>
+                                    </tr>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>

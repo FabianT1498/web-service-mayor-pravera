@@ -1,5 +1,9 @@
-@props(['modalID' => '', 'denominations' => [], 'currency' => '$'])
-
+@props([
+    'modalID' => '',
+    'denominations' => [],
+    'currency' => '$',
+    'records' => []
+])
 <!-- Main modal -->
 <div id={{ $modalID }} aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed h-108 right-0 left-0 top-4 z-50 justify-center items-center md:h-full md:inset-0">
     <div class="flex flex-col relative px-4 w-full max-w-md h-full">
@@ -29,22 +33,40 @@
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                                @foreach($denominations as $denomination)
-                                    <tr class="hover:bg-gray-100 dark:hover:bg-gray-700" data-id="0">
-                                        <th data-table="num-col" class="py-4 pl-6 pr-3 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ $denomination . ' ' . $currency }}</th>
-                                        <td class="py-4 pl-3 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                                            <input 
-                                                data-denomination={{ $denomination }}
-                                                type="text"
-                                                min="0"
-                                                name={{ $modalID . '[' . $denomination . ']' }} 
-                                                value="0"
-                                                class="w-36 rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                            >
-                                                
-                                            </td>
-                                    </tr>
-                                @endforeach
+                                @if(count($records) > 0)
+                                    @foreach($records as $record)
+                                            <tr class="hover:bg-gray-100 dark:hover:bg-gray-700">
+                                                <th data-table="num-col" class="py-4 pl-6 pr-3 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ $record->denomination . ' ' . $currency }}</th>
+                                                <td class="py-4 pl-3 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white">
+                                                    <input 
+                                                        data-denomination={{ $record->denomination }}
+                                                        type="text"
+                                                        min="0"
+                                                        name={{ $modalID . '[' . $record->denomination . ']' }} 
+                                                        value={{ $record->quantity }}
+                                                        class="w-36 rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                                    >   
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                @else
+                                    @foreach($denominations as $denomination)
+                                        <tr class="hover:bg-gray-100 dark:hover:bg-gray-700" data-id="0">
+                                            <th data-table="num-col" class="py-4 pl-6 pr-3 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ $denomination . ' ' . $currency }}</th>
+                                            <td class="py-4 pl-3 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white">
+                                                <input 
+                                                    data-denomination={{ $denomination }}
+                                                    type="text"
+                                                    min="0"
+                                                    name={{ $modalID . '[' . $denomination . ']' }} 
+                                                    value="0"
+                                                    class="w-36 rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                                >
+                                                    
+                                                </td>
+                                        </tr>
+                                    @endforeach
+                                @endif
                             </tbody>
                         </table>
                     </div>
