@@ -206,18 +206,15 @@ class CashRegisterController extends Controller
         $bs_denomination_records = $cash_register_data->bs_denomination_records;
         $dollar_denomination_records = $cash_register_data->dollar_denomination_records;
         $zelle_records = $cash_register_data->zelle_records;
-        $point_sale_dollar_records = $cash_register_data->point_sale_dollar_records;
+        
+        $point_sale_dollar_record = $cash_register_data
+            ->point_sale_dollar_records()
+            ->first();
 
         $cash_registers_workers_id_arr = $this->getWorkers();
         $cash_registers_id_arr = $this->getCashRegisterUsers();
 
-
-        $point_sale_bs_records = $cash_register_data
-            ->point_sale_bs_records()
-            ->orderBy('bank_name')
-            ->get();
-
-        $point_sale_bs_remaining_banks = DB::connection('caja_mayorista')
+        $banks = DB::connection('caja_mayorista')
             ->table('banks')
             ->select('name')
             ->whereNotIn('banks.name', function($query) use ($cash_register_data){
@@ -228,14 +225,22 @@ class CashRegisterController extends Controller
                     ->groupBy('point_sale_bs_records.bank_name');
             })     
             ->get();
+
+        $point_sale_bs_records = $cash_register_data
+            ->point_sale_bs_records()
+            ->orderBy('bank_name')
+            ->get();
  
+        // Banks array is just an array of literal strings
         $point_sale_bs_banks = $point_sale_bs_records
             ->unique('bank_name')
+            ->values()
             ->map(function($record){
                 return $record->bank_name;
             });
 
-        $point_sale_bs_records = $point_sale_bs_records->reduce(function ($arr, $item) {
+        // point_sale_bs_records is an array whose credit and debit entries contains Eloquent Models
+        $point_sale_bs_records_arr = $point_sale_bs_records->reduce(function ($arr, $item) {
             if ($item->type === "CREDIT"){
                 array_push($arr['credit'], $item);
             } else {
@@ -244,19 +249,53 @@ class CashRegisterController extends Controller
             return $arr;
         }, ['credit' => [], 'debit' => []]);
 
+        $point_sale_bs_records_arr = array_merge($point_sale_bs_records_arr, ['bank' => $point_sale_bs_banks]);
+
+        // Total amounts
+        $total_dollar_cash = $dollar_cash_records->reduce(function($carry, $el){
+            return $carry + $el->amount;
+        }, 0);
+
+        $total_bs_cash = $bs_cash_records->reduce(function($carry, $el){
+            return $carry + $el->amount;
+        }, 0);
+
+        $total_point_sale_bs = $point_sale_bs_records->reduce(function($carry, $el){
+            return $carry + $el->amount;
+        }, 0);
+
+        $total_dollar_denominations = $dollar_denomination_records->reduce(function($carry, $el){
+            return $carry + ($el->quantity * $el->denomination);
+        }, 0);
+
+        $total_bs_denominations = $bs_denomination_records->reduce(function($carry, $el){
+            return $carry + ($el->quantity * $el->denomination);
+        }, 0);
+
+        $total_zelle = $zelle_records->reduce(function($carry, $el){
+            return $carry + $el->amount;
+        }, 0);
+
+
+
         return view('pages.cash-register.edit', compact(
             'cash_register_data',
+            'total_dollar_cash',
+            'total_bs_cash',
+            'total_point_sale_bs',
+            'total_dollar_denominations',
+            'total_bs_denominations',
+            'total_zelle',
             'dollar_cash_records',
             'bs_cash_records',
-            'point_sale_bs_records',
-            'point_sale_bs_banks',
-            'point_sale_dollar_records',
+            'point_sale_dollar_record',
+            'point_sale_bs_records_arr',
+            'banks',
             'bs_denomination_records',
             'dollar_denomination_records',
             'zelle_records',
             'cash_registers_id_arr',
             'cash_registers_workers_id_arr',
-            'point_sale_bs_remaining_banks'
         ));
     }
 

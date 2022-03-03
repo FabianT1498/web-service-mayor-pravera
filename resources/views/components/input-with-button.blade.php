@@ -1,9 +1,16 @@
-@props(['readonly' => true, 'modalID' => '', 'inputID' => '', 'currencySign' => "$"])
+@props([
+    'readonly' => true, 
+    'modalID' => '', 
+    'inputID' => '', 
+    'currencySign' => "$",
+    'value' => ''
+])
 
 <div class="h-10 flex w-56 bg-white items-center rounded-md shadow-md border-gray-300  focus-within:border-indigo-300 focus-within:ring focus-within:ring-indigo-200 focus-within:ring-opacity-50">
     <input
         {{ $readonly ? 'readonly' : '' }}
-        placeholder='{{ "0.00 {$currencySign}"}}'
+        placeholder="{{ '0.00 ' . $currencySign }}"
+        value={{ $value !== '' ? $value : '0'}}
         data-currency={{ $currencySign }}
         {!! $attributes->merge(['class' => 'min-w-0 h-full rounded-tl-sm basis-5/6 rounded-bl-sm border-transparent focus:outline-none focus:shadow-none focus:border-transparent focus:ring-0']) !!}
         id={{ $inputID }}

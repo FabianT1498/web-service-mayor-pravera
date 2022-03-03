@@ -37,7 +37,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('cash_register', [CashRegisterController::class, 'create'])->name('cash_register.create');
     Route::post('cash_register', [CashRegisterController::class, 'store'])->name('cash_register.store');
     Route::get('cash_register/edit/{id}', [CashRegisterController::class, 'edit'])->name('cash_register.edit');
-        
+    Route::put('cash_register/{id}', [CashRegisterController::class, 'update'])->name('cash_register.update');
+    
+    
     // Route::get('cash_register/dollar-cash-detail', [CashRegisterController::class, 'createStepTwo'])->name('cash_register_step_two.create');
     // Route::get('cash_register/create-step-three', [CashRegisterController::class, 'createStepThree'])->name('cash_register_step_three.create');
     // Route::get('cash_register/create-step-four', [CashRegisterController::class, 'createStepFour'])->name('cash_register_step_four.create');
