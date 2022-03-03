@@ -61,14 +61,14 @@ const MoneyRecordModalPresenterPrototype = {
 		let index = this.moneyRecordCollection.getIndexByID(parseInt(id));
 		let value = formatAmount(inputValue);
 		this.moneyRecordCollection.setElementAtIndex(index, { amount: value })
-	}
+	},
 }
 
-const MoneyRecordModalPresenter = function (currency, method, setTotalAmount){
+const MoneyRecordModalPresenter = function (currency, method, setTotalAmount, moneyRecordCollection = []){
     this.view = null;
 	this.currency = currency;
 	this.method = method;
-	this.moneyRecordCollection = new MoneyRecordCollection();
+	this.moneyRecordCollection = new MoneyRecordCollection(moneyRecordCollection);
 	this.setTotalAmount = setTotalAmount;
 }
 

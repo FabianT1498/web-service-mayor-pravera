@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('js')
+    <script src="{{ asset('js/cash_register_edit.js') }}" defer></script>
+@endsection
+
 @section('main')
     @foreach ($errors->all() as $error)
         <li>
