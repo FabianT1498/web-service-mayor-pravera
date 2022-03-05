@@ -152,10 +152,18 @@ const SalePointModalPresenterPrototype = {
 	},
 	setView(view){
 		this.view = view;
-	}
+	},
+	fetchInitialData: async function(){
+        try {
+            const banks = await getAllBanks();
+            return {banks}
+        } catch(e){
+            return { banks: [] }
+        }
+   	}	
 }
 
-const SalePointModalPresenter = function (currency, setTotalAmount){
+const SalePointModalPresenter = function (currency, setTotalAmount, pointSaleRecords = {}){
    this.view = null;
 	this.currency = currency;
 	this.banks = [];
@@ -164,22 +172,23 @@ const SalePointModalPresenter = function (currency, setTotalAmount){
 	this.pointSaleDebit = new PointSaleCollection();
 	this.pointSaleCredit = new PointSaleCollection();
 
-	fetchInitialData()
-		.then(res => {
-			this.banks = res.banks;
-		})
-		.catch(err => {
-			console.log(err)
-		});
-
-	async function fetchInitialData(){
-        try {
-            const banks = await getAllBanks();
-            return {banks}
-        } catch(e){
-            return { banks: [] }
-        }
-   	}	
+	if (Object.keys(pointSaleRecords).length > 0 
+		&& ("bank" in pointSaleRecords && pointSaleRecords['bank'].length > 0)
+				&& ("credit" in pointSaleRecords) && ("debit" in pointSaleRecords)
+						&& "availableBanks" in pointSaleRecords){
+		this.selectedBanks.setElements(pointSaleRecords['bank']);
+		this.pointSaleDebit.setElements(pointSaleRecords['debit']);
+		this.pointSaleCredit.setElements(pointSaleRecords['credit']);
+		this.banks = pointSaleRecords['availableBanks']
+	} else {
+		this.fetchInitialData()
+			.then(res => {
+				this.banks = res.banks;
+			})
+			.catch(err => {
+				console.log(err)
+			});
+	}	
 }
 
 SalePointModalPresenter.prototype = SalePointModalPresenterPrototype;

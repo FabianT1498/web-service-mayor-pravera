@@ -23,6 +23,9 @@ import SalePointModalView from '_views/SalePointModalView'
 import {decimalInputs} from '_utilities/decimalInput';
 
 import MoneyRecord from '_models/moneyRecord'
+import DenominationRecord from '_models/DenominationRecord'
+import PointSaleRecord from '_models/PointSaleRecord'
+import Bank from '_models/Bank';
 
 export default {
     totalInputDOMS: {
@@ -62,6 +65,7 @@ export default {
         let cashRegister = new CashRegisterData()
         cashRegister.init(cashRegisterContainer)
 
+        // Cash records bs
         let liquidMoneyBsRegisterModal = document.querySelector('#bs_cash_record');
         let cashBsRecordsElements = liquidMoneyBsRegisterModal.querySelector('tbody').children; 
         let cashBsRecords = Array.prototype.map.call(cashBsRecordsElements, function(el, key){
@@ -78,6 +82,7 @@ export default {
         let moneyRecordTable = new MoneyRecordTable()
         bolivarRecordMoneyView.init(liquidMoneyBsRegisterModal, 'bs_cash_record', moneyRecordTable)
         
+        // Cash records dollar
         let cashDollarRecordModal = document.querySelector('#dollar_cash_record');
         let cashDollarRecordsElements = cashDollarRecordModal.querySelector('tbody').children;
         let cashDollarRecords = Array.prototype.map.call(cashDollarRecordsElements, function(el, key){
@@ -94,23 +99,96 @@ export default {
         let dollarRecordTable = new ForeignMoneyRecordTable()
         dollarRecordMoneyView.init(cashDollarRecordModal, 'dollar_cash_record', dollarRecordTable)
 
+        // Bs denomination records
         let bsDenominationsModal = document.querySelector('#bs_denominations_record');
-        let bolivarDenominationModalPresenter = new DenominationModalPresenter(CURRENCIES.BOLIVAR, PAYMENT_METHODS.CASH, this.setPropWrapper(this.setTotalDenominationBs))
+        let bsDenominationRecordsElements = bsDenominationsModal.querySelector('tbody').children;
+        let bsDenominationRecords = Array.prototype.map.call(bsDenominationRecordsElements, function(el, key){
+            let input = el.querySelector('input');
+            let amount = parseInt(input.value);
+            let denomination = parseFloat(input.getAttribute('data-denomination'));
+            let total = Math.round(((denomination * amount) + Number.EPSILON) * 100) / 100
+            return new DenominationRecord(CURRENCIES.BOLIVAR, denomination, total, amount, key);
+        });
+        let bolivarDenominationModalPresenter = new DenominationModalPresenter(
+            CURRENCIES.BOLIVAR,
+            PAYMENT_METHODS.CASH,
+            this.setPropWrapper(this.setTotalDenominationBs,
+            bsDenominationRecords
+        ))
         let bolivarDenominationModalView = new DenominationModalView(bolivarDenominationModalPresenter);
         bolivarDenominationModalView.init(bsDenominationsModal, 'bs_denominations_record');
 
+        // Dollar denomination records
         let dollarDenominationsModal = document.querySelector('#dollar_denominations_record');
-        let dollarDenominationModalPresenter = new DenominationModalPresenter(CURRENCIES.DOLLAR, PAYMENT_METHODS.CASH, this.setPropWrapper(this.setTotalDenominationDollar))
+        let dollarDenominationRecordsElements = dollarDenominationsModal.querySelector('tbody').children;
+        let dollarDenominationRecords = Array.prototype.map.call(dollarDenominationRecordsElements, function(el, key){
+            let input = el.querySelector('input');
+            let amount = parseInt(input.value);
+            let denomination = parseFloat(input.getAttribute('data-denomination'));
+            let total = Math.round(((denomination * amount) + Number.EPSILON) * 100) / 100
+            return new DenominationRecord(CURRENCIES.DOLLAR, denomination, total, amount, key);
+        });
+        let dollarDenominationModalPresenter = new DenominationModalPresenter(
+            CURRENCIES.DOLLAR, 
+            PAYMENT_METHODS.CASH, 
+            this.setPropWrapper(this.setTotalDenominationDollar),
+            dollarDenominationRecords
+        )
         let dollarDenominationModalView = new DenominationModalView(dollarDenominationModalPresenter);
         dollarDenominationModalView.init(dollarDenominationsModal, 'dollar_denominations_record');
-
+        
+        // Point of sale bs records
         let salePointModal = document.querySelector('#point_sale_bs');
-        let salePointModalPresenter = new SalePointModalPresenter(CURRENCIES.BOLIVAR, this.setPropWrapper(this.setTotalPointSaleBs))
+        let pointSaleBsRecordsElements = salePointModal.querySelector('tbody').children;
+        let pointSaleBsRecords = {'credit' : [], 'debit': [], 'bank': [], 'availableBanks': []}
+      
+        if (pointSaleBsRecordsElements.length > 0){
+            // Get the availables banks
+            let bankSelectEl = salePointModal.querySelector('tbody tr select[name="point_sale_bs_bank"]');
+            if (bankSelectEl.options.length > 1){
+                for (let i = 1; i < bankSelectEl.options.length; i++){
+                    pointSaleBsRecords['availableBanks']
+                        .push(bankSelectEl.options[i].value);
+                }
+            }
+
+            pointSaleBsRecords = Array.prototype
+                .reduce.call(pointSaleBsRecordsElements,
+                    function(obj, curr, index){
+                        let bank = curr.querySelector('select[name="point_sale_bs_bank"]').value;
+                        let bankObj = new Bank(bank, index)
+                        let credit = parseFloat(curr.querySelector('input[id^="point_sale_bs_credit_"]').value);
+                        let debit = parseFloat(curr.querySelector('input[id^="point_sale_bs_debit_"]').value);
+                        obj['credit'].push(new PointSaleRecord(CURRENCIES.BOLIVAR, credit, bankObj, index));
+                        obj['debit'].push(new PointSaleRecord(CURRENCIES.BOLIVAR, debit, bankObj, index));
+                        obj['bank'].push(bankObj);
+                        return obj;
+                    }, pointSaleBsRecords);
+        }
+
+        console.log(pointSaleBsRecords)
+        
+        let salePointModalPresenter = new SalePointModalPresenter(
+            CURRENCIES.BOLIVAR,
+            this.setPropWrapper(this.setTotalPointSaleBs),
+            pointSaleBsRecords
+        )
         let salePointModalView = new SalePointModalView(salePointModalPresenter);
         salePointModalView.init(salePointModal, 'point_sale_bs');
-
+        
+        // Zelle records
         let zelleRecordModal = document.querySelector('#zelle_record');
-        let zelleRecordMoneyPresenter = new ForeignMoneyRecordModalPresenter(CURRENCIES.DOLLAR, PAYMENT_METHODS.ZELLE, this.setPropWrapper(this.setTotalZelleDollar));
+        let zelleRecordsElements = zelleRecordModal.querySelector('tbody').children;
+        let zelleRecords = Array.prototype.map.call(zelleRecordsElements, function(el, key){
+            let amount = parseFloat(el.querySelector('input[id^="zelle_record_"]').value);
+            return new MoneyRecord(amount,  CURRENCIES.DOLLAR, PAYMENT_METHODS.ZELLE, key);
+        });
+        let zelleRecordMoneyPresenter = new ForeignMoneyRecordModalPresenter(
+            CURRENCIES.DOLLAR,
+            PAYMENT_METHODS.ZELLE,
+            this.setPropWrapper(this.setTotalZelleDollar),
+            zelleRecords
+        );
         let zelleRecordMoneyView = new ForeignMoneyRecordModalView(zelleRecordMoneyPresenter);
         let zelleRecordTable = new ForeignMoneyRecordTable()
         zelleRecordMoneyView.init(zelleRecordModal, 'zelle_record', zelleRecordTable)

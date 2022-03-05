@@ -51,13 +51,16 @@ const DenominationModalPresenterPrototype = {
 	}
 }
 
-const DenominationModalPresenter = function (currency, method, setTotalAmount){
+const DenominationModalPresenter = function (currency, method, setTotalAmount, denominationRecord = []){
    	this.view = null;
 	this.currency = currency;
 	this.method = method;
 	this.setTotalAmount = setTotalAmount;
 
-	let denominationRecord = CURRENCIES_DENOMINATIONS[currency].map((el, index) => new DenominationRecord(currency, el, 0, 0, index))
+	if (denominationRecord.length === 0){
+		denominationRecord = CURRENCIES_DENOMINATIONS[currency].map((el, index) => new DenominationRecord(currency, el, 0, 0, index))
+	}
+	
 	this.denominationRecord = new DenominationRecordCollection(denominationRecord)
 }
 

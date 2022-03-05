@@ -276,8 +276,6 @@ class CashRegisterController extends Controller
             return $carry + $el->amount;
         }, 0);
 
-
-
         return view('pages.cash-register.edit', compact(
             'cash_register_data',
             'total_dollar_cash',
@@ -458,7 +456,7 @@ class CashRegisterController extends Controller
             ->whereDate('SAFACT.FechaE', '=', Date::now()->format('Y-m-d'))
             ->where('SAFACT.CodUsua', '=', $cash_register->cash_register_id)
             ->orderBy('SAFACT.FechaE', 'desc')
-            ->paginate(10);;
+            ->paginate(10);
         
         $amounts = $this->getBillsAmounts($bills);
         $sum_amount = $this::getSumAmount($amounts);

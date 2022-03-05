@@ -1823,6 +1823,10 @@ div.code-toolbar .toolbar button:hover {
   margin-top: -1px;
 }
 
+.mt-3{
+  margin-top: 0.75rem;
+}
+
 .mr-6{
   margin-right: 1.5rem;
 }
@@ -1845,10 +1849,6 @@ div.code-toolbar .toolbar button:hover {
 
 .mt-6{
   margin-top: 1.5rem;
-}
-
-.mt-3{
-  margin-top: 0.75rem;
 }
 
 .mb-2{
@@ -2794,14 +2794,14 @@ div.code-toolbar .toolbar button:hover {
   color: rgb(31 41 55 / var(--tw-text-opacity));
 }
 
-.text-teal-500{
-  --tw-text-opacity: 1;
-  color: rgb(6 148 162 / var(--tw-text-opacity));
-}
-
 .text-red-600{
   --tw-text-opacity: 1;
   color: rgb(224 36 36 / var(--tw-text-opacity));
+}
+
+.text-teal-500{
+  --tw-text-opacity: 1;
+  color: rgb(6 148 162 / var(--tw-text-opacity));
 }
 
 .underline{

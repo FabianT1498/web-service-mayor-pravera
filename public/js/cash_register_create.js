@@ -1082,13 +1082,18 @@ var DenominationModalPresenterPrototype = {
 };
 
 var DenominationModalPresenter = function DenominationModalPresenter(currency, method, setTotalAmount) {
+  var denominationRecord = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
   this.view = null;
   this.currency = currency;
   this.method = method;
   this.setTotalAmount = setTotalAmount;
-  var denominationRecord = _constants_currenciesDenominations__WEBPACK_IMPORTED_MODULE_2__["default"][currency].map(function (el, index) {
-    return new _models_DenominationRecord__WEBPACK_IMPORTED_MODULE_1__["default"](currency, el, 0, 0, index);
-  });
+
+  if (denominationRecord.length === 0) {
+    denominationRecord = _constants_currenciesDenominations__WEBPACK_IMPORTED_MODULE_2__["default"][currency].map(function (el, index) {
+      return new _models_DenominationRecord__WEBPACK_IMPORTED_MODULE_1__["default"](currency, el, 0, 0, index);
+    });
+  }
+
   this.denominationRecord = new _collections_denominationRecordCollection__WEBPACK_IMPORTED_MODULE_0__["default"](denominationRecord);
 };
 
@@ -1516,31 +1521,9 @@ var SalePointModalPresenterPrototype = {
   },
   setView: function setView(view) {
     this.view = view;
-  }
-};
-
-var SalePointModalPresenter = function SalePointModalPresenter(currency, setTotalAmount) {
-  var _this = this;
-
-  this.view = null;
-  this.currency = currency;
-  this.banks = [];
-  this.setTotalAmount = setTotalAmount;
-  this.selectedBanks = new _collections_bankCollection__WEBPACK_IMPORTED_MODULE_2__["default"]();
-  this.pointSaleDebit = new _collections_poinSaleCollection__WEBPACK_IMPORTED_MODULE_1__["default"]();
-  this.pointSaleCredit = new _collections_poinSaleCollection__WEBPACK_IMPORTED_MODULE_1__["default"]();
-  fetchInitialData().then(function (res) {
-    _this.banks = res.banks;
-  })["catch"](function (err) {
-    console.log(err);
-  });
-
-  function fetchInitialData() {
-    return _fetchInitialData.apply(this, arguments);
-  }
-
-  function _fetchInitialData() {
-    _fetchInitialData = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee() {
+  },
+  fetchInitialData: function () {
+    var _fetchInitialData = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee() {
       var banks;
       return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee$(_context) {
         while (1) {
@@ -1570,7 +1553,38 @@ var SalePointModalPresenter = function SalePointModalPresenter(currency, setTota
         }
       }, _callee, null, [[0, 7]]);
     }));
-    return _fetchInitialData.apply(this, arguments);
+
+    function fetchInitialData() {
+      return _fetchInitialData.apply(this, arguments);
+    }
+
+    return fetchInitialData;
+  }()
+};
+
+var SalePointModalPresenter = function SalePointModalPresenter(currency, setTotalAmount) {
+  var _this = this;
+
+  var pointSaleRecords = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  this.view = null;
+  this.currency = currency;
+  this.banks = [];
+  this.setTotalAmount = setTotalAmount;
+  this.selectedBanks = new _collections_bankCollection__WEBPACK_IMPORTED_MODULE_2__["default"]();
+  this.pointSaleDebit = new _collections_poinSaleCollection__WEBPACK_IMPORTED_MODULE_1__["default"]();
+  this.pointSaleCredit = new _collections_poinSaleCollection__WEBPACK_IMPORTED_MODULE_1__["default"]();
+
+  if (Object.keys(pointSaleRecords).length > 0 && "bank" in pointSaleRecords && pointSaleRecords['bank'].length > 0 && "credit" in pointSaleRecords && "debit" in pointSaleRecords && "availableBanks" in pointSaleRecords) {
+    this.selectedBanks.setElements(pointSaleRecords['bank']);
+    this.pointSaleDebit.setElements(pointSaleRecords['debit']);
+    this.pointSaleCredit.setElements(pointSaleRecords['credit']);
+    this.banks = pointSaleRecords['availableBanks'];
+  } else {
+    this.fetchInitialData().then(function (res) {
+      _this.banks = res.banks;
+    })["catch"](function (err) {
+      console.log(err);
+    });
   }
 };
 
