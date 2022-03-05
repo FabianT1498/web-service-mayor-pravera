@@ -25,7 +25,7 @@ class CashRegisterData extends Model
         'user_id',
         'cash_register_user',
         'date',
-        'worker_name',
+        'worker_id',
         'status',
     ];
 

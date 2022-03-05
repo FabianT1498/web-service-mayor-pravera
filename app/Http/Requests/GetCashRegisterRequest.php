@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Http\Request;
+use Illuminate\Foundation\Http\FormRequest;
 use App\Models\CashRegisterData;
 
-class GetCashRegisterRequest extends Request
+class GetCashRegisterRequest extends FormRequest
 {
    
     /**
@@ -15,9 +15,13 @@ class GetCashRegisterRequest extends Request
      */
     public function authorize()
     {
-        
-        $cash_register_data = CashRegisterData::find($this->route('id'));
+        $cash_register_data = CashRegisterData::where('id', $this->route('id'))->first();
 
-        return (!is_null($cash_register_data) && $cash_register_data->status === "EN EDICION");
+    
+        return (!is_null($cash_register_data) && $cash_register_data->status === 'EN EDICION');
+    }
+
+    public function rules(){
+        return [];
     }
 }

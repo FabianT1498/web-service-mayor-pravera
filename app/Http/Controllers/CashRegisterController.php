@@ -20,6 +20,7 @@ use App\Models\ZelleRecord;
 
 use App\Http\Requests\StoreCashRegisterRequest;
 use App\Http\Requests\GetCashRegisterRequest;
+use App\Http\Requests\UpdateCashRegisterRequest;
 
 use App\Models\DollarExchange;
 use Illuminate\Support\Facades\Auth;
@@ -197,10 +198,10 @@ class CashRegisterController extends Controller
         return redirect()->route('dashboard');
     }
 
-    public function edit($id, GetCashRegisterRequest $request){
+    public function edit(GetCashRegisterRequest $request){
 
-        $cash_register_data = CashRegisterData::where('id', $id)->first();
-        
+        $cash_register_data = CashRegisterData::where('id', $request->id)->first();
+
         $dollar_cash_records = $cash_register_data->dollar_cash_records;
         $bs_cash_records = $cash_register_data->bs_cash_records;
         $bs_denomination_records = $cash_register_data->bs_denomination_records;
@@ -295,6 +296,53 @@ class CashRegisterController extends Controller
             'cash_registers_id_arr',
             'cash_registers_workers_id_arr',
         ));
+    }
+
+    public function update(UpdateCashRegisterRequest $request){
+
+        $validated = $request->validated();
+
+        $cash_register_data = CashRegisterData::where('id', $request->route('id'))->first();
+
+        $date =  Date::now()->format('d-m-Y');
+
+        $validated += ["date" => $date];
+
+        if (array_key_exists('new_cash_register_worker', $validated)){
+            $worker = new Worker(array('name' => $validated['new_cash_register_worker']));
+            $worker->save();
+            array_merge($validated, array('worker_id' => $worker->id));
+        }
+
+        $cash_register_data->worker_id = $validated['worker_id'];
+        $cash_register_data->cash_register_user = $validated['cash_register_user'];
+        $cash_register_data->date = $date;
+      
+        if ($cash_register_data->isDirty()){
+            $cash_register_data->save();
+        }
+        
+        if (array_key_exists('dollar_cash_record', $validated)){
+            $dollar_cash_records = $cash_register_data->dollar_cash_records;
+            $diff = $dollar_cash_records->count() - count($validated['dollar_cash_record']);
+
+            $data = array_map(function($value){
+                return array('amount' => $value);
+            }, $validated['dollar_cash_record']);
+
+            if ($diff === 0){
+                $dollar_cash_records->upsert($data, ['id'], ['amount']);
+            } else if ($diff < 0){
+
+            } else {
+
+            }
+        }
+
+        toastr()->success('El registro fue actualizado con exito');
+        return redirect()->route('cash_register.edit', [$cash_register_data->id]);
+
+
     }
 
     // public function dollarCashDetails(GetCashRegisterRequest $request)

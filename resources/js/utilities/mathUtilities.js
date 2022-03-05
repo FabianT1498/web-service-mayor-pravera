@@ -16,7 +16,7 @@ const formatAmount = (amount, defaultValue = '0.00') => {
         return 0;
     }
     
-    let arr = amount.split(',', 2);
+    let arr = amount.split('.', 2);
     let integer = arr[0] ?? null;
     let decimal = arr[1] ?? null;
             

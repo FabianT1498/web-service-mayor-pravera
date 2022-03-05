@@ -5,7 +5,7 @@ const decimalMaskOptions = {
     alias:'decimal',
     positionCaretOnClick: "radixFocus",
     digits: 2,
-    radixPoint: ",",
+    radixPoint: ".",
     _radixDance: true,
     numericInput: true,
     placeholder: "0",

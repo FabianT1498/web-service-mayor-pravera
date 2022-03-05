@@ -122,7 +122,7 @@
                <x-input-with-button 
                     :inputID="__('total_point_sale_bs')"
                     :modalID="__('point_sale_bs')"
-                    :currency="__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))"
+                    :currencySign="__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))"
                     :value="old('total_point_sale_bs') ? old('total_point_sale_bs') : $total_point_sale_bs"
                     name="total_point_sale_bs"
                     type="text"

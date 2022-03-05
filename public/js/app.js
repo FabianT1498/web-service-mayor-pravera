@@ -7438,7 +7438,7 @@ var decimalMaskOptions = {
   alias: 'decimal',
   positionCaretOnClick: "radixFocus",
   digits: 2,
-  radixPoint: ",",
+  radixPoint: ".",
   _radixDance: true,
   numericInput: true,
   placeholder: "0",
@@ -7488,7 +7488,7 @@ var formatAmount = function formatAmount(amount) {
     return 0;
   }
 
-  var arr = amount.split(',', 2);
+  var arr = amount.split('.', 2);
   var integer = (_arr$ = arr[0]) !== null && _arr$ !== void 0 ? _arr$ : null;
   var decimal = (_arr$2 = arr[1]) !== null && _arr$2 !== void 0 ? _arr$2 : null; // Check if it is an integer number
 

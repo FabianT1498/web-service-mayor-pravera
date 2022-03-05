@@ -52,7 +52,7 @@
                                             <td data-table="num-col" class="py-4 pl-6 text-sm font-medium text-center text-gray-900 whitespace-nowrap dark:text-white">{{ $key + 1}}</td>
                                             
                                             <td class="pl-3 py-4 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                                                <select class="w-full form-select" name={{$modalID . "_bank"}}>
+                                                <select class="w-full form-select" name={{$modalID . "_bank[]"}}>
                                                     <option value="{{ $bank }}" selected>{{ $bank }}</option>
                                                     @foreach($banks as $bank)
                                                         <option value="{{ $bank->name }}">{{ $bank->name}}</option>

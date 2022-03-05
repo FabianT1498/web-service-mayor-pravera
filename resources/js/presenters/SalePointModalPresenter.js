@@ -173,9 +173,9 @@ const SalePointModalPresenter = function (currency, setTotalAmount, pointSaleRec
 	this.pointSaleCredit = new PointSaleCollection();
 
 	if (Object.keys(pointSaleRecords).length > 0 
-		&& ("bank" in pointSaleRecords && pointSaleRecords['bank'].length > 0)
-				&& ("credit" in pointSaleRecords) && ("debit" in pointSaleRecords)
-						&& "availableBanks" in pointSaleRecords){
+			&& ("bank" in pointSaleRecords && pointSaleRecords['bank'].length > 0)
+					&& ("credit" in pointSaleRecords) && ("debit" in pointSaleRecords)
+							&& "availableBanks" in pointSaleRecords){
 		this.selectedBanks.setElements(pointSaleRecords['bank']);
 		this.pointSaleDebit.setElements(pointSaleRecords['debit']);
 		this.pointSaleCredit.setElements(pointSaleRecords['credit']);

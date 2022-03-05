@@ -882,10 +882,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _presenters_SalePointModalPresenter__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! _presenters/SalePointModalPresenter */ "./resources/js/presenters/SalePointModalPresenter.js");
 /* harmony import */ var _views_SalePointModalView__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! _views/SalePointModalView */ "./resources/js/views/SalePointModalView.js");
 /* harmony import */ var _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! _utilities/decimalInput */ "./resources/js/utilities/decimalInput.js");
-/* harmony import */ var _models_moneyRecord__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! _models/moneyRecord */ "./resources/js/models/moneyRecord.js");
-/* harmony import */ var _models_DenominationRecord__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! _models/DenominationRecord */ "./resources/js/models/DenominationRecord.js");
-/* harmony import */ var _models_PointSaleRecord__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! _models/PointSaleRecord */ "./resources/js/models/PointSaleRecord.js");
-/* harmony import */ var _models_Bank__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! _models/Bank */ "./resources/js/models/Bank.js");
+/* harmony import */ var _utilities_numericInput__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! _utilities/numericInput */ "./resources/js/utilities/numericInput.js");
+/* harmony import */ var _models_moneyRecord__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! _models/moneyRecord */ "./resources/js/models/moneyRecord.js");
+/* harmony import */ var _models_DenominationRecord__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! _models/DenominationRecord */ "./resources/js/models/DenominationRecord.js");
+/* harmony import */ var _models_PointSaleRecord__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! _models/PointSaleRecord */ "./resources/js/models/PointSaleRecord.js");
+/* harmony import */ var _models_Bank__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! _models/Bank */ "./resources/js/models/Bank.js");
+
 
 
 
@@ -948,8 +950,10 @@ __webpack_require__.r(__webpack_exports__);
     var liquidMoneyBsRegisterModal = document.querySelector('#bs_cash_record');
     var cashBsRecordsElements = liquidMoneyBsRegisterModal.querySelector('tbody').children;
     var cashBsRecords = Array.prototype.map.call(cashBsRecordsElements, function (el, key) {
-      var amount = parseFloat(el.querySelector('input[id^="bs_cash_record_"]').value);
-      return new _models_moneyRecord__WEBPACK_IMPORTED_MODULE_16__["default"](amount, _constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.BOLIVAR, _constants_paymentMethods__WEBPACK_IMPORTED_MODULE_1__.PAYMENT_METHODS.CASH, key);
+      var input = el.querySelector('input[id^="bs_cash_record_"]');
+      _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_15__.decimalInputs[_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.BOLIVAR].mask(input);
+      var amount = parseFloat(input.value);
+      return new _models_moneyRecord__WEBPACK_IMPORTED_MODULE_17__["default"](amount, _constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.BOLIVAR, _constants_paymentMethods__WEBPACK_IMPORTED_MODULE_1__.PAYMENT_METHODS.CASH, key);
     });
     var bolivarRecordMoneyPresenter = new _presenters_MoneyRecordModalPresenter__WEBPACK_IMPORTED_MODULE_6__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.BOLIVAR, _constants_paymentMethods__WEBPACK_IMPORTED_MODULE_1__.PAYMENT_METHODS.CASH, this.setPropWrapper(this.setTotalLiquidMoneyBs), cashBsRecords);
     var bolivarRecordMoneyView = new _views_MoneyRecordModalView__WEBPACK_IMPORTED_MODULE_5__["default"](bolivarRecordMoneyPresenter);
@@ -959,8 +963,10 @@ __webpack_require__.r(__webpack_exports__);
     var cashDollarRecordModal = document.querySelector('#dollar_cash_record');
     var cashDollarRecordsElements = cashDollarRecordModal.querySelector('tbody').children;
     var cashDollarRecords = Array.prototype.map.call(cashDollarRecordsElements, function (el, key) {
-      var amount = parseFloat(el.querySelector('input[id^="dollar_cash_record_"]').value);
-      return new _models_moneyRecord__WEBPACK_IMPORTED_MODULE_16__["default"](amount, _constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.DOLLAR, _constants_paymentMethods__WEBPACK_IMPORTED_MODULE_1__.PAYMENT_METHODS.CASH, key);
+      var input = el.querySelector('input[id^="dollar_cash_record_"]');
+      _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_15__.decimalInputs[_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.DOLLAR].mask(input);
+      var amount = parseFloat(input.value);
+      return new _models_moneyRecord__WEBPACK_IMPORTED_MODULE_17__["default"](amount, _constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.DOLLAR, _constants_paymentMethods__WEBPACK_IMPORTED_MODULE_1__.PAYMENT_METHODS.CASH, key);
     });
     var dollarRecordMoneyPresenter = new _presenters_ForeignMoneyRecordModalPresenter__WEBPACK_IMPORTED_MODULE_9__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.DOLLAR, _constants_paymentMethods__WEBPACK_IMPORTED_MODULE_1__.PAYMENT_METHODS.CASH, this.setPropWrapper(this.setTotalLiquidMoneyDollar), cashDollarRecords);
     var dollarRecordMoneyView = new _views_ForeignMoneyRecordModalView__WEBPACK_IMPORTED_MODULE_8__["default"](dollarRecordMoneyPresenter);
@@ -971,12 +977,13 @@ __webpack_require__.r(__webpack_exports__);
     var bsDenominationRecordsElements = bsDenominationsModal.querySelector('tbody').children;
     var bsDenominationRecords = Array.prototype.map.call(bsDenominationRecordsElements, function (el, key) {
       var input = el.querySelector('input');
+      _utilities_numericInput__WEBPACK_IMPORTED_MODULE_16__["default"].mask(input);
       var amount = parseInt(input.value);
       var denomination = parseFloat(input.getAttribute('data-denomination'));
       var total = Math.round((denomination * amount + Number.EPSILON) * 100) / 100;
-      return new _models_DenominationRecord__WEBPACK_IMPORTED_MODULE_17__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.BOLIVAR, denomination, total, amount, key);
+      return new _models_DenominationRecord__WEBPACK_IMPORTED_MODULE_18__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.BOLIVAR, denomination, total, amount, key);
     });
-    var bolivarDenominationModalPresenter = new _presenters_DenominationModalPresenter__WEBPACK_IMPORTED_MODULE_11__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.BOLIVAR, _constants_paymentMethods__WEBPACK_IMPORTED_MODULE_1__.PAYMENT_METHODS.CASH, this.setPropWrapper(this.setTotalDenominationBs, bsDenominationRecords));
+    var bolivarDenominationModalPresenter = new _presenters_DenominationModalPresenter__WEBPACK_IMPORTED_MODULE_11__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.BOLIVAR, _constants_paymentMethods__WEBPACK_IMPORTED_MODULE_1__.PAYMENT_METHODS.CASH, this.setPropWrapper(this.setTotalDenominationBs), bsDenominationRecords);
     var bolivarDenominationModalView = new _views_DenominationModalView__WEBPACK_IMPORTED_MODULE_12__["default"](bolivarDenominationModalPresenter);
     bolivarDenominationModalView.init(bsDenominationsModal, 'bs_denominations_record'); // Dollar denomination records
 
@@ -984,10 +991,11 @@ __webpack_require__.r(__webpack_exports__);
     var dollarDenominationRecordsElements = dollarDenominationsModal.querySelector('tbody').children;
     var dollarDenominationRecords = Array.prototype.map.call(dollarDenominationRecordsElements, function (el, key) {
       var input = el.querySelector('input');
+      _utilities_numericInput__WEBPACK_IMPORTED_MODULE_16__["default"].mask(input);
       var amount = parseInt(input.value);
       var denomination = parseFloat(input.getAttribute('data-denomination'));
       var total = Math.round((denomination * amount + Number.EPSILON) * 100) / 100;
-      return new _models_DenominationRecord__WEBPACK_IMPORTED_MODULE_17__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.DOLLAR, denomination, total, amount, key);
+      return new _models_DenominationRecord__WEBPACK_IMPORTED_MODULE_18__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.DOLLAR, denomination, total, amount, key);
     });
     var dollarDenominationModalPresenter = new _presenters_DenominationModalPresenter__WEBPACK_IMPORTED_MODULE_11__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.DOLLAR, _constants_paymentMethods__WEBPACK_IMPORTED_MODULE_1__.PAYMENT_METHODS.CASH, this.setPropWrapper(this.setTotalDenominationDollar), dollarDenominationRecords);
     var dollarDenominationModalView = new _views_DenominationModalView__WEBPACK_IMPORTED_MODULE_12__["default"](dollarDenominationModalPresenter);
@@ -1004,7 +1012,7 @@ __webpack_require__.r(__webpack_exports__);
 
     if (pointSaleBsRecordsElements.length > 0) {
       // Get the availables banks
-      var bankSelectEl = salePointModal.querySelector('tbody tr select[name="point_sale_bs_bank"]');
+      var bankSelectEl = salePointModal.querySelector('tbody tr select[name^="point_sale_bs_bank"]');
 
       if (bankSelectEl.options.length > 1) {
         for (var i = 1; i < bankSelectEl.options.length; i++) {
@@ -1013,18 +1021,21 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       pointSaleBsRecords = Array.prototype.reduce.call(pointSaleBsRecordsElements, function (obj, curr, index) {
-        var bank = curr.querySelector('select[name="point_sale_bs_bank"]').value;
-        var bankObj = new _models_Bank__WEBPACK_IMPORTED_MODULE_19__["default"](bank, index);
-        var credit = parseFloat(curr.querySelector('input[id^="point_sale_bs_credit_"]').value);
-        var debit = parseFloat(curr.querySelector('input[id^="point_sale_bs_debit_"]').value);
-        obj['credit'].push(new _models_PointSaleRecord__WEBPACK_IMPORTED_MODULE_18__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.BOLIVAR, credit, bankObj, index));
-        obj['debit'].push(new _models_PointSaleRecord__WEBPACK_IMPORTED_MODULE_18__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.BOLIVAR, debit, bankObj, index));
+        var bank = curr.querySelector('select[name^="point_sale_bs_bank"]').value;
+        var bankObj = new _models_Bank__WEBPACK_IMPORTED_MODULE_20__["default"](bank, index);
+        var creditInput = curr.querySelector('input[id^="point_sale_bs_credit_"]');
+        var debitInput = curr.querySelector('input[id^="point_sale_bs_debit_"]');
+        _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_15__.decimalInputs[_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.BOLIVAR].mask(creditInput);
+        _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_15__.decimalInputs[_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.BOLIVAR].mask(debitInput);
+        var credit = parseFloat(creditInput.value);
+        var debit = parseFloat(debitInput.value);
+        obj['credit'].push(new _models_PointSaleRecord__WEBPACK_IMPORTED_MODULE_19__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.BOLIVAR, credit, bankObj, index));
+        obj['debit'].push(new _models_PointSaleRecord__WEBPACK_IMPORTED_MODULE_19__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.BOLIVAR, debit, bankObj, index));
         obj['bank'].push(bankObj);
         return obj;
       }, pointSaleBsRecords);
     }
 
-    console.log(pointSaleBsRecords);
     var salePointModalPresenter = new _presenters_SalePointModalPresenter__WEBPACK_IMPORTED_MODULE_13__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.BOLIVAR, this.setPropWrapper(this.setTotalPointSaleBs), pointSaleBsRecords);
     var salePointModalView = new _views_SalePointModalView__WEBPACK_IMPORTED_MODULE_14__["default"](salePointModalPresenter);
     salePointModalView.init(salePointModal, 'point_sale_bs'); // Zelle records
@@ -1032,8 +1043,10 @@ __webpack_require__.r(__webpack_exports__);
     var zelleRecordModal = document.querySelector('#zelle_record');
     var zelleRecordsElements = zelleRecordModal.querySelector('tbody').children;
     var zelleRecords = Array.prototype.map.call(zelleRecordsElements, function (el, key) {
-      var amount = parseFloat(el.querySelector('input[id^="zelle_record_"]').value);
-      return new _models_moneyRecord__WEBPACK_IMPORTED_MODULE_16__["default"](amount, _constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.DOLLAR, _constants_paymentMethods__WEBPACK_IMPORTED_MODULE_1__.PAYMENT_METHODS.ZELLE, key);
+      var input = el.querySelector('input[id^="zelle_record_"]');
+      _utilities_decimalInput__WEBPACK_IMPORTED_MODULE_15__.decimalInputs[_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.DOLLAR].mask(input);
+      var amount = parseFloat(input.value);
+      return new _models_moneyRecord__WEBPACK_IMPORTED_MODULE_17__["default"](amount, _constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.DOLLAR, _constants_paymentMethods__WEBPACK_IMPORTED_MODULE_1__.PAYMENT_METHODS.ZELLE, key);
     });
     var zelleRecordMoneyPresenter = new _presenters_ForeignMoneyRecordModalPresenter__WEBPACK_IMPORTED_MODULE_9__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.DOLLAR, _constants_paymentMethods__WEBPACK_IMPORTED_MODULE_1__.PAYMENT_METHODS.ZELLE, this.setPropWrapper(this.setTotalZelleDollar), zelleRecords);
     var zelleRecordMoneyView = new _views_ForeignMoneyRecordModalView__WEBPACK_IMPORTED_MODULE_8__["default"](zelleRecordMoneyPresenter);

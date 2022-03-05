@@ -1823,10 +1823,6 @@ div.code-toolbar .toolbar button:hover {
   margin-top: -1px;
 }
 
-.mt-3{
-  margin-top: 0.75rem;
-}
-
 .mr-6{
   margin-right: 1.5rem;
 }
@@ -1849,6 +1845,10 @@ div.code-toolbar .toolbar button:hover {
 
 .mt-6{
   margin-top: 1.5rem;
+}
+
+.mt-3{
+  margin-top: 0.75rem;
 }
 
 .mb-2{
@@ -2031,16 +2031,16 @@ div.code-toolbar .toolbar button:hover {
   max-width: 72rem;
 }
 
-.max-w-7xl{
-  max-width: 80rem;
-}
-
 .max-w-xl{
   max-width: 36rem;
 }
 
 .max-w-lg{
   max-width: 32rem;
+}
+
+.max-w-7xl{
+  max-width: 80rem;
 }
 
 .flex-1{
@@ -2546,11 +2546,6 @@ div.code-toolbar .toolbar button:hover {
   padding-bottom: 0.75rem;
 }
 
-.py-12{
-  padding-top: 3rem;
-  padding-bottom: 3rem;
-}
-
 .px-3{
   padding-left: 0.75rem;
   padding-right: 0.75rem;
@@ -2564,6 +2559,11 @@ div.code-toolbar .toolbar button:hover {
 .py-6{
   padding-top: 1.5rem;
   padding-bottom: 1.5rem;
+}
+
+.py-12{
+  padding-top: 3rem;
+  padding-bottom: 3rem;
 }
 
 .py-2\.5{
@@ -2701,12 +2701,12 @@ div.code-toolbar .toolbar button:hover {
   line-height: 1.75rem;
 }
 
-.leading-tight{
-  line-height: 1.25;
-}
-
 .leading-none{
   line-height: 1;
+}
+
+.leading-tight{
+  line-height: 1.25;
 }
 
 .leading-6{
@@ -2794,14 +2794,14 @@ div.code-toolbar .toolbar button:hover {
   color: rgb(31 41 55 / var(--tw-text-opacity));
 }
 
-.text-red-600{
-  --tw-text-opacity: 1;
-  color: rgb(224 36 36 / var(--tw-text-opacity));
-}
-
 .text-teal-500{
   --tw-text-opacity: 1;
   color: rgb(6 148 162 / var(--tw-text-opacity));
+}
+
+.text-red-600{
+  --tw-text-opacity: 1;
+  color: rgb(224 36 36 / var(--tw-text-opacity));
 }
 
 .underline{
