@@ -322,20 +322,22 @@ class CashRegisterController extends Controller
             $cash_register_data->save();
         }
         
+        $cash_register_data_id = $request->route('id');
+
         if (array_key_exists('dollar_cash_record', $validated)){
             $dollar_cash_records_coll = $cash_register_data->dollar_cash_records;
             $diff = $dollar_cash_records_coll->count() - count($validated['dollar_cash_record']);
 
-            if ($diff === 0){
-                $data = array_map(function($oldRecord, $newAmount){
-                    return ['id' => $oldRecord['id'], 'amount' => $newAmount, 'cash_register_data_id' => $oldRecord['cash_register_data_id']];
+            if ($diff <= 0){
+                $data = array_map(function($oldRecord, $newAmount) use ($cash_register_data_id){
+                    return [
+                        'id' => $oldRecord ? $oldRecord['id'] : null,
+                        'amount' => $newAmount,
+                        'cash_register_data_id' => $cash_register_data_id
+                    ];
                 }, $dollar_cash_records_coll->toArray(), $validated['dollar_cash_record']);
 
-                $cash_register_data->dollar_cash_records()->upsert($data, 'id', ['amount']);
-            } else if ($diff < 0){
-
-            } else {
-
+                $cash_register_data->dollar_cash_records()->upsert($data, ['id'], ['amount']);
             }
         }
 
