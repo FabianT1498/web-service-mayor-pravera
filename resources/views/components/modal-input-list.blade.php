@@ -52,7 +52,7 @@
                                                 type="text"
                                                 placeholder="0.00 {{$currency_sign}}"
                                                 id="{{ $modalID . "_" . $key }}" 
-                                                name="{{$modalID . "[" . $record->id . "]" }}" 
+                                                name="{{ $modalID . "[" . $record->id . "]" }}" 
                                                 class="w-36 rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                                 value="{{ $record->amount }}"
                                             >
