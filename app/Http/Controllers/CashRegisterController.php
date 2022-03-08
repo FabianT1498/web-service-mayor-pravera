@@ -23,6 +23,7 @@ use App\Http\Requests\GetCashRegisterRequest;
 use App\Http\Requests\UpdateCashRegisterRequest;
 
 use App\Models\DollarExchange;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 
 class CashRegisterController extends Controller
@@ -323,28 +324,53 @@ class CashRegisterController extends Controller
         }
         
         $cash_register_data_id = $request->route('id');
+        $dollar_cash_records_coll = $cash_register_data->dollar_cash_records;
 
-        if (array_key_exists('dollar_cash_record', $validated)){
-            $dollar_cash_records_coll = $cash_register_data->dollar_cash_records;
-            $diff = $dollar_cash_records_coll->count() - count($validated['dollar_cash_record']);
-
-            if ($diff <= 0){
-                $data = array_map(function($oldRecord, $newAmount) use ($cash_register_data_id){
-                    return [
-                        'id' => $oldRecord ? $oldRecord['id'] : null,
-                        'amount' => $newAmount,
-                        'cash_register_data_id' => $cash_register_data_id
-                    ];
-                }, $dollar_cash_records_coll->toArray(), $validated['dollar_cash_record']);
-
-                $cash_register_data->dollar_cash_records()->upsert($data, ['id'], ['amount']);
+        if (!key_exists('dollar_cash_record', $validated)){
+            if ($dollar_cash_records_coll->count() > 0){
+                $dollar_cash_records_coll
+                    ->each(function($item, $key){
+                        $item->delete();
+                    });
             }
+        } else {
+            $diff = $dollar_cash_records_coll->count() - count($validated['dollar_cash_record']);
+            
+            if ($diff > 0){
+                $dollar_cash_records_coll
+                    ->splice($diff)
+                    ->each(function($item, $key){
+                        $item->delete();
+                });
+            } 
+
+            $data = $this->mergeOldAndNewValues(
+                $dollar_cash_records_coll->toArray(),
+                $validated['dollar_cash_record'],
+                $cash_register_data_id,
+                'dollarCashRecordsColsToUpdate'
+            );
+            
+            $cash_register_data->dollar_cash_records()->upsert($data, ['id'], ['amount']);
         }
 
         toastr()->success('El registro fue actualizado con exito');
         return redirect()->route('cash_register.edit', [$cash_register_data->id]);
+    }
 
+    private function mergeOldAndNewValues($old_values, $new_values, $parent_id, $callback_name){
+        $callback = [$this, $callback_name];
+        return array_map(function($old_record, $new_record) use ($parent_id, $callback){
+            return $callback($old_record, $new_record, $parent_id);
+        }, $old_values, $new_values);
+    }
 
+    private function dollarCashRecordsColsToUpdate($old_record, $new_record, $parent_id){
+        return [
+            'id' => $old_record ? $old_record['id'] : null,
+            'amount' => $new_record,
+            'cash_register_data_id' => $parent_id
+        ];
     }
 
     // public function dollarCashDetails(GetCashRegisterRequest $request)

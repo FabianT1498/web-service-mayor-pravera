@@ -47,7 +47,7 @@ class UpdateCashRegisterRequest extends FormRequest
 
         if (count($this->dollar_cash_record) > 0){
             $rules['dollar_cash_record.*'] = $total_rules;
-        }
+        } 
         
         if (count($this->bs_cash_record) > 0){
             $rules['bs_cash_record.*'] = $total_rules;
