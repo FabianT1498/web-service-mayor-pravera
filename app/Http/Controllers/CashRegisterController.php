@@ -324,6 +324,8 @@ class CashRegisterController extends Controller
         }
         
         $cash_register_data_id = $request->route('id');
+
+        // Update Dollar Cash Records
         $dollar_cash_records_coll = $cash_register_data->dollar_cash_records;
 
         if (!key_exists('dollar_cash_record', $validated) && $dollar_cash_records_coll->count() > 0){
@@ -342,30 +344,150 @@ class CashRegisterController extends Controller
             }
 
             $data = $this->mergeOldAndNewValues(
+                $cash_register_data_id,
+                'totalRecordsColsToUpdate',
                 $dollar_cash_records_coll->toArray(),
                 $validated['dollar_cash_record'],
-                $cash_register_data_id,
-                'dollarCashRecordsColsToUpdate'
             );
 
             $cash_register_data->dollar_cash_records()->upsert($data, ['id'], ['amount']);
+        }
+
+        // Update Bs Cash Records
+        $bs_cash_records_coll = $cash_register_data->bs_cash_records;
+
+        if (!key_exists('bs_cash_record', $validated) && $bs_cash_records_coll->count() > 0){
+            $bs_cash_records_coll
+                ->each(function($item, $key){
+                    $item->delete();
+                });
+        } else if(key_exists('bs_cash_record', $validated)){
+            $diff = $bs_cash_records_coll->count() - count($validated['bs_cash_record']);
+            
+            if ($diff > 0){
+                $to_delete = $bs_cash_records_coll->splice(0, $diff);
+                $to_delete->each(function($item, $key){
+                    $item->delete();
+                });
+            }
+
+            $data = $this->mergeOldAndNewValues(
+                $cash_register_data_id,
+                'totalRecordsColsToUpdate',
+                $bs_cash_records_coll->toArray(),
+                $validated['bs_cash_record'],
+            );
+
+            $cash_register_data->bs_cash_records()->upsert($data, ['id'], ['amount']);
+        }
+
+        // Update Point Sale Bs Records
+        $point_sale_bs_records_coll = $cash_register_data->point_sale_bs_records;
+
+        if (!key_exists('point_sale_bs_bank', $validated) && $point_sale_bs_records_coll->count() > 0){
+            $point_sale_bs_records_coll
+                ->each(function($item, $key){
+                    $item->delete();
+                });
+
+        } else if(key_exists('point_sale_bs_bank', $validated)){
+            $diff = ($point_sale_bs_records_coll->count() / 2) - count($validated['point_sale_bs_bank']);
+            
+            if ($diff > 0){
+                $to_delete = $point_sale_bs_records_coll->splice(0, $diff * 2);
+                $to_delete->each(function($item, $key){
+                    $item->delete();
+                });
+            }
+            
+            $credit_data = $this->mergeOldAndNewValues(
+                $cash_register_data_id,
+                'pointSaleBsCreditColsToUpdate',
+                $point_sale_bs_records_coll->slice(0, ($point_sale_bs_records_coll->count() / 2))->toArray(),
+                $validated['point_sale_bs_credit'],
+                $validated['point_sale_bs_bank'],
+            );
+
+            $debit_data = $this->mergeOldAndNewValues(
+                $cash_register_data_id,
+                'pointSaleBsDebitColsToUpdate',
+                $point_sale_bs_records_coll->slice(($point_sale_bs_records_coll->count() / 2))->toArray(),
+                $validated['point_sale_bs_debit'],
+                $validated['point_sale_bs_bank'],
+            );
+
+            $data = array_merge($credit_data, $debit_data);
+
+            $cash_register_data->point_sale_bs_records()->upsert($data, ['id'], ['amount']);
+        }
+
+
+        // Update Zelle Records
+        $zelle_records_coll = $cash_register_data->zelle_records;
+
+        if (!key_exists('zelle_record', $validated) && $zelle_records_coll->count() > 0){
+            $zelle_records_coll
+                ->each(function($item, $key){
+                    $item->delete();
+                });
+        } else if(key_exists('zelle_record', $validated)){
+            $diff = $zelle_records_coll->count() - count($validated['zelle_record']);
+            
+            if ($diff > 0){
+                $to_delete = $zelle_records_coll->splice(0, $diff);
+                $to_delete->each(function($item, $key){
+                    $item->delete();
+                });
+            }
+
+            $data = $this->mergeOldAndNewValues(
+                $cash_register_data_id,
+                'totalRecordsColsToUpdate',
+                $zelle_records_coll->toArray(),
+                $validated['zelle_record'],
+            );
+
+            $cash_register_data->zelle_records()->upsert($data, ['id'], ['amount']);
         }
 
         toastr()->success('El registro fue actualizado con exito');
         return redirect()->route('cash_register.edit', [$cash_register_data->id]);
     }
 
-    private function mergeOldAndNewValues($old_values, $new_values, $parent_id, $callback_name){
+    private function mergeOldAndNewValues($parent_id, $callback_name, $old_values, ...$new_values){
         $callback = [$this, $callback_name];
-        return array_map(function($old_record, $new_record) use ($parent_id, $callback){
+        return array_map(function($old_record, ...$new_record) use ($parent_id, $callback){
             return $callback($old_record, $new_record, $parent_id);
-        }, $old_values, $new_values);
+        }, $old_values, ...$new_values);
     }
 
-    private function dollarCashRecordsColsToUpdate($old_record, $new_record, $parent_id){
+    private function totalRecordsColsToUpdate($old_record, $new_record, $parent_id){
         return [
             'id' => $old_record ? $old_record['id'] : null,
-            'amount' => $new_record,
+            'amount' => $new_record[0],
+            'cash_register_data_id' => $parent_id
+        ];
+    }
+
+    private function pointSaleBsDebitColsToUpdate($old_record, $new_record, $parent_id){
+        return array_merge(
+            $this->pointSaleBsRecordsColsToUpdate($old_record, $new_record, $parent_id),
+            ['type' => 'DEBIT']
+        );
+    }
+
+    private function pointSaleBsCreditColsToUpdate($old_record, $new_record, $parent_id){
+        return array_merge(
+            $this->pointSaleBsRecordsColsToUpdate($old_record, $new_record, $parent_id),
+            ['type' => 'CREDIT']
+        );
+    }
+
+    private function pointSaleBsRecordsColsToUpdate($old_record, $new_record, $parent_id){
+        return [
+            'id' => $old_record ? $old_record['id'] : null,
+            'amount' => $new_record[0],
+            'bank_name' => $new_record[1],
             'cash_register_data_id' => $parent_id
         ];
     }
