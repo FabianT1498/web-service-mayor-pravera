@@ -39,9 +39,9 @@
       <!-- end link -->
 
       <!-- link -->
-      <a href="#" class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500">
+      <a href="{{ route('cash_register.index') }}" class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500">
         <i class="fad fa-book text-xs mr-2"></i>
-        Consultar arqueo de cajas
+        Consultar arqueos de caja
       </a>
       <!-- end link -->
  

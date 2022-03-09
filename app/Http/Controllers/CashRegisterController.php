@@ -85,6 +85,46 @@ class CashRegisterController extends Controller
         });
     }
 
+    public function index(Request $request){
+        $status = $request->has('status') ? $request->status : "ALL";
+        $start_date = $request->has('start_date') ? $request->start_date : '';
+        $end_date = $request->has('end_date') ? $request->end_date : '';
+        
+        $query = CashRegisterData::select([
+            'cash_register_data.id',
+            'cash_register_data.cash_register_user',
+            'cash_register_data.date',
+            'cash_register_data.status',
+            'cash_register_data.updated_at',
+            'users.name',
+        ]); 
+
+        $query = $query->join('users', 'cash_register_data.user_id', '=', 'users.id');
+
+        if ($status !== "ALL"){
+            $query = $query->where('status', $status);
+        }
+
+        if ($start_date !== '' && $end_date !== ''){
+            $new_start_date = date('Y-m-d', strtotime($start_date));
+            $new_finish_date = date('Y-m-d', strtotime($end_date));
+
+            $query = $query->whereBetween('date', [$new_start_date, $new_finish_date]);
+        }
+        
+        $records = $query->orderBy('date', 'desc')->paginate(10); 
+
+        $columns = [
+            "Nro",
+            "Usuario",
+            "Fecha del arqueo",
+            "Última modificacion",
+            "Opciones"
+        ];
+
+        return view('pages.cash-register.index', compact('columns', 'records'));
+    }
+
     public function create()
     {  
         $date =  Date::now()->format('d-m-Y');
