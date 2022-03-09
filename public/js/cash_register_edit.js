@@ -978,7 +978,7 @@ __webpack_require__.r(__webpack_exports__);
     var bsDenominationRecords = Array.prototype.map.call(bsDenominationRecordsElements, function (el, key) {
       var input = el.querySelector('input');
       _utilities_numericInput__WEBPACK_IMPORTED_MODULE_16__["default"].mask(input);
-      var amount = parseInt(input.value);
+      var amount = input.value !== '' ? parseInt(input.value) : 0;
       var denomination = parseFloat(input.getAttribute('data-denomination'));
       var total = Math.round((denomination * amount + Number.EPSILON) * 100) / 100;
       return new _models_DenominationRecord__WEBPACK_IMPORTED_MODULE_18__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.BOLIVAR, denomination, total, amount, key);
@@ -992,7 +992,7 @@ __webpack_require__.r(__webpack_exports__);
     var dollarDenominationRecords = Array.prototype.map.call(dollarDenominationRecordsElements, function (el, key) {
       var input = el.querySelector('input');
       _utilities_numericInput__WEBPACK_IMPORTED_MODULE_16__["default"].mask(input);
-      var amount = parseInt(input.value);
+      var amount = input.value !== '' ? parseInt(input.value) : 0;
       var denomination = parseFloat(input.getAttribute('data-denomination'));
       var total = Math.round((denomination * amount + Number.EPSILON) * 100) / 100;
       return new _models_DenominationRecord__WEBPACK_IMPORTED_MODULE_18__["default"](_constants_currencies__WEBPACK_IMPORTED_MODULE_0__.CURRENCIES.DOLLAR, denomination, total, amount, key);

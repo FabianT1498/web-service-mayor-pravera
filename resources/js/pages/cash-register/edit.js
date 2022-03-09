@@ -110,7 +110,7 @@ export default {
         let bsDenominationRecords = Array.prototype.map.call(bsDenominationRecordsElements, function(el, key){
             let input = el.querySelector('input');
             numericInput.mask(input);
-            let amount = parseInt(input.value);
+            let amount = input.value !== '' ? parseInt(input.value) : 0;
             let denomination = parseFloat(input.getAttribute('data-denomination'));
             let total = Math.round(((denomination * amount) + Number.EPSILON) * 100) / 100
             return new DenominationRecord(CURRENCIES.BOLIVAR, denomination, total, amount, key);
@@ -131,7 +131,7 @@ export default {
         let dollarDenominationRecords = Array.prototype.map.call(dollarDenominationRecordsElements, function(el, key){
             let input = el.querySelector('input');
             numericInput.mask(input);
-            let amount = parseInt(input.value);
+            let amount = input.value !== '' ? parseInt(input.value) : 0;
             let denomination = parseFloat(input.getAttribute('data-denomination'));
             let total = Math.round(((denomination * amount) + Number.EPSILON) * 100) / 100
             return new DenominationRecord(CURRENCIES.DOLLAR, denomination, total, amount, key);

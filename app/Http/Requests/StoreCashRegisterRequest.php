@@ -52,13 +52,13 @@ class StoreCashRegisterRequest extends FormRequest
             $rules['bs_cash_record.*'] = $total_rules;
         }
 
-        if ($this->total_dollar_denominations > 0){
-            $rules['dollar_denominations_record.*'] = ['required', 'gte:0'];
-        }
+        // if ($this->total_dollar_denominations > 0){
+        $rules['dollar_denominations_record.*'] = ['required', 'gte:0'];
+        // }
 
-        if ($this->total_bs_denominations > 0){
-            $rules['bs_denominations_record.*'] = ['required', 'gte:0'];
-        }
+        // if ($this->total_bs_denominations > 0){
+        $rules['bs_denominations_record.*'] = ['required', 'gte:0'];
+        // }
 
         if (count($this->point_sale_bs_bank) > 0){
             $rules['point_sale_bs_bank.*'] = ['exists:caja_mayorista.banks,name'];

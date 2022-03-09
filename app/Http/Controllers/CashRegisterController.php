@@ -381,6 +381,51 @@ class CashRegisterController extends Controller
             $cash_register_data->bs_cash_records()->upsert($data, ['id'], ['amount']);
         }
 
+        // Dollar Denomination Records
+        $dollar_denomination_records_coll = $cash_register_data->dollar_denomination_records;
+    
+        if (!key_exists('dollar_denominations_record', $validated) 
+                && $dollar_denomination_records_coll->contains(function($val){ return ($val->quantity > 0); })){
+            $cash_register_data->dollar_denomination_records()->update(['quantity' => 0]);
+        } else if (key_exists('dollar_denominations_record', $validated)){
+            $data = $this->mergeOldAndNewValues(
+                $cash_register_data_id,
+                'denominationRecordsColsToUpdate',
+                $dollar_denomination_records_coll->toArray(),
+                $validated['dollar_denominations_record'],
+            );
+            $cash_register_data->dollar_denomination_records()->upsert($data, ['id'], ['quantity']);
+        }
+
+        // Bs Denomination Records
+        $bs_denomination_records_coll = $cash_register_data->bs_denomination_records;
+    
+        if (!key_exists('dollar_denominations_record', $validated) 
+                && $bs_denomination_records_coll->contains(function($val){ return ($val->quantity > 0); })){
+            $cash_register_data->bs_denomination_records()->update(['quantity' => 0]);
+        } else if (key_exists('bs_denominations_record', $validated)){
+            $data = $this->mergeOldAndNewValues(
+                $cash_register_data_id,
+                'denominationRecordsColsToUpdate',
+                $bs_denomination_records_coll->toArray(),
+                $validated['bs_denominations_record'],
+            );
+            $cash_register_data->bs_denomination_records()->upsert($data, ['id'], ['quantity']);
+        }
+
+        // Update Point Sale $ Records
+        $total_point_sale_dollar = $cash_register_data->point_sale_dollar_records()->first();
+        if(!key_exists('total_point_sale_dollar', $validated) && $total_point_sale_dollar){
+            $total_point_sale_dollar->delete();
+        } else if (key_exists('total_point_sale_dollar', $validated)) {
+            $data = [
+                'id' => $total_point_sale_dollar ? $total_point_sale_dollar->id : null, 
+                'amount' => $validated['total_point_sale_dollar'],
+                'cash_register_data_id' => $cash_register_data_id
+            ];
+            $cash_register_data->point_sale_dollar_records()->upsert($data, ['id'], ['amount']);
+        }
+
         // Update Point Sale Bs Records
         $point_sale_bs_records_coll = $cash_register_data->point_sale_bs_records;
 
@@ -465,6 +510,15 @@ class CashRegisterController extends Controller
         return [
             'id' => $old_record ? $old_record['id'] : null,
             'amount' => $new_record[0],
+            'cash_register_data_id' => $parent_id
+        ];
+    }
+
+    private function denominationRecordsColsToUpdate($old_record, $new_record, $parent_id){
+        return [
+            'id' => $old_record ? $old_record['id'] : null,
+            'quantity' => $new_record[0],
+            'denomination' => $old_record ? $old_record['denomination'] : null,
             'cash_register_data_id' => $parent_id
         ];
     }
