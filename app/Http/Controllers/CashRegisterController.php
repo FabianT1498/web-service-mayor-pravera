@@ -326,23 +326,20 @@ class CashRegisterController extends Controller
         $cash_register_data_id = $request->route('id');
         $dollar_cash_records_coll = $cash_register_data->dollar_cash_records;
 
-        if (!key_exists('dollar_cash_record', $validated)){
-            if ($dollar_cash_records_coll->count() > 0){
-                $dollar_cash_records_coll
-                    ->each(function($item, $key){
-                        $item->delete();
-                    });
-            }
-        } else {
+        if (!key_exists('dollar_cash_record', $validated) && $dollar_cash_records_coll->count() > 0){
+            $dollar_cash_records_coll
+                ->each(function($item, $key){
+                    $item->delete();
+                });
+        } else if(key_exists('dollar_cash_record', $validated)){
             $diff = $dollar_cash_records_coll->count() - count($validated['dollar_cash_record']);
             
             if ($diff > 0){
-                $dollar_cash_records_coll
-                    ->splice($diff)
-                    ->each(function($item, $key){
-                        $item->delete();
+                $to_delete = $dollar_cash_records_coll->splice(0, $diff);
+                $to_delete->each(function($item, $key){
+                    $item->delete();
                 });
-            } 
+            }
 
             $data = $this->mergeOldAndNewValues(
                 $dollar_cash_records_coll->toArray(),
@@ -350,7 +347,7 @@ class CashRegisterController extends Controller
                 $cash_register_data_id,
                 'dollarCashRecordsColsToUpdate'
             );
-            
+
             $cash_register_data->dollar_cash_records()->upsert($data, ['id'], ['amount']);
         }
 
