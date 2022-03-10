@@ -19,4 +19,8 @@ import("./pages/cash-register/edit" /* webpackChunkName: "/js/cash_register_edit
    editCashRegister.init()
 });
 
+import("./pages/cash-register/index" /* webpackChunkName: "/js/cash_register_index" */).then(({default: indexCashRegister}) => {
+   indexCashRegister.init()
+});
+
 import LogoIsotipo from './../assets/logo-isotipo.svg';

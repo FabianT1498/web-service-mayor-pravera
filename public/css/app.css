@@ -1673,6 +1673,10 @@ div.code-toolbar .toolbar button:hover {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.pointer-events-none{
+  pointer-events: none;
+}
+
 .visible{
   visibility: visible;
 }
@@ -1707,6 +1711,11 @@ div.code-toolbar .toolbar button:hover {
   right: 0px;
   bottom: 0px;
   left: 0px;
+}
+
+.inset-y-0{
+  top: 0px;
+  bottom: 0px;
 }
 
 .right-0{
@@ -1759,6 +1768,11 @@ div.code-toolbar .toolbar button:hover {
   margin-right: auto;
 }
 
+.mx-4{
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
 .ml-3{
   margin-left: 0.75rem;
 }
@@ -1777,6 +1791,10 @@ div.code-toolbar .toolbar button:hover {
 
 .ml-4{
   margin-left: 1rem;
+}
+
+.mt-8{
+  margin-top: 2rem;
 }
 
 .mb-4{
@@ -1811,20 +1829,12 @@ div.code-toolbar .toolbar button:hover {
   margin-left: 0.5rem;
 }
 
-.mt-8{
-  margin-top: 2rem;
-}
-
 .ml-12{
   margin-left: 3rem;
 }
 
 .-mt-px{
   margin-top: -1px;
-}
-
-.mt-3{
-  margin-top: 0.75rem;
 }
 
 .mr-6{
@@ -1847,8 +1857,16 @@ div.code-toolbar .toolbar button:hover {
   margin-right: 0.75rem;
 }
 
+.mb-6{
+  margin-bottom: 1.5rem;
+}
+
 .mt-6{
   margin-top: 1.5rem;
+}
+
+.mt-3{
+  margin-top: 0.75rem;
 }
 
 .mb-2{
@@ -1925,6 +1943,10 @@ div.code-toolbar .toolbar button:hover {
 
 .h-6{
   height: 1.5rem;
+}
+
+.h-11{
+  height: 2.75rem;
 }
 
 .h-9{
@@ -2005,6 +2027,10 @@ div.code-toolbar .toolbar button:hover {
 
 .w-48{
   width: 12rem;
+}
+
+.w-7{
+  width: 1.75rem;
 }
 
 .w-1\/2{
@@ -2205,6 +2231,10 @@ div.code-toolbar .toolbar button:hover {
 
 .justify-around{
   justify-content: space-around;
+}
+
+.justify-evenly{
+  justify-content: space-evenly;
 }
 
 .gap-4{
@@ -2432,6 +2462,11 @@ div.code-toolbar .toolbar button:hover {
   background-color: rgb(243 244 246 / var(--tw-bg-opacity));
 }
 
+.bg-blue-300{
+  --tw-bg-opacity: 1;
+  background-color: rgb(164 202 254 / var(--tw-bg-opacity));
+}
+
 .bg-gray-800{
   --tw-bg-opacity: 1;
   background-color: rgb(31 41 55 / var(--tw-bg-opacity));
@@ -2447,19 +2482,14 @@ div.code-toolbar .toolbar button:hover {
   background-color: rgb(213 245 246 / var(--tw-bg-opacity));
 }
 
-.bg-blue-300{
+.bg-gray-900{
   --tw-bg-opacity: 1;
-  background-color: rgb(164 202 254 / var(--tw-bg-opacity));
+  background-color: rgb(17 24 39 / var(--tw-bg-opacity));
 }
 
 .bg-blue-700{
   --tw-bg-opacity: 1;
   background-color: rgb(26 86 219 / var(--tw-bg-opacity));
-}
-
-.bg-gray-900{
-  --tw-bg-opacity: 1;
-  background-color: rgb(17 24 39 / var(--tw-bg-opacity));
 }
 
 .bg-opacity-50{
@@ -2499,16 +2529,16 @@ div.code-toolbar .toolbar button:hover {
   padding: 0px;
 }
 
-.p-4{
-  padding: 1rem;
-}
-
 .p-2\.5{
   padding: 0.625rem;
 }
 
 .p-2{
   padding: 0.5rem;
+}
+
+.p-4{
+  padding: 1rem;
 }
 
 .px-4{
@@ -2622,6 +2652,10 @@ div.code-toolbar .toolbar button:hover {
 
 .pr-6{
   padding-right: 1.5rem;
+}
+
+.pl-10{
+  padding-left: 2.5rem;
 }
 
 .pt-0{
@@ -2794,14 +2828,14 @@ div.code-toolbar .toolbar button:hover {
   color: rgb(31 41 55 / var(--tw-text-opacity));
 }
 
-.text-red-600{
-  --tw-text-opacity: 1;
-  color: rgb(224 36 36 / var(--tw-text-opacity));
-}
-
 .text-teal-500{
   --tw-text-opacity: 1;
   color: rgb(6 148 162 / var(--tw-text-opacity));
+}
+
+.text-red-600{
+  --tw-text-opacity: 1;
+  color: rgb(224 36 36 / var(--tw-text-opacity));
 }
 
 .underline{
@@ -2897,6 +2931,12 @@ div.code-toolbar .toolbar button:hover {
 
 .transition-all{
   transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.transition-opacity{
+  transition-property: opacity;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 }
@@ -6042,6 +6082,11 @@ button.toast-close-button {
   border-color: rgb(17 24 39 / var(--tw-border-opacity));
 }
 
+.focus\:border-blue-500:focus{
+  --tw-border-opacity: 1;
+  border-color: rgb(63 131 248 / var(--tw-border-opacity));
+}
+
 .focus\:bg-indigo-100:focus{
   --tw-bg-opacity: 1;
   background-color: rgb(229 237 255 / var(--tw-bg-opacity));
@@ -6121,6 +6166,11 @@ button.toast-close-button {
 .focus\:ring-indigo-200:focus{
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(205 219 254 / var(--tw-ring-opacity));
+}
+
+.focus\:ring-blue-500:focus{
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgb(63 131 248 / var(--tw-ring-opacity));
 }
 
 .focus\:ring-gray-200:focus{
@@ -6241,6 +6291,21 @@ button.toast-close-button {
   color: rgb(156 163 175 / var(--tw-text-opacity));
 }
 
+.dark .dark\:placeholder-gray-400::-moz-placeholder{
+  --tw-placeholder-opacity: 1;
+  color: rgb(156 163 175 / var(--tw-placeholder-opacity));
+}
+
+.dark .dark\:placeholder-gray-400:-ms-input-placeholder{
+  --tw-placeholder-opacity: 1;
+  color: rgb(156 163 175 / var(--tw-placeholder-opacity));
+}
+
+.dark .dark\:placeholder-gray-400::placeholder{
+  --tw-placeholder-opacity: 1;
+  color: rgb(156 163 175 / var(--tw-placeholder-opacity));
+}
+
 .dark .dark\:hover\:bg-gray-600:hover{
   --tw-bg-opacity: 1;
   background-color: rgb(75 85 99 / var(--tw-bg-opacity));
@@ -6259,6 +6324,16 @@ button.toast-close-button {
 .dark .dark\:hover\:text-white:hover{
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+
+.dark .dark\:focus\:border-blue-500:focus{
+  --tw-border-opacity: 1;
+  border-color: rgb(63 131 248 / var(--tw-border-opacity));
+}
+
+.dark .dark\:focus\:ring-blue-500:focus{
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgb(63 131 248 / var(--tw-ring-opacity));
 }
 
 @media (max-width: 639px){
@@ -6313,6 +6388,10 @@ button.toast-close-button {
   }
   .sm\:text-right{
     text-align: right;
+  }
+  .sm\:text-sm{
+    font-size: 0.875rem;
+    line-height: 1.25rem;
   }
 }
 

@@ -24,6 +24,7 @@
         "sass-loader": "^12.1.0"
     },
     "dependencies": {
+        "@themesberg/tailwind-datepicker": "^1.1.0",
         "apexcharts": "^3.33.0",
         "clipboard": "^2.0.8",
         "inputmask": "^5.0.7",

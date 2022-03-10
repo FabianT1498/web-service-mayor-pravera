@@ -45,7 +45,8 @@ module.exports = {
           hingeSpeed: 2000,
           bounceInSpeed: 750,
           bounceOutSpeed: 750,
-          animationDelaySpeed: 1000
+          animationDelaySpeed: 1000,
+          verticalAlign: 'center',
         },
         variants: ['responsive'],
       }),

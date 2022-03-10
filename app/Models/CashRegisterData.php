@@ -37,7 +37,7 @@ class CashRegisterData extends Model
         $this->date =  key_exists('date', $attributes) ? $attributes['date'] : '';
         $this->cash_register_user = key_exists('cash_register_user', $attributes) ? $attributes['cash_register_user'] : '';
         $this->worker_id = key_exists('worker_id', $attributes) ? $attributes['worker_id'] : '';
-        $this->status = key_exists('status', $attributes) ? $attributes['status'] : "EN EDICION";
+        $this->status = key_exists('status', $attributes) ? $attributes['status'] : "EDITING";
     }
 
     public function dollar_cash_records()

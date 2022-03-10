@@ -5509,6 +5509,10 @@ __webpack_require__.e(/*! import() | ../../js/cash_register_edit */ "/js/cash_re
   var editCashRegister = _ref2["default"];
   editCashRegister.init();
 });
+__webpack_require__.e(/*! import() | ../../js/cash_register_index */ "/js/cash_register_index").then(__webpack_require__.bind(__webpack_require__, /*! ./pages/cash-register/index */ "./resources/js/pages/cash-register/index.js")).then(function (_ref3) {
+  var indexCashRegister = _ref3["default"];
+  indexCashRegister.init();
+});
 
 
 /***/ }),
@@ -32939,7 +32943,7 @@ module.exports = JSON.parse('{"_from":"axios@^0.21","_id":"axios@0.21.4","_inBun
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.u = (chunkId) => {
 /******/ 			// return url for filenames not based on template
-/******/ 			if ({"/js/cash_register_create":1,"/js/cash_register_edit":1}[chunkId]) return "" + chunkId + ".js";
+/******/ 			if ({"/js/cash_register_create":1,"/js/cash_register_edit":1,"/js/cash_register_index":1}[chunkId]) return "" + chunkId + ".js";
 /******/ 			// return url for filenames based on template
 /******/ 			return undefined;
 /******/ 		};

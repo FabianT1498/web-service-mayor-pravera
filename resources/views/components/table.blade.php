@@ -1,7 +1,7 @@
 @props([
     'columns' => [], 
     'data' => [],
-    'hasOptions' => false
+    'actions'
 ])
 <div>
     <table class="table table-bordered table-hover">
@@ -15,16 +15,12 @@
         <tbody>
             @foreach ($data as $row)
                 <tr>
-                    @foreach($row as $key => $value)
-                        @if($key === "id")
-                            <th scope="row">{{ $value }}</th>
-                        @else
-                            <td>{{ $value }}</td>
-                        @endif
+                    @foreach($row->getAttributes() as $key => $value)
+                        <td>{{ $value }}</td> 
                     @endforeach
-                    @if($hasOptions)
-                        {{ $slot }}
-                    @endif 
+                    @if(isset($actions))
+                        <td>{{ $actions }}</td>
+                    @endif
                 </tr>
             @endforeach
         </tbody>

@@ -86,17 +86,17 @@ class CashRegisterController extends Controller
     }
 
     public function index(Request $request){
-        $status = $request->has('status') ? $request->status : "ALL";
+        $status = $request->has('status') ? $request->status : "EDITING";
         $start_date = $request->has('start_date') ? $request->start_date : '';
         $end_date = $request->has('end_date') ? $request->end_date : '';
         
         $query = CashRegisterData::select([
             'cash_register_data.id',
+            'users.name as user_name',
             'cash_register_data.cash_register_user',
             'cash_register_data.date',
             'cash_register_data.status',
             'cash_register_data.updated_at',
-            'users.name',
         ]); 
 
         $query = $query->join('users', 'cash_register_data.user_id', '=', 'users.id');
@@ -111,18 +111,33 @@ class CashRegisterController extends Controller
 
             $query = $query->whereBetween('date', [$new_start_date, $new_finish_date]);
         }
+
+        $status_options = [
+            (object) ['key' => 'ALL', 'value' => 'Todos'],
+            (object) ['key' => 'EDITING', 'value' => 'En edición'],
+            (object) ['key' => 'COMPLETED', 'value' => 'Completado'],
+        ];
         
         $records = $query->orderBy('date', 'desc')->paginate(10); 
 
         $columns = [
             "Nro",
-            "Usuario",
+            "Usuario creador",
+            "Nombre de la caja",
             "Fecha del arqueo",
+            "Estatus",
             "Última modificacion",
             "Opciones"
         ];
 
-        return view('pages.cash-register.index', compact('columns', 'records'));
+        return view('pages.cash-register.index', compact(
+            'columns',
+            'records',
+            'status',
+            'status_options',
+            'start_date',
+            'end_date'
+        ));
     }
 
     public function create()
