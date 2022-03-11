@@ -6,8 +6,9 @@
 
 @section('main')
     <div class="w-10/12 mx-auto">
-        <div class="mb-6">
-            <form method="GET" action="route('cash_register.index')">
+        <div class="mb-8">
+            <form id="form_filter" method="GET" action="{{ route('cash_register.index') }}">
+                <input id="page" name="page" type="hidden" value="{{ $page }}">
                 <div class="flex justify-evenly items-center">
                     <div id="date_range_picker" date-rangepicker class="flex items-center">
                         <div class="relative">
@@ -25,8 +26,10 @@
                                 id="start_date"
                                 name="start_date" 
                                 type="text" 
+                                value="{{$start_date}}"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
                                 placeholder="Seleccione fecha inicial"
+                                autocomplete="off"
                             >
                         </div>
                         <span class="mx-4 text-gray-500">hasta</span>
@@ -45,8 +48,10 @@
                                 id="end_date"
                                 name="end_date" 
                                 type="text" 
+                                value="{{$end_date}}"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
                                 placeholder="Seleccione fecha final"
+                                autocomplete="off"
                             >
                         </div>
                     </div>
@@ -124,7 +129,10 @@
                 @endforeach
             </tbody>
         </table>
-        <div class="mt-8">
+        @if ($records->count() === 0)
+            <p class="text-center">No hay registros</p>
+        @endif
+        <div id=""class="mt-8">
             {{ $records->onEachSide(1)->links('pagination::tailwind') }}
         </div>
     </div>

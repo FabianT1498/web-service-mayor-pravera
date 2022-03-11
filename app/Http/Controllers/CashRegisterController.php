@@ -6,7 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 
-use App\Models\CashRegister;
+use Flasher\SweetAlert\Prime\SweetAlertFactory;
+
 use App\Models\Worker;
 use App\Models\CashRegisterData;
 use App\Models\DollarCashRecord;
@@ -19,15 +20,19 @@ use App\Models\ZelleRecord;
 
 
 use App\Http\Requests\StoreCashRegisterRequest;
-use App\Http\Requests\GetCashRegisterRequest;
+use App\Http\Requests\EditCashRegisterRequest;
 use App\Http\Requests\UpdateCashRegisterRequest;
 
-use App\Models\DollarExchange;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 
 class CashRegisterController extends Controller
 {
+    private $flasher = null;
+
+    public function __construct(SweetAlertFactory $flasher)
+    {
+        $this->flasher = $flasher;
+    }
     
     private function getTableSummaryView($stepViewName, $objects){
         return view($stepViewName, $objects);
@@ -86,10 +91,10 @@ class CashRegisterController extends Controller
     }
 
     public function index(Request $request){
-        $status = $request->has('status') ? $request->status : "EDITING";
-        $start_date = $request->has('start_date') ? $request->start_date : '';
-        $end_date = $request->has('end_date') ? $request->end_date : '';
-        
+        $status = $request->query('status', config('constants.CASH_REGISTER_STATUS.EDITING'));
+        $start_date = $request->query('start_date', '');
+        $end_date = $request->query('end_date', '');
+
         $query = CashRegisterData::select([
             'cash_register_data.id',
             'users.name as user_name',
@@ -102,23 +107,32 @@ class CashRegisterController extends Controller
         $query = $query->join('users', 'cash_register_data.user_id', '=', 'users.id');
 
         if ($status !== "ALL"){
-            $query = $query->where('status', $status);
+            $query = $query->where('cash_register_data.status', '=', $status);
         }
 
-        if ($start_date !== '' && $end_date !== ''){
+        if ($start_date && $end_date){
             $new_start_date = date('Y-m-d', strtotime($start_date));
             $new_finish_date = date('Y-m-d', strtotime($end_date));
 
-            $query = $query->whereBetween('date', [$new_start_date, $new_finish_date]);
+            $query = $query->whereBetween('cash_register_data.date', [$new_start_date, $new_finish_date]);
         }
 
         $status_options = [
             (object) ['key' => 'ALL', 'value' => 'Todos'],
-            (object) ['key' => 'EDITING', 'value' => 'En edición'],
-            (object) ['key' => 'COMPLETED', 'value' => 'Completado'],
+            (object) ['key' => config('constants.CASH_REGISTER_STATUS.EDITING'), 'value' => 'En edición'],
+            (object) ['key' => config('constants.CASH_REGISTER_STATUS.COMPLETED'), 'value' => 'Completado'],
         ];
+
         
-        $records = $query->orderBy('date', 'desc')->paginate(10); 
+        $records = $query->orderBy('date', 'desc')->paginate(5);
+        
+        $page = 1;
+
+        if ($records->currentPage() <= $records->lastPage()){
+            $page = $records->currentPage();
+        } else {
+            // $records->setCurrentPage($page, "1");
+        }
 
         $columns = [
             "Nro",
@@ -136,7 +150,8 @@ class CashRegisterController extends Controller
             'status',
             'status_options',
             'start_date',
-            'end_date'
+            'end_date',
+            'page'
         ));
     }
 
@@ -246,15 +261,15 @@ class CashRegisterController extends Controller
                 ZelleRecord::insert($data);
             }
 
-            toastr()->success('El registro fue guardado con exito');
-            return redirect()->route('cash_register.edit', [$cash_register_data->id]);
+            $this->flasher->addSuccess('El arqueo de caja se guardó exitosamente!');
+        } else {
+            $this->flasher->addError('El arqueo de caja no se pudo guardar');
         }
 
-        toastr()->error('No se pudo guardar el registro');
-        return redirect()->route('dashboard');
+        return redirect()->route('cash_register.index');
     }
 
-    public function edit(GetCashRegisterRequest $request){
+    public function edit(EditCashRegisterRequest $request){
 
         $cash_register_data = CashRegisterData::where('id', $request->id)->first();
 
@@ -550,8 +565,20 @@ class CashRegisterController extends Controller
             $cash_register_data->zelle_records()->upsert($data, ['id'], ['amount']);
         }
 
-        toastr()->success('El registro fue actualizado con exito');
-        return redirect()->route('cash_register.edit', [$cash_register_data->id]);
+        $this->flasher->addSuccess('El arqueo de caja fue actualizado exitosamente!');
+        return redirect()->route('cash_register.index');
+    }
+
+    public function finishCashRegister(EditCashRegisterRequest $request){
+        $cash_register_data = CashRegisterData::where('id', $request->id)->first();
+        $cash_register_data->status = config('constants.CASH_REGISTER_STATUS.COMPLETED');
+        if ($cash_register_data->save()){
+            $this->flasher->addSuccess('El arqueo de caja fue cerrado exitosamente!');
+        } else {
+            $this->flasher->addError('El arqueo de caja no se pudo actualizar');
+        }
+
+        return redirect()->route('cash_register.index');
     }
 
     private function mergeOldAndNewValues($parent_id, $callback_name, $old_values, ...$new_values){

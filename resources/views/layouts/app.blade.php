@@ -34,6 +34,6 @@
             </div>
             <!-- end content -->
         </div>
-
+        @flasher_render
     </body>
 </html>

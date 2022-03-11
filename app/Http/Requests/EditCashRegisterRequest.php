@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Models\CashRegisterData;
 
-class GetCashRegisterRequest extends FormRequest
+class EditCashRegisterRequest extends FormRequest
 {
    
     /**
@@ -17,8 +17,7 @@ class GetCashRegisterRequest extends FormRequest
     {
         $cash_register_data = CashRegisterData::where('id', $this->route('id'))->first();
 
-    
-        return (!is_null($cash_register_data) && $cash_register_data->status === 'EN EDICION');
+        return (!is_null($cash_register_data) && $cash_register_data->status === config('constants.CASH_REGISTER_STATUS.EDITING'));
     }
 
     public function rules(){
