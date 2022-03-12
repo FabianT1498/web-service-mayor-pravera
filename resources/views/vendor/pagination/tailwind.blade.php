@@ -21,7 +21,7 @@
                             <i class="fas fa-chevron-left text-md text-stone-400"></i>                        
                         </button>
                     @else
-                        <a href="{{ $paginator->previousPageUrl() }}" rel="prev" class="flex items-center justify-center w-8 h-8 transition-colors duration-150 rounded-full focus:shadow-xl hover:bg-green-100" aria-label="{{ __('pagination.previous') }}">
+                        <a href="{{ $paginator->previousPageUrl() }}" rel="prev" class="flex items-center justify-center w-8 h-8 transition-colors duration-150 rounded-full focus:shadow-xl hover:bg-gray-300" aria-label="{{ __('pagination.previous') }}">
                             <i class="fas fa-chevron-left text-md text-gray-800"></i>                        
                         </a>
                     @endif
@@ -51,7 +51,7 @@
 
                     {{-- Next Page Link --}}
                     @if ($paginator->hasMorePages())
-                        <a href="{{ $paginator->nextPageUrl() }}" rel="next" class="ml-4 flex items-center justify-center w-8 h-8 transition-colors duration-150 rounded-full focus:shadow-xl hover:bg-green-100" aria-label="{{ __('pagination.previous') }}">
+                        <a href="{{ $paginator->nextPageUrl() }}" rel="next" class="ml-4 flex items-center justify-center w-8 h-8 transition-colors duration-150 rounded-full focus:shadow-xl hover:bg-gray-300" aria-label="{{ __('pagination.previous') }}">
                             <i class="fas fa-chevron-right text-md text-gray-800"></i>                        
                         </a>
                     @else

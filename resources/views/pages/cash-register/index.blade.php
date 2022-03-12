@@ -7,9 +7,8 @@
 @section('main')
     <div class="w-10/12 mx-auto">
         <div class="mb-8">
-            <form id="form_filter" method="GET" action="{{ route('cash_register.index') }}">
-                <input id="page" name="page" type="hidden" value="{{ $page }}">
-                <div class="flex justify-evenly items-center">
+            <form class="mb-4" id="form_filter" method="GET" action="{{ route('cash_register.index') }}">
+                <div class="flex justify-between items-center">
                     <div id="date_range_picker" date-rangepicker class="flex items-center">
                         <div class="relative">
                             <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
@@ -68,6 +67,19 @@
                     <x-button>Filtrar</x-button>
                 </div>
             </form>
+            @if (($start_date && $end_date) 
+                    && $status === config('constants.CASH_REGISTER_STATUS.COMPLETED')
+                            && $records->count() > 0)
+                <div class="flex">
+                    <x-nav-link-button
+                        href="{{ route('cash_register.interval_record_pdf', ['start_date' => $start_date, 'end_date' => $end_date]) }}"
+                        class="justify-around basis-40"
+                    >
+                        Imprimir PDF
+                        <i class="fas fa-file-pdf"></i>
+                    </x-nav-link-button>
+                </div>
+            @endif
         </div>
         <table class="table table-bordered table-hover">
             <thead class="bg-blue-300">
@@ -85,44 +97,61 @@
                         @endforeach
                         <td>
                             <div class="flex items-center justify-between h-11 text-lg">
-                                <form 
-                                    method="POST" 
-                                    action="{{ route('cash_register.finish', $record->id) }}" 
-                                    class="inline-block w-7"
-                                >
-                                    @csrf
-                                    @method('PUT')
-                                    <button
-                                        data-tooltip-target="close-tooltip"
-                                        class="font-medium hover:text-teal-600 transition ease-in-out duration-500"
-                                        
+                                @if ($record->status === config('constants.CASH_REGISTER_STATUS.EDITING'))
+                                    <form 
+                                        method="POST" 
+                                        action="{{ route('cash_register.finish', $record->id) }}" 
                                     >
-                                        <i class="fas fa-save"></i>
-                                    </button>
+                                        @csrf
+                                        @method('PUT')
+                                        <button
+                                            data-tooltip-target="close-tooltip"
+                                            class="font-medium hover:text-teal-600 transition ease-in-out duration-500"
+                                            
+                                        >
+                                            <i class="fas fa-save"></i>
+                                        </button>
+                                        <div 
+                                            id="close-tooltip"
+                                            role="tooltip" 
+                                            class="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 transition-opacity duration-300 tooltip dark:bg-gray-700"
+                                        >
+                                            Cerrar arqueo de caja
+                                            <div class="tooltip-arrow" data-popper-arrow></div>
+                                        </div> 
+                                    </form>
+                                    <a 
+                                        href="{{ route('cash_register.edit', $record->id) }}" 
+                                        class="font-medium hover:text-teal-600 transition ease-in-out duration-500"
+                                        data-tooltip-target="edit-tooltip"
+                                    >
+                                        <i class="fas fa-pencil"></i>
+                                    </a>
                                     <div 
-                                        id="close-tooltip"
+                                        id="edit-tooltip"
                                         role="tooltip" 
                                         class="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 transition-opacity duration-300 tooltip dark:bg-gray-700"
                                     >
-                                        Cerrar arqueo de caja
+                                        Editar
                                         <div class="tooltip-arrow" data-popper-arrow></div>
-                                    </div> 
-                                </form>
-                                <a 
-                                    href="{{ route('cash_register.edit', $record->id) }}" 
-                                    class="font-medium hover:text-teal-600 transition ease-in-out duration-500"
-                                    data-tooltip-target="edit-tooltip"
-                                >
-                                    <i class="fas fa-pencil"></i>
-                                </a>
-                                <div 
-                                    id="edit-tooltip"
-                                    role="tooltip" 
-                                    class="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 transition-opacity duration-300 tooltip dark:bg-gray-700"
-                                >
-                                    Editar
-                                    <div class="tooltip-arrow" data-popper-arrow></div>
-                                </div> 
+                                    </div>
+                                @elseif ($record->status === config('constants.CASH_REGISTER_STATUS.COMPLETED'))
+                                    <a 
+                                        href="{{ URL::to(route('cash_register.single_record_pdf', $record->id)) }}" 
+                                        class="font-medium hover:text-teal-600 transition ease-in-out duration-500"
+                                        data-tooltip-target="single-report-tooltip"
+                                    >
+                                        <i class="fas fa-file-pdf"></i>
+                                    </a>
+                                    <div 
+                                        id="single-report-tooltip"
+                                        role="tooltip" 
+                                        class="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 transition-opacity duration-300 tooltip dark:bg-gray-700"
+                                    >
+                                        Imprimir reporte
+                                        <div class="tooltip-arrow" data-popper-arrow></div>
+                                    </div>
+                                @endif
                             </div>
                         </td>
                     </tr>

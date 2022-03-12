@@ -17,6 +17,8 @@ class CashRegister extends Model
 
     protected $fillable = [
         'id',
+        'worker_name',
+        'user_name',
         'total_dollar_cash',
         'total_bs_cash',
         'total_dollar_denominations',
@@ -24,6 +26,7 @@ class CashRegister extends Model
         'total_point_sale_bs',
         'total_point_sale_dollar',
         'total_zelle',
+        'date',
     ];
     
 }

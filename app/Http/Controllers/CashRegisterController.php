@@ -10,6 +10,7 @@ use Flasher\SweetAlert\Prime\SweetAlertFactory;
 
 use App\Models\Worker;
 use App\Models\CashRegisterData;
+use App\Models\CashRegister;
 use App\Models\DollarCashRecord;
 use App\Models\BsCashRecord;
 use App\Models\BsDenominationRecord;
@@ -22,6 +23,8 @@ use App\Models\ZelleRecord;
 use App\Http\Requests\StoreCashRegisterRequest;
 use App\Http\Requests\EditCashRegisterRequest;
 use App\Http\Requests\UpdateCashRegisterRequest;
+use App\Http\Requests\PrintSingleCashRegisterRequest;
+use App\Http\Requests\PrintIntervalCashRegisterRequest;
 
 use Illuminate\Support\Facades\Auth;
 
@@ -126,13 +129,7 @@ class CashRegisterController extends Controller
         
         $records = $query->orderBy('date', 'desc')->paginate(5);
         
-        $page = 1;
-
-        if ($records->currentPage() <= $records->lastPage()){
-            $page = $records->currentPage();
-        } else {
-            // $records->setCurrentPage($page, "1");
-        }
+       $records->appends(['status' => $status, 'start_date' => $start_date, 'end_date' => $end_date]);
 
         $columns = [
             "Nro",
@@ -151,7 +148,6 @@ class CashRegisterController extends Controller
             'status_options',
             'start_date',
             'end_date',
-            'page'
         ));
     }
 
@@ -570,15 +566,58 @@ class CashRegisterController extends Controller
     }
 
     public function finishCashRegister(EditCashRegisterRequest $request){
-        $cash_register_data = CashRegisterData::where('id', $request->id)->first();
-        $cash_register_data->status = config('constants.CASH_REGISTER_STATUS.COMPLETED');
+        $id = $request->id;
+        $cash_register_data = CashRegisterData::where('id', $id)->first();
+        // $cash_register_data->status = config('constants.CASH_REGISTER_STATUS.COMPLETED');
         if ($cash_register_data->save()){
+
+
+            $query = CashRegisterData::select([
+                'cash_register_data.id as id',
+                'cash_register_data.date as date',
+                'workers.name as worker_name',
+                'users.name as user_name',
+                'dollar_cash_records_join.total',
+                'bs_cash_records_join.total',
+            ]); 
+            
+            // SELECT `cash_register_data`.`id`, `dollar_cash_records_join`.`total` FROM `cash_register_data` INNER JOIN (SELECT SUM(`dollar_cash_records`.`amount`) as `total`, `dollar_cash_records`.`cash_register_data_id` FROM `dollar_cash_records` GROUP BY `dollar_cash_records`.`cash_register_data_id`) `dollar_cash_records_join` ON `dollar_cash_records_join`.`cash_register_data_id` = `cash_register_data`.`id` WHERE `cash_register_data`.`id` = 17;
+            $query = $query
+                ->join('users', 'cash_register_data.user_id', '=', 'users.id')
+                ->join('workers', 'cash_register_data.worker_id', '=', 'workers.id')
+                ->join(
+                    DB::raw("(SELECT SUM(`dollar_cash_records`.`amount`) as `total`, `dollar_cash_records`.`cash_register_data_id` FROM `dollar_cash_records` GROUP BY `dollar_cash_records`.`cash_register_data_id`) `dollar_cash_records_join`"),
+                    function($join) use ($id) {
+                        $join
+                            ->on('dollar_cash_records_join.cash_register_data_id', '=', 'cash_register_data.id')
+                            ->where('cash_register_data.id', '=', $id);
+                    }
+                )
+                ->join(
+                    DB::raw("(SELECT SUM(`bs_cash_records`.`amount`) as `total`, `bs_cash_records`.`cash_register_data_id` FROM `bs_cash_records` GROUP BY `bs_cash_records`.`cash_register_data_id`) `bs_cash_records_join`"),
+                    function($join) use ($id) {
+                        $join
+                            ->on('bs_cash_records_join.cash_register_data_id', '=', 'cash_register_data.id')
+                            ->where('cash_register_data.id', '=', $id);
+                    }
+                );
+
+            return print_r($query->get());
+
             $this->flasher->addSuccess('El arqueo de caja fue cerrado exitosamente!');
         } else {
             $this->flasher->addError('El arqueo de caja no se pudo actualizar');
         }
 
         return redirect()->route('cash_register.index');
+    }
+
+    public function singleRecordPdf(PrintSingleCashRegisterRequest $request){
+
+    }
+
+    public function intervalRecordPdf(PrintIntervalCashRegisterRequest $request){
+
     }
 
     private function mergeOldAndNewValues($parent_id, $callback_name, $old_values, ...$new_values){

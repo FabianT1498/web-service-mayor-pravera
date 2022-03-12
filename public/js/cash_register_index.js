@@ -3293,31 +3293,29 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   DOMElements: {
-    dateRangePicker: document.querySelector('#date_range_picker'),
-    pagesLinksContainer: document.querySelector('#pages_links_container'),
-    formFilter: document.querySelector('#form_filter'),
-    pageInput: document.querySelector('#page')
+    dateRangePicker: document.querySelector('#date_range_picker') // pagesLinksContainer: document.querySelector('#pages_links_container'),
+    // formFilter: document.querySelector('#form_filter'),
+    // pageInput: document.querySelector('#page')
+
   },
   init: function init() {
     Object.assign(_themesberg_tailwind_datepicker_Datepicker__WEBPACK_IMPORTED_MODULE_0__["default"].locales, _themesberg_tailwind_datepicker_locales_es__WEBPACK_IMPORTED_MODULE_2__["default"]);
     new _themesberg_tailwind_datepicker_DateRangePicker__WEBPACK_IMPORTED_MODULE_1__["default"](this.DOMElements.dateRangePicker, {
       format: 'dd-mm-yyyy',
       language: 'es'
-    });
-    this.DOMElements.pagesLinksContainer.addEventListener('click', function (pageInput, form) {
-      return function (e) {
-        e.preventDefault();
-        var anchor = e.target.closest('a');
-
-        if (anchor) {
-          var url = new URL(anchor.href);
-          var params = new URLSearchParams(url.search);
-          var page = params.get("page");
-          pageInput.value = page;
-          form.submit();
-        }
-      };
-    }(this.DOMElements.pageInput, this.DOMElements.formFilter));
+    }); // this.DOMElements.pagesLinksContainer.addEventListener('click', function(pageInput, form){
+    //     return (e) => {
+    //         e.preventDefault();
+    //         let anchor = e.target.closest('a');
+    //         if (anchor){
+    //             let url = new URL(anchor.href);
+    //             let params = new URLSearchParams(url.search);
+    //             let page = params.get("page");
+    //             pageInput.value = page;
+    //             form.submit();
+    //         }
+    //     }
+    // }(this.DOMElements.pageInput, this.DOMElements.formFilter));
   }
 });
 
