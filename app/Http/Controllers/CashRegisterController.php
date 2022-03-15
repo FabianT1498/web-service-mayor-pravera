@@ -589,8 +589,37 @@ class CashRegisterController extends Controller
 
     public function singleRecordPdf(PrintSingleCashRegisterRequest $request){
         $cash_register = CashRegister::where('id', $request->route('id'))->first();
+        
+        $totals_from_saint = $this->getTotalsFromSaint($cash_register->cash_register_user,
+            $cash_register->date);
+
+        $cash_register_saint = $totals_from_saint['total_cash_records']->reduce(function ($carry, $item) {
+            $carry[config('constants.CASH_TIPO_FAC.' . $item->TipoFac)] = $item->total_cash;
+            return $carry;
+        }, []);
+
+
+        $e_payment_records = $totals_from_saint['total_e_payment_records']->reduce(function ($carry, $item) {
+            $carry[config('constants.COD_PAGO.' . $item->TipoFac . '.' . $item->CodPago)] = $item->total;
+            return $carry;
+        }, $cash_register_saint);
+
+        $currency_signs = [
+            'dollar' => config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')),
+            'bs' => config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR'))
+        ];
+
+        $differences = [
+            'dollar_cash' =>  $cash_register->total_dollar_cash -  (key_exists('dollar_cash', $cash_register_saint) ? $cash_register_saint['dollar_cash'] : 0),
+            'bs_cash' => $cash_register->total_bs_cash
+        ]
+
         $pdf = App::make('dompdf.wrapper');
-        $pdf = $pdf->loadView('pdf.cash-register.single-record', compact('cash_register'))
+        $pdf = $pdf->loadView('pdf.cash-register.single-record', compact(
+            'cash_register',
+            'cash_register_saint',
+            'currency_signs'
+        ))
             ->setOptions([
                 'defaultFont' => 'sans-serif',
             ]);
@@ -608,99 +637,44 @@ class CashRegisterController extends Controller
         }, $old_values, ...$new_values);
     }
 
-    private function getTotalsFromSaint($cash_register_user){
+    private function getTotalsFromSaint($cash_register_user, $date){
 
-        DB::connection('saint_db')->table('SAFACT')
-            ->select(['NumeroD as id', 'Monto as amount'])
-            ->where('CodUsua', '=', $cash_register_data->cash_register_user)
-            ->where('TipoFac', '=', 'B')
-            ->whereNotIn('')
-            ->whereDate('FechaE', '=', Date::now()->format('d-m-Y'))
-            ->orderBy('FechaE', 'desc');
-
+        // Get the totals of cash registers
         $query =  DB::connection('saint_db')
             ->table('SAFACT')
             ->selectRaw('
-                SUM(Monto) as total,
-                TipoFac
-            ')
-            ->where()
-            ->whereDate('FechaE', '=', Date::now()->format('d-m-Y'))
-            ->groupBy('TipoFac');
-        $total_cash = $query->get();
+                COALESCE(SUM(SAFACT.Monto), 0) as total_cash,
+                COALESCE(SAFACT.TipoFac,' . '\'unassigned_TipoFac\'' . ') as TipoFac'
+            )
+            ->leftJoin("SAIPAVTA", function($join) {
+                $join
+                    ->on('SAFACT.NumeroD', '=', 'SAIPAVTA.NumeroD');
+            })
+            ->where('SAFACT.CodUsua', '=', $cash_register_user)
+            ->where('SAIPAVTA.NumeroD', '=', null)
+            ->whereDate('SAFACT.FechaE', '=', '08-03-2022')
+            ->groupBy('SAFACT.TipoFac');
+        
+        $total_cash_records = $query->get();
 
-        DB::connection('saint_db')
-            ->table('SAFACT')
+        // Get the totals on SAIPAVTA Table
+        $query =  DB::connection('saint_db')
+            ->table('SAIPAVTA')
             ->selectRaw('
-                COALESCE(dol_c_join.total, 0) as total_dollar_cash,
-                COALESCE(bs_c_join.total, 0) as total_bs_cash,
-                COALESCE(ps_bs_join.total, 0) as total_point_sale_bs,
-                COALESCE(ps_dol_join.total, 0) as total_point_sale_dollar,
-                COALESCE(bs_denomination_join.total, 0) as total_bs_denominations,
-                COALESCE(dollar_denomination_join.total, 0) as total_dollar_denominations,
-                COALESCE(zelle_join.total, 0) as total_zelle
-            ')
-            ->groupBy('TipoFac');
+                COALESCE(SUM(SAIPAVTA.Monto), 0) as total,
+                COALESCE(SAIPAVTA.CodPago,' . '\'unassigned_CodPago\'' . ') as CodPago,
+                COALESCE(SAIPAVTA.TipoFac,' . '\'unassigned_TipoFac\'' . ') as TipoFac'
+            )
+            ->join("SAFACT", function($join) use ($cash_register_user, $date) {
+                $join->on('SAIPAVTA.NumeroD', '=', 'SAFACT.NumeroD')
+                    ->where('SAFACT.CodUsua', '=', $cash_register_user)
+                    ->whereDate('SAFACT.FechaE', '=', '09-03-2022');
+            })
+            ->groupBy('SAIPAVTA.CodPago', 'SAIPAVTA.TipoFac');
+            
+        $total_e_payment_records = $query->get();
 
-
-            ->selectRaw('
-                COALESCE(dol_c_join.total, 0) as total_dollar_cash,
-                COALESCE(bs_c_join.total, 0) as total_bs_cash,
-                COALESCE(ps_bs_join.total, 0) as total_point_sale_bs,
-                COALESCE(ps_dol_join.total, 0) as total_point_sale_dollar,
-                COALESCE(bs_denomination_join.total, 0) as total_bs_denominations,
-                COALESCE(dollar_denomination_join.total, 0) as total_dollar_denominations,
-                COALESCE(zelle_join.total, 0) as total_zelle
-            ')
-            ->leftJoin(
-                DB::raw("(SELECT SUM(`SAFACT`.`Monto`) as `total`, `dollar_cash_records`.`cash_register_data_id` FROM `dollar_cash_records` GROUP BY `dollar_cash_records`.`cash_register_data_id`) `dol_c_join`"),
-                function($join) use ($id) {
-                    $join->on('dol_c_join.cash_register_data_id', '=', 'cash_register_data.id');
-                }
-            )
-            ->leftJoin(
-                DB::raw("(SELECT SUM(`bs_cash_records`.`amount`) as `total`, `bs_cash_records`.`cash_register_data_id` FROM `bs_cash_records` GROUP BY `bs_cash_records`.`cash_register_data_id`) `bs_c_join`"),
-                function($join) use ($id) {
-                    $join->on('bs_c_join.cash_register_data_id', '=', 'cash_register_data.id');
-                }
-            )
-            ->leftJoin(
-                DB::raw("(SELECT SUM(`point_sale_bs_records`.`amount`) as `total`, `point_sale_bs_records`.`cash_register_data_id` FROM `point_sale_bs_records` GROUP BY `point_sale_bs_records`.`cash_register_data_id`) `ps_bs_join`"),
-                function($join) use ($id) {
-                    $join->on('ps_bs_join.cash_register_data_id', '=', 'cash_register_data.id');
-                }
-            )
-            ->leftJoin(
-                DB::raw("
-                    (SELECT SUM(`point_sale_dollar_records`.`amount`) as `total`,
-                    `point_sale_dollar_records`.`cash_register_data_id` 
-                    FROM `point_sale_dollar_records` 
-                    GROUP BY 
-                        `point_sale_dollar_records`.`cash_register_data_id`
-                    ) `ps_dol_join`"),
-                function($join) use ($id) {
-                    $join->on('ps_dol_join.cash_register_data_id', '=', 'cash_register_data.id');
-                }
-            )
-            ->leftJoin(
-                DB::raw("(SELECT SUM(`bs_denomination_records`.`quantity` * `bs_denomination_records`.`denomination`) as `total`, `bs_denomination_records`.`cash_register_data_id` FROM `bs_denomination_records` GROUP BY `bs_denomination_records`.`cash_register_data_id`) `bs_denomination_join`"),
-                function($join) use ($id) {
-                    $join->on('bs_denomination_join.cash_register_data_id', '=', 'cash_register_data.id');
-                }
-            )
-            ->leftJoin(
-                DB::raw("(SELECT SUM(`dollar_denomination_records`.`quantity` * `dollar_denomination_records`.`denomination`) as `total`, `dollar_denomination_records`.`cash_register_data_id` FROM `dollar_denomination_records` GROUP BY `dollar_denomination_records`.`cash_register_data_id`) `dollar_denomination_join`"),
-                function($join) use ($id) {
-                    $join->on('dollar_denomination_join.cash_register_data_id', '=', 'cash_register_data.id');
-                }
-            )
-            ->leftJoin(
-                DB::raw("(SELECT SUM(`zelle_records`.`amount`) as `total`, `zelle_records`.`cash_register_data_id` FROM `zelle_records` GROUP BY `zelle_records`.`cash_register_data_id`) `zelle_join`"),
-                function($join) use ($id) {
-                    $join->on('zelle_join.cash_register_data_id', '=', 'cash_register_data.id');
-                }
-            )
-            ->where('cash_register_data.id', '=', $id);
+        return compact('total_cash_records', 'total_e_payment_records');
     }
 
     private function getTotalsRelatedToRecord($id){
