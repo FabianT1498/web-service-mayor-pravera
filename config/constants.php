@@ -16,15 +16,12 @@ $cash_tipo_fac = ['A' => 'bs_cash', 'B' => 'dollar_cash'];
 $tipo_fac = ['A' => 'efectivo', 'B' => 'cheque'];
 
 $cod_pago = [
-    'A' => [
-        '01' => 'bs_debit',
-        '02' => 'bs_credit',
-        '03' => 'todo_ticket',
-        '05' => 'transferencia_pago_movil',
-        '07' => 'zelle',
-        '08' => 'point_sale_dollar'
-    ],
-    'B' => []
+    '01' => 'bs_debit',
+    '02' => 'bs_credit',
+    '03' => 'todo_ticket',
+    '05' => 'transferencia_pago_movil',
+    '07' => 'zelle',
+    '08' => 'point_sale_dollar'
 ];
 
 return [

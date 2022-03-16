@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\App;
+use App\Http\Controllers\Controller;
 
 use Flasher\SweetAlert\Prime\SweetAlertFactory;
 
@@ -26,7 +27,6 @@ use App\Http\Requests\EditCashRegisterRequest;
 use App\Http\Requests\UpdateCashRegisterRequest;
 use App\Http\Requests\PrintSingleCashRegisterRequest;
 use App\Http\Requests\PrintIntervalCashRegisterRequest;
-
 
 class CashRegisterController extends Controller
 {
@@ -573,8 +573,9 @@ class CashRegisterController extends Controller
 
             $result = $this->getTotalsRelatedToRecord($id);
 
+            // toArray method converts eloquent model's properties to primitive data types
             $cash_register = new CashRegister($result->toArray());
-            
+
             if ($cash_register->save()){
                 $this->flasher->addSuccess('El arqueo de caja fue cerrado exitosamente!');
             } else {
@@ -588,36 +589,72 @@ class CashRegisterController extends Controller
     }
 
     public function singleRecordPdf(PrintSingleCashRegisterRequest $request){
-        $cash_register = CashRegister::where('id', $request->route('id'))->first();
-        
-        $totals_from_saint = $this->getTotalsFromSaint($cash_register->cash_register_user,
+
+        $cash_register = CashRegister::where('cash_register_data_id', $request->route('id'))->first();
+  
+        $totals_from_db_saint = $this->getTotalsFromSaint($cash_register->cash_register_user,
             $cash_register->date);
+        
+        $totals_saint = [];
+        
+        // Mapping every cash record entry with its key
+        foreach(array_keys(config('constants.CASH_TIPO_FAC')) as $index => $value){
+            $record = $totals_from_db_saint['total_cash_records']->slice($index, 1)->first();
+            $key = config('constants.CASH_TIPO_FAC.'. $value);
 
-        $cash_register_saint = $totals_from_saint['total_cash_records']->reduce(function ($carry, $item) {
-            $carry[config('constants.CASH_TIPO_FAC.' . $item->TipoFac)] = $item->total_cash;
-            return $carry;
-        }, []);
+            if (!is_null($record)){
+                if ($value === $record->TipoFac){
+                    $totals_saint[$key] = $record->total_cash;
+                } else {
+                    if (!key_exists($key, $totals_saint)){
+                        $totals_saint[$key] = 0;
+                    }
+                    $totals_saint[config('constants.CASH_TIPO_FAC.'. $record->TipoFac)] = $record->total_cash;
+                }
+            } else if (!key_exists($key, $totals_saint)) {
+                $totals_saint[$key] = 0;
+            }
+        }
 
+        // Mapping every e-payment entry with its key
+        foreach(array_keys(config('constants.COD_PAGO')) as $index => $value){
+            $record = $totals_from_db_saint['total_e_payment_records']->slice($index, 1)->first();
+            $key = config('constants.COD_PAGO.'. $value);
 
-        $e_payment_records = $totals_from_saint['total_e_payment_records']->reduce(function ($carry, $item) {
-            $carry[config('constants.COD_PAGO.' . $item->TipoFac . '.' . $item->CodPago)] = $item->total;
-            return $carry;
-        }, $cash_register_saint);
+            if (!is_null($record)){
+                if ($value === $record->CodPago){
+                    $totals_saint[$key] = $record->total;
+                } else {
+                    if (!key_exists($key, $totals_saint)){
+                        $totals_saint[$key] = 0;
+                    }
+                    $totals_saint[config('constants.COD_PAGO.'. $record->CodPago)] = $record->total;
+                }
+            } else if (!key_exists($key, $totals_saint)) {
+                $totals_saint[$key] = 0;
+            }
+        }
+
+        $differences = [
+            'dollar_cash' => $cash_register->total_dollar_cash - $totals_saint['dollar_cash'],
+            'bs_cash' => $cash_register->total_bs_cash - $totals_saint['bs_cash'],
+            'point_sale_bs' => ($cash_register->total_point_sale_bs - ($totals_saint['bs_debit'] + $totals_saint['bs_credit'])),
+            'point_sale_dollar' => $cash_register->total_point_sale_dollar - $totals_saint['point_sale_dollar'],
+            'zelle' => $cash_register->total_zelle - $totals_saint['zelle'],
+            'bs_denominations' => $cash_register->total_bs_denominations - $totals_saint['bs_cash'],
+            'dollar_denominations' => $cash_register->total_dollar_denominations - $totals_saint['dollar_cash'],
+        ];
 
         $currency_signs = [
             'dollar' => config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')),
             'bs' => config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR'))
         ];
 
-        $differences = [
-            'dollar_cash' =>  $cash_register->total_dollar_cash -  (key_exists('dollar_cash', $cash_register_saint) ? $cash_register_saint['dollar_cash'] : 0),
-            'bs_cash' => $cash_register->total_bs_cash
-        ]
-
         $pdf = App::make('dompdf.wrapper');
         $pdf = $pdf->loadView('pdf.cash-register.single-record', compact(
             'cash_register',
-            'cash_register_saint',
+            'totals_saint',
+            'differences',
             'currency_signs'
         ))
             ->setOptions([
@@ -643,7 +680,7 @@ class CashRegisterController extends Controller
         $query =  DB::connection('saint_db')
             ->table('SAFACT')
             ->selectRaw('
-                COALESCE(SUM(SAFACT.Monto), 0) as total_cash,
+                COALESCE(CAST(ROUND(SUM(SAFACT.Monto), 2) AS decimal(18,2)), 0) as total_cash,
                 COALESCE(SAFACT.TipoFac,' . '\'unassigned_TipoFac\'' . ') as TipoFac'
             )
             ->leftJoin("SAIPAVTA", function($join) {
@@ -661,7 +698,7 @@ class CashRegisterController extends Controller
         $query =  DB::connection('saint_db')
             ->table('SAIPAVTA')
             ->selectRaw('
-                COALESCE(SUM(SAIPAVTA.Monto), 0) as total,
+                COALESCE(CAST(ROUND(SUM(SAIPAVTA.Monto), 2) AS decimal(18, 2)), 0) as total,
                 COALESCE(SAIPAVTA.CodPago,' . '\'unassigned_CodPago\'' . ') as CodPago,
                 COALESCE(SAIPAVTA.TipoFac,' . '\'unassigned_TipoFac\'' . ') as TipoFac'
             )

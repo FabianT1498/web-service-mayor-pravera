@@ -17,9 +17,9 @@ class CashRegisterData extends Model
 {
     use HasFactory;
 
-    protected $dates = [
-        'date',
-	];
+    protected $casts = [
+        'date' => 'date:Y-m-d'
+    ]; 
 
     protected $fillable = [
         'user_id',

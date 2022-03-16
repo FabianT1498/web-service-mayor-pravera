@@ -19,7 +19,7 @@ class CreateCashRegisterDataTable extends Migration
             $table->string('cash_register_user');
             $table->unsignedBigInteger('worker_id');
             $table->enum('status', array_values(config('constants.CASH_REGISTER_STATUS')));
-            $table->timestamp('date');
+            $table->date('date');
             $table->timestamps();
      
             $table->foreign('user_id')->references('id')->on('users');

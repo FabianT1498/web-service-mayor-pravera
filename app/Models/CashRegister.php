@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class CashRegister extends Model
 {
@@ -12,9 +13,11 @@ class CashRegister extends Model
     protected $connection = 'caja_mayorista';
     protected $table = 'cash_registers';
 
-    protected $dates = [
-        'date',
-	];
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
 
     protected $fillable = [
         'id',
@@ -47,6 +50,11 @@ class CashRegister extends Model
         $this->total_point_sale_dollar = key_exists('total_point_sale_dollar', $attributes) ? $attributes['total_point_sale_dollar'] : 0;
         $this->total_zelle = key_exists('total_zelle', $attributes) ? $attributes['total_zelle'] : 0;
         $this->date = key_exists('date', $attributes) ? $attributes['date'] : '';
-        $this->cash_register_data_id = key_exists('id', $attributes) ? $attributes['id'] : '';
+        $this->cash_register_data_id = key_exists('id', $attributes)  ? $attributes['id'] : '';
+    }
+
+    public function getDateAttribute($date)
+    {
+        return (new Carbon($date))->format('d-m-Y');
     }
 }

@@ -25,7 +25,7 @@ class CreateCashRegister extends Migration
             $table->float('total_point_sale_bs');
             $table->float('total_point_sale_dollar');
             $table->float('total_zelle');
-            $table->timestamp('date');
+            $table->date('date');
             $table->timestamps();
             $table->unsignedBigInteger('cash_register_data_id');
         

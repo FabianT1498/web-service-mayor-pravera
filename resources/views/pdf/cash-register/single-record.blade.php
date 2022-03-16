@@ -100,7 +100,7 @@
 
             table {
                 border-collapse: collapse;
-                text-align: center;
+                text-align: left;
 	            vertical-align: middle;
                 border: 1px solid black;
             }
@@ -164,69 +164,100 @@
                     <tr>
                         <th>Dolares en efectivo</th>
                         <td>{{ $cash_register->total_dollar_cash . ' ' . $currency_signs['dollar'] }}</td>
-                        <td>{{ (key_exists('dollar_cash', $cash_register_saint) 
-                            ? $cash_register_saint['dollar_cash'] 
-                            : 0) . ' ' . $currency_signs['dollar']
-                        }}</td>
-                        <td>
-                        
+                        <td>{{ $totals_saint['dollar_cash'] . ' ' . $currency_signs['dollar'] }}</td>
+                        <td 
+                            class="{{ $differences['dollar_cash'] > 0 
+                                ? 'text-blue-400' 
+                                : ( $differences['dollar_cash'] < 0 
+                                    ? 'text-red-400' 
+                                    : '' )}}"
+                        >
+                                {{ $differences['dollar_cash'] . ' ' . $currency_signs['dollar']}}
                         </td> 
                     </tr>
                     <tr>
                         <th>Bs en efectivo</td>
                         <td>{{ $cash_register->total_bs_cash . ' ' . $currency_signs['bs'] }}</td>
-                        <td>{{ (key_exists('bs_cash', $cash_register_saint) 
-                            ? $cash_register_saint['bs_cash'] 
-                            : 0) . ' ' . $currency_signs['bs']
-                        }}</td>
-                        <td></td>
+                        <td>{{ $totals_saint['bs_cash'] . ' ' . $currency_signs['bs'] }}</td>
+                        <td 
+                            class="{{ $differences['bs_cash'] > 0 
+                                ? 'text-blue-400' 
+                                : ( $differences['bs_cash'] < 0 
+                                    ? 'text-red-400' 
+                                    : '' )}}"
+                        >
+                                {{ $differences['bs_cash'] . ' ' . $currency_signs['bs'] }}
+                        </td>
                     </tr>
                     <tr>
                         <th>Punto de venta Bs</th>
                         <td>{{ $cash_register->total_point_sale_bs . ' ' . $currency_signs['bs'] }}</td>
-                        <td>
-                            @if (key_exists('bs_debit', $cash_register_saint) && key_exists('bs_credit', $cash_register_saint))
-                                {{  $cash_register_saint['bs_debit'] + $cash_register_saint['bs_credit']}}
-                            @elseif(key_exists('bs_debit', $cash_register_saint))
-                                {{  $cash_register_saint['bs_debit'] }}
-                            @elseif(key_exists('bs_credit', $cash_register_saint))
-                                {{  $cash_register_saint['bs_credit'] }}
-                            @else
-                                __('0')
-                            @endif
-                            {{ ' ' . $currency_signs['bs']}}
+                        <td>{{ ($totals_saint['bs_credit'] + $totals_saint['bs_debit']) . ' ' . $currency_signs['bs']}}</td>
+                        <td 
+                            class="{{ $differences['point_sale_bs'] > 0 
+                                ? 'text-blue-400' 
+                                : ( $differences['point_sale_bs'] < 0 
+                                    ? 'text-red-400' 
+                                    : '' )}}"
+                        >
+                                {{ $differences['point_sale_bs'] . ' ' . $currency_signs['bs'] }}
                         </td>
-                        <td></td>
                     </tr>
                     <tr>
                         <th>Punto de venta $</th>
                         <td>{{ $cash_register->total_point_sale_dollar . ' ' . $currency_signs['dollar']}}</td>
-                        <td>{{ (key_exists('point_sale_dollar', $cash_register_saint) 
-                            ? $cash_register_saint['point_sale_dollar'] 
-                            : 0) . ' ' . $currency_signs['dollar'] 
-                        }}</td>
-                        <td></td>
+                        <td>{{ $totals_saint['point_sale_dollar'] . ' ' . $currency_signs['dollar']  }}</td>
+                        <td 
+                            class="{{ $differences['point_sale_dollar'] > 0 
+                                ? 'text-blue-400' 
+                                : ( $differences['point_sale_dollar'] < 0 
+                                    ? 'text-red-400' 
+                                    : '' )}}"
+                        >
+                                {{ $differences['point_sale_dollar'] . ' ' . $currency_signs['dollar'] }}
+                        </td>
                     </tr>
                     <tr>
                         <th>Zelle</th>
                         <td>{{ $cash_register->total_zelle . ' ' . $currency_signs['dollar']}}</td>
-                        <td>{{ (key_exists('zelle', $cash_register_saint) 
-                            ? $cash_register_saint['zelle'] 
-                            : 0) . ' ' . $currency_signs['dollar'] 
-                        }}</td>
-                        <td>&nbsp;</td>
+                        <td>{{ $totals_saint['zelle'] . ' ' . $currency_signs['dollar'] }}</td>
+                        <td 
+                            class="{{ $differences['zelle'] > 0 
+                                ? 'text-blue-400' 
+                                : ( $differences['zelle'] < 0 
+                                    ? 'text-red-400' 
+                                    : '' )}}"
+                        >
+                                {{ $differences['zelle'] . ' ' . $currency_signs['dollar'] }}
+                        </td>
                     </tr>
                     <tr>
                         <th>Bolivares en físico (Denominaciones)</th>
                         <td>{{ $cash_register->total_bs_denominations . ' ' . $currency_signs['bs'] }}</td>
-                        <td class="bg-grey-400">&nbsp;</td>
-                        <td class="bg-grey-400">&nbsp;</td>
+                        <td>{{ $totals_saint['bs_cash'] . ' ' . $currency_signs['bs'] }}</td>
+                        <td 
+                            class="{{ $differences['bs_denominations'] > 0 
+                                ? 'text-blue-400' 
+                                : ( $differences['bs_denominations'] < 0 
+                                    ? 'text-red-400' 
+                                    : '' )}}"
+                        >
+                                {{ $differences['bs_denominations'] . ' ' . $currency_signs['bs'] }}
+                        </td>
                     </tr>
                     <tr>
                         <th>Dolares en efectivo (Denominaciones)</th>
                         <td>{{ $cash_register->total_dollar_denominations . ' ' . $currency_signs['dollar']}}</td>
-                        <td class="bg-grey-400">&nbsp;</td>
-                        <td class="bg-grey-400">&nbsp;</td>
+                        <td>{{ $totals_saint['dollar_cash']. ' ' . $currency_signs['dollar'] }}</td>
+                        <td 
+                            class="{{ $differences['dollar_denominations'] > 0 
+                                ? 'text-blue-400' 
+                                : ( $differences['dollar_denominations'] < 0 
+                                    ? 'text-red-400' 
+                                    : '' )}}"
+                        >
+                                {{ $differences['dollar_denominations'] . ' ' . $currency_signs['dollar'] }}
+                        </td>
                     </tr>
                 </tbody>
             </table>
