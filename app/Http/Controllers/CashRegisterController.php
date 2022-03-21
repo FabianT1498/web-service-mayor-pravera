@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\App;
 use App\Http\Controllers\Controller;
+use Carbon\Carbon;
 
 use Flasher\SweetAlert\Prime\SweetAlertFactory;
 
@@ -81,19 +82,27 @@ class CashRegisterController extends Controller
         });
     }
 
-    private function getCashRegisterUsers(){
-        $cash_registers_id = DB::connection('saint_db')->table('SSUSRS')
-        ->select('CodUsua as cash_register_id')
-        ->where("CodUsua", "LIKE", "CAJA%")
-        ->where("CodUsua", "=", "DELIVERY", 'or')
-        ->get();
+    private function getCashRegisterUsersWithoutRecord($date = null){
+        $result =  DB::table('cash_register_users')
+            ->select([
+                'cash_register_users.name as cash_register_id',
+            ])
+            ->leftJoin('cash_register_data', function($join) use ($date){
+                $join
+                    ->on('cash_register_data.cash_register_user', '=', 'cash_register_users.name')
+                    ->whereDate('cash_register_data.date', '=', $date);
+            })
+            ->where('cash_register_data.cash_register_user', '=', null)
+            ->get();
 
-        return $cash_registers_id->map(function($item, $key) {
-            return (object) array("key" => $item->cash_register_id, "value" => $item->cash_register_id);
-        });
+        return $result
+            ->map(function($item, $key) {
+                return (object) array("key" => $item->cash_register_id, "value" => $item->cash_register_id);
+            });
     }
 
     public function index(Request $request){
+ 
         $status = $request->query('status', config('constants.CASH_REGISTER_STATUS.EDITING'));
         $start_date = $request->query('start_date', '');
         $end_date = $request->query('end_date', '');
@@ -153,12 +162,20 @@ class CashRegisterController extends Controller
 
     public function create()
     {  
-        $date =  Date::now()->format('d-m-Y');
-
+        
         $cash_registers_workers_id_arr = $this->getWorkers();
-        $cash_registers_id_arr = $this->getCashRegisterUsers();
 
-        $data = compact('date', 'cash_registers_id_arr', 'cash_registers_workers_id_arr');
+        $today_date = Carbon::now();
+        $cash_registers_id_arr = $this
+            ->getCashRegisterUsersWithoutRecord($today_date->format('Y-m-d'));
+
+        $today_date = $today_date->format('d-m-Y');
+        
+        $data = compact(
+            'cash_registers_id_arr',
+            'cash_registers_workers_id_arr',
+            'today_date'
+        );
 
         return $this->getTableSummaryView('pages.cash-register.create', $data);
     }
@@ -167,15 +184,12 @@ class CashRegisterController extends Controller
     {
         $validated = $request->validated();
 
-        $date =  Date::now()->format('d-m-Y');
-
-        $validated += ["date" => $date];
         $validated += ["user_id" => Auth::id()];
 
         if (array_key_exists('new_cash_register_worker', $validated)){
             $worker = new Worker(array('name' => $validated['new_cash_register_worker']));
             $worker->save();
-            array_merge($validated, array('worker_id' => $worker->id));
+            $validated = array_merge($validated, array('worker_id' => $worker->id));
         }
 
         $cash_register_data = new CashRegisterData($validated);
@@ -219,7 +233,7 @@ class CashRegisterController extends Controller
             
             if (array_key_exists('point_sale_bs_bank', $validated)){
 
-                $credit_data = array_map(function($amount, $bank) use ($cash_register_data, $date){
+                $credit_data = array_map(function($amount, $bank) use ($cash_register_data){
                     return array(
                         'amount' => $amount,
                         'type' => "CREDIT",
@@ -228,7 +242,7 @@ class CashRegisterController extends Controller
                     );
                 }, $validated['point_sale_bs_credit'], $validated['point_sale_bs_bank']);
 
-                $debit_data = array_map(function($amount, $bank) use ($cash_register_data, $date){
+                $debit_data = array_map(function($amount, $bank) use ($cash_register_data){
                     return array(
                         'amount' => $amount,
                         'type' => "DEBIT",
@@ -280,7 +294,16 @@ class CashRegisterController extends Controller
             ->first();
 
         $cash_registers_workers_id_arr = $this->getWorkers();
-        $cash_registers_id_arr = $this->getCashRegisterUsers();
+
+        $cash_registers_id_arr = $this
+            ->getCashRegisterUsersWithoutRecord($cash_register_data->date);
+
+        $date = $cash_register_data->date->format('d-m-Y');
+
+        $cash_registers_id_arr->prepend((object)[
+            'key' => $cash_register_data->cash_register_user,
+            'value' => $cash_register_data->cash_register_user]
+        );
 
         $banks = DB::connection('caja_mayorista')
             ->table('banks')
@@ -362,6 +385,7 @@ class CashRegisterController extends Controller
             'zelle_records',
             'cash_registers_id_arr',
             'cash_registers_workers_id_arr',
+            'date'
         ));
     }
 
@@ -371,19 +395,15 @@ class CashRegisterController extends Controller
 
         $cash_register_data = CashRegisterData::where('id', $request->route('id'))->first();
 
-        $date =  Date::now()->format('d-m-Y');
-
-        $validated += ["date" => $date];
-
         if (array_key_exists('new_cash_register_worker', $validated)){
             $worker = new Worker(array('name' => $validated['new_cash_register_worker']));
             $worker->save();
-            array_merge($validated, array('worker_id' => $worker->id));
+            $validated = array_merge($validated, array('worker_id' => $worker->id));
         }
 
         $cash_register_data->worker_id = $validated['worker_id'];
         $cash_register_data->cash_register_user = $validated['cash_register_user'];
-        $cash_register_data->date = $date;
+        $cash_register_data->date = $validated['date'];
       
         if ($cash_register_data->isDirty()){
             $cash_register_data->save();

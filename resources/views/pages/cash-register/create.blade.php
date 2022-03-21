@@ -14,12 +14,13 @@
         @csrf
         <div class="w-10/12"><h3 class="h3 text-center mb-4">Datos de la caja</h3></div>
 
-        <div id="cash_register_data" class="w-10/12 grid gap-4 grid-cols-[200px_250px] grid-rows-4 mb-8 mx-auto">
-            <!-- Cash register date -->
-        
-            <x-label for="date" :value="__('Fecha')" />
-            <x-input type="text" :value="__($date)" readonly />
+        <div id="cash_register_data" class="w-10/12 grid gap-4 grid-cols-[150px_200px_200px] grid-rows-4 mb-8 mx-auto items-center">
             
+            <!-- Cash register date -->
+            <x-label for="date" :value="__('Fecha')" />
+            <x-input  name="date" id="date" type="text" :value="$today_date"/>
+            <div>&nbsp;</div>
+    
             <!-- Cash register number-->
             <x-label for="cash_register" :value="__('Caja')" />
             <x-select-input 
@@ -30,6 +31,7 @@
                 :value="old('cash_register_user')" 
                 required  
             />
+            <div id="cash_register_users_status">&nbsp;</div>
             
             <x-label for="cash_register_worker" :value="__('Cajero/a:')" />
             <x-select-input
@@ -40,9 +42,18 @@
                 :value="old('worker_id')"
                 required 
             />
+            <div class="flex justify-around items-center">
+                @if($cash_registers_workers_id_arr->count() === 0)
+                    <p>Ya se han creado arqueos para todos las cajas</p>
+                    <i class="animate-bounce far fa-check-circle text-blue-600"></i>
+                @else
+                    <p>Ya se han creado arqueos para todos las cajas</p>
+                    <i class="animate-bounce far fa-check-circle text-blue-600"></i>
+                @endif
+            </div>
 
-            <div class="flex items-center">
-                   <x-label for="exist_cash_register_worker" class="basis-2/3" :value="__('No esta registrado el cajero/a ?')" />
+            <div class="flex items-center justify-between">
+                   <x-label for="exist_cash_register_worker" class="flex-1" :value="__('No esta registrado el cajero/a ?')" />
                    <input
                         id="cash_register_worker_exist_check"
                         type="checkbox"

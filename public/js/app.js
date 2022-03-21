@@ -7267,7 +7267,8 @@ DollarExchangeModalPresenter.prototype.constructor = DollarExchangeModalPresente
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "postDollarExchange": () => (/* binding */ postDollarExchange),
-/* harmony export */   "getDollarExchange": () => (/* binding */ getDollarExchange)
+/* harmony export */   "getDollarExchange": () => (/* binding */ getDollarExchange),
+/* harmony export */   "getRegisteredDates": () => (/* binding */ getRegisteredDates)
 /* harmony export */ });
 /* harmony import */ var _utilities_axiosClient__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utilities/axiosClient */ "./resources/js/utilities/axiosClient.js");
 
@@ -7278,6 +7279,10 @@ var postDollarExchange = function postDollarExchange(obj) {
 
 var getDollarExchange = function getDollarExchange() {
   return asyncFunction(_utilities_axiosClient__WEBPACK_IMPORTED_MODULE_0__["default"].get('/dollar_exchange'));
+};
+
+var getRegisteredDates = function getRegisteredDates(obj) {
+  return asyncFunction(_utilities_axiosClient__WEBPACK_IMPORTED_MODULE_0__["default"].get('/registered_dates', obj));
 };
 
 var asyncFunction = function asyncFunction(promise) {

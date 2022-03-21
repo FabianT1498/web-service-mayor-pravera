@@ -1,8 +1,6 @@
 import { CURRENCIES, SIGN as CURRENCY_SIGN_MAP} from '_constants/currencies';
 import { PAYMENT_METHODS } from '_constants/paymentMethods';
 
-import CashRegisterData from '_components/cash-register-data'
-
 import { store } from '_store'
 import { STORE_DOLLAR_EXCHANGE_VALUE } from '_store/action'
 
@@ -16,6 +14,9 @@ import ForeignMoneyRecordTable from '_components/money-record-table/ForeignMoney
 
 import DenominationModalPresenter from '_presenters/DenominationModalPresenter'
 import DenominationModalView from '_views/DenominationModalView'
+
+import CashRegisterDataPresenter from '_presenters/CashRegisterDataPresenter'
+import CashRegisterDataView from '_views/CashRegisterDataView'
 
 import SalePointModalPresenter from '_presenters/SalePointModalPresenter'
 import SalePointModalView from '_views/SalePointModalView'
@@ -57,8 +58,9 @@ export default {
     init(){
 
         let cashRegisterContainer = document.querySelector('#cash_register_data')
-        let cashRegister = new CashRegisterData()
-        cashRegister.init(cashRegisterContainer)
+        let cashRegisterDataPresenter = new CashRegisterDataPresenter();
+        let cashRegisterDataView = new CashRegisterDataView(cashRegisterDataPresenter);
+        cashRegisterDataView.init(cashRegisterContainer)
 
         let liquidMoneyBsRegisterModal = document.querySelector('#bs_cash_record');
         let bolivarRecordMoneyPresenter = new MoneyRecordModalPresenter(CURRENCIES.BOLIVAR, PAYMENT_METHODS.CASH, this.setPropWrapper(this.setTotalLiquidMoneyBs));

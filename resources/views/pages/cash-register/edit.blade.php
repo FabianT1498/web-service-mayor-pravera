@@ -19,7 +19,7 @@
             <!-- Cash register date -->
         
             <x-label for="date" :value="__('Fecha')" />
-            <x-input type="text" :value="$cash_register_data->date" readonly />
+            <x-input id="date" name="date" type="text" :value="$date"/>
             
             <!-- Cash register number-->
             <x-label for="cash_register" :value="__('Caja')" />

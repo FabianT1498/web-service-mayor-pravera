@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Carbon\Carbon;
+
 use App\Http\Traits\AmountCurrencyTrait;
 
 use App\Rules\BadFormattedAmount;
@@ -35,11 +37,13 @@ class UpdateCashRegisterRequest extends FormRequest
         $total_rules = ['required', new BadFormattedAmount, 'gt:0'];
 
         $rules = [
-            'cash_register_user' => ['required', 'exists:saint_db.SSUSRS,CodUsua']
+            'cash_register_user' => ['required', 'exists:cash_register_users,name'],
+            'date' => ['required', 'date_format:Y-m-d']
         ];
 
-        if ($this->has('new_cash_register_worker')
-                && !empty($this->new_cash_register_worker)){
+        if ($this->has('exist_cash_register_worker') 
+                && $this->exist_cash_register_worker === '1' 
+                    && $this->has('new_cash_register_worker')){
             $rules['new_cash_register_worker'] = ['required', 'unique:caja_mayorista.workers,name', 'max:100'];
         } else {
             $rules['worker_id'] = ['required', 'exists:workers,id'];
@@ -86,6 +90,7 @@ class UpdateCashRegisterRequest extends FormRequest
     protected function prepareForValidation()
     {
         $inputs = [
+            'date' => isset($this->date) ? Carbon::createFromFormat('d-m-Y', $this->date)->format('Y-m-d') : null,
             'total_dollar_denominations' => $this->formatAmount($this->total_dollar_denominations),
             'total_bs_denominations' => $this->formatAmount($this->total_bs_denominations)
         ];
