@@ -33,6 +33,9 @@ export default {
         pointSaleDollar: document.querySelector('#total_point_sale_dollar'),
         pointSaleBs: document.querySelector('#total_point_sale_bs')
     },
+    totalsCashRegisterUser: {
+
+    },
     proxy: null,
     setTotalLiquidMoneyBs(total){
         this.proxy.liquidMoneyBs = total

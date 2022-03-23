@@ -719,7 +719,7 @@ class CashRegisterController extends Controller
             })
             ->where('SAFACT.CodUsua', '=', $cash_register_user)
             ->where('SAIPAVTA.NumeroD', '=', null)
-            ->whereDate('SAFACT.FechaE', '=', '08-03-2022')
+            ->whereDate('SAFACT.FechaE', '=', $date)
             ->groupBy('SAFACT.TipoFac');
         
         $total_cash_records = $query->get();
@@ -735,13 +735,18 @@ class CashRegisterController extends Controller
             ->join("SAFACT", function($join) use ($cash_register_user, $date) {
                 $join->on('SAIPAVTA.NumeroD', '=', 'SAFACT.NumeroD')
                     ->where('SAFACT.CodUsua', '=', $cash_register_user)
-                    ->whereDate('SAFACT.FechaE', '=', '09-03-2022');
+                    ->whereDate('SAFACT.FechaE', '=', $date);
             })
             ->groupBy('SAIPAVTA.CodPago', 'SAIPAVTA.TipoFac');
             
         $total_e_payment_records = $query->get();
 
         return compact('total_cash_records', 'total_e_payment_records');
+    }
+
+    public function getTotalsFromSaintJson($cash_register_user, $date){
+        $data = $this->getTotalsFromSaint($cash_register_user, $date);
+        return $this->jsonResponse(['data' => $data], 200);
     }
 
     private function getTotalsRelatedToRecord($id){

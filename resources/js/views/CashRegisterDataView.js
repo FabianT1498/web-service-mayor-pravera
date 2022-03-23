@@ -15,6 +15,7 @@ const CashRegisterDataViewPrototype = {
     },
     changeEventHandlerWrapper(presenter){
         return (event) => {
+
             presenter.changeOnView({
                 target: event.target
             })
@@ -67,7 +68,8 @@ const CashRegisterDataViewPrototype = {
             cashRegisterUsersSelect.innerHTML = `<option hidden disabled value selected>No hay elementos</option>`; 
         } else {
             cashRegisterUsersSelect.disabled = false;
-            cashRegisterUsersSelect.innerHTML = elements.map(el => `<option value="${el.key}"> ${el.value}</option>`).join('');
+            cashRegisterUsersSelect.innerHTML = '<option hidden disabled value selected>Selecione una caja</option>'
+            cashRegisterUsersSelect.insertAdjacentHTML('beforeend', elements.map(el => `<option value="${el.key}"> ${el.value}</option>`).join(''))
         }
     }
 }

@@ -3901,6 +3901,7 @@ __webpack_require__.r(__webpack_exports__);
     pointSaleDollar: document.querySelector('#total_point_sale_dollar'),
     pointSaleBs: document.querySelector('#total_point_sale_bs')
   },
+  totalsCashRegisterUser: {},
   proxy: null,
   setTotalLiquidMoneyBs: function setTotalLiquidMoneyBs(total) {
     this.proxy.liquidMoneyBs = total;
@@ -4020,12 +4021,29 @@ var CashRegisterDataPresenterPrototype = {
     if (id === 'cash_register_worker_exist_check') {
       target.value = target.value === "0" ? "1" : "0";
       this.view.toggleNewWorkerContainer();
+    } else if (id === 'cash_register_id') {
+      this.selectedCashRegisterUser = target.value;
+      this.getTotalsToCashRegisterUserOption(this.selectedDate, this.selectedCashRegisterUser);
     }
   },
   changeDateOnView: function changeDateOnView(_ref2) {
     var date = _ref2.date;
     var newDate = _themesberg_tailwind_datepicker_Datepicker__WEBPACK_IMPORTED_MODULE_0__["default"].formatDate(date, 'yyyy-mm-dd');
+    this.selectedDate = newDate;
     this.getUsersWithoutRecord(newDate);
+  },
+  getTotalsToCashRegisterUserOption: function getTotalsToCashRegisterUserOption(date, cashRegisterUser) {
+    (0,_services_cash_register__WEBPACK_IMPORTED_MODULE_1__.getTotalsToCashRegisterUser)({
+      date: date,
+      cashRegisterUser: cashRegisterUser
+    }).then(function (res) {
+      if ([201, 200].includes(res.status)) {
+        var data = res.data.data;
+        console.log(data);
+      }
+    })["catch"](function (err) {
+      console.log(err);
+    });
   },
   getUsersWithoutRecord: function getUsersWithoutRecord(date) {
     var _this = this;
@@ -4039,20 +4057,18 @@ var CashRegisterDataPresenterPrototype = {
         var data = res.data.data; // If there's a stored date on component, then the user is 
         // editing a cash register
 
-        if (_this.date && _this.cashRegisterUser && _this.date === date) {
+        if (_this.defaultDate && _this.defaultCashRegisterUser && _this.defaultDate === date) {
           data.unshift({
-            key: _this.cashRegisterUser,
-            value: _this.cashRegisterUser
+            key: _this.defaultCashRegisterUser,
+            value: _this.defaultCashRegisterUser
           });
         }
 
         if (data.length === 0) {
           _this.view.showCashRegisterUsersNoAvailable();
-
-          _this.view.setCashRegisterUsersElements([]);
-        } else {
-          _this.view.setCashRegisterUsersElements(data);
         }
+
+        _this.view.setCashRegisterUsersElements(data);
       }
     })["catch"](function (err) {
       console.log(err);
@@ -4067,9 +4083,11 @@ var CashRegisterDataPresenter = function CashRegisterDataPresenter() {
   var date = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
   var cashRegisterUser = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
   this.view = null;
-  this.date = date ? date.split('-').reverse().join('-') : null; // Date formatted to Y-m-d
+  this.defaultDate = date ? date.split('-').reverse().join('-') : null; // Date formatted to Y-m-d
 
-  this.cashRegisterUser = cashRegisterUser;
+  this.defaultCashRegisterUser = cashRegisterUser;
+  this.selectedDate = this.defaultDate;
+  this.selectedCashRegisterUser = this.defaultCashRegisterUser;
 };
 
 CashRegisterDataPresenter.prototype = CashRegisterDataPresenterPrototype;
@@ -4734,13 +4752,18 @@ var getAllBanks = /*#__PURE__*/function () {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "getCashRegisterUsersWithoutRecords": () => (/* binding */ getCashRegisterUsersWithoutRecords)
+/* harmony export */   "getCashRegisterUsersWithoutRecords": () => (/* binding */ getCashRegisterUsersWithoutRecords),
+/* harmony export */   "getTotalsToCashRegisterUser": () => (/* binding */ getTotalsToCashRegisterUser)
 /* harmony export */ });
 /* harmony import */ var _utilities_axiosClient__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utilities/axiosClient */ "./resources/js/utilities/axiosClient.js");
 
 
 var getCashRegisterUsersWithoutRecords = function getCashRegisterUsersWithoutRecords(date) {
   return asyncFunction(_utilities_axiosClient__WEBPACK_IMPORTED_MODULE_0__["default"].get("/cash_register/users_without_record/".concat(date)));
+};
+
+var getTotalsToCashRegisterUser = function getTotalsToCashRegisterUser(obj) {
+  return asyncFunction(_utilities_axiosClient__WEBPACK_IMPORTED_MODULE_0__["default"].get("/cash_register/totals/".concat(obj.cashRegisterUser, "/").concat(obj.date)));
 };
 
 var asyncFunction = function asyncFunction(promise) {
@@ -4862,9 +4885,10 @@ var CashRegisterDataViewPrototype = {
       cashRegisterUsersSelect.innerHTML = "<option hidden disabled value selected>No hay elementos</option>";
     } else {
       cashRegisterUsersSelect.disabled = false;
-      cashRegisterUsersSelect.innerHTML = elements.map(function (el) {
+      cashRegisterUsersSelect.innerHTML = '<option hidden disabled value selected>Selecione una caja</option>';
+      cashRegisterUsersSelect.insertAdjacentHTML('beforeend', elements.map(function (el) {
         return "<option value=\"".concat(el.key, "\"> ").concat(el.value, "</option>");
-      }).join('');
+      }).join(''));
     }
   }
 };

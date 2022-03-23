@@ -1,6 +1,6 @@
 import Datepicker from '@themesberg/tailwind-datepicker/Datepicker';
 
-import { getCashRegisterUsersWithoutRecords } from '_services/cash-register';
+import { getCashRegisterUsersWithoutRecords, getTotalsToCashRegisterUser } from '_services/cash-register';
 
 const CashRegisterDataPresenterPrototype = {
 	changeOnView({ target }) {
@@ -10,13 +10,29 @@ const CashRegisterDataPresenterPrototype = {
 		if(id === 'cash_register_worker_exist_check'){
 			target.value = target.value === "0" ? "1" : "0"
 			this.view.toggleNewWorkerContainer()
+		} else if (id === 'cash_register_id'){
+			this.selectedCashRegisterUser = target.value;
+			this.getTotalsToCashRegisterUserOption(this.selectedDate, this.selectedCashRegisterUser)
 		}
    	},
 	changeDateOnView({ date }){
 
 		let newDate = Datepicker.formatDate(date, 'yyyy-mm-dd')
+		this.selectedDate = newDate
 		this.getUsersWithoutRecord(newDate)
 		
+	},
+	getTotalsToCashRegisterUserOption(date, cashRegisterUser){
+		getTotalsToCashRegisterUser({date, cashRegisterUser})
+			.then(res => {
+				if ([201, 200].includes(res.status)){
+					let data = res.data.data;
+					console.log(data)
+				}
+			})
+			.catch(err => {
+				console.log(err);
+			})
 	},
 	getUsersWithoutRecord(date){
         this.view.showLoading()
@@ -31,17 +47,16 @@ const CashRegisterDataPresenterPrototype = {
 
 					// If there's a stored date on component, then the user is 
 					// editing a cash register
-					if (this.date && this.cashRegisterUser 
-							&& this.date === date){
-						data.unshift({key: this.cashRegisterUser, value: this.cashRegisterUser})
+					if (this.defaultDate && this.defaultCashRegisterUser 
+							&& this.defaultDate === date){
+						data.unshift({key: this.defaultCashRegisterUser, value: this.defaultCashRegisterUser})
 					}
 
 					if (data.length === 0){
                         this.view.showCashRegisterUsersNoAvailable();
-                        this.view.setCashRegisterUsersElements([]);
-                    } else {
-                        this.view.setCashRegisterUsersElements(data);
-                    }                 
+                    }
+                    
+					this.view.setCashRegisterUsersElements(data);
                 }
             })
             .catch(err => {
@@ -55,8 +70,11 @@ const CashRegisterDataPresenterPrototype = {
 
 const CashRegisterDataPresenter = function (date = null, cashRegisterUser = null){
     this.view = null;
-	this.date = date ? date.split('-').reverse().join('-') : null; // Date formatted to Y-m-d
-	this.cashRegisterUser = cashRegisterUser;
+	this.defaultDate = date ? date.split('-').reverse().join('-') : null; // Date formatted to Y-m-d
+	this.defaultCashRegisterUser = cashRegisterUser;
+
+	this.selectedDate = this.defaultDate;
+	this.selectedCashRegisterUser = this.defaultCashRegisterUser;
 }
 
 CashRegisterDataPresenter.prototype = CashRegisterDataPresenterPrototype;

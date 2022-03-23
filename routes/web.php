@@ -58,6 +58,9 @@ Route::group(['middleware' => ['auth', 'jsonify']], function() {
     Route::get('banks', [BankController::class, 'getAll']);
 
     Route::get('cash_register/users_without_record/{date}', [CashRegisterController::class, 'getCashRegisterUsersWithoutRecordJson']);
+
+    Route::get('cash_register/totals/{cash_register_user}/{date}', [CashRegisterController::class, 'getTotalsFromSaintJson']);
+    
 });
 
 require __DIR__.'/auth.php';
