@@ -4,18 +4,26 @@ import es from '@themesberg/tailwind-datepicker/locales/es';
 const CashRegisterDataViewPrototype = {
     init(container){
         this.container = container;
-        this.container.addEventListener("change", this.changeEventHandlerWrapper(this.presenter));
-
         let date = this.container.querySelector('#date');
         Object.assign(Datepicker.locales, es);
         new Datepicker(date, {
-            format: 'dd-mm-yyyy'
-        });
+            format: 'dd-mm-yyyy',
+            language: 'es'
+        })
+        this.container.addEventListener("change", this.changeEventHandlerWrapper(this.presenter));
+        date.addEventListener('changeDate', this.changeDateEventHandlerWrapper(this.presenter))
     },
     changeEventHandlerWrapper(presenter){
         return (event) => {
             presenter.changeOnView({
                 target: event.target
+            })
+        }
+    },
+    changeDateEventHandlerWrapper(presenter){
+        return (event) => {
+            presenter.changeDateOnView({
+                date: event.detail.date
             })
         }
     },
@@ -33,6 +41,33 @@ const CashRegisterDataViewPrototype = {
             if (workersSelectEl.disabled){
                 workersSelectEl.selectedIndex = "0"
             }
+        }
+    },
+    showCashRegisterUsersNoAvailable(){
+        this.container.querySelector('#cash_register_users_message').classList.remove('hidden')
+    },
+    hideCashRegisterUsersNoAvailable(){
+        this.container.querySelector('#cash_register_users_message').classList.add('hidden')
+    },
+    showLoading(){
+        let el = this.container.querySelector('#cash_register_users_status').children.item(0);
+       
+        if(el.classList.contains('loading')){
+            el.classList.remove('hidden');
+        }
+    },
+    hideLoading(){
+        let el = this.container.querySelector('#cash_register_users_status').children.item(0);
+        el.classList.add('hidden');
+    },
+    setCashRegisterUsersElements(elements = []){
+        let cashRegisterUsersSelect = this.container.querySelector('#cash_register_id')
+        if (elements.length === 0){
+            cashRegisterUsersSelect.disabled = true;
+            cashRegisterUsersSelect.innerHTML = `<option hidden disabled value selected>No hay elementos</option>`; 
+        } else {
+            cashRegisterUsersSelect.disabled = false;
+            cashRegisterUsersSelect.innerHTML = elements.map(el => `<option value="${el.key}"> ${el.value}</option>`).join('');
         }
     }
 }

@@ -56,6 +56,8 @@ Route::group(['middleware' => ['auth', 'jsonify']], function() {
     Route::get('dollar_exchange', [DollarExchangeController::class, 'get']);
     
     Route::get('banks', [BankController::class, 'getAll']);
+
+    Route::get('cash_register/users_without_record/{date}', [CashRegisterController::class, 'getCashRegisterUsersWithoutRecordJson']);
 });
 
 require __DIR__.'/auth.php';

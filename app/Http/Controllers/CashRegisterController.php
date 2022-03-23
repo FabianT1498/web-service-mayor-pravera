@@ -101,6 +101,11 @@ class CashRegisterController extends Controller
             });
     }
 
+    public function getCashRegisterUsersWithoutRecordJson($date = null){
+        $data = $this->getCashRegisterUsersWithoutRecord($date);
+        return $this->jsonResponse(['data' => $data], 200);
+    }
+
     public function index(Request $request){
  
         $status = $request->query('status', config('constants.CASH_REGISTER_STATUS.EDITING'));
@@ -168,6 +173,11 @@ class CashRegisterController extends Controller
         $today_date = Carbon::now();
         $cash_registers_id_arr = $this
             ->getCashRegisterUsersWithoutRecord($today_date->format('Y-m-d'));
+
+        if ($cash_registers_id_arr->count() === 0){
+            $this->flasher->addInfo('Ya se han registrado arqueos de caja para todas las cajas el dia de hoy,
+                por favor seleccione otra fecha');
+        }
 
         $today_date = $today_date->format('d-m-Y');
         

@@ -64,7 +64,9 @@ export default {
     init(){
 
         let cashRegisterContainer = document.querySelector('#cash_register_data')
-        let cashRegisterDataPresenter = new CashRegisterDataPresenter();
+        let cashRegisterUser = cashRegisterContainer.querySelector('#cash_register_id').value;
+        let casgRegisterDate = cashRegisterContainer.querySelector('#date').value;
+        let cashRegisterDataPresenter = new CashRegisterDataPresenter(casgRegisterDate, cashRegisterUser);
         let cashRegisterDataView = new CashRegisterDataView(cashRegisterDataPresenter);
         cashRegisterDataView.init(cashRegisterContainer)
 
