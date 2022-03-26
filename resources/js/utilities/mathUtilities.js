@@ -30,4 +30,8 @@ const formatAmount = (amount, defaultValue = '0.00') => {
     return (Math.round((parseFloat(numberString) + Number.EPSILON) * 100) / 100)
 };
 
-export  { formatAmount };
+const roundNumber = (number, decimals = 2) => {
+    return (Math.round((number + Number.EPSILON) * Math.pow(10, decimals)) / 100);
+}
+
+export  { formatAmount, roundNumber};

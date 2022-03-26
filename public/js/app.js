@@ -7470,7 +7470,8 @@ var decimalInputs = (_decimalInputs = {}, _defineProperty(_decimalInputs, _const
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "formatAmount": () => (/* binding */ formatAmount)
+/* harmony export */   "formatAmount": () => (/* binding */ formatAmount),
+/* harmony export */   "roundNumber": () => (/* binding */ roundNumber)
 /* harmony export */ });
 var formatAmount = function formatAmount(amount) {
   var _arr$, _arr$2;
@@ -7502,6 +7503,11 @@ var formatAmount = function formatAmount(amount) {
 
   var numberString = integer + '.' + decimal;
   return Math.round((parseFloat(numberString) + Number.EPSILON) * 100) / 100;
+};
+
+var roundNumber = function roundNumber(number) {
+  var decimals = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 2;
+  return Math.round((number + Number.EPSILON) * Math.pow(10, decimals)) / 100;
 };
 
 

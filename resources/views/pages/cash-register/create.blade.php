@@ -85,7 +85,6 @@
             <x-label class="w-56" :value="__('Cotización del $:')" />
             <p data-dollar-exchange="dollar_exchange_value" id="last-dollar-exchange-bs-label">{{ $dollar_exchange?->bs_exchange ?? 0 }} Bs.S</p>
                             
-
             <!-- Cash on liquid input (dollars) -->
             <x-label :value="__('Total de $ en efectivo:')" />
             <x-input-with-button 
@@ -105,8 +104,8 @@
             />
 
             <div class="col-span-2 mb-8">
-                <p>Cantidad recuperada del sistema: <span id="total_dollar_cash_saint"></span></p>
-                <p>Diferencia: <span></span></p>
+                <p>Cantidad recuperada del sistema: <span id="total_dollar_cash_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}</p>
+                <p>Diferencia: <span id="total_dollar_cash_diff">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}</p>
             </div>
             <div class="col-span-2  mb-8">
                 &nbsp;
@@ -131,8 +130,8 @@
                 type="text"
             />
             <div class="col-span-2 mb-8">
-                <p>Cantidad recuperada del sistema: <span id="total_dollar_cash_saint"></span></p>
-                <p>Diferencia: <span></span></p>
+                <p>Cantidad recuperada del sistema: <span id="total_bs_cash_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}</p>
+                <p>Diferencia: <span id="total_bs_cash_diff">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}</p>
             </div>
             <div class="col-span-2  mb-8">
                 &nbsp;
@@ -164,13 +163,13 @@
             />
 
             <div class="col-span-2">
-                <p>Cantidad recuperada del sistema: <span id="total_dollar_cash_saint"></span></p>
-                <p>Diferencia: <span></span></p>
+                <p>Cantidad recuperada del sistema: <span id="total_point_sale_bs_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}</p>
+                <p>Diferencia: <span id="total_point_sale_bs_diff">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}</p>
             </div>
 
             <div class="col-span-2">
-                <p>Cantidad recuperada del sistema: <span id="total_dollar_cash_saint"></span></p>
-                <p>Diferencia: <span></span></p>
+                <p>Cantidad recuperada del sistema: <span id="total_point_sale_dollar_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}</p>
+                <p>Diferencia: <span id="total_point_sale_dollar_diff">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}</p>
             </div>
             <!-- Cash on punto de venta ($) -->
         </div>
@@ -186,8 +185,8 @@
                 type="text"
             />
             <div class="col-span-2">
-                <p>Cantidad recuperada del sistema: <span id="total_dollar_cash_saint"></span></p>
-                <p>Diferencia: <span></span></p>
+                <p>Cantidad recuperada del sistema: <span id="total_zelle_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}</p>
+                <p>Diferencia: <span id="total_zelle_diff">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}</p>
             </div>
         </div>
 

@@ -4123,6 +4123,9 @@ var CashRegisterDataPresenterPrototype = {
     this.getUsersWithoutRecord(newDate);
   },
   getTotalsToCashRegisterUserOption: function getTotalsToCashRegisterUserOption(date, cashRegisterUser) {
+    var _this = this;
+
+    this.setTotalAmounts(null);
     (0,_services_cash_register__WEBPACK_IMPORTED_MODULE_1__.getTotalsToCashRegisterUser)({
       date: date,
       cashRegisterUser: cashRegisterUser
@@ -4130,35 +4133,37 @@ var CashRegisterDataPresenterPrototype = {
       if ([201, 200].includes(res.status)) {
         var data = res.data.data;
         console.log(data);
+
+        _this.setTotalAmounts(data);
       }
     })["catch"](function (err) {
       console.log(err);
     });
   },
   getUsersWithoutRecord: function getUsersWithoutRecord(date) {
-    var _this = this;
+    var _this2 = this;
 
     this.view.showLoading();
     this.view.hideCashRegisterUsersNoAvailable();
     (0,_services_cash_register__WEBPACK_IMPORTED_MODULE_1__.getCashRegisterUsersWithoutRecords)(date).then(function (res) {
-      _this.view.hideLoading();
+      _this2.view.hideLoading();
 
       if ([201, 200].includes(res.status)) {
         var data = res.data.data; // If there's a stored date on component, then the user is 
         // editing a cash register
 
-        if (_this.defaultDate && _this.defaultCashRegisterUser && _this.defaultDate === date) {
+        if (_this2.defaultDate && _this2.defaultCashRegisterUser && _this2.defaultDate === date) {
           data.unshift({
-            key: _this.defaultCashRegisterUser,
-            value: _this.defaultCashRegisterUser
+            key: _this2.defaultCashRegisterUser,
+            value: _this2.defaultCashRegisterUser
           });
         }
 
         if (data.length === 0) {
-          _this.view.showCashRegisterUsersNoAvailable();
+          _this2.view.showCashRegisterUsersNoAvailable();
         }
 
-        _this.view.setCashRegisterUsersElements(data);
+        _this2.view.setCashRegisterUsersElements(data);
       }
     })["catch"](function (err) {
       console.log(err);
@@ -4169,15 +4174,16 @@ var CashRegisterDataPresenterPrototype = {
   }
 };
 
-var CashRegisterDataPresenter = function CashRegisterDataPresenter() {
-  var date = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-  var cashRegisterUser = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+var CashRegisterDataPresenter = function CashRegisterDataPresenter(setTotalAmounts) {
+  var date = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+  var cashRegisterUser = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
   this.view = null;
-  this.defaultDate = date ? date.split('-').reverse().join('-') : null; // Date formatted to Y-m-d
-
+  var today = new Date();
+  this.defaultDate = date ? date.split('-').reverse().join('-') : today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
   this.defaultCashRegisterUser = cashRegisterUser;
   this.selectedDate = this.defaultDate;
   this.selectedCashRegisterUser = this.defaultCashRegisterUser;
+  this.setTotalAmounts = setTotalAmounts;
 };
 
 CashRegisterDataPresenter.prototype = CashRegisterDataPresenterPrototype;
@@ -4481,7 +4487,7 @@ var MoneyRecordModalPresenterPrototype = {
   },
   updateMoneyRecord: function updateMoneyRecord(id, inputValue) {
     var index = this.moneyRecordCollection.getIndexByID(parseInt(id));
-    var value = (0,_utilities_mathUtilities__WEBPACK_IMPORTED_MODULE_2__.formatAmount)(inputValue);
+    var value = !isNaN(inputValue) ? (0,_utilities_mathUtilities__WEBPACK_IMPORTED_MODULE_2__.formatAmount)(inputValue) : 0;
     this.moneyRecordCollection.setElementAtIndex(index, {
       amount: value
     });
@@ -4687,7 +4693,7 @@ var SalePointModalPresenterPrototype = {
   },
   updatePointSaleRecord: function updatePointSaleRecord(id, type, inputValue) {
     var index = this.selectedBanks.getIndexByID(id);
-    var value = (0,_utilities_mathUtilities__WEBPACK_IMPORTED_MODULE_5__.formatAmount)(inputValue);
+    var value = !isNaN(inputValue) ? (0,_utilities_mathUtilities__WEBPACK_IMPORTED_MODULE_5__.formatAmount)(inputValue) : 0;
 
     if (type === _constants_point_sale_type__WEBPACK_IMPORTED_MODULE_4__["default"].DEBIT) {
       this.pointSaleDebit.setElementAtIndex(index, {

@@ -140,7 +140,7 @@ const SalePointModalPresenterPrototype = {
 	},
 	updatePointSaleRecord(id, type, inputValue){
 		let index = this.selectedBanks.getIndexByID(id)
-		let value = formatAmount(inputValue);
+		let value = !isNaN(inputValue) ? formatAmount(inputValue) : 0;
 
 		if (type === POINT_SALE_TYPE.DEBIT){
 			this.pointSaleDebit.setElementAtIndex(index, { total: value })

@@ -23,11 +23,13 @@ const CashRegisterDataPresenterPrototype = {
 		
 	},
 	getTotalsToCashRegisterUserOption(date, cashRegisterUser){
+		this.setTotalAmounts(null)
 		getTotalsToCashRegisterUser({date, cashRegisterUser})
 			.then(res => {
 				if ([201, 200].includes(res.status)){
 					let data = res.data.data;
-					console.log(data)
+					console.log(data);
+					this.setTotalAmounts(data)
 				}
 			})
 			.catch(err => {
@@ -68,13 +70,19 @@ const CashRegisterDataPresenterPrototype = {
 	},
 }
 
-const CashRegisterDataPresenter = function (date = null, cashRegisterUser = null){
+const CashRegisterDataPresenter = function (setTotalAmounts, date = null, cashRegisterUser = null){
     this.view = null;
-	this.defaultDate = date ? date.split('-').reverse().join('-') : null; // Date formatted to Y-m-d
+	let today = new Date();
+
+	this.defaultDate = date 
+		? date.split('-').reverse().join('-') 
+		: today.getFullYear()+'-'+(today.getMonth() + 1)+'-'+today.getDate();
+
 	this.defaultCashRegisterUser = cashRegisterUser;
 
 	this.selectedDate = this.defaultDate;
 	this.selectedCashRegisterUser = this.defaultCashRegisterUser;
+	this.setTotalAmounts = setTotalAmounts;
 }
 
 CashRegisterDataPresenter.prototype = CashRegisterDataPresenterPrototype;
