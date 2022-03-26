@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 
 use  Database\Seeders\BankSeeder;
+use  Database\Seeders\CashRegisterUserSeeder;
+
 
 class DatabaseSeeder extends Seeder
 {
@@ -19,6 +21,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             BankSeeder::class,
+            CashRegisterUserSeeder::class
         ]);
     }
 }

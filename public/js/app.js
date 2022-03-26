@@ -5505,6 +5505,14 @@ __webpack_require__.e(/*! import() | ../../js/cash_register_create */ "/js/cash_
   var createCashRegister = _ref["default"];
   createCashRegister.init();
 });
+__webpack_require__.e(/*! import() | ../../js/cash_register_edit */ "/js/cash_register_edit").then(__webpack_require__.bind(__webpack_require__, /*! ./pages/cash-register/edit */ "./resources/js/pages/cash-register/edit.js")).then(function (_ref2) {
+  var editCashRegister = _ref2["default"];
+  editCashRegister.init();
+});
+__webpack_require__.e(/*! import() | ../../js/cash_register_index */ "/js/cash_register_index").then(__webpack_require__.bind(__webpack_require__, /*! ./pages/cash-register/index */ "./resources/js/pages/cash-register/index.js")).then(function (_ref3) {
+  var indexCashRegister = _ref3["default"];
+  indexCashRegister.init();
+});
 
 
 /***/ }),
@@ -7434,7 +7442,7 @@ var decimalMaskOptions = {
   alias: 'decimal',
   positionCaretOnClick: "radixFocus",
   digits: 2,
-  radixPoint: ",",
+  radixPoint: ".",
   _radixDance: true,
   numericInput: true,
   placeholder: "0",
@@ -7462,7 +7470,8 @@ var decimalInputs = (_decimalInputs = {}, _defineProperty(_decimalInputs, _const
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "formatAmount": () => (/* binding */ formatAmount)
+/* harmony export */   "formatAmount": () => (/* binding */ formatAmount),
+/* harmony export */   "roundNumber": () => (/* binding */ roundNumber)
 /* harmony export */ });
 var formatAmount = function formatAmount(amount) {
   var _arr$, _arr$2;
@@ -7484,7 +7493,7 @@ var formatAmount = function formatAmount(amount) {
     return 0;
   }
 
-  var arr = amount.split(',', 2);
+  var arr = amount.split('.', 2);
   var integer = (_arr$ = arr[0]) !== null && _arr$ !== void 0 ? _arr$ : null;
   var decimal = (_arr$2 = arr[1]) !== null && _arr$2 !== void 0 ? _arr$2 : null; // Check if it is an integer number
 
@@ -7494,6 +7503,11 @@ var formatAmount = function formatAmount(amount) {
 
   var numberString = integer + '.' + decimal;
   return Math.round((parseFloat(numberString) + Number.EPSILON) * 100) / 100;
+};
+
+var roundNumber = function roundNumber(number) {
+  var decimals = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 2;
+  return Math.round((number + Number.EPSILON) * Math.pow(10, decimals)) / 100;
 };
 
 
@@ -32935,7 +32949,7 @@ module.exports = JSON.parse('{"_from":"axios@^0.21","_id":"axios@0.21.4","_inBun
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.u = (chunkId) => {
 /******/ 			// return url for filenames not based on template
-/******/ 			if (chunkId === "/js/cash_register_create") return "" + chunkId + ".js";
+/******/ 			if ({"/js/cash_register_create":1,"/js/cash_register_edit":1,"/js/cash_register_index":1}[chunkId]) return "" + chunkId + ".js";
 /******/ 			// return url for filenames based on template
 /******/ 			return undefined;
 /******/ 		};

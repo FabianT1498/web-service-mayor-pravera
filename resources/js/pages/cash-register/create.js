@@ -1,7 +1,7 @@
 import { CURRENCIES, SIGN as CURRENCY_SIGN_MAP} from '_constants/currencies';
 import { PAYMENT_METHODS } from '_constants/paymentMethods';
-
-import CashRegisterData from '_components/cash-register-data'
+import { PAYMENT_CODES, TYPE_BILLS} from '_constants/paymentCodes';
+import { AMOUNT_COLORS } from '_constants/colors';
 
 import { store } from '_store'
 import { STORE_DOLLAR_EXCHANGE_VALUE } from '_store/action'
@@ -17,10 +17,14 @@ import ForeignMoneyRecordTable from '_components/money-record-table/ForeignMoney
 import DenominationModalPresenter from '_presenters/DenominationModalPresenter'
 import DenominationModalView from '_views/DenominationModalView'
 
+import CashRegisterDataPresenter from '_presenters/CashRegisterDataPresenter'
+import CashRegisterDataView from '_views/CashRegisterDataView'
+
 import SalePointModalPresenter from '_presenters/SalePointModalPresenter'
 import SalePointModalView from '_views/SalePointModalView'
 
 import {decimalInputs} from '_utilities/decimalInput';
+import { roundNumber } from '_utilities/mathUtilities'
 
 export default {
     totalInputDOMS: {
@@ -30,14 +34,38 @@ export default {
         denominationsDollar: document.querySelector('#total_dollar_denominations'),
         zelleDollar: document.querySelector('#total_zelle'),
         pointSaleDollar: document.querySelector('#total_point_sale_dollar'),
-        pointSaleBs: document.querySelector('#total_point_sale_bs')
+        pointSaleBs: document.querySelector('#total_point_sale_bs'),
     },
+    totalSaintDOMS: {
+        liquidMoneyBs: document.querySelector('#total_bs_cash_saint'),
+        liquidMoneyDollar: document.querySelector('#total_dollar_cash_saint'),
+        pointSaleDollar: document.querySelector('#total_point_sale_dollar_saint'),
+        pointSaleBs: document.querySelector('#total_point_sale_bs_saint'),
+        zelleDollar: document.querySelector('#total_zelle_saint'),
+    },
+    totalDiffDOMS: {
+        liquidMoneyBs: document.querySelector('#total_bs_cash_diff'),
+        liquidMoneyDollar: document.querySelector('#total_dollar_cash_diff'),
+        pointSaleDollar: document.querySelector('#total_point_sale_dollar_diff'),
+        pointSaleBs: document.querySelector('#total_point_sale_bs_diff'),
+        zelleDollar: document.querySelector('#total_zelle_diff'),
+    },
+    propNameToDiffTotalMethod: {
+        liquidMoneyBs: 'setTotalBsCashDiff',
+        liquidMoneyDollar: 'setTotalDollarCashDiff',
+        pointSaleDollar: 'setTotalPointSaleDollarDiff',
+        pointSaleBs: 'setTotalPointSaleBsDiff',
+        zelleDollar: 'setTotalZelleDiff',
+    },
+    proxyTotalSaint: null,
     proxy: null,
     setTotalLiquidMoneyBs(total){
         this.proxy.liquidMoneyBs = total
+        this.setTotalBsCashDiff();
     },
     setTotalLiquidMoneyDollar(total){
         this.proxy.liquidMoneyDollar = total
+        this.setTotalDollarCashDiff();
     },
     setTotalDenominationBs(total){
         this.proxy.denominationsBs = total
@@ -47,18 +75,97 @@ export default {
     },
     setTotalZelleDollar(total){
         this.proxy.zelleDollar = total
+        this.setTotalZelleDiff();
     },
     setTotalPointSaleBs(total){
         this.proxy.pointSaleBs = total
+        this.setTotalPointSaleBsDiff();
+    },
+    setTotalPointSaleDollar(event){
+        let amount = event.target.value ? parseFloat(event.target.value) : 0
+        this.proxy.pointSaleDollar = amount
+        this.setTotalPointSaleDollarDiff();
+    },
+    setTotalSaintDOMS(totals = null){
+        if (!totals){
+            Object.keys(this.proxyTotalSaint).forEach(el => {
+                this.proxyTotalSaint[el] = 0;
+            })
+        } else {
+            // Liquid Money Payment Amounts
+            totals.total_cash_records.forEach(el => {
+                this.proxyTotalSaint[TYPE_BILLS[el.TipoFac]] = parseFloat(el.total_cash);
+                this[this.propNameToDiffTotalMethod[TYPE_BILLS[el.TipoFac]]].call(this)
+            });
+            
+            // E-Payment Amounts
+            totals.total_e_payment_records.forEach(el => {
+                if (this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] !== undefined){
+                    if (el.CodPago === '01' || el.CodPago === '02'){
+                        this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] += parseFloat(el.total)
+                        let amount = roundNumber(this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]])
+                        this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] = amount;
+                    } else {
+                        this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] = parseFloat(el.total)
+                    }
+                    this[this.propNameToDiffTotalMethod[PAYMENT_CODES[el.CodPago]]].call(this)
+                };
+            });
+        }
+    },
+    setTotalDollarCashDiff(){
+        let diff = this.proxy.liquidMoneyDollar - this.proxyTotalSaint.liquidMoneyDollar;
+        let color = this.getAmountColor(diff);
+        this.totalDiffDOMS.liquidMoneyDollar.className = '';
+        this.totalDiffDOMS.liquidMoneyDollar.classList.add(color);
+        this.totalDiffDOMS.liquidMoneyDollar.innerHTML = roundNumber(diff);
+    },
+    setTotalBsCashDiff(){
+        let diff = this.proxy.liquidMoneyBs - this.proxyTotalSaint.liquidMoneyBs;
+        let color = this.getAmountColor(diff);
+        this.totalDiffDOMS.liquidMoneyBs.className = '';
+        this.totalDiffDOMS.liquidMoneyBs.classList.add(color);
+        this.totalDiffDOMS.liquidMoneyBs.innerHTML = roundNumber(diff);
+    },
+    setTotalPointSaleBsDiff(){
+        let diff = this.proxy.pointSaleBs - this.proxyTotalSaint.pointSaleBs;
+        let color = this.getAmountColor(diff);
+        this.totalDiffDOMS.pointSaleBs.className = '';
+        this.totalDiffDOMS.pointSaleBs.classList.add(color);
+        this.totalDiffDOMS.pointSaleBs.innerHTML = roundNumber(diff);
+    },
+    setTotalPointSaleDollarDiff(){
+        let diff = this.proxy.pointSaleDollar - this.proxyTotalSaint.pointSaleDollar;
+        let color = this.getAmountColor(diff);
+        this.totalDiffDOMS.pointSaleDollar.className = '';
+        this.totalDiffDOMS.pointSaleDollar.classList.add(color);
+        this.totalDiffDOMS.pointSaleDollar.innerHTML = roundNumber(diff);
+    },
+    setTotalZelleDiff(){
+        let diff = this.proxy.zelleDollar - this.proxyTotalSaint.zelleDollar;
+        let color = this.getAmountColor(diff);
+        this.totalDiffDOMS.zelleDollar.className = '';
+        this.totalDiffDOMS.zelleDollar.classList.add(color);
+        this.totalDiffDOMS.zelleDollar.innerHTML = roundNumber(diff);
     },
     setPropWrapper(fn){
         return fn.bind(this)
     },
+    getAmountColor(amount){
+        if (amount > 0){
+            return AMOUNT_COLORS.POSITIVE;
+        } else if (amount < 0){
+            return AMOUNT_COLORS.NEGATIVE;
+        }
+        
+        return '';
+    },
     init(){
 
         let cashRegisterContainer = document.querySelector('#cash_register_data')
-        let cashRegister = new CashRegisterData()
-        cashRegister.init(cashRegisterContainer)
+        let cashRegisterDataPresenter = new CashRegisterDataPresenter(this.setPropWrapper(this.setTotalSaintDOMS));
+        let cashRegisterDataView = new CashRegisterDataView(cashRegisterDataPresenter);
+        cashRegisterDataView.init(cashRegisterContainer)
 
         let liquidMoneyBsRegisterModal = document.querySelector('#bs_cash_record');
         let bolivarRecordMoneyPresenter = new MoneyRecordModalPresenter(CURRENCIES.BOLIVAR, PAYMENT_METHODS.CASH, this.setPropWrapper(this.setTotalLiquidMoneyBs));
@@ -107,24 +214,42 @@ export default {
         // Point sale input DOMS
         decimalInputs[CURRENCIES.DOLLAR].mask(this.totalInputDOMS.pointSaleDollar);
         decimalInputs[CURRENCIES.BOLIVAR].mask(this.totalInputDOMS.pointSaleBs);
+                                            
+        // Point Sale Dollar Event Handler
+        this.totalInputDOMS.pointSaleDollar.addEventListener('change', this.setPropWrapper(this.setTotalPointSaleDollar))
 
-        let handlerWrapper = () => {
+        let handlerInputDOMS = (self, key, value) => {
+            self.totalInputDOMS[key].value = value
+        }
+
+        let handlerTotalSaintDOMS = (self, key, value) => {
+            self.totalSaintDOMS[key].innerHTML = value
+        }
+
+        let handlerWrapper = (fn) => {
             let self = this;
             return {
                 set: function(target, key, value) {
                     target[key] = value;
-                    self.totalInputDOMS[key].value = value
+                    fn(self, key, value)
                     return true;
                 },
             }
         }
 
-        let keys = Object.keys(this.totalInputDOMS).reduce((obj, key) => {
+        let totalInputkeys = Object.keys(this.totalInputDOMS).reduce((obj, key) => {
             obj[key] = 0;
             return obj;
         }, {})
 
-        this.proxy = new Proxy(keys, handlerWrapper())
+        let totalSaintkeys = Object.keys(this.totalSaintDOMS).reduce((obj, key) => {
+            obj[key] = 0;
+            return obj;
+        }, {})
+
+        this.proxy = new Proxy(totalInputkeys, handlerWrapper(handlerInputDOMS))
+
+        this.proxyTotalSaint = new Proxy(totalSaintkeys, handlerWrapper(handlerTotalSaintDOMS))
 
         store.subscribe(() => {
             let state = store.getState();

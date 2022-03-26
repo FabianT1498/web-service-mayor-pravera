@@ -1,20 +1,26 @@
 @extends('layouts.app')
 
+@section('js')
+    <script src="{{ asset('js/cash_register_edit.js') }}" defer></script>
+@endsection
+
 @section('main')
     @foreach ($errors->all() as $error)
         <li>
             {{ $error }}
         </li>
     @endforeach
-    <form id="form" autocomplete="off" method="POST" action="{{ route('cash_register.store') }}">
+    <form id="form" autocomplete="off" method="POST" action="{{ route('cash_register.update', $cash_register_data->id) }}">
         @csrf
+        @method('PUT')
         <div class="w-10/12"><h3 class="h3 text-center mb-4">Datos de la caja</h3></div>
 
-        <div id="cash_register_data" class="w-10/12 grid gap-4 grid-cols-[200px_250px] grid-rows-4 mb-8 mx-auto">
+        <div id="cash_register_data" class="w-10/12 grid gap-4 grid-cols-[200px_250px_300px] grid-rows-4 mb-8 mx-auto items-center">
             <!-- Cash register date -->
         
             <x-label for="date" :value="__('Fecha')" />
-            <x-input type="text" :value="$cash_register_data->date" readonly />
+            <x-input id="date" name="date" type="text" :value="$date"/>
+            <div>&nbsp;</div>
             
             <!-- Cash register number-->
             <x-label for="cash_register" :value="__('Caja')" />
@@ -22,10 +28,22 @@
                 :options="$cash_registers_id_arr" 
                 :defaultOptTitle="__('Seleccione la caja')"
                 id="cash_register_id"
-                :name="__('cash_register_id')" 
-                :value="old('cash_register_id') ? old('cash_register_id') : $cash_register_data->cash_register_user" 
+                :name="__('cash_register_user')" 
+                :value="old('cash_register_user') ? old('cash_register_user') : $cash_register_data->cash_register_user" 
                 required  
             />
+            <div id="cash_register_users_status" class="flex justify-between items-center">
+                <i class="hidden loading animate-spin text-lg text-blue-600 fad fa-spinner-third"></i>
+                <div 
+                    id="cash_register_users_message" 
+                    class="flex justify-around items-center {{ $cash_registers_workers_id_arr->count() === 0 ? '' : 'hidden'}}"
+                >
+                    <p class="basis-5/6">Ya se han creado arqueos para todos las cajas en esta fecha, por favor seleccione otra fecha</p>
+                    <div class="rounded-full flex justify-center items-center w-8 h-8 p-2 motion-safe:animate-bounce bg-white shadow-md">
+                        <i class="text-lg fas fa-exclamation text-blue-600"></i>
+                    </div>
+                </div>
+            </div>
             
             <x-label for="cash_register_worker" :value="__('Cajero/a:')" />
             <x-select-input
@@ -36,6 +54,7 @@
                 :value="old('worker_id') ? old('worker_id') : $cash_register_data->worker_id"
                 required 
             />
+            <div>&nbsp;</div>
 
             <div class="flex items-center">
                    <x-label for="exist_cash_register_worker" class="basis-2/3" :value="__('No esta registrado el cajero/a ?')" />
@@ -55,6 +74,7 @@
                         :value="old('new_cash_register_worker') ? old('new_cash_register_worker') : ''" 
                     />
             </div>
+            <div>&nbsp;</div>
         </div>
         
         <div class="w-10/12"><h3 class="h3 text-center mb-8">Ingresos en fisico</h3></div>
@@ -73,6 +93,7 @@
                 :inputID="__('total_dollar_cash')"
                 :modalID="__('dollar_cash_record')"
                 :currencySign="__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))"
+                :value="old('total_dollar_cash') ? old('total_dollar_cash') : $total_dollar_cash"
                 name="total_dollar_cash"
                 type="text"
             />
@@ -81,6 +102,7 @@
             <x-input-with-button 
                 :inputID="__('total_dollar_denominations')"
                 :modalID="__('dollar_denominations_record')"
+                :value="old('total_dollar_denominations') ? old('total_dollar_denominations') : $total_dollar_denominations"
                 name="total_dollar_denominations"
                 type="text"
             />
@@ -91,6 +113,7 @@
                 :inputID="__('total_bs_cash')"
                 :modalID="__('bs_cash_record')"
                 :currencySign="__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))"
+                :value="old('total_bs_cash') ? old('total_bs_cash') : $total_bs_cash"
                 name="total_bs_cash"
                 type="text"
             />
@@ -99,6 +122,7 @@
                 :inputID="__('total_bs_denominations')"
                 :modalID="__('bs_denominations_record')"
                 :currencySign="__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))"
+                :value="old('total_bs_denominations') ? old('total_bs_denominations') : $total_bs_denominations"
                 name="total_bs_denominations"
                 type="text"
             />
@@ -113,7 +137,8 @@
                <x-input-with-button 
                     :inputID="__('total_point_sale_bs')"
                     :modalID="__('point_sale_bs')"
-                    :currency="__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))"
+                    :currencySign="__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))"
+                    :value="old('total_point_sale_bs') ? old('total_point_sale_bs') : $total_point_sale_bs"
                     name="total_point_sale_bs"
                     type="text"
                 />
@@ -127,7 +152,7 @@
                     class="block ml-4" 
                     type="text"
                     name="total_point_sale_dollar" 
-                    :value="old('point_sale_dollar') ?? '0'"
+                    :value="old('point_sale_dollar') ? old('point_sale_dollar') : ($point_sale_dollar_record ? $point_sale_dollar_record->amount : 0)"
                 />
             </div>
             <!-- Cash on punto de venta ($) -->
@@ -140,6 +165,7 @@
             <x-input-with-button 
                 :inputID="__('total_zelle')"
                 :modalID="__('zelle_record')"
+                :value="old('total_zelle') ? old('total_zelle') : $total_zelle"
                 name="total_zelle"
                 type="text"
             />
@@ -147,7 +173,7 @@
 
         <div class="w-10/12 flex mx-auto justify-end pt-8">
             <x-button :variation="__('rounded')">
-                {{ __('Guardar') }}
+                {{ __('Guardar cambios') }}
             </x-button>
             
         </div>
@@ -180,9 +206,8 @@
 
         <x-modal-point-sale-list
             :modalID="__('point_sale_bs')"
-            :selectedBanks="$point_sale_bs_banks"
-            :records="$point_sale_bs_records"
-            :remainingBanks="$point_sale_bs_remaining_banks"
+            :records="$point_sale_bs_records_arr"
+            :banks="$banks"
         />
 
         <x-modal-input-list 

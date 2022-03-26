@@ -41,7 +41,6 @@
                                                     <input 
                                                         data-denomination={{ $record->denomination }}
                                                         type="text"
-                                                        min="0"
                                                         name={{ $modalID . '[' . $record->denomination . ']' }} 
                                                         value={{ $record->quantity }}
                                                         class="w-36 rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -57,9 +56,7 @@
                                                 <input 
                                                     data-denomination={{ $denomination }}
                                                     type="text"
-                                                    min="0"
                                                     name={{ $modalID . '[' . $denomination . ']' }} 
-                                                    value="0"
                                                     class="w-36 rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                                 >
                                                     

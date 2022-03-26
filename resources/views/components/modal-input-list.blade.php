@@ -45,14 +45,14 @@
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
                                 @foreach($records as $key => $record)
-                                    <tr class="hover:bg-gray-100 dark:hover:bg-gray-700" data-id="$key">
+                                    <tr class="hover:bg-gray-100 dark:hover:bg-gray-700" data-id="{{$key}}">
                                         <td data-table="num-col" class="py-4 pl-6 pr-3 text-sm font-medium text-center text-gray-900 whitespace-nowrap dark:text-white">{{ $key + 1}}</td>
                                         <td class="py-4 pl-3 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white">
                                             <input 
                                                 type="text"
                                                 placeholder="0.00 {{$currency_sign}}"
                                                 id="{{ $modalID . "_" . $key }}" 
-                                                name="{{$modalID . "[" . $record->id . "]" }}" 
+                                                name="{{ $modalID . "[" . $record->id . "]" }}" 
                                                 class="w-36 rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                                 value="{{ $record->amount }}"
                                             >
@@ -63,7 +63,7 @@
                                             </td>
                                         @endif
                                         <td class="py-4 pl-3 pr-6 text-sm text-center font-medium whitespace-nowrap">
-                                            <button data-modal="remove" data-del-row="$key" type="button" class="bg-red-600 flex justify-center w-6 h-6 items-center transition-colors duration-150 rounded-full shadow-lg hover:bg-red-500">
+                                            <button data-modal="remove" data-del-row="{{$key}}" type="button" class="bg-red-600 flex justify-center w-6 h-6 items-center transition-colors duration-150 rounded-full shadow-lg hover:bg-red-500">
                                                 <i class="fas fa-times  text-white"></i>                        
                                             </button>
                                         </td>

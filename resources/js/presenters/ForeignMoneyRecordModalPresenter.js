@@ -7,8 +7,8 @@ import { formatAmount } from '_utilities/mathUtilities'
 import { store } from '_store'
 import { STORE_DOLLAR_EXCHANGE_VALUE } from '_store/action'
 
-const ForeignMoneyRecordModalPresenter = function (currency, method, setTotalAmount){
-	MoneyRecordModalPresenter.call(this, currency, method, setTotalAmount);
+const ForeignMoneyRecordModalPresenter = function (currency, method, setTotalAmount, moneyRecordCollection = []){
+	MoneyRecordModalPresenter.call(this, currency, method, setTotalAmount, moneyRecordCollection);
 
 	store.subscribe(() => {
 		let state = store.getState();
