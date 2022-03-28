@@ -10,7 +10,7 @@ const MoneyRecordModalPresenterPrototype = {
 		if(button && button.tagName === 'BUTTON'){
 			const action = button.getAttribute('data-modal');
 		  	const modalToggleID = button.getAttribute('data-modal-toggle');
-			
+
 			if (action){
 				if (action === 'add'){
 					if (this.moneyRecordCollection.getAll().findIndex((el) => el.amount === 0) !== -1){ // Check If there's a zero value
@@ -35,7 +35,7 @@ const MoneyRecordModalPresenterPrototype = {
    },
    keyPressedOnModal({target, key}){
    		if (key === 13 || key === 'Enter'){ // Handle new table's row creation
-			
+
 			if (this.moneyRecordCollection.getAll().findIndex((el) => el.amount === 0) !== -1){ // Check If there's a zero value
 				return;
 			}
@@ -59,7 +59,7 @@ const MoneyRecordModalPresenterPrototype = {
 	},
 	updateMoneyRecord(id, inputValue){
 		let index = this.moneyRecordCollection.getIndexByID(parseInt(id));
-		let value = !isNaN(inputValue) ? formatAmount(inputValue) : 0;
+    let value = formatAmount(inputValue);
 		this.moneyRecordCollection.setElementAtIndex(index, { amount: value })
 	},
 }

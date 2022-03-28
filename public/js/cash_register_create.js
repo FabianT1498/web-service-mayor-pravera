@@ -521,9 +521,9 @@ class Datepicker {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "triggerDatepickerEvent": () => (/* binding */ triggerDatepickerEvent),
 /* harmony export */   "goToPrevOrNext": () => (/* binding */ goToPrevOrNext),
 /* harmony export */   "switchView": () => (/* binding */ switchView),
+/* harmony export */   "triggerDatepickerEvent": () => (/* binding */ triggerDatepickerEvent),
 /* harmony export */   "unfocus": () => (/* binding */ unfocus)
 /* harmony export */ });
 /* harmony import */ var _lib_utils_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../lib/utils.js */ "./node_modules/@themesberg/tailwind-datepicker/js/lib/utils.js");
@@ -588,10 +588,10 @@ function unfocus(datepicker) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "onKeydown": () => (/* binding */ onKeydown),
-/* harmony export */   "onFocus": () => (/* binding */ onFocus),
-/* harmony export */   "onMousedown": () => (/* binding */ onMousedown),
 /* harmony export */   "onClickInput": () => (/* binding */ onClickInput),
+/* harmony export */   "onFocus": () => (/* binding */ onFocus),
+/* harmony export */   "onKeydown": () => (/* binding */ onKeydown),
+/* harmony export */   "onMousedown": () => (/* binding */ onMousedown),
 /* harmony export */   "onPaste": () => (/* binding */ onPaste)
 /* harmony export */ });
 /* harmony import */ var _lib_utils_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../lib/utils.js */ "./node_modules/@themesberg/tailwind-datepicker/js/lib/utils.js");
@@ -846,13 +846,13 @@ function onClickOutside(datepicker, ev) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "onClickTodayBtn": () => (/* binding */ onClickTodayBtn),
 /* harmony export */   "onClickClearBtn": () => (/* binding */ onClickClearBtn),
-/* harmony export */   "onClickViewSwitch": () => (/* binding */ onClickViewSwitch),
-/* harmony export */   "onClickPrevBtn": () => (/* binding */ onClickPrevBtn),
 /* harmony export */   "onClickNextBtn": () => (/* binding */ onClickNextBtn),
+/* harmony export */   "onClickPicker": () => (/* binding */ onClickPicker),
+/* harmony export */   "onClickPrevBtn": () => (/* binding */ onClickPrevBtn),
+/* harmony export */   "onClickTodayBtn": () => (/* binding */ onClickTodayBtn),
 /* harmony export */   "onClickView": () => (/* binding */ onClickView),
-/* harmony export */   "onClickPicker": () => (/* binding */ onClickPicker)
+/* harmony export */   "onClickViewSwitch": () => (/* binding */ onClickViewSwitch)
 /* harmony export */ });
 /* harmony import */ var _lib_date_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../lib/date.js */ "./node_modules/@themesberg/tailwind-datepicker/js/lib/date.js");
 /* harmony import */ var _lib_event_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../lib/event.js */ "./node_modules/@themesberg/tailwind-datepicker/js/lib/event.js");
@@ -998,10 +998,10 @@ __webpack_require__.r(__webpack_exports__);
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "reFormatTokens": () => (/* binding */ reFormatTokens),
-/* harmony export */   "reNonDateParts": () => (/* binding */ reNonDateParts),
+/* harmony export */   "formatDate": () => (/* binding */ formatDate),
 /* harmony export */   "parseDate": () => (/* binding */ parseDate),
-/* harmony export */   "formatDate": () => (/* binding */ formatDate)
+/* harmony export */   "reFormatTokens": () => (/* binding */ reFormatTokens),
+/* harmony export */   "reNonDateParts": () => (/* binding */ reNonDateParts)
 /* harmony export */ });
 /* harmony import */ var _date_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./date.js */ "./node_modules/@themesberg/tailwind-datepicker/js/lib/date.js");
 /* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils.js */ "./node_modules/@themesberg/tailwind-datepicker/js/lib/utils.js");
@@ -1202,16 +1202,16 @@ function formatDate(date, format, locale) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "stripTime": () => (/* binding */ stripTime),
-/* harmony export */   "today": () => (/* binding */ today),
-/* harmony export */   "dateValue": () => (/* binding */ dateValue),
 /* harmony export */   "addDays": () => (/* binding */ addDays),
-/* harmony export */   "addWeeks": () => (/* binding */ addWeeks),
 /* harmony export */   "addMonths": () => (/* binding */ addMonths),
+/* harmony export */   "addWeeks": () => (/* binding */ addWeeks),
 /* harmony export */   "addYears": () => (/* binding */ addYears),
+/* harmony export */   "dateValue": () => (/* binding */ dateValue),
 /* harmony export */   "dayOfTheWeekOf": () => (/* binding */ dayOfTheWeekOf),
 /* harmony export */   "getWeek": () => (/* binding */ getWeek),
-/* harmony export */   "startOfYearPeriod": () => (/* binding */ startOfYearPeriod)
+/* harmony export */   "startOfYearPeriod": () => (/* binding */ startOfYearPeriod),
+/* harmony export */   "stripTime": () => (/* binding */ stripTime),
+/* harmony export */   "today": () => (/* binding */ today)
 /* harmony export */ });
 function stripTime(timeValue) {
   return new Date(timeValue).setHours(0, 0, 0, 0);
@@ -1307,12 +1307,12 @@ function startOfYearPeriod(date, years) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "parseHTML": () => (/* binding */ parseHTML),
-/* harmony export */   "isVisible": () => (/* binding */ isVisible),
-/* harmony export */   "hideElement": () => (/* binding */ hideElement),
-/* harmony export */   "showElement": () => (/* binding */ showElement),
 /* harmony export */   "emptyChildNodes": () => (/* binding */ emptyChildNodes),
-/* harmony export */   "replaceChildNodes": () => (/* binding */ replaceChildNodes)
+/* harmony export */   "hideElement": () => (/* binding */ hideElement),
+/* harmony export */   "isVisible": () => (/* binding */ isVisible),
+/* harmony export */   "parseHTML": () => (/* binding */ parseHTML),
+/* harmony export */   "replaceChildNodes": () => (/* binding */ replaceChildNodes),
+/* harmony export */   "showElement": () => (/* binding */ showElement)
 /* harmony export */ });
 const range = document.createRange();
 
@@ -1380,9 +1380,9 @@ function replaceChildNodes(el, newChildNodes) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "findElementInEventPath": () => (/* binding */ findElementInEventPath),
 /* harmony export */   "registerListeners": () => (/* binding */ registerListeners),
-/* harmony export */   "unregisterListeners": () => (/* binding */ unregisterListeners),
-/* harmony export */   "findElementInEventPath": () => (/* binding */ findElementInEventPath)
+/* harmony export */   "unregisterListeners": () => (/* binding */ unregisterListeners)
 /* harmony export */ });
 const listenerRegistry = new WeakMap();
 const {addEventListener, removeEventListener} = EventTarget.prototype;
@@ -1464,14 +1464,14 @@ function findElementInEventPath(ev, selector) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "hasProperty": () => (/* binding */ hasProperty),
-/* harmony export */   "lastItemOf": () => (/* binding */ lastItemOf),
-/* harmony export */   "pushUnique": () => (/* binding */ pushUnique),
-/* harmony export */   "stringToArray": () => (/* binding */ stringToArray),
-/* harmony export */   "isInRange": () => (/* binding */ isInRange),
-/* harmony export */   "limitToRange": () => (/* binding */ limitToRange),
 /* harmony export */   "createTagRepeat": () => (/* binding */ createTagRepeat),
-/* harmony export */   "optimizeTemplateHTML": () => (/* binding */ optimizeTemplateHTML)
+/* harmony export */   "hasProperty": () => (/* binding */ hasProperty),
+/* harmony export */   "isInRange": () => (/* binding */ isInRange),
+/* harmony export */   "lastItemOf": () => (/* binding */ lastItemOf),
+/* harmony export */   "limitToRange": () => (/* binding */ limitToRange),
+/* harmony export */   "optimizeTemplateHTML": () => (/* binding */ optimizeTemplateHTML),
+/* harmony export */   "pushUnique": () => (/* binding */ pushUnique),
+/* harmony export */   "stringToArray": () => (/* binding */ stringToArray)
 /* harmony export */ });
 function hasProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
@@ -4041,6 +4041,7 @@ __webpack_require__.r(__webpack_exports__);
   setTotalDollarCashDiff: function setTotalDollarCashDiff() {
     var diff = this.proxy.liquidMoneyDollar - this.proxyTotalSaint.liquidMoneyDollar;
     var color = this.getAmountColor(diff);
+    console.log(color);
     this.totalDiffDOMS.liquidMoneyDollar.className = '';
     this.totalDiffDOMS.liquidMoneyDollar.classList.add(color);
     this.totalDiffDOMS.liquidMoneyDollar.innerHTML = (0,_utilities_mathUtilities__WEBPACK_IMPORTED_MODULE_19__.roundNumber)(diff);
@@ -4573,7 +4574,7 @@ var MoneyRecordModalPresenterPrototype = {
   },
   updateMoneyRecord: function updateMoneyRecord(id, inputValue) {
     var index = this.moneyRecordCollection.getIndexByID(parseInt(id));
-    var value = !isNaN(inputValue) ? (0,_utilities_mathUtilities__WEBPACK_IMPORTED_MODULE_2__.formatAmount)(inputValue) : 0;
+    var value = (0,_utilities_mathUtilities__WEBPACK_IMPORTED_MODULE_2__.formatAmount)(inputValue);
     this.moneyRecordCollection.setElementAtIndex(index, {
       amount: value
     });
@@ -4779,7 +4780,7 @@ var SalePointModalPresenterPrototype = {
   },
   updatePointSaleRecord: function updatePointSaleRecord(id, type, inputValue) {
     var index = this.selectedBanks.getIndexByID(id);
-    var value = !isNaN(inputValue) ? (0,_utilities_mathUtilities__WEBPACK_IMPORTED_MODULE_5__.formatAmount)(inputValue) : 0;
+    var value = (0,_utilities_mathUtilities__WEBPACK_IMPORTED_MODULE_5__.formatAmount)(inputValue);
 
     if (type === _constants_point_sale_type__WEBPACK_IMPORTED_MODULE_4__["default"].DEBIT) {
       this.pointSaleDebit.setElementAtIndex(index, {

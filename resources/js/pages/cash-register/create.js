@@ -97,7 +97,7 @@ export default {
                 this.proxyTotalSaint[TYPE_BILLS[el.TipoFac]] = parseFloat(el.total_cash);
                 this[this.propNameToDiffTotalMethod[TYPE_BILLS[el.TipoFac]]].call(this)
             });
-            
+
             // E-Payment Amounts
             totals.total_e_payment_records.forEach(el => {
                 if (this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] !== undefined){
@@ -116,6 +116,7 @@ export default {
     setTotalDollarCashDiff(){
         let diff = this.proxy.liquidMoneyDollar - this.proxyTotalSaint.liquidMoneyDollar;
         let color = this.getAmountColor(diff);
+        console.log(color)
         this.totalDiffDOMS.liquidMoneyDollar.className = '';
         this.totalDiffDOMS.liquidMoneyDollar.classList.add(color);
         this.totalDiffDOMS.liquidMoneyDollar.innerHTML = roundNumber(diff);
@@ -157,7 +158,7 @@ export default {
         } else if (amount < 0){
             return AMOUNT_COLORS.NEGATIVE;
         }
-        
+
         return '';
     },
     init(){
@@ -172,7 +173,7 @@ export default {
         let bolivarRecordMoneyView = new MoneyRecordModalView(bolivarRecordMoneyPresenter);
         let moneyRecordTable = new MoneyRecordTable()
         bolivarRecordMoneyView.init(liquidMoneyBsRegisterModal, 'bs_cash_record', moneyRecordTable)
-        
+
         let cashDollarRecordModal = document.querySelector('#dollar_cash_record');
         let dollarRecordMoneyPresenter = new ForeignMoneyRecordModalPresenter(CURRENCIES.DOLLAR, PAYMENT_METHODS.CASH, this.setPropWrapper(this.setTotalLiquidMoneyDollar));
         let dollarRecordMoneyView = new ForeignMoneyRecordModalView(dollarRecordMoneyPresenter);
@@ -214,7 +215,7 @@ export default {
         // Point sale input DOMS
         decimalInputs[CURRENCIES.DOLLAR].mask(this.totalInputDOMS.pointSaleDollar);
         decimalInputs[CURRENCIES.BOLIVAR].mask(this.totalInputDOMS.pointSaleBs);
-                                            
+
         // Point Sale Dollar Event Handler
         this.totalInputDOMS.pointSaleDollar.addEventListener('change', this.setPropWrapper(this.setTotalPointSaleDollar))
 
@@ -253,7 +254,7 @@ export default {
 
         store.subscribe(() => {
             let state = store.getState();
-        
+
             if (state.lastAction === STORE_DOLLAR_EXCHANGE_VALUE ){
                 document.querySelector('p[data-dollar-exchange="dollar_exchange_date"]').innerText = state.dollarExchange.createdAt
                 document.querySelector('p[data-dollar-exchange="dollar_exchange_value"]').innerText = `${state.dollarExchange.value} ${CURRENCY_SIGN_MAP[CURRENCIES.BOLIVAR]}`
