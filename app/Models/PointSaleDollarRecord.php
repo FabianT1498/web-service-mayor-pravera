@@ -11,7 +11,7 @@ class PointSaleDollarRecord extends Model
 
     protected $connection = 'caja_mayorista';
     protected $table = 'point_sale_dollar_records';
-    protected $timestamp = false;
+    public $timestamps = false;
 
     protected $fillable = [
         'amount',

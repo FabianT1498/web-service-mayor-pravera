@@ -3,12 +3,16 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Carbon\Carbon;
+
 use App\Http\Traits\AmountCurrencyTrait;
 
 use App\Rules\BadFormattedAmount;
-use Carbon\Carbon;
+use App\Models\CashRegisterData;
 
-class StoreCashRegisterRequest extends FormRequest
+
+
+class UpdateCashRegisterRequest extends FormRequest
 {
     use AmountCurrencyTrait;
     
@@ -19,7 +23,8 @@ class StoreCashRegisterRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        $cash_register_data = CashRegisterData::where('id', $this->route('id'))->first();
+        return (!is_null($cash_register_data) && $cash_register_data->status === config('constants.CASH_REGISTER_STATUS.EDITING'));
     }
 
     /**
@@ -29,7 +34,6 @@ class StoreCashRegisterRequest extends FormRequest
      */
     public function rules()
     {
-       
         $total_rules = ['required', new BadFormattedAmount, 'gt:0'];
 
         $rules = [
@@ -47,19 +51,19 @@ class StoreCashRegisterRequest extends FormRequest
 
         if (count($this->dollar_cash_record) > 0){
             $rules['dollar_cash_record.*'] = $total_rules;
-        }
+        } 
         
         if (count($this->bs_cash_record) > 0){
             $rules['bs_cash_record.*'] = $total_rules;
         }
 
-        // if ($this->total_dollar_denominations > 0){
-        $rules['dollar_denominations_record.*'] = ['required', 'gte:0'];
-        // }
+        if ($this->total_dollar_denominations > 0){
+            $rules['dollar_denominations_record.*'] = ['required', 'gte:0'];
+        }
 
-        // if ($this->total_bs_denominations > 0){
-        $rules['bs_denominations_record.*'] = ['required', 'gte:0'];
-        // }
+        if ($this->total_bs_denominations > 0){
+            $rules['bs_denominations_record.*'] = ['required', 'gte:0'];
+        }
 
         if (count($this->point_sale_bs_bank) > 0){
             $rules['point_sale_bs_bank.*'] = ['exists:caja_mayorista.banks,name'];
@@ -86,9 +90,9 @@ class StoreCashRegisterRequest extends FormRequest
     protected function prepareForValidation()
     {
         $inputs = [
+            'date' => isset($this->date) ? Carbon::createFromFormat('d-m-Y', $this->date)->format('Y-m-d') : null,
             'total_dollar_denominations' => $this->formatAmount($this->total_dollar_denominations),
-            'total_bs_denominations' => $this->formatAmount($this->total_bs_denominations),
-            'date' => isset($this->date) ? Carbon::createFromFormat('d-m-Y', $this->date)->format('Y-m-d') : null
+            'total_bs_denominations' => $this->formatAmount($this->total_bs_denominations)
         ];
 
         // if (!is_null($inputs['total_dollar_cash']) && $inputs['total_dollar_cash'] > 0){

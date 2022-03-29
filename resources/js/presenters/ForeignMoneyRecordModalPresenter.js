@@ -7,12 +7,12 @@ import { formatAmount } from '_utilities/mathUtilities'
 import { store } from '_store'
 import { STORE_DOLLAR_EXCHANGE_VALUE } from '_store/action'
 
-const ForeignMoneyRecordModalPresenter = function (currency, method, setTotalAmount){
-	MoneyRecordModalPresenter.call(this, currency, method, setTotalAmount);
+const ForeignMoneyRecordModalPresenter = function (currency, method, setTotalAmount, moneyRecordCollection = []){
+	MoneyRecordModalPresenter.call(this, currency, method, setTotalAmount, moneyRecordCollection);
 
 	store.subscribe(() => {
 		let state = store.getState();
-	
+
 		if (state.lastAction === STORE_DOLLAR_EXCHANGE_VALUE && this.moneyRecordCollection.getLength() > 0){
 			let convertions = getAllConvertions(this.moneyRecordCollection.getAll(), state.dollarExchange.value)
 			this.view.updateConvertionCol(convertions)
@@ -21,7 +21,7 @@ const ForeignMoneyRecordModalPresenter = function (currency, method, setTotalAmo
 
 	this.keyPressedOnModal = function({target, key}){
 		MoneyRecordModalPresenter.prototype.keyPressedOnModal.call(this, {target, key})
- 
+
 		if (isFinite(key)){ // Handle case to convert dollar to Bs.S`
 			let rowID = target.closest('tr').getAttribute('data-id');
             let amount = formatAmount(target.value)
@@ -42,7 +42,7 @@ const ForeignMoneyRecordModalPresenter = function (currency, method, setTotalAmo
         }
 	}
 
-	const getConvertionFormated = function(amount, dollarExchange) {	
+	const getConvertionFormated = function(amount, dollarExchange) {
 		return `${calculateConvertion(amount, dollarExchange)} ${CURRENCY_SYMBOLS_MAP[CURRENCIES.BOLIVAR]}`;
 	}
 

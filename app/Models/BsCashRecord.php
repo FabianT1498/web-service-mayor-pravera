@@ -12,7 +12,7 @@ class BsCashRecord extends Model
     protected $connection = 'caja_mayorista';
     protected $table = 'bs_cash_records';
 
-    protected $timestamp = false;
+    public $timestamps = false;
 
     protected $fillable = [
         'amount',

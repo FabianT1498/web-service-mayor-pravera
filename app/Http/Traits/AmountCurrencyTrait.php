@@ -19,7 +19,7 @@ trait AmountCurrencyTrait {
         $arrAmount = explode(' ', $amount);
         $number = $arrAmount[0];
         
-        $arrNumber = explode(',', $number);
+        $arrNumber = explode('.', $number);
         
         $integer = $arrNumber["0"] ?? null;
         $decimal = $arrNumber["1"] ?? null;

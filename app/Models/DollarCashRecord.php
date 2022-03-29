@@ -12,7 +12,12 @@ class DollarCashRecord extends Model
     protected $connection = 'caja_mayorista';
     protected $table = 'dollar_cash_records';
 
-    protected $timestamp = false;
+    public $timestamps = false;
+
+    protected $fillable = [
+        'amount',
+        'cash_register_data_id',
+    ];
 
     public function __construct(array $attributes = array())
     {
@@ -21,8 +26,4 @@ class DollarCashRecord extends Model
         $this->cash_register_data_id = key_exists('cash_register_data_id', $attributes) ? $attributes['cash_register_data_id'] : '';
     }
 
-    protected $fillable = [
-        'amount',
-        'cash_register_data_id',
-    ];
 }

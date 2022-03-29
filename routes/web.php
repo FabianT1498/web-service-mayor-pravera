@@ -27,17 +27,17 @@ Route::get('/dashboard', function () {
 })->middleware(['auth'])->name('dashboard');
 
 Route::group(['middleware' => ['auth']], function () {
-
-    // Cash register worker routes
-    Route::get('cash_register_worker/create', [CashRegisterWorkerController::class, 'create'])->name('cash_register_worker.create');
-    Route::post('cash_register_worker/store', [CashRegisterWorkerController::class, 'store'])->name('cash_register_worker.store');
     
-
     // Cash register routes
-    Route::get('cash_register', [CashRegisterController::class, 'create'])->name('cash_register.create');
+    Route::get('cash_register', [CashRegisterController::class, 'index'])->name('cash_register.index');
+    Route::get('cash_register/create', [CashRegisterController::class, 'create'])->name('cash_register.create');
     Route::post('cash_register', [CashRegisterController::class, 'store'])->name('cash_register.store');
     Route::get('cash_register/edit/{id}', [CashRegisterController::class, 'edit'])->name('cash_register.edit');
-        
+    Route::put('cash_register/{id}', [CashRegisterController::class, 'update'])->name('cash_register.update');
+    Route::put('cash_register/{id}/finish', [CashRegisterController::class, 'finishCashRegister'])->name('cash_register.finish');
+    
+    Route::get('cash_register/pdf/{id}', [CashRegisterController::class, 'singleRecordPdf'])->name('cash_register.single_record_pdf');
+    Route::get('cash_register/pdf/{start_date}/{end_date}', [CashRegisterController::class, 'intervalRecordPdf'])->name('cash_register.interval_record_pdf');
     // Route::get('cash_register/dollar-cash-detail', [CashRegisterController::class, 'createStepTwo'])->name('cash_register_step_two.create');
     // Route::get('cash_register/create-step-three', [CashRegisterController::class, 'createStepThree'])->name('cash_register_step_three.create');
     // Route::get('cash_register/create-step-four', [CashRegisterController::class, 'createStepFour'])->name('cash_register_step_four.create');
@@ -56,6 +56,11 @@ Route::group(['middleware' => ['auth', 'jsonify']], function() {
     Route::get('dollar_exchange', [DollarExchangeController::class, 'get']);
     
     Route::get('banks', [BankController::class, 'getAll']);
+
+    Route::get('cash_register/users_without_record/{date}', [CashRegisterController::class, 'getCashRegisterUsersWithoutRecordJson']);
+
+    Route::get('cash_register/totals/{cash_register_user}/{date}', [CashRegisterController::class, 'getTotalsFromSaintJson']);
+    
 });
 
 require __DIR__.'/auth.php';

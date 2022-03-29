@@ -13,8 +13,11 @@ class CreateCashRegister extends Migration
      */
     public function up()
     {
-        Schema::connection('caja_mayorista')->create('cash_register', function (Blueprint $table) {
-            $table->unsignedBigInteger('id');
+        Schema::connection('caja_mayorista')->create('cash_registers', function (Blueprint $table) {
+            $table->id();
+            $table->string('worker_name', 100);
+            $table->string('user_name');
+            $table->string('cash_register_user');
             $table->float('total_dollar_cash');
             $table->float('total_bs_cash');
             $table->float('total_dollar_denominations');
@@ -22,8 +25,11 @@ class CreateCashRegister extends Migration
             $table->float('total_point_sale_bs');
             $table->float('total_point_sale_dollar');
             $table->float('total_zelle');
+            $table->date('date');
+            $table->timestamps();
+            $table->unsignedBigInteger('cash_register_data_id');
         
-            $table->foreign('id')->references('id')->on('cash_register_data');
+            $table->foreign('cash_register_data_id')->references('id')->on('cash_register_data');
         });
     }
 
@@ -34,6 +40,6 @@ class CreateCashRegister extends Migration
      */
     public function down()
     {
-        Schema::connection('caja_mayorista')->dropIfExists('cash_register');
+        Schema::connection('caja_mayorista')->dropIfExists('cash_registers');
     }
 }
