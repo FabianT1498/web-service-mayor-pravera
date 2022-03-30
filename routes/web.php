@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\CashRegisterController;
+use App\Http\Controllers\MoneyEntranceController;
 use App\Http\Controllers\CashRegisterWorkerController;
 use App\Http\Controllers\DollarExchangeController;
 use App\Http\Controllers\BankController;
@@ -27,7 +28,10 @@ Route::get('/dashboard', function () {
 })->middleware(['auth'])->name('dashboard');
 
 Route::group(['middleware' => ['auth']], function () {
-    
+    // Money entrance routes
+    Route::get('money_entrance', [MoneyEntranceController::class, 'index'])->name('money_entrance.index');
+    Route::get('money_entrance/generate-report', [MoneyEntranceController::class, 'generateReport'])->name('money_entrance.generate-report');
+
     // Cash register routes
     Route::get('cash_register', [CashRegisterController::class, 'index'])->name('cash_register.index');
     Route::get('cash_register/create', [CashRegisterController::class, 'create'])->name('cash_register.create');
@@ -35,17 +39,17 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('cash_register/edit/{id}', [CashRegisterController::class, 'edit'])->name('cash_register.edit');
     Route::put('cash_register/{id}', [CashRegisterController::class, 'update'])->name('cash_register.update');
     Route::put('cash_register/{id}/finish', [CashRegisterController::class, 'finishCashRegister'])->name('cash_register.finish');
-    
+
     Route::get('cash_register/pdf/{id}', [CashRegisterController::class, 'singleRecordPdf'])->name('cash_register.single_record_pdf');
     Route::get('cash_register/pdf/{start_date}/{end_date}', [CashRegisterController::class, 'intervalRecordPdf'])->name('cash_register.interval_record_pdf');
     // Route::get('cash_register/dollar-cash-detail', [CashRegisterController::class, 'createStepTwo'])->name('cash_register_step_two.create');
     // Route::get('cash_register/create-step-three', [CashRegisterController::class, 'createStepThree'])->name('cash_register_step_three.create');
     // Route::get('cash_register/create-step-four', [CashRegisterController::class, 'createStepFour'])->name('cash_register_step_four.create');
     // Route::get('cash_register/create-step-five', [CashRegisterController::class, 'createStepFive'])->name('cash_register_step_five.create');
-    // Route::get('cash_register/create-step-six', [CashRegisterController::class, 'createStepSix'])->name('cash_register_step_six.create');  
+    // Route::get('cash_register/create-step-six', [CashRegisterController::class, 'createStepSix'])->name('cash_register_step_six.create');
     // Route::get('cash_register/create-step-seven', [CashRegisterController::class, 'createStepSeven'])->name('cash_register_step_seven.create');
-    // Route::get('cash_register/create-step-eight', [CashRegisterController::class, 'createStepEight'])->name('cash_register_step_eight.create');  
-    // Route::get('cash_register/create-step-nine', [CashRegisterController::class, 'createStepNine'])->name('cash_register_step_nine.create');  
+    // Route::get('cash_register/create-step-eight', [CashRegisterController::class, 'createStepEight'])->name('cash_register_step_eight.create');
+    // Route::get('cash_register/create-step-nine', [CashRegisterController::class, 'createStepNine'])->name('cash_register_step_nine.create');
 
     // Route::post('cash_register/store', [CashRegisterController::class, 'store'])->name('cash_register.store');
 
@@ -54,13 +58,13 @@ Route::group(['middleware' => ['auth']], function () {
 Route::group(['middleware' => ['auth', 'jsonify']], function() {
     Route::post('dollar_exchange', [DollarExchangeController::class, 'store']);
     Route::get('dollar_exchange', [DollarExchangeController::class, 'get']);
-    
+
     Route::get('banks', [BankController::class, 'getAll']);
 
     Route::get('cash_register/users_without_record/{date}', [CashRegisterController::class, 'getCashRegisterUsersWithoutRecordJson']);
 
     Route::get('cash_register/totals/{cash_register_user}/{date}', [CashRegisterController::class, 'getTotalsFromSaintJson']);
-    
+
 });
 
 require __DIR__.'/auth.php';
