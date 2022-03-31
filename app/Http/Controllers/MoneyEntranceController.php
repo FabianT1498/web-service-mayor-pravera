@@ -79,7 +79,7 @@ class MoneyEntranceController extends Controller
         $totals_e_payment = DB
             ::connection('saint_db')
             ->table('SAIPAVTA')
-            ->selectRaw('COALESCE(CAST(ROUND(SUM(SAFACT.Monto), 2) AS decimal(18,2)), 0) as total,
+            ->selectRaw('COALESCE(CAST(ROUND(SUM(SAIPAVTA.Monto), 2) AS decimal(18,2)), 0) as total,
                 MAX(SAIPAVTA.TipoFac) AS TipoFac, MAX(SAIPAVTA.CodPago) AS CodPago,
                 MAX(SAFACT.CodUsua) as CodUsua')
             ->join('SAFACT', 'SAIPAVTA.NumeroD', '=', 'SAFACT.NumeroD')
@@ -144,7 +144,7 @@ class MoneyEntranceController extends Controller
                         }
                         $totals_saint[$cod_usua][config('constants.COD_PAGO.'. $record->CodPago)] = $record->total;
                     }
-                } else if (!key_exists($key, $totals_saint)) {
+                } else if (!key_exists($key, $totals_saint[$cod_usua])) {
                     $totals_saint[$cod_usua][$key] = 0;
                 }
             }

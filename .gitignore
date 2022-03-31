@@ -1,5 +1,6 @@
 /public/css/
 /public/js/
+/storage/framework/sessions/
 /node_modules
 /public/hot
 /public/storage

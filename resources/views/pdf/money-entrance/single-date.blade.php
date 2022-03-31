@@ -183,14 +183,14 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
+                            <!-- <tr>
                                 <th>Dolares en efectivo</th>
                                 <td>{{ $record['dollar_cash'] . ' ' . $currency_signs['dollar'] }}</td>
                             </tr>
                             <tr>
                                 <th>Bs en efectivo</td>
                                 <td>{{ $record['bs_cash'] . ' ' . $currency_signs['bs'] }}</td>
-                            </tr>
+                            </tr> -->
                             <tr>
                                 <th>Punto de venta Bs (Pagos en Debito)</th>
                                 <td>{{ $record['bs_debit'] . ' ' . $currency_signs['bs'] }}</td>
@@ -198,6 +198,14 @@
                             <tr>
                                 <th>Punto de venta en Bs (Pagos en Credito)</th>
                                 <td>{{ $record['bs_credit'] . ' ' . $currency_signs['bs'] }}</td>
+                            </tr>
+                            <tr>
+                                <th>Todo ticket Bs</th>
+                                <td>{{ $record['todo_ticket'] . ' ' . $currency_signs['bs'] }}</td>
+                            </tr>
+                            <tr>
+                                <th>Transf. y Pago Movíl Bs</th>
+                                <td>{{ $record['transferencia_pago_movil'] . ' ' . $currency_signs['bs'] }}</td>
                             </tr>
                             <tr>
                                 <th>Punto de venta en $</th>
