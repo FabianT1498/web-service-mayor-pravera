@@ -23,4 +23,8 @@ import("./pages/cash-register/index" /* webpackChunkName: "/js/cash_register_ind
    indexCashRegister.init()
 });
 
+import("./pages/fiscal-bill/index" /* webpackChunkName: "/js/fiscal_bill_index" */).then(({default: indexFiscalBill}) => {
+   indexFiscalBill.init()
+});
+
 import LogoIsotipo from './../assets/logo-isotipo.svg';

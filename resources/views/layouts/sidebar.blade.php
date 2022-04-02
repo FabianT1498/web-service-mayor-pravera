@@ -40,6 +40,7 @@
 
       <p class="uppercase text-xs text-gray-600 mb-4 mt-4 tracking-wider">Reportes</p>
       <a  href="{{ route('money_entrance.index') }}" class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500">Entrada de dinero en cajas</a>
+      <a  href="{{ route('drink-bills.index') }}" class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500">Facturas fiscales con items de bebidas alcoholicas</a>
 
       <p class="uppercase text-xs text-gray-600 mb-4 mt-4 tracking-wider">Configuraciones</p>
       <!-- link -->

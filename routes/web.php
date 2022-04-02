@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\CashRegisterController;
 use App\Http\Controllers\MoneyEntranceController;
+use App\Http\Controllers\DrinkBillController;
 use App\Http\Controllers\CashRegisterWorkerController;
 use App\Http\Controllers\DollarExchangeController;
 use App\Http\Controllers\BankController;
@@ -31,6 +32,10 @@ Route::group(['middleware' => ['auth']], function () {
     // Money entrance routes
     Route::get('money_entrance', [MoneyEntranceController::class, 'index'])->name('money_entrance.index');
     Route::get('money_entrance/generate-report', [MoneyEntranceController::class, 'generateReport'])->name('money_entrance.generate-report');
+
+    // Drink Bill routes
+    Route::get('drink_bill', [DrinkBillController::class, 'index'])->name('drink-bills.index');
+    Route::get('drink_bill/generate-report', [DrinkBillController::class, 'generateReport'])->name('drink-bills.generate-report');
 
     // Cash register routes
     Route::get('cash_register', [CashRegisterController::class, 'index'])->name('cash_register.index');
