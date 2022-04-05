@@ -64,6 +64,7 @@ return [
             'charset' => 'utf8',
             'prefix' => '',
             'prefix_indexes' => true,
+            'trust_server_certificate' => true // Esta línea le dice al servidor que no intente verficar el certificado enviado por el servidor
         ],
 
     ],

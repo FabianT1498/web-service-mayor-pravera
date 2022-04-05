@@ -32,8 +32,8 @@ class DrinkBillController extends Controller
             ::connection('saint_db')
             ->table('SAITEMFAC')
             ->selectRaw("SAITEMFAC.NumeroD AS NumeroD, SAPROD.Descrip AS Descrip, CAST(SAITEMFAC.Cantidad AS int) as Cantidad,
-                CAST(CONVERT(VARCHAR, CAST(SAITEMFAC.Precio AS MONEY), 1) AS VARCHAR) as PrecioVentaUnidad,
-                CAST(CONVERT(VARCHAR, CAST(CAST(ROUND((SAITEMFAC.Precio * SAITEMFAC.Cantidad), 2) AS decimal(18,2)) AS MONEY), 1) AS VARCHAR) as Subtotal,
+                CAST(CONVERT(VARCHAR, CAST(SAITEMFAC.Precio * SAFACT.Signo AS MONEY), 1) AS VARCHAR) as PrecioVentaUnidad,
+                CAST(CONVERT(VARCHAR, CAST(CAST(ROUND((SAITEMFAC.Precio * SAFACT.Signo * SAITEMFAC.Cantidad), 2) AS decimal(18,2)) AS MONEY), 1) AS VARCHAR) as Subtotal,
                 SAFACT.CodUsua as CodUsua, CAST(SAITEMFAC.FechaE as date) as FechaE")
             ->join('SAPROD', function($join){
                 $join
@@ -70,7 +70,7 @@ class DrinkBillController extends Controller
         return DB
             ::connection('saint_db')
             ->table('SAITEMFAC')
-            ->selectRaw("CAST(ROUND(SUM(SAITEMFAC.Precio * SAITEMFAC.Cantidad), 2) AS decimal(18,2)) as total,
+            ->selectRaw("CAST(ROUND(SUM(SAITEMFAC.Precio * SAFACT.Signo * SAITEMFAC.Cantidad), 2) AS decimal(18,2)) as total,
                 CAST(SAITEMFAC.FechaE AS date) AS FechaE, MAX(SAFACT.CodUsua) AS CodUsua")
             ->join('SAPROD', function($join){
                 $join
@@ -109,6 +109,20 @@ class DrinkBillController extends Controller
             });
     }
 
+    private function getTotalsFiscalBillsWithDrinksByUser($array){
+        $totals = [];
+
+        foreach($array as $key => $child){
+            $total = $child->reduce(function ($carry, $item) {
+                return $carry + $item[0]->total;
+            });
+
+            $totals[$key] = $total;
+        }
+
+        return $totals;
+    }
+
     public function index(){
         $today_date = Carbon::now()->format('d-m-Y');
 
@@ -142,7 +156,7 @@ class DrinkBillController extends Controller
             $totals = $this->getTotalsFiscalBillsWithDrinksFromSaint($new_start_date,
             $new_end_date, $cash_register_user);
 
-            
+            $totals_by_user = $this->getTotalsFiscalBillsWithDrinksByUser($totals);
 
             $view_name = 'pdf.fiscal-bill.alcoholic-drinks';
         
@@ -151,7 +165,8 @@ class DrinkBillController extends Controller
                     'currency_signs',
                     'start_date',
                     'end_date',
-                    'totals'
+                    'totals',
+                    'totals_by_user'
                 ))
                 ->setOptions([
                     'defaultFont' => 'sans-serif',

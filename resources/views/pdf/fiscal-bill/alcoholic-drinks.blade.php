@@ -205,11 +205,36 @@
                 </div>
             </div>
             <div>
+                <div>
+                 
+                        <table class="w-80p mb-8">
+                            <caption class="text-center w-80p bg-grey-400">Total por caja</caption>
+                            <thead>
+                                <tr>
+                                    <th>Caja</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($totals_by_user as $key => $total)
+                                    <tr>
+                                        <td>{{ $key }}</td>
+                                        <td>{{ $total . ' ' . $currency_signs['bs'] }}</td>
+                                    </tr>
+                                @endforeach
+                                <tr>
+                                    <td class="font-semibold">Total</td>
+                                    <td>{{ array_sum($totals_by_user) . ' ' . $currency_signs['bs']  }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                
+                </div>
                 @foreach($data as $key_user => $dates)
                     @foreach($dates as $key_date => $records)
                         <table class="w-80p mb-4">
                             <caption class="text-center w-80p bg-grey-400">{{ $key_user }}</caption>
-                            <caption class="text-center w-80p bg-grey-400">{{ $key_date }}</caption>
+                            <caption class="text-center w-80p bg-grey-400">{{ date('d-m-Y', strtotime($key_date)) }}</caption>
 
                             <thead>
                                 <tr>
