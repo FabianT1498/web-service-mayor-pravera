@@ -21,75 +21,56 @@ class MoneyEntranceController extends Controller
         $this->flasher = $flasher;
     }
 
-    private function getTotalsByInterval($start_date, $end_date){
+    private function getTotalsMoneyEntrance($start_date, $end_date){
+        /* Consulta para obtener los totales de las facturas*/
+        $queryParams = ($start_date === $end_date) ? [$start_date] : [$start_date, $end_date];
+
+        $interval_query = ($start_date === $end_date) 
+            ? "CAST(SAFACT.FechaE as date) = ?"
+            : "CAST(SAFACT.FechaE as date) BETWEEN CAST(? as date) AND CAST(? as date)";
+
+        $factors = DB::connection('saint_db')
+            ->table('SAFACT')
+            ->selectRaw("ROUND(MAX(SAFACT.Factor), 2) as MaxFactor, CAST(SAFACT.FechaE as date) as FechaE")
+            ->whereRaw($interval_query, $queryParams)
+            ->groupByRaw("CAST(SAFACT.FechaE as date)");
 
         $totals_cash = DB
             ::connection('saint_db')
             ->table('SAFACT')
-            ->selectRaw('COALESCE(CAST(ROUND(SUM(SAFACT.Monto), 2) AS decimal(18,2)), 0) AS total,
-                MAX(SAFACT.TipoFac) AS TipoFac, MAX(SAFACT.CodUsua) AS CodUsua,
-                MAX(CAST(SAFACT.FechaE as date)) AS FechaE')
-            ->leftJoin('SAIPAVTA', 'SAIPAVTA.NumeroD', '=', 'SAFACT.NumeroD')
-            ->whereRaw("SAIPAVTA.NumeroD IS NULL AND SAFACT.CodUsua IN ('CAJA1', 'CAJA2', 'CAJA3', 'CAJA4', 'CAJA5', 'CAJA6' , 'CAJA7', 'DELIVERY')
-                    AND CAST(SAFACT.FechaE AS date) BETWEEN CAST(:start_date AS date) AND CAST(:end_date AS date)",
-                    [
-                        'start_date' => $start_date,
-                        'end_date' => $end_date
-                    ]
-            )
-            ->groupByRaw("SAFACT.TipoFac, CAST(SAFACT.FechaE AS date), SAFACT.CodUsua")
-            ->orderByRaw("MAX(CAST(SAFACT.FechaE as date)) asc")
-            ->get();
-
-        $totals_e_payment = DB
-            ::connection('saint_db')
-            ->table('SAIPAVTA')
-            ->selectRaw('COALESCE(CAST(ROUND(SUM(SAIPAVTA.Monto), 2) AS decimal(18,2)), 0) as total,
-                MAX(SAIPAVTA.TipoFac) AS TipoFac, MAX(SAIPAVTA.CodPago) AS CodPago,
-                MAX(SAFACT.CodUsua) as CodUsua, MAX(CAST(SAFACT.FechaE as date)) as FechaE')
-            ->join('SAFACT', function($query) use ($start_date, $end_date){
-                $query
-                ->on('SAIPAVTA.NumeroD', '=', 'SAFACT.NumeroD ')
-                ->whereRaw("SAFACT.CodUsua IN ('CAJA1', 'CAJA2', 'CAJA3', 'CAJA4',
-                    'CAJA5', 'CAJA6', 'CAJA7', 'CAJA8', 'DELIVERY')")
-                ->whereRaw("CAST(SAFACT.FechaE AS date) BETWEEN CAST('2022-03-23' as date)
-                    AND CAST('2022-03-25' as date)");
+            ->selectRaw("MAX(SAFACT.CodUsua) AS CodUsua, CAST(ROUND(SUM(SAFACT.CancelE * SAFACT.Signo), 2) AS decimal(18, 2)) AS bolivares,
+            CAST(ROUND((SUM(SAFACT.CancelC * SAFACT.Signo)/MAX(FactorHist.MaxFactor)), 2) AS decimal(18, 2)) AS dolares, CAST(SAFACT.FechaE as date) as FechaE")
+            ->joinSub($factors, 'FactorHist', function($query){
+                $query->on(DB::raw("CAST(SAFACT.FechaE AS date)"), '=', "FactorHist.FechaE");
             })
-            ->groupByRaw("SAIPAVTA.CodPago, SAIPAVTA.TipoFac, CAST(SAFACT.FechaE AS date), SAFACT.CodUsua")
-            ->orderByRaw("MAX(SAFACT.CodUsua) asc, MAX(CAST(SAIPAVTA.FechaE as date)) asc")
-            ->get();
-
-        return compact('totals_cash', 'totals_e_payment');
-    }
-
-    private function getTotalsByDateFromSaint($date){
-        $totals_cash = DB
-            ::connection('saint_db')
-            ->table('SAFACT')
-            ->selectRaw('COALESCE(CAST(ROUND(SUM(SAFACT.Monto), 2) AS decimal(18,2)), 0) as total,
-		        MAX(SAFACT.TipoFac) AS TipoFac, MAX(SAFACT.CodUsua) as CodUsua')
-            ->leftJoin('SAIPAVTA', 'SAIPAVTA.NumeroD', '=', 'SAFACT.NumeroD')
-            ->whereRaw("SAIPAVTA.NumeroD IS NULL AND SAFACT.CodUsua IN ('CAJA1', 'CAJA2', 'CAJA3', 'CAJA4', 'CAJA5', 'CAJA6' , 'CAJA7', 'DELIVERY')
-                AND CAST(SAFACT.FechaE AS date) = CAST(? as date)", [$date])
-            ->groupBy(['SAFACT.TipoFac', 'SAFACT.CodUsua'])
-            ->orderByRaw("SAFACT.CodUsua asc, MAX(CAST(SAFACT.FechaE AS date)) asc")
+            ->whereRaw("SAFACT.CodUsua IN ('CAJA1', 'CAJA2', 'CAJA3', 'CAJA4', 'CAJA5',
+                'CAJA6' , 'CAJA7', 'DELIVERY') AND " . $interval_query,
+                $queryParams)
+            ->groupByRaw("SAFACT.CodUsua, CAST(SAFACT.FechaE as date)")
+            ->orderByRaw("CAST(SAFACT.FechaE as date)")
             ->get()
-            ->groupBy('CodUsua');
+            ->groupBy(['CodUsua', 'FechaE']);
+
+        
 
         $totals_e_payment = DB
             ::connection('saint_db')
             ->table('SAIPAVTA')
-            ->selectRaw('COALESCE(CAST(ROUND(SUM(SAIPAVTA.Monto), 2) AS decimal(18,2)), 0) as total,
-                MAX(SAIPAVTA.TipoFac) AS TipoFac, MAX(SAIPAVTA.CodPago) AS CodPago,
-                MAX(SAFACT.CodUsua) as CodUsua')
-            ->join('SAFACT', 'SAIPAVTA.NumeroD', '=', 'SAFACT.NumeroD')
-            ->whereRaw("SAFACT.CodUsua IN ('CAJA1', 'CAJA2', 'CAJA3', 'CAJA4','CAJA5', 'CAJA6',
-                'CAJA7', 'CAJA8', 'DELIVERY') AND CAST(SAFACT.FechaE AS date) = CAST(? as date)", [$date])
-            ->groupBy(['SAIPAVTA.CodPago', 'SAIPAVTA.TipoFac', 'SAFACT.CodUsua'])
-            ->orderByRaw("SAFACT.CodUsua asc, MAX(CAST(SAFACT.FechaE AS date)) asc")
+            ->selectRaw("MAX(SAFACT.CodUsua) as CodUsua, MAX(SAIPAVTA.CodPago) as CodPago, MAX(CAST(SAFACT.FechaE as date)) as FechaE,
+            CAST(ROUND(SUM(SAIPAVTA.Monto * SAFACT.Signo), 2) AS decimal(18, 2)) as total")
+            ->join('SAFACT', function($query){
+                $query->on("SAFACT.NumeroD", '=', "SAIPAVTA.NumeroD");
+            })
+            ->whereRaw("SAFACT.CodUsua IN ('CAJA1', 'CAJA2', 'CAJA3', 'CAJA4', 'CAJA5',
+                'CAJA6' , 'CAJA7', 'DELIVERY') AND " . $interval_query,
+                $queryParams)
+            ->groupByRaw("SAFACT.CodUsua, SAIPAVTA.CodPago, CAST(SAFACT.FechaE AS date)")
+            ->orderByRaw("SAFACT.CodUsua, SAIPAVTA.CodPago")
             ->get()
-            ->groupBy('CodUsua');
+            ->groupBy(['CodUsua', 'FechaE']);
 
+        return $totals_e_payment;
+        
         return compact('totals_cash', 'totals_e_payment');
     }
 
@@ -165,6 +146,8 @@ class MoneyEntranceController extends Controller
         if ($start_date && $end_date){
             $new_start_date = date('Y-m-d', strtotime($start_date));
             $new_finish_date = date('Y-m-d', strtotime($end_date));
+
+            return print_r($this->getTotalsMoneyEntrance($new_start_date, $new_finish_date));
 
             $pdf = App::make('dompdf.wrapper');
 
