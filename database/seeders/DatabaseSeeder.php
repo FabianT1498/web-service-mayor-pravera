@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 
 use  Database\Seeders\BankSeeder;
 use  Database\Seeders\CashRegisterUserSeeder;
+use  Database\Seeders\PaymentMethodSeeder;
 
 
 class DatabaseSeeder extends Seeder
@@ -21,7 +22,8 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             BankSeeder::class,
-            CashRegisterUserSeeder::class
+            CashRegisterUserSeeder::class,
+            PaymentMethodSeeder::class
         ]);
     }
 }
