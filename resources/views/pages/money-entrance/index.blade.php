@@ -8,6 +8,8 @@
 @section('main')
     <div class="w-10/12 mx-auto">
         <div class="mb-8">
+            <h3 class="h3 mb-8 text-center">Reporte de entrada de dinero</h3>
+
             <form class="mb-4" id="form_filter" method="GET" action="{{ route('money_entrance.generate-report') }}">
                 <div 
                     id="date_range_picker" 

@@ -69,6 +69,10 @@
                 margin: 0;
             }
 
+            h1 {
+                font-size: 3.2rem;
+            }
+
             .container {
                 width: 800px;
                 margin: 0 auto;
@@ -88,6 +92,10 @@
 
             .bg-grey-400 {
                 background-color: #e9e9e9;
+            }
+
+            .bg-grey-600 {
+                background-color: #b8b8b8;
             }
 
             .border-solid {
@@ -151,6 +159,10 @@
                 width: 80%;
             }
 
+            .w-90p{
+                width: 90%;
+            }
+
             .font-semibold {
                 font-weight: 500;
             }
@@ -187,6 +199,22 @@
                 text-align: center;
             }
 
+            .absolute {
+                position: absolute;
+            }
+
+            .left50p {
+                left: 50%;
+            }
+
+            .translate-50p{
+                transform: translate(-50%);
+            }
+
+            .relative {
+                position: relative;
+            }
+
         </style>
     </head>
     <body class="font-sans antialiased bg-gray-100">
@@ -194,7 +222,7 @@
             <div class="w-full mb-4 clearfix">
                 <div class="left">Logo</div>
                 <div class="right pr-10">
-                    <p class="mb-2 font-semibold">Entrada de dinero</p>
+                    <p class="mb-2 font-semibold">Reporte de entrada de dinero</p>
                     <p>
                         @if ($start_date === $end_date)
                             Fecha: {{ $start_date }}
@@ -209,26 +237,26 @@
                 <div>
                  
                     <table class="w-80p mb-8">
-                        <caption class="text-center w-80p bg-grey-400">Total de efectivo por caja</caption>
+                        <caption class="text-center w-80p bg-grey-400">Resumen del total de dinero tangible por caja</caption>
                         <thead>
                             <tr>
                                 <th>&nbsp;</th>
-                                <th>Bolivares</th>
-                                <th>Dolares</th>
+                                <th>Bolívares (Tangibles)</th>
+                                <th>Dólares (Tangibles)</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($totals_cash_by_user as $key => $entries)
+                            @foreach($totals_safact_by_user as $key => $entries)
                                 <tr>
                                     <td>{{ $key }}</td>
-                                    <td class="text-center">{{ $entries['bolivar'] . ' ' . $currency_signs['bs'] }}</td>
-                                    <td class="text-center">{{ $entries['dollar'] . ' ' . $currency_signs['dollar'] }}</td>
+                                    <td class="text-center">{{ number_format($entries['bolivar'], 2) }}</td>
+                                    <td class="text-center">{{ number_format($entries['dollar'], 2) }}</td>
                                 </tr>
                             @endforeach
-                            <tr>
+                            <tr class="bg-grey-600">
                                 <td class="font-semibold">Total</td>
-                                <td class="text-center">{{ $totals_cash_by_interval['bolivar'] . ' ' . $currency_signs['bs']  }}</td>
-                                <td class="text-center">{{ $totals_cash_by_interval['dollar'] . ' ' . $currency_signs['dollar']  }}</td>
+                                <td class="text-center">{{ number_format($totals_safact_by_interval['bolivar'], 2) }}</td>
+                                <td class="text-center">{{ number_format($totals_safact_by_interval['dollar'], 2) }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -236,15 +264,14 @@
                 </div>
 
                 <div>
-                 
-                    <table class="w-80p mb-8">
-                        <caption class="text-center w-80p bg-grey-400">Total en métodos de pagos electronicos por caja</caption>
+                    <table class="w-90p mb-8">
+                        <caption class="text-center w-90p bg-grey-400">Resumen del total en métodos de pagos electrónicos por caja</caption>
                         <thead>
                             <tr>
                                 <th>&nbsp;</th>
                                 <th>PV. Debito (Bs)</th>
-                                <th>PV. Credito(Bs)</th>
                                 <th>TDC (Bs)</th>
+                                <th>Todoticket (Bs)</th>
                                 <th>AMEX (Bs)</th>
                                 <th>Transferencias (Bs)</th>
                                 <th>Zelle ($)</th>
@@ -256,14 +283,124 @@
                                 <tr>
                                     <td>{{ $key }}</td>
                                     @foreach($entries as $subtotal)
-                                        <td class="text-center">{{ $subtotal }}</td>
+                                        <td class="text-center">{{ number_format($subtotal, 2) }}</td>
                                     @endforeach                              
                                 </tr>
                             @endforeach
+                            <tr class="bg-grey-600">
+                                <td class="font-semibold">Total</td>
+                                @foreach($totals_e_payment_by_interval as $total)
+                                    <td class="text-center">{{ number_format($total, 2) }}</td>                         
+                                @endforeach
+                            </tr>
                         </tbody>
                     </table>
-                
                 </div>
+
+                <div>
+                    <table class="w-90p mb-8">
+                        <caption class="text-center w-90p bg-grey-400">Resumen del total de credito por caja</caption>
+                        <thead>
+                            <tr>
+                                <th>&nbsp;</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($totals_safact_by_user as $key => $entries)
+                                <tr>
+                                    <td>{{ $key }}</td>
+                                    <td class="text-center">{{ number_format($entries['credito'], 2) }}</td>
+                                </tr>
+                            @endforeach
+                            <tr class="bg-grey-600">
+                                <td class="font-semibold">Total</td>
+                                <td class="text-center">{{ number_format($totals_safact_by_interval['credito'], 2)  }}</td>                         
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="w-80p mb-8">
+                    <h1 class="text-center">Totales de entradas en dinero tangible</h1>
+                </div>
+
+                @foreach($totals_safact as $key_user => $dates)
+                    @foreach($dates as $key_date => $records)
+                        <table class="w-80p mb-4">
+                            <caption class="text-center w-80p bg-grey-400">{{ $key_user }}</caption>
+                            <caption class="text-center w-80p bg-grey-400">{{ date('d-m-Y', strtotime($key_date)) }}</caption>
+
+                            <thead>
+                                <tr>
+                                    <th>Bolívares (Tangibles)</th>
+                                    <th>Dólares (Tangibles)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($records as $record)
+                                    <tr>
+                                        <td class="text-center">{{ number_format($record->bolivares, 2) }}</td>
+                                        <td class="text-center">{{ number_format($record->dolares, 2) }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    @endforeach
+                @endforeach
+
+                <div class="w-80p mb-8">
+                    <h1 class="text-center">Totales de entradas por credito</h1>
+                </div>
+
+                @foreach($totals_safact as $key_user => $dates)
+                    <table class="w-80p mb-4">
+                        <caption class="text-center w-80p bg-grey-400">{{ $key_user }}</caption>
+                        @foreach($dates as $key_date => $records)
+                            @foreach($records as $record)
+                                    <tr>
+                                        <td class="text-center">{{ date('d-m-Y', strtotime($key_date)) }}</caption>
+                                        <td class="text-center">{{ number_format($record->credito, 2) }}</td>
+                                    </tr>
+                            @endforeach
+                        @endforeach
+                    </table>
+                @endforeach
+
+                <div class="w-90p mb-8">
+                    <h1 class="text-center">Totales de entradas en métodos de pago electrónicos</h1>
+                </div>
+                @foreach($totals_e_payment as $key_user => $dates)
+                    @foreach($dates as $key_date => $date_record)
+                        <table class="w-90p mb-4">
+                            <caption class="text-center w-90p bg-grey-400">{{ $key_user }}</caption>
+                            <caption class="text-center w-90p bg-grey-400">{{ date('d-m-Y', strtotime($key_date)) }}</caption>
+
+                            <thead>
+                                <tr>
+                                    <th>PV. Debito (Bs)</th>
+                                    <th>TDC (Bs)</th>
+                                    <th>Todoticket (Bs)</th>
+                                    <th>AMEX (Bs)</th>
+                                    <th>Transferencias (Bs)</th>
+                                    <th>Zelle ($)</th>
+                                    <th>PV Int. ($)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-center">{{ number_format($date_record['01'], 2) }}</td>
+                                    <td class="text-center">{{ number_format($date_record['02'], 2) }}</td>
+                                    <td class="text-center">{{ number_format($date_record['03'], 2) }}</td>
+                                    <td class="text-center">{{ number_format($date_record['04'], 2) }}</td>
+                                    <td class="text-center">{{ number_format($date_record['05'], 2) }}</td>
+                                    <td class="text-center">{{ number_format($date_record['07'], 2) }}</td>
+                                    <td class="text-center">{{ number_format($date_record['08'], 2) }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    @endforeach
+                @endforeach
             </div>
         </div>
         <script type="text/php">
