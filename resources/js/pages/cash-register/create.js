@@ -26,6 +26,7 @@ import SalePointModalView from '_views/SalePointModalView'
 import {decimalInputs} from '_utilities/decimalInput';
 import { roundNumber } from '_utilities/mathUtilities'
 
+
 export default {
     totalInputDOMS: {
         liquidMoneyBs: document.querySelector('#total_bs_cash'),
@@ -92,14 +93,21 @@ export default {
                 this.proxyTotalSaint[el] = 0;
             })
         } else {
-            // Liquid Money Payment Amounts
-            totals.total_cash_records.forEach(el => {
-                this.proxyTotalSaint[TYPE_BILLS[el.TipoFac]] = parseFloat(el.total_cash);
-                this[this.propNameToDiffTotalMethod[TYPE_BILLS[el.TipoFac]]].call(this)
-            });
 
-            // E-Payment Amounts
-            totals.total_e_payment_records.forEach(el => {
+            // Liquid Money Payment Amounts
+            let totalsFromSafact = totals.totals_from_safact[0];
+
+
+            this.proxyTotalSaint['liquidMoneyBs'] = parseFloat(totalsFromSafact.bolivares);
+            this.setTotalBsCashDiff(this);
+
+            this.proxyTotalSaint['liquidMoneyDollar'] = parseFloat(totalsFromSafact.dolares);
+            this.setTotalDollarCashDiff(this);
+
+            let totalsEPayments = totals.totals_e_payments;
+
+           // E-Payment Amounts
+            totalsEPayments.forEach(el => {
                 if (this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] !== undefined){
                     if (el.CodPago === '01' || el.CodPago === '02'){
                         this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] += parseFloat(el.total)

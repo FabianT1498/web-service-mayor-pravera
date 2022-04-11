@@ -29,6 +29,8 @@ use App\Http\Requests\UpdateCashRegisterRequest;
 use App\Http\Requests\PrintSingleCashRegisterRequest;
 use App\Http\Requests\PrintIntervalCashRegisterRequest;
 
+use App\Repositories\CashRegisterRepository;
+
 class CashRegisterController extends Controller
 {
     private $flasher = null;
@@ -37,40 +39,11 @@ class CashRegisterController extends Controller
     {
         $this->flasher = $flasher;
     }
-    
-    private function getTableSummaryView($stepViewName, $objects){
-        return view($stepViewName, $objects);
-    }
-    
-    private function getSessionCashRegisterData($request){
-        return $request->session()->get('cash_register', null);
-    }
 
-    private function getBillsAmounts($bills){
-        return $bills->map(function($bill){
-            return floatval($bill->amount . 'El');
-        });
-    }
+    // private function contains_step_route($sub_route){
+    //     return str_contains($sub_route, 'create-step');
+    // }
 
-    private function substring_sub_route_prev_url($route){
-        return str_replace(url('/') . $route . '/', '', url()->previous());
-    }
-
-    private function contains_step_route($sub_route){
-        return str_contains($sub_route, 'create-step');
-    }
-
-    public static function getSumAmount($amounts) {
-        return $amounts->reduce(function($carry, $item){
-            return ($carry + $item);
-        });
-    }
-
-    private function format_amount(& $bills, $amounts_float){
-        $bills->each(function($bill, $key) use ($amounts_float){
-            $bill->amount = number_format($amounts_float[$key], 2, '.', ',');
-        });
-    }
 
     private function getWorkers(){
         $cash_register_workers = DB::table('workers')
@@ -82,7 +55,7 @@ class CashRegisterController extends Controller
         });
     }
 
-    private function getCashRegisterUsersWithoutRecord($date = null){
+    public function getCashRegisterUsersWithoutRecord($date = null){
         $result =  DB::table('cash_register_users')
             ->select([
                 'cash_register_users.name as cash_register_id',
@@ -101,13 +74,8 @@ class CashRegisterController extends Controller
             });
     }
 
-    public function getCashRegisterUsersWithoutRecordJson($date = null){
-        $data = $this->getCashRegisterUsersWithoutRecord($date);
-        return $this->jsonResponse(['data' => $data], 200);
-    }
-
     public function index(Request $request){
- 
+
         $status = $request->query('status', config('constants.CASH_REGISTER_STATUS.EDITING'));
         $start_date = $request->query('start_date', '');
         $end_date = $request->query('end_date', '');
@@ -119,7 +87,7 @@ class CashRegisterController extends Controller
             'cash_register_data.date',
             'cash_register_data.status',
             'cash_register_data.updated_at',
-        ]); 
+        ]);
 
         $query = $query->join('users', 'cash_register_data.user_id', '=', 'users.id');
 
@@ -140,9 +108,9 @@ class CashRegisterController extends Controller
             (object) ['key' => config('constants.CASH_REGISTER_STATUS.COMPLETED'), 'value' => 'Completado'],
         ];
 
-        
+
         $records = $query->orderBy('date', 'desc')->paginate(5);
-        
+
        $records->appends(['status' => $status, 'start_date' => $start_date, 'end_date' => $end_date]);
 
         $columns = [
@@ -166,8 +134,8 @@ class CashRegisterController extends Controller
     }
 
     public function create()
-    {  
-        
+    {
+
         $cash_registers_workers_id_arr = $this->getWorkers();
 
         $today_date = Carbon::now();
@@ -180,14 +148,14 @@ class CashRegisterController extends Controller
         }
 
         $today_date = $today_date->format('d-m-Y');
-        
+
         $data = compact(
             'cash_registers_id_arr',
             'cash_registers_workers_id_arr',
             'today_date'
         );
 
-        return $this->getTableSummaryView('pages.cash-register.create', $data);
+        return view('pages.cash-register.create', $data);
     }
 
     public function store(StoreCashRegisterRequest $request)
@@ -203,7 +171,7 @@ class CashRegisterController extends Controller
         }
 
         $cash_register_data = new CashRegisterData($validated);
-        
+
         if ($cash_register_data->save()){
             if (array_key_exists('dollar_cash_record', $validated)){
                 $data = array_map(function($value) use ($cash_register_data){
@@ -211,14 +179,14 @@ class CashRegisterController extends Controller
                 }, $validated['dollar_cash_record']);
                 DollarCashRecord::insert($data);
             }
-    
+
             if (array_key_exists('bs_cash_record', $validated)){
                 $data = array_map(function($value) use ($cash_register_data){
                     return array('amount' => $value, 'cash_register_data_id' => $cash_register_data->id);
                 }, $validated['dollar_cash_record']);
                 BsCashRecord::insert($data);
             }
-    
+
             if (array_key_exists('dollar_denominations_record', $validated)){
                 $data = array_map(function($quantity, $denomination) use ($cash_register_data){
                     return array(
@@ -229,7 +197,7 @@ class CashRegisterController extends Controller
                 }, $validated['dollar_denominations_record'], array_keys($validated['dollar_denominations_record']));
                 DollarDenominationRecord::insert($data);
             }
-    
+
             if (array_key_exists('bs_denominations_record', $validated)){
                 $data = array_map(function($quantity, $denomination) use ($cash_register_data){
                     return array(
@@ -240,7 +208,7 @@ class CashRegisterController extends Controller
                 }, $validated['bs_denominations_record'], array_keys($validated['bs_denominations_record']));
                 BsDenominationRecord::insert($data);
             }
-            
+
             if (array_key_exists('point_sale_bs_bank', $validated)){
 
                 $credit_data = array_map(function($amount, $bank) use ($cash_register_data){
@@ -273,7 +241,7 @@ class CashRegisterController extends Controller
                 ];
                 PointSaleDollarRecord::insert($data);
             }
-    
+
             if (array_key_exists('zelle_record', $validated)){
                 $data = array_map(function($value) use ($cash_register_data){
                     return array('amount' => $value, 'cash_register_data_id' => $cash_register_data->id);
@@ -298,7 +266,7 @@ class CashRegisterController extends Controller
         $bs_denomination_records = $cash_register_data->bs_denomination_records;
         $dollar_denomination_records = $cash_register_data->dollar_denomination_records;
         $zelle_records = $cash_register_data->zelle_records;
-        
+
         $point_sale_dollar_record = $cash_register_data
             ->point_sale_dollar_records()
             ->first();
@@ -324,14 +292,14 @@ class CashRegisterController extends Controller
                     ->from('point_sale_bs_records')
                     ->where('point_sale_bs_records.cash_register_data_id', '=', $cash_register_data->id)
                     ->groupBy('point_sale_bs_records.bank_name');
-            })     
+            })
             ->get();
 
         $point_sale_bs_records = $cash_register_data
             ->point_sale_bs_records()
             ->orderBy('bank_name')
             ->get();
- 
+
         // Banks array is just an array of literal strings
         $point_sale_bs_banks = $point_sale_bs_records
             ->unique('bank_name')
@@ -414,11 +382,11 @@ class CashRegisterController extends Controller
         $cash_register_data->worker_id = $validated['worker_id'];
         $cash_register_data->cash_register_user = $validated['cash_register_user'];
         $cash_register_data->date = $validated['date'];
-      
+
         if ($cash_register_data->isDirty()){
             $cash_register_data->save();
         }
-        
+
         $cash_register_data_id = $request->route('id');
 
         // Update Dollar Cash Records
@@ -431,7 +399,7 @@ class CashRegisterController extends Controller
                 });
         } else if(key_exists('dollar_cash_record', $validated)){
             $diff = $dollar_cash_records_coll->count() - count($validated['dollar_cash_record']);
-            
+
             if ($diff > 0){
                 $to_delete = $dollar_cash_records_coll->splice(0, $diff);
                 $to_delete->each(function($item, $key){
@@ -459,7 +427,7 @@ class CashRegisterController extends Controller
                 });
         } else if(key_exists('bs_cash_record', $validated)){
             $diff = $bs_cash_records_coll->count() - count($validated['bs_cash_record']);
-            
+
             if ($diff > 0){
                 $to_delete = $bs_cash_records_coll->splice(0, $diff);
                 $to_delete->each(function($item, $key){
@@ -479,8 +447,8 @@ class CashRegisterController extends Controller
 
         // Dollar Denomination Records
         $dollar_denomination_records_coll = $cash_register_data->dollar_denomination_records;
-    
-        if (!key_exists('dollar_denominations_record', $validated) 
+
+        if (!key_exists('dollar_denominations_record', $validated)
                 && $dollar_denomination_records_coll->contains(function($val){ return ($val->quantity > 0); })){
             $cash_register_data->dollar_denomination_records()->update(['quantity' => 0]);
         } else if (key_exists('dollar_denominations_record', $validated)){
@@ -495,8 +463,8 @@ class CashRegisterController extends Controller
 
         // Bs Denomination Records
         $bs_denomination_records_coll = $cash_register_data->bs_denomination_records;
-    
-        if (!key_exists('dollar_denominations_record', $validated) 
+
+        if (!key_exists('dollar_denominations_record', $validated)
                 && $bs_denomination_records_coll->contains(function($val){ return ($val->quantity > 0); })){
             $cash_register_data->bs_denomination_records()->update(['quantity' => 0]);
         } else if (key_exists('bs_denominations_record', $validated)){
@@ -515,7 +483,7 @@ class CashRegisterController extends Controller
             $total_point_sale_dollar->delete();
         } else if (key_exists('total_point_sale_dollar', $validated)) {
             $data = [
-                'id' => $total_point_sale_dollar ? $total_point_sale_dollar->id : null, 
+                'id' => $total_point_sale_dollar ? $total_point_sale_dollar->id : null,
                 'amount' => $validated['total_point_sale_dollar'],
                 'cash_register_data_id' => $cash_register_data_id
             ];
@@ -533,14 +501,14 @@ class CashRegisterController extends Controller
 
         } else if(key_exists('point_sale_bs_bank', $validated)){
             $diff = ($point_sale_bs_records_coll->count() / 2) - count($validated['point_sale_bs_bank']);
-            
+
             if ($diff > 0){
                 $to_delete = $point_sale_bs_records_coll->splice(0, $diff * 2);
                 $to_delete->each(function($item, $key){
                     $item->delete();
                 });
             }
-            
+
             $credit_data = $this->mergeOldAndNewValues(
                 $cash_register_data_id,
                 'pointSaleBsCreditColsToUpdate',
@@ -573,7 +541,7 @@ class CashRegisterController extends Controller
                 });
         } else if(key_exists('zelle_record', $validated)){
             $diff = $zelle_records_coll->count() - count($validated['zelle_record']);
-            
+
             if ($diff > 0){
                 $to_delete = $zelle_records_coll->splice(0, $diff);
                 $to_delete->each(function($item, $key){
@@ -595,13 +563,13 @@ class CashRegisterController extends Controller
         return redirect()->route('cash_register.index');
     }
 
-    public function finishCashRegister(EditCashRegisterRequest $request){
+    public function finishCashRegister(CashRegisterRepository $cash_register_repo, EditCashRegisterRequest $request){
         $id = $request->id;
         $cash_register_data = CashRegisterData::where('id', $id)->first();
         $cash_register_data->status = config('constants.CASH_REGISTER_STATUS.COMPLETED');
         if ($cash_register_data->save()){
 
-            $result = $this->getTotalsRelatedToRecord($id);
+            $result = $cash_register_repo->getTotals($id);
 
             // toArray method converts eloquent model's properties to primitive data types
             $cash_register = new CashRegister($result->toArray());
@@ -621,12 +589,12 @@ class CashRegisterController extends Controller
     public function singleRecordPdf(PrintSingleCashRegisterRequest $request){
 
         $cash_register = CashRegister::where('cash_register_data_id', $request->route('id'))->first();
-  
+
         $totals_from_db_saint = $this->getTotalsFromSaint($cash_register->cash_register_user,
             $cash_register->date);
-        
+
         $totals_saint = [];
-        
+
         // Mapping every cash record entry with its key
         foreach(array_keys(config('constants.CASH_TIPO_FAC')) as $index => $value){
             $record = $totals_from_db_saint['total_cash_records']->slice($index, 1)->first();
@@ -693,10 +661,6 @@ class CashRegisterController extends Controller
         return $pdf->download('arqueo-caja_' . $cash_register->cash_register_user . '_' . $cash_register->date . '.pdf');
     }
 
-    public function intervalRecordPdf(PrintIntervalCashRegisterRequest $request){
-
-    }
-
     private function mergeOldAndNewValues($parent_id, $callback_name, $old_values, ...$new_values){
         $callback = [$this, $callback_name];
         return array_map(function($old_record, ...$new_record) use ($parent_id, $callback){
@@ -704,120 +668,22 @@ class CashRegisterController extends Controller
         }, $old_values, ...$new_values);
     }
 
-    private function getTotalsFromSaint($cash_register_user, $date){
+    public function getTotalsFromSaint(CashRegisterRepository $cash_register_repo, $user, $start_date, $end_date){
 
-        // Get the totals of cash registers
-        $query =  DB::connection('saint_db')
-            ->table('SAFACT')
-            ->selectRaw('
-                COALESCE(CAST(ROUND(SUM(SAFACT.Monto), 2) AS decimal(18,2)), 0) as total_cash,
-                COALESCE(SAFACT.TipoFac,' . '\'unassigned_TipoFac\'' . ') as TipoFac'
-            )
-            ->leftJoin("SAIPAVTA", function($join) {
-                $join
-                    ->on('SAFACT.NumeroD', '=', 'SAIPAVTA.NumeroD');
-            })
-            ->where('SAFACT.CodUsua', '=', $cash_register_user)
-            ->where('SAIPAVTA.NumeroD', '=', null)
-            ->whereDate('SAFACT.FechaE', '=', $date)
-            ->groupBy('SAFACT.TipoFac');
-        
-        $total_cash_records = $query->get();
+        $totals_from_safact = $cash_register_repo->getTotalsFromSafact($start_date, $end_date, $user);
 
-        // Get the totals on SAIPAVTA Table
-        $query =  DB::connection('saint_db')
-            ->table('SAIPAVTA')
-            ->selectRaw('
-                COALESCE(CAST(ROUND(SUM(SAIPAVTA.Monto), 2) AS decimal(18, 2)), 0) as total,
-                COALESCE(SAIPAVTA.CodPago,' . '\'unassigned_CodPago\'' . ') as CodPago,
-                COALESCE(SAIPAVTA.TipoFac,' . '\'unassigned_TipoFac\'' . ') as TipoFac'
-            )
-            ->join("SAFACT", function($join) use ($cash_register_user, $date) {
-                $join->on('SAIPAVTA.NumeroD', '=', 'SAFACT.NumeroD')
-                    ->where('SAFACT.CodUsua', '=', $cash_register_user)
-                    ->whereDate('SAFACT.FechaE', '=', $date);
-            })
-            ->groupBy('SAIPAVTA.CodPago', 'SAIPAVTA.TipoFac');
-            
-        $total_e_payment_records = $query->get();
+        $totals_e_payments = $cash_register_repo->getTotalsEPaymentMethods($start_date, $end_date, $user);
 
-        return compact('total_cash_records', 'total_e_payment_records');
+        return $this->jsonResponse(['data' => [
+          'totals_from_safact' => $totals_from_safact,
+          'totals_e_payments' =>  $totals_e_payments
+        ]], 200);
     }
 
-    public function getTotalsFromSaintJson($cash_register_user, $date){
-        $data = $this->getTotalsFromSaint($cash_register_user, $date);
-        return $this->jsonResponse(['data' => $data], 200);
-    }
+    public function getTotals(CashRegisterRepository $cash_register_repo, $id){
+        $totals = $cash_register_repo->getTotals($id);
 
-    private function getTotalsRelatedToRecord($id){
-        $query = CashRegisterData::selectRaw(
-            'cash_register_data.id as id,
-            cash_register_data.date as date,
-            cash_register_data.cash_register_user as cash_register_user,
-            workers.name as worker_name,
-            users.name as user_name,
-            COALESCE(dol_c_join.total, 0) as total_dollar_cash,
-            COALESCE(bs_c_join.total, 0) as total_bs_cash,
-            COALESCE(ps_bs_join.total, 0) as total_point_sale_bs,
-            COALESCE(ps_dol_join.total, 0) as total_point_sale_dollar,
-            COALESCE(bs_denomination_join.total, 0) as total_bs_denominations,
-            COALESCE(dollar_denomination_join.total, 0) as total_dollar_denominations,
-            COALESCE(zelle_join.total, 0) as total_zelle
-            '
-        )
-        ->join('users', 'cash_register_data.user_id', '=', 'users.id')
-        ->join('workers', 'cash_register_data.worker_id', '=', 'workers.id')
-        ->leftJoin(
-            DB::raw("(SELECT SUM(`dollar_cash_records`.`amount`) as `total`, `dollar_cash_records`.`cash_register_data_id` FROM `dollar_cash_records` GROUP BY `dollar_cash_records`.`cash_register_data_id`) `dol_c_join`"),
-            function($join) use ($id) {
-                $join->on('dol_c_join.cash_register_data_id', '=', 'cash_register_data.id');
-            }
-        )
-        ->leftJoin(
-            DB::raw("(SELECT SUM(`bs_cash_records`.`amount`) as `total`, `bs_cash_records`.`cash_register_data_id` FROM `bs_cash_records` GROUP BY `bs_cash_records`.`cash_register_data_id`) `bs_c_join`"),
-            function($join) use ($id) {
-                $join->on('bs_c_join.cash_register_data_id', '=', 'cash_register_data.id');
-            }
-        )
-        ->leftJoin(
-            DB::raw("(SELECT SUM(`point_sale_bs_records`.`amount`) as `total`, `point_sale_bs_records`.`cash_register_data_id` FROM `point_sale_bs_records` GROUP BY `point_sale_bs_records`.`cash_register_data_id`) `ps_bs_join`"),
-            function($join) use ($id) {
-                $join->on('ps_bs_join.cash_register_data_id', '=', 'cash_register_data.id');
-            }
-        )
-        ->leftJoin(
-            DB::raw("
-                (SELECT SUM(`point_sale_dollar_records`.`amount`) as `total`,
-                `point_sale_dollar_records`.`cash_register_data_id` 
-                FROM `point_sale_dollar_records` 
-                GROUP BY 
-                    `point_sale_dollar_records`.`cash_register_data_id`
-                ) `ps_dol_join`"),
-            function($join) use ($id) {
-                $join->on('ps_dol_join.cash_register_data_id', '=', 'cash_register_data.id');
-            }
-        )
-        ->leftJoin(
-            DB::raw("(SELECT SUM(`bs_denomination_records`.`quantity` * `bs_denomination_records`.`denomination`) as `total`, `bs_denomination_records`.`cash_register_data_id` FROM `bs_denomination_records` GROUP BY `bs_denomination_records`.`cash_register_data_id`) `bs_denomination_join`"),
-            function($join) use ($id) {
-                $join->on('bs_denomination_join.cash_register_data_id', '=', 'cash_register_data.id');
-            }
-        )
-        ->leftJoin(
-            DB::raw("(SELECT SUM(`dollar_denomination_records`.`quantity` * `dollar_denomination_records`.`denomination`) as `total`, `dollar_denomination_records`.`cash_register_data_id` FROM `dollar_denomination_records` GROUP BY `dollar_denomination_records`.`cash_register_data_id`) `dollar_denomination_join`"),
-            function($join) use ($id) {
-                $join->on('dollar_denomination_join.cash_register_data_id', '=', 'cash_register_data.id');
-            }
-        )
-        ->leftJoin(
-            DB::raw("(SELECT SUM(`zelle_records`.`amount`) as `total`, `zelle_records`.`cash_register_data_id` FROM `zelle_records` GROUP BY `zelle_records`.`cash_register_data_id`) `zelle_join`"),
-            function($join) use ($id) {
-                $join->on('zelle_join.cash_register_data_id', '=', 'cash_register_data.id');
-            }
-        )
-        ->where('cash_register_data.id', '=', $id);
-
-        return $query->first();
+        return $this->jsonResponse(['data' => $totals], 200);
     }
 
     private function totalRecordsColsToUpdate($old_record, $new_record, $parent_id){
@@ -858,280 +724,5 @@ class CashRegisterController extends Controller
             'bank_name' => $new_record[1],
             'cash_register_data_id' => $parent_id
         ];
-    }
-
-    public function dollarCashDetails(GetCashRegisterRequest $request)
-    {
-        $cash_register_data = CashRegisterData::find($request->validated('id'));
-
-        $title = "Facturas de dolares en efectivo";
-        $columns = ["id", "Monto"];
-
-        // ( TipoFac = B )En esta categoria esta tanto pagos en dolares en efectivo, zelle y punto internacional
-        $bills = DB::connection('saint_db')->table('SAFACT')
-            ->select(['NumeroD as id', 'Monto as amount'])
-            ->where('CodUsua', '=', $cash_register_data->cash_register_user)
-            ->where('TipoFac', '=', 'B')
-            ->whereNotIn('')
-            ->whereDate('FechaE', '=', Date::now()->format('d-m-Y'))
-            ->orderBy('FechaE', 'desc')
-            ->paginate(10);
-       
-        $amounts = $this->getBillsAmounts($bills);
-       
-        $sum_amount = $this::getSumAmount($amounts);
-
-        $this->format_amount($bills, $amounts);
-        
-        /** Here should be handle the queries to the database */
-        $data = compact('cash_register', 'columns', 'bills', 'sum_amount', 'title');
-
-        return $this->getTableSummaryView('pages.cash-register.create-step-two', $data);
-    }
-
-    public function createStepThree(Request $request)
-    {
-        $cash_register = $this->getSessionCashRegisterData($request);
-        $sub_route = $this->substring_sub_route_prev_url('cash-register');
-
-        if (!$this->contains_step_route($sub_route) || is_null($cash_register)){
-            return redirect()->route('cash_register_step_one.create');
-        }
-
-        $title = "Facturas de Bs en efectivo";
-        $columns = ["id", "Monto"];
-    
-        // Consulta que extrae la diferencia entre SAFACT y SAIPAVTA
-        // Para entraer las facturas de pagos en efectivo (Bs.)
-        $bills = DB::connection('saint_db')->table('SAFACT')
-            ->select(['SAFACT.NumeroD as id', 'SAFACT.Monto as amount'])
-            ->whereNotIn('SAFACT.NumeroD', function($query){
-                $query
-                    ->select('SAIPAVTA.NumeroD')
-                    ->from('SAIPAVTA');
-            })
-            ->where('SAFACT.TipoFac', '=', 'A')
-            ->whereDate('SAFACT.FechaE', '=', Date::now()->format('Y-m-d'))
-            ->orderBy('SAFACT.FechaE', 'desc')
-            ->paginate(10);
-
-            
-        $amounts = $this->getBillsAmounts($bills);
-       
-        $sum_amount = $this::getSumAmount($amounts);
-
-        $this->format_amount($bills, $amounts);
-        
-        /** Here should be handle the queries to the database */
-        $data = compact('cash_register', 'columns', 'bills', 'sum_amount', 'title');
-       
-        return $this->getTableSummaryView('pages.cash-register.create-step-three', $data);
-    }
-
-    public function createStepFour(Request $request)
-    {
-        $cash_register = $this->getSessionCashRegisterData($request);
-
-        $sub_route = $this->substring_sub_route_prev_url('cash-register');
-
-        if (!$this->contains_step_route($sub_route) || is_null($cash_register)){
-            return redirect()->route('cash_register_step_one.create');
-        }
-
-        $title = "Facturas de pagos en Zelle";
-        $columns = ["id", "Monto"];
-        
-        $bills = DB::connection('saint_db')->table('SAFACT')
-        ->select(['NumeroD as id', 'Monto as amount'])
-        ->where('CodUsua', '=', $cash_register->cash_register_id)
-        ->where('TipoFac', '=', 'B')
-        ->whereDate('FechaE', '=', Date::now()->format('d-m-Y'))
-        ->orderBy('FechaE', 'desc')
-        ->paginate(10);
-
-        $amounts = $this->getBillsAmounts($bills);
-    
-        $sum_amount = $this::getSumAmount($amounts);
-
-        $this->format_amount($bills, $amounts);
-
-        /** Here should be handle the queries to the database */
-        $data = compact('cash_register', 'columns', 'bills', 'sum_amount', 'title');
-
-        return $this->getTableSummaryView('pages.cash-register.create-step-four', $data);
-    }
-
-    public function createStepFive(Request $request)
-    {
-        $cash_register = $this->getSessionCashRegisterData($request);
-
-        $sub_route = $this->substring_sub_route_prev_url('cash-register');
-
-        if (!$this->contains_step_route($sub_route) || is_null($cash_register)){
-            return redirect()->route('cash_register_step_one.create');
-        }
-
-        $title = "Facturas de pagos en Punto de venta Bs (Debito)";
-        $columns = ["id", "Monto"];
-        
-        $bills = DB::connection('saint_db')->table('SAFACT')
-            ->select(['SAFACT.NumeroD as id', 'SAFACT.Monto as amount'])
-            ->join('SAIPAVTA', function($join){
-                $join
-                    ->on('SAFACT.NumeroD', '=', 'SAIPAVTA.NumeroD')
-                    ->where('SAIPAVTA.CodPago', '=', '01');
-            })
-            ->whereDate('SAFACT.FechaE', '=', Date::now()->format('Y-m-d'))
-            ->where('SAFACT.CodUsua', '=', $cash_register->cash_register_id)
-            ->orderBy('SAFACT.FechaE', 'desc')
-            ->paginate(10);
-    
-        $amounts = $this->getBillsAmounts($bills);
-        $sum_amount = $this::getSumAmount($amounts);
-        
-
-        /** Here should be handle the queries to the database */
-        $data = compact('cash_register', 'columns', 'bills', 'sum_amount', 'title');
-
-        return $this->getTableSummaryView('pages.cash-register.create-step-five', $data);
-    }
-
-    public function createStepSix(Request $request)
-    {
-        $cash_register = $this->getSessionCashRegisterData($request);
-
-        $sub_route = $this->substring_sub_route_prev_url('cash-register');
-
-        if (!$this->contains_step_route($sub_route) || is_null($cash_register)){
-            return redirect()->route('cash_register_step_one.create');
-        }
-        
-        $title = "Facturas de pagos en Punto de venta Bs (Credito)";
-        $columns = ["id", "Monto"];
-        
-        $bills = DB::connection('saint_db')->table('SAFACT')
-            ->select(['SAFACT.NumeroD as id', 'SAFACT.Monto as amount'])
-            ->join('SAIPAVTA', function($join){
-                $join
-                    ->on('SAFACT.NumeroD', '=', 'SAIPAVTA.NumeroD')
-                    ->where('SAIPAVTA.CodPago', '=', '02');
-            })
-            ->whereDate('SAFACT.FechaE', '=', Date::now()->format('Y-m-d'))
-            ->where('SAFACT.CodUsua', '=', $cash_register->cash_register_id)
-            ->orderBy('SAFACT.FechaE', 'desc')
-            ->paginate(10);
-        
-        $amounts = $this->getBillsAmounts($bills);
-        $sum_amount = $this::getSumAmount($amounts);
-        
-
-        /** Here should be handle the queries to the database */
-        $data = compact('cash_register', 'columns', 'bills', 'sum_amount', 'title');
-
-        return $this->getTableSummaryView('pages.cash-register.create-step-six', $data);
-    }
-
-    public function createStepSeven(Request $request)
-    {
-        $cash_register = $this->getSessionCashRegisterData($request);
-
-        $sub_route = $this->substring_sub_route_prev_url('cash-register');
-
-        if (!$this->contains_step_route($sub_route) || is_null($cash_register)){
-            return redirect()->route('cash_register_step_one.create');
-        }
-
-        $title = "Facturas de pagos en Punto de venta Bs (Todo Ticket)";
-        $columns = ["id", "Monto"];
-        
-        $bills = DB::connection('saint_db')->table('SAFACT')
-            ->select(['SAFACT.NumeroD as id', 'SAFACT.Monto as amount'])
-            ->join('SAIPAVTA', function($join){
-                $join
-                    ->on('SAFACT.NumeroD', '=', 'SAIPAVTA.NumeroD')
-                    ->where('SAIPAVTA.CodPago', '=', '03');
-            })
-            ->whereDate('SAFACT.FechaE', '=', Date::now()->format('Y-m-d'))
-            ->where('SAFACT.CodUsua', '=', $cash_register->cash_register_id)
-            ->orderBy('SAFACT.FechaE', 'desc')
-            ->paginate(10);
-      
-        $amounts = $this->getBillsAmounts($bills);
-        $sum_amount = $this::getSumAmount($amounts);
-        
-        /** Here should be handle the queries to the database */
-        $data = compact('cash_register', 'columns', 'bills', 'sum_amount', 'title');
-
-        return $this->getTableSummaryView('pages.cash-register.create-step-seven', $data);
-    }
-
-    public function createStepEight(Request $request)
-    {
-        $cash_register = $this->getSessionCashRegisterData($request);
-
-        $sub_route = $this->substring_sub_route_prev_url('cash-register');
-
-        if (!$this->contains_step_route($sub_route) || is_null($cash_register)){
-            return redirect()->route('cash_register_step_one.create');
-        }
-
-        $title = "Facturas de pagos en transferencia y pago movil";
-        $columns = ["id", "Monto"];
-
-        $bills = DB::connection('saint_db')->table('SAFACT')
-            ->select(['SAFACT.NumeroD as id', 'SAFACT.Monto as amount'])
-            ->join('SAIPAVTA', function($join){
-                $join
-                    ->on('SAFACT.NumeroD', '=', 'SAIPAVTA.NumeroD')
-                    ->where('SAIPAVTA.CodPago', '=', '05');
-            })
-            ->whereDate('SAFACT.FechaE', '=', Date::now()->format('Y-m-d'))
-            ->where('SAFACT.CodUsua', '=', $cash_register->cash_register_id)
-            ->orderBy('SAFACT.FechaE', 'desc')
-            ->paginate(10);
-
-        $amounts = $this->getBillsAmounts($bills);
-    
-        $sum_amount = $this::getSumAmount($amounts);
-
-        $this->format_amount($bills, $amounts);
-        
-        /** Here should be handle the queries to the database */
-        $data = compact('cash_register', 'columns', 'bills', 'sum_amount', 'title');
-
-        return $this->getTableSummaryView('pages.cash-register.create-step-eight', $data);
-    }
-
-    public function createStepNine(Request $request)
-    {
-        $cash_register = $this->getSessionCashRegisterData($request);
-
-        $sub_route = $this->substring_sub_route_prev_url('cash-register');
-
-        if (!$this->contains_step_route($sub_route) || is_null($cash_register)){
-            return redirect()->route('cash_register_step_one.create');
-        }
-
-        $title = "Facturas de pagos en Punto de venta internacional ($)";
-        $columns = ["id", "Monto"];
-
-        $bills = DB::connection('saint_db')->table('SAFACT')
-        ->select(['NumeroD as id', 'Monto as amount'])
-        ->where('CodUsua', '=', $cash_register->cash_register_id)
-        ->where('TipoFac', '=', 'B')
-        ->whereDate('FechaE', '=', Date::now()->format('d-m-Y'))
-        ->orderBy('FechaE', 'desc')
-        ->paginate(10);
-
-        $amounts = $this->getBillsAmounts($bills);
-    
-        $sum_amount = $this::getSumAmount($amounts);
-
-        $this->format_amount($bills, $amounts);
-        
-        /** Here should be handle the queries to the database */
-        $data = compact('cash_register', 'columns', 'bills', 'sum_amount', 'title');
-
-        return $this->getTableSummaryView('pages.cash-register.create-step-nine', $data);
     }
 }

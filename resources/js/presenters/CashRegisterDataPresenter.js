@@ -1,6 +1,6 @@
 import Datepicker from '@themesberg/tailwind-datepicker/Datepicker';
 
-import { getCashRegisterUsersWithoutRecords, getTotalsToCashRegisterUser } from '_services/cash-register';
+import { getCashRegisterUsersWithoutRecords, getTotalsToCashRegisterUserSaint } from '_services/cash-register';
 
 const CashRegisterDataPresenterPrototype = {
 	changeOnView({ target }) {
@@ -20,15 +20,14 @@ const CashRegisterDataPresenterPrototype = {
 		let newDate = Datepicker.formatDate(date, 'yyyy-mm-dd')
 		this.selectedDate = newDate
 		this.getUsersWithoutRecord(newDate)
-		
+
 	},
 	getTotalsToCashRegisterUserOption(date, cashRegisterUser){
 		this.setTotalAmounts(null)
-		getTotalsToCashRegisterUser({date, cashRegisterUser})
+		getTotalsToCashRegisterUserSaint({date, cashRegisterUser})
 			.then(res => {
 				if ([201, 200].includes(res.status)){
 					let data = res.data.data;
-					console.log(data);
 					this.setTotalAmounts(data)
 				}
 			})
@@ -39,17 +38,17 @@ const CashRegisterDataPresenterPrototype = {
 	getUsersWithoutRecord(date){
         this.view.showLoading()
         this.view.hideCashRegisterUsersNoAvailable();
-         
+
 		getCashRegisterUsersWithoutRecords(date)
             .then(res => {
                 this.view.hideLoading()
                 if ([201, 200].includes(res.status)){
 
-                    let data = res.data.data;
+                    let data = res.data;
 
-					// If there's a stored date on component, then the user is 
+					// If there's a stored date on component, then the user is
 					// editing a cash register
-					if (this.defaultDate && this.defaultCashRegisterUser 
+					if (this.defaultDate && this.defaultCashRegisterUser
 							&& this.defaultDate === date){
 						data.unshift({key: this.defaultCashRegisterUser, value: this.defaultCashRegisterUser})
 					}
@@ -57,7 +56,7 @@ const CashRegisterDataPresenterPrototype = {
 					if (data.length === 0){
                         this.view.showCashRegisterUsersNoAvailable();
                     }
-                    
+
 					this.view.setCashRegisterUsersElements(data);
                 }
             })
@@ -74,11 +73,11 @@ const CashRegisterDataPresenter = function (setTotalAmounts, date = null, cashRe
     this.view = null;
 	let today = new Date();
 
-	this.defaultDate = date 
-		? date.split('-').reverse().join('-') 
+	this.defaultDate = date
+		? date.split('-').reverse().join('-')
 		: today.getFullYear()+'-'+(today.getMonth() + 1)+'-'+today.getDate();
 
-	this.defaultCashRegisterUser = cashRegisterUser;
+  this.defaultCashRegisterUser = cashRegisterUser;
 
 	this.selectedDate = this.defaultDate;
 	this.selectedCashRegisterUser = this.defaultCashRegisterUser;

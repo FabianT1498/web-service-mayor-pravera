@@ -32,6 +32,9 @@ import DenominationRecord from '_models/DenominationRecord'
 import PointSaleRecord from '_models/PointSaleRecord'
 import Bank from '_models/Bank';
 
+
+import { getTotalsToCashRegisterUserSaint, getTotalsToCashRegisterUser } from '_services/cash-register';
+
 export default {
     totalInputDOMS: {
       liquidMoneyBs: document.querySelector('#total_bs_cash'),
@@ -65,7 +68,7 @@ export default {
     },
     proxyTotalSaint: null,
     proxy: null,
-setTotalLiquidMoneyBs(total){
+    setTotalLiquidMoneyBs(total){
         this.proxy.liquidMoneyBs = total
         this.setTotalBsCashDiff();
     },
@@ -98,13 +101,18 @@ setTotalLiquidMoneyBs(total){
                 this.proxyTotalSaint[el] = 0;
             })
         } else {
-            // Liquid Money Payment Amounts
-            totals.total_cash_records.forEach(el => {
-                this.proxyTotalSaint[TYPE_BILLS[el.TipoFac]] = parseFloat(el.total_cash);
-                this[this.propNameToDiffTotalMethod[TYPE_BILLS[el.TipoFac]]].call(this)
-            });
+          // Liquid Money Payment Amounts
+          let totalsFromSafact = totals.totals_from_safact[0];
 
-            // E-Payment Amounts
+          this.proxyTotalSaint['liquidMoneyBs'] = parseFloat(totalsFromSafact.bolivares);
+          this.setTotalBsCashDiff(this);
+
+          this.proxyTotalSaint['liquidMoneyDollar'] = parseFloat(totalsFromSafact.bolivares);
+          this.setTotalDollarCashDiff(this);
+
+          let totalsEPayments = totals.totals_e_payments;
+
+           // E-Payment Amounts
             totals.total_e_payment_records.forEach(el => {
                 if (this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] !== undefined){
                     if (el.CodPago === '01' || el.CodPago === '02'){
@@ -118,6 +126,29 @@ setTotalLiquidMoneyBs(total){
                 };
             });
         }
+    },
+    getCashRegisterData(date, cashRegisterUser){
+        getTotalsToCashRegisterUser({date, cashRegisterUser})
+          .then(res => {
+            if ([201, 200].includes(res.status)){
+              let data = res.data.data;
+              this.setTotalSaintDOMS(data)
+            }
+          })
+          .catch(err => {
+            console.log(err);
+          })
+
+        getTotalsToCashRegisterUser({date, cashRegisterUser})
+          .then(res => {
+            if ([201, 200].includes(res.status)){
+              let data = res.data.data;
+              this.setTotalSaintDOMS(data)
+            }
+          })
+          .catch(err => {
+            console.log(err);
+          })
     },
     setTotalDollarCashDiff(){
         let diff = this.proxy.liquidMoneyDollar - this.proxyTotalSaint.liquidMoneyDollar;
@@ -363,15 +394,17 @@ setTotalLiquidMoneyBs(total){
         }, {})
 
         this.proxy = new Proxy(totalInputkeys, handlerWrapper(handlerInputDOMS))
-
         this.proxyTotalSaint = new Proxy(totalSaintkeys, handlerWrapper(handlerTotalSaintDOMS))
-        store.subscribe(() => {
-            let state = store.getState();
 
-            if (state.lastAction === STORE_DOLLAR_EXCHANGE_VALUE ){
-                document.querySelector('p[data-dollar-exchange="dollar_exchange_date"]').innerText = state.dollarExchange.createdAt
-                document.querySelector('p[data-dollar-exchange="dollar_exchange_value"]').innerText = `${state.dollarExchange.value} ${CURRENCY_SIGN_MAP[CURRENCIES.BOLIVAR]}`
-            }
-        })
+        store.subscribe(() => {
+          let state = store.getState();
+
+          if (state.lastAction === STORE_DOLLAR_EXCHANGE_VALUE ){
+            document.querySelector('p[data-dollar-exchange="dollar_exchange_date"]')
+              .innerText = state.dollarExchange.createdAt
+            document.querySelector('p[data-dollar-exchange="dollar_exchange_value"]').innerText = `${state.          dollarExchange.value} ${CURRENCY_SIGN_MAP[CURRENCIES.BOLIVAR]}`
+          }
+            document.querySelector('p[data-dollar-exchange="dollar_exchange_value"]').innerText = `${state.dollarExchange.value} ${CURRENCY_SIGN_MAP[CURRENCIES.BOLIVAR]}`
+        });
     }
 }
