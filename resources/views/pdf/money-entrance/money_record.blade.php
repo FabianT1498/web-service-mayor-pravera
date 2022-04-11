@@ -299,11 +299,11 @@
 
                 <div>
                     <table class="w-90p mb-8">
-                        <caption class="text-center w-90p bg-grey-400">Resumen del total de credito por caja</caption>
+                        <caption class="text-center w-90p bg-grey-400">Resumen del total de entrada de credito por caja</caption>
                         <thead>
                             <tr>
                                 <th>&nbsp;</th>
-                                <th>Total</th>
+                                <th>Total (Bs)</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -322,48 +322,57 @@
                 </div>
 
                 <div class="w-80p mb-8">
-                    <h1 class="text-center">Totales de entradas en dinero tangible</h1>
+                    <h1 class="text-center">Totales de entradas en dinero tangible por fecha</h1>
                 </div>
 
                 @foreach($totals_safact as $key_user => $dates)
-                    @foreach($dates as $key_date => $records)
+                    
                         <table class="w-80p mb-4">
                             <caption class="text-center w-80p bg-grey-400">{{ $key_user }}</caption>
-                            <caption class="text-center w-80p bg-grey-400">{{ date('d-m-Y', strtotime($key_date)) }}</caption>
-
                             <thead>
                                 <tr>
+                                    <th>Fecha</th>
                                     <th>Bolívares (Tangibles)</th>
                                     <th>Dólares (Tangibles)</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($records as $record)
-                                    <tr>
-                                        <td class="text-center">{{ number_format($record->bolivares, 2) }}</td>
-                                        <td class="text-center">{{ number_format($record->dolares, 2) }}</td>
-                                    </tr>
+                                @foreach($dates as $key_date => $records)
+                                    @foreach($records as $record)
+                                        <tr>
+                                            <td class="text-center font-semibold">{{ date('d-m-Y', strtotime($key_date)) }}</td>
+                                            <td class="text-center">{{ number_format($record->bolivares, 2) }}</td>
+                                            <td class="text-center">{{ number_format($record->dolares, 2) }}</td>
+                                        </tr>
+                                    @endforeach
                                 @endforeach
                             </tbody>
                         </table>
-                    @endforeach
                 @endforeach
 
                 <div class="w-80p mb-8">
-                    <h1 class="text-center">Totales de entradas por credito</h1>
+                    <h1 class="text-center">Total de entrada de credito por fecha</h1>
                 </div>
 
                 @foreach($totals_safact as $key_user => $dates)
                     <table class="w-80p mb-4">
                         <caption class="text-center w-80p bg-grey-400">{{ $key_user }}</caption>
-                        @foreach($dates as $key_date => $records)
-                            @foreach($records as $record)
-                                    <tr>
-                                        <td class="text-center">{{ date('d-m-Y', strtotime($key_date)) }}</caption>
-                                        <td class="text-center">{{ number_format($record->credito, 2) }}</td>
-                                    </tr>
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Total (Bs)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($dates as $key_date => $records)
+                                @foreach($records as $record)
+                                        <tr>
+                                            <td class="text-center font-semibold">{{ date('d-m-Y', strtotime($key_date)) }}</caption>
+                                            <td class="text-center">{{ number_format($record->credito, 2) . ' ' . $currency_signs['bs'] }}</td>
+                                        </tr>
+                                @endforeach
                             @endforeach
-                        @endforeach
+                        </tbody>
                     </table>
                 @endforeach
 
@@ -371,13 +380,13 @@
                     <h1 class="text-center">Totales de entradas en métodos de pago electrónicos</h1>
                 </div>
                 @foreach($totals_e_payment as $key_user => $dates)
-                    @foreach($dates as $key_date => $date_record)
+                   
                         <table class="w-90p mb-4">
                             <caption class="text-center w-90p bg-grey-400">{{ $key_user }}</caption>
-                            <caption class="text-center w-90p bg-grey-400">{{ date('d-m-Y', strtotime($key_date)) }}</caption>
 
                             <thead>
                                 <tr>
+                                    <th>Fecha</th>
                                     <th>PV. Debito (Bs)</th>
                                     <th>TDC (Bs)</th>
                                     <th>Todoticket (Bs)</th>
@@ -388,18 +397,21 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td class="text-center">{{ number_format($date_record['01'], 2) }}</td>
-                                    <td class="text-center">{{ number_format($date_record['02'], 2) }}</td>
-                                    <td class="text-center">{{ number_format($date_record['03'], 2) }}</td>
-                                    <td class="text-center">{{ number_format($date_record['04'], 2) }}</td>
-                                    <td class="text-center">{{ number_format($date_record['05'], 2) }}</td>
-                                    <td class="text-center">{{ number_format($date_record['07'], 2) }}</td>
-                                    <td class="text-center">{{ number_format($date_record['08'], 2) }}</td>
-                                </tr>
+                                @foreach($dates as $key_date => $date_record)
+                                    <tr>
+                                        <td class="text-center font-semibold">{{ date('d-m-Y', strtotime($key_date)) }}</td>
+                                        <td class="text-center">{{ number_format($date_record['01'], 2) }}</td>
+                                        <td class="text-center">{{ number_format($date_record['02'], 2) }}</td>
+                                        <td class="text-center">{{ number_format($date_record['03'], 2) }}</td>
+                                        <td class="text-center">{{ number_format($date_record['04'], 2) }}</td>
+                                        <td class="text-center">{{ number_format($date_record['05'], 2) }}</td>
+                                        <td class="text-center">{{ number_format($date_record['07'], 2) }}</td>
+                                        <td class="text-center">{{ number_format($date_record['08'], 2) }}</td>
+                                    </tr>
+                                @endforeach
                             </tbody>
                         </table>
-                    @endforeach
+                    
                 @endforeach
             </div>
         </div>
