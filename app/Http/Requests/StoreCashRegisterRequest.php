@@ -30,7 +30,7 @@ class StoreCashRegisterRequest extends FormRequest
     public function rules()
     {
        
-        $total_rules = ['required', new BadFormattedAmount, 'gt:0'];
+        $total_rules = ['required', new BadFormattedAmount, 'gte:0'];
 
         $rules = [
             'cash_register_user' => ['required', 'exists:cash_register_users,name'],
@@ -51,6 +51,10 @@ class StoreCashRegisterRequest extends FormRequest
         
         if (count($this->bs_cash_record) > 0){
             $rules['bs_cash_record.*'] = $total_rules;
+        }
+
+        if (count($this->pago_movil_record) > 0){
+            $rules['pago_movil_record.*'] = $total_rules;
         }
 
         // if ($this->total_dollar_denominations > 0){
@@ -100,6 +104,15 @@ class StoreCashRegisterRequest extends FormRequest
             $inputs['dollar_cash_record'] = [];
         }
         // }
+
+        // if (!is_null($inputs['total_dollar_cash']) && $inputs['total_dollar_cash'] > 0){
+        if ($this->has('pago_movil_record')){
+            $inputs['pago_movil_record'] = array_map(function($record){
+                return $this->formatAmount($record);
+            }, $this->pago_movil_record);
+        } else {
+            $inputs['pago_movil_record'] = [];
+        }
             
         // if (!is_null($inputs['total_bs_cash']) && $inputs['total_bs_cash'] > 0){
         if ($this->has('bs_cash_record')){

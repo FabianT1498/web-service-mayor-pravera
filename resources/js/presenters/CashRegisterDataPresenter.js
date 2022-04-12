@@ -28,6 +28,7 @@ const CashRegisterDataPresenterPrototype = {
 			.then(res => {
 				if ([201, 200].includes(res.status)){
 					let data = res.data.data;
+					console.log(data)
 					this.setTotalAmounts(data)
 				}
 			})

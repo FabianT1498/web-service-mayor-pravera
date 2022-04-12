@@ -17,6 +17,7 @@ use App\Models\CashRegisterData;
 use App\Models\CashRegister;
 use App\Models\DollarCashRecord;
 use App\Models\BsCashRecord;
+use App\Models\PagoMovilRecord;
 use App\Models\BsDenominationRecord;
 use App\Models\DollarDenominationRecord;
 use App\Models\PointSaleBsRecord;
@@ -185,6 +186,13 @@ class CashRegisterController extends Controller
                     return array('amount' => $value, 'cash_register_data_id' => $cash_register_data->id);
                 }, $validated['dollar_cash_record']);
                 BsCashRecord::insert($data);
+            }
+
+            if (array_key_exists('pago_movil_record', $validated)){
+                $data = array_map(function($value) use ($cash_register_data){
+                    return array('amount' => $value, 'cash_register_data_id' => $cash_register_data->id);
+                }, $validated['pago_movil_record']);
+                PagoMovilRecord::insert($data);
             }
 
             if (array_key_exists('dollar_denominations_record', $validated)){
