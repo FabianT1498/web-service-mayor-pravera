@@ -1,9 +1,9 @@
   <!-- start sidebar -->
-  <div id="sideBar" class="relative flex flex-col flex-wrap bg-white border-r border-gray-300 p-6 flex-none w-64 md:-ml-64 md:fixed md:top-0 md:z-30 md:h-screen md:shadow-xl animate__animated animate__faster">
+  <div id="sideBar" class="relative flex flex-col flex-wrap bg-white border-r border-gray-300 p-6 flex-none w-64 md:-ml-64 md:fixed md:top-0 md:z-30 lg:h-screen md:shadow-xl animate__animated animate__faster">
 
 
     <!-- sidebar content -->
-    <div class="flex flex-col">
+    <div class="flex flex-col lg:h-screen">
 
       <!-- sidebar toggle -->
       <div class="text-right hidden md:block mb-4">
@@ -55,5 +55,5 @@
 
     <x-dollar-exchange-modal />
 
-    </div>
+  </div>
   <!-- end sidbar -->

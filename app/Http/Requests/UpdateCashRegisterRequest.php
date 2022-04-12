@@ -34,6 +34,7 @@ class UpdateCashRegisterRequest extends FormRequest
      */
     public function rules()
     {
+        
         $total_rules = ['required', new BadFormattedAmount, 'gt:0'];
 
         $rules = [

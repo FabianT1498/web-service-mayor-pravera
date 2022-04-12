@@ -369,6 +369,7 @@ class CashRegisterController extends Controller
 
     public function update(UpdateCashRegisterRequest $request){
 
+        
         $validated = $request->validated();
 
         $cash_register_data = CashRegisterData::where('id', $request->route('id'))->first();

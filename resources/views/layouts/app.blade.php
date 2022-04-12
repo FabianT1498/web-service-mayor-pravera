@@ -25,7 +25,7 @@
         @include('layouts.navigation')
 
         <!-- strat wrapper -->
-        <div class="h-screen flex flex-row flex-wrap">
+        <div class="h-screen flex flex-row">
             @include('layouts.sidebar')
             
             <!-- strat content -->
