@@ -4,6 +4,8 @@ namespace App\Repositories;
 
 use Illuminate\Support\Facades\DB;
 
+use App\Models\CashRegisterData;
+
 class CashRegisterRepository implements CashRegisterRepositoryInterface
 {
 

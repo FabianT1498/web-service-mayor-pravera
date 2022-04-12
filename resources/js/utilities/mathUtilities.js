@@ -31,6 +31,10 @@ const formatAmount = (amount, defaultValue = '0.00') => {
 };
 
 const roundNumber = (number, decimals = 2) => {
+    if (number === 0){
+        return number
+    }
+    
     return (Math.round((number + Number.EPSILON) * Math.pow(10, decimals)) / 100);
 }
 

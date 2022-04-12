@@ -8,14 +8,11 @@ const getTotalsToCashRegisterUserSaint = function(obj){
   return asyncFunction(axiosClient.get(`/cash_register/saint/totals/${obj.cashRegisterUser}/${obj.date}/${obj.date}`))
 };
 
-const getTotalsToCashRegisterUser = function(obj){
-  return asyncFunction(axiosClient.get(`/cash_register/totals/${obj.cashRegisterUser}/${obj.date}/${obj.date}`))
+const getTotalsToCashRegisterUser = function(id){
+  return asyncFunction(axiosClient.get(`/cash_register/totals/${id}`))
 };
 
 const asyncFunction = (promise) => promise.then(res => res).catch(err => err)
 
-const getTotalsToCashRegisterUser = function(obj){
-  return asyncFunction(axiosClient.get(`/cash_register/totals/${obj.cashRegisterUser}/${obj.date}/${obj.date}`))
-};
 
-export { getCashRegisterUsersWithoutRecords, getTotalsToCashRegisterUserSaint };
+export { getCashRegisterUsersWithoutRecords, getTotalsToCashRegisterUserSaint, getTotalsToCashRegisterUser };

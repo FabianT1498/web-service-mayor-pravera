@@ -13,6 +13,7 @@
     <form id="form" autocomplete="off" method="POST" action="{{ route('cash_register.update', $cash_register_data->id) }}">
         @csrf
         @method('PUT')
+        <input id="id" type="hidden" value={{$cash_register_data->id}}>
         <div class="w-10/12"><h3 class="h3 text-center mb-4">Datos de la caja</h3></div>
 
         <div id="cash_register_data" class="w-10/12 grid gap-4 grid-cols-[150px_250px_300px] grid-rows-4 mb-8 mx-auto items-center">

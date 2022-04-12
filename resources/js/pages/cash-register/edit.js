@@ -90,10 +90,13 @@ export default {
         this.proxy.pointSaleBs = total
         this.setTotalPointSaleBsDiff();
     },
-    setTotalPointSaleDollar(event){
-        let amount = event.target.value ? parseFloat(event.target.value) : 0
-        this.proxy.pointSaleDollar = amount
+    setTotalPointSaleDollar(total){
+        this.proxy.pointSaleDollar = total
         this.setTotalPointSaleDollarDiff();
+    },
+    handlePointSaleDollar(event){
+        let total = event.target.value ? parseFloat(event.target.value) : 0
+        this.setTotalPointSaleDollar(total)
     },
     setTotalSaintDOMS(totals = null){
         if (!totals){
@@ -107,18 +110,16 @@ export default {
           this.proxyTotalSaint['liquidMoneyBs'] = parseFloat(totalsFromSafact.bolivares);
           this.setTotalBsCashDiff(this);
 
-          this.proxyTotalSaint['liquidMoneyDollar'] = parseFloat(totalsFromSafact.bolivares);
+          this.proxyTotalSaint['liquidMoneyDollar'] = parseFloat(totalsFromSafact.dolares);
           this.setTotalDollarCashDiff(this);
 
           let totalsEPayments = totals.totals_e_payments;
 
            // E-Payment Amounts
-            totals.total_e_payment_records.forEach(el => {
+           totalsEPayments.forEach(el => {
                 if (this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] !== undefined){
                     if (el.CodPago === '01' || el.CodPago === '02'){
-                        this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] += parseFloat(el.total)
-                        let amount = roundNumber(this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]])
-                        this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] = amount;
+                        this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] += roundNumber(parseFloat(el.total))
                     } else {
                         this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] = parseFloat(el.total)
                     }
@@ -127,63 +128,49 @@ export default {
             });
         }
     },
-    getCashRegisterData(date, cashRegisterUser){
-        getTotalsToCashRegisterUser({date, cashRegisterUser})
-          .then(res => {
-            if ([201, 200].includes(res.status)){
-              let data = res.data.data;
-              this.setTotalSaintDOMS(data)
-            }
-          })
-          .catch(err => {
-            console.log(err);
-          })
-
-        getTotalsToCashRegisterUser({date, cashRegisterUser})
-          .then(res => {
-            if ([201, 200].includes(res.status)){
-              let data = res.data.data;
-              this.setTotalSaintDOMS(data)
-            }
-          })
-          .catch(err => {
-            console.log(err);
-          })
-    },
     setTotalDollarCashDiff(){
         let diff = this.proxy.liquidMoneyDollar - this.proxyTotalSaint.liquidMoneyDollar;
         let color = this.getAmountColor(diff);
-        console.log(color)
         this.totalDiffDOMS.liquidMoneyDollar.className = '';
-        this.totalDiffDOMS.liquidMoneyDollar.classList.add(color);
+        if (color !== ''){
+            this.totalDiffDOMS.liquidMoneyDollar.classList.add(color);
+        }
         this.totalDiffDOMS.liquidMoneyDollar.innerHTML = roundNumber(diff);
     },
     setTotalBsCashDiff(){
         let diff = this.proxy.liquidMoneyBs - this.proxyTotalSaint.liquidMoneyBs;
         let color = this.getAmountColor(diff);
         this.totalDiffDOMS.liquidMoneyBs.className = '';
-        this.totalDiffDOMS.liquidMoneyBs.classList.add(color);
+        if (color !== ''){
+            this.totalDiffDOMS.liquidMoneyBs.classList.add(color);
+        }        
         this.totalDiffDOMS.liquidMoneyBs.innerHTML = roundNumber(diff);
     },
     setTotalPointSaleBsDiff(){
         let diff = this.proxy.pointSaleBs - this.proxyTotalSaint.pointSaleBs;
         let color = this.getAmountColor(diff);
         this.totalDiffDOMS.pointSaleBs.className = '';
-        this.totalDiffDOMS.pointSaleBs.classList.add(color);
+        if (color !== ''){
+            this.totalDiffDOMS.pointSaleBs.classList.add(color);
+        }
         this.totalDiffDOMS.pointSaleBs.innerHTML = roundNumber(diff);
     },
     setTotalPointSaleDollarDiff(){
         let diff = this.proxy.pointSaleDollar - this.proxyTotalSaint.pointSaleDollar;
         let color = this.getAmountColor(diff);
         this.totalDiffDOMS.pointSaleDollar.className = '';
-        this.totalDiffDOMS.pointSaleDollar.classList.add(color);
+        if (color !== ''){
+            this.totalDiffDOMS.pointSaleDollar.classList.add(color);
+        }        
         this.totalDiffDOMS.pointSaleDollar.innerHTML = roundNumber(diff);
     },
     setTotalZelleDiff(){
         let diff = this.proxy.zelleDollar - this.proxyTotalSaint.zelleDollar;
         let color = this.getAmountColor(diff);
         this.totalDiffDOMS.zelleDollar.className = '';
-        this.totalDiffDOMS.zelleDollar.classList.add(color);
+        if (color !== ''){
+            this.totalDiffDOMS.zelleDollar.classList.add(color);
+        }        
         this.totalDiffDOMS.zelleDollar.innerHTML = roundNumber(diff);
     },
     setPropWrapper(fn){
@@ -198,12 +185,113 @@ export default {
 
         return '';
     },
+    initData(){
+        let handlerInputDOMS = (self, key, value) => {
+            self.totalInputDOMS[key].value = value;
+        }
+
+        let handlerTotalSaintDOMS = (self, key, value) => {
+            self.totalSaintDOMS[key].innerHTML = value
+        }
+
+        let handlerWrapper = (fn) => {
+            let self = this;
+            return {
+                set: function(target, key, value) {
+                    target[key] = value;
+                    fn(self, key, value)
+                    return true;
+                },
+            }
+        }
+
+        let totalInputkeys = Object.keys(this.totalInputDOMS).reduce((obj, key) => {
+            obj[key] = 0;
+            return obj;
+        }, {})
+
+        let totalSaintkeys = Object.keys(this.totalSaintDOMS).reduce((obj, key) => {
+            obj[key] = 0;
+            return obj;
+        }, {})
+
+        this.proxy = new Proxy(totalInputkeys, handlerWrapper(handlerInputDOMS))
+        this.proxyTotalSaint = new Proxy(totalSaintkeys, handlerWrapper(handlerTotalSaintDOMS))        
+    },
+    initEventListeners(){
+        // // Cash register modal total input DOMs
+        decimalInputs[CURRENCIES.BOLIVAR].mask(this.totalInputDOMS.liquidMoneyBs);
+        decimalInputs[CURRENCIES.DOLLAR].mask(this.totalInputDOMS.liquidMoneyDollar);
+
+        // // Denomination modal total input DOMs
+        decimalInputs[CURRENCIES.BOLIVAR].mask(this.totalInputDOMS.denominationsBs);
+        decimalInputs[CURRENCIES.DOLLAR].mask(this.totalInputDOMS.denominationsDollar);
+
+        // // Zelle total input DOMs
+        decimalInputs[CURRENCIES.DOLLAR].mask(this.totalInputDOMS.zelleDollar);
+
+        // Point sale input DOMS
+        decimalInputs[CURRENCIES.DOLLAR].mask(this.totalInputDOMS.pointSaleDollar);
+        decimalInputs[CURRENCIES.BOLIVAR].mask(this.totalInputDOMS.pointSaleBs);
+
+        // Point Sale Dollar Event Handler
+        this.totalInputDOMS.pointSaleDollar.addEventListener('change', this.setPropWrapper(this.handlePointSaleDollar)) 
+
+        store.subscribe(() => {
+            let state = store.getState();
+  
+            if (state.lastAction === STORE_DOLLAR_EXCHANGE_VALUE ){
+              document.querySelector('p[data-dollar-exchange="dollar_exchange_date"]')
+                .innerText = state.dollarExchange.createdAt
+              document.querySelector('p[data-dollar-exchange="dollar_exchange_value"]').innerText = `${state.          dollarExchange.value} ${CURRENCY_SIGN_MAP[CURRENCIES.BOLIVAR]}`
+            }
+              document.querySelector('p[data-dollar-exchange="dollar_exchange_value"]').innerText = `${state.dollarExchange.value} ${CURRENCY_SIGN_MAP[CURRENCIES.BOLIVAR]}`
+        });
+    },
+    fetchInitialData(){
+        let id = document.querySelector('#id').value;
+       
+        getTotalsToCashRegisterUser(id)
+          .then(res => {
+            if ([201, 200].includes(res.status)){
+                let data = res.data.data;
+                this.setTotalLiquidMoneyBs(parseFloat(data.total_bs_cash));
+                this.setTotalLiquidMoneyDollar(parseFloat(data.total_dollar_cash));
+                this.setTotalPointSaleBs(parseFloat(data.total_point_sale_bs));
+                this.setTotalPointSaleDollar(parseFloat(data.total_point_sale_dollar));
+                this.setTotalZelleDollar(parseFloat(data.total_zelle));
+               
+                const params = {
+                    date: data.date,
+                    cashRegisterUser: data.cash_register_user
+                };
+
+                return getTotalsToCashRegisterUserSaint(params);
+            }
+          })
+          .then(res => {
+            if ([201, 200].includes(res.status)){
+                let data = res.data.data;
+
+                console.log(data);
+
+                this.setTotalSaintDOMS(data)
+              }
+          })
+          .catch(err => {
+            console.log(err);
+          })
+    },
     init(){
+        this.initData();
+        this.initEventListeners();
+        this.fetchInitialData();
 
         let cashRegisterContainer = document.querySelector('#cash_register_data')
         let cashRegisterUser = cashRegisterContainer.querySelector('#cash_register_id').value;
         let casgRegisterDate = cashRegisterContainer.querySelector('#date').value;
-        let cashRegisterDataPresenter = new CashRegisterDataPresenter(casgRegisterDate, cashRegisterUser);
+        let cashRegisterDataPresenter = new CashRegisterDataPresenter(this.setPropWrapper(this.setTotalSaintDOMS),
+            casgRegisterDate, cashRegisterUser);
         let cashRegisterDataView = new CashRegisterDataView(cashRegisterDataPresenter);
         cashRegisterDataView.init(cashRegisterContainer)
 
@@ -345,66 +433,6 @@ export default {
         let zelleRecordMoneyView = new ForeignMoneyRecordModalView(zelleRecordMoneyPresenter);
         let zelleRecordTable = new ForeignMoneyRecordTable()
         zelleRecordMoneyView.init(zelleRecordModal, 'zelle_record', zelleRecordTable)
-
-        // // Cash register modal total input DOMs
-        decimalInputs[CURRENCIES.BOLIVAR].mask(this.totalInputDOMS.liquidMoneyBs);
-        decimalInputs[CURRENCIES.DOLLAR].mask(this.totalInputDOMS.liquidMoneyDollar);
-
-        // // Denomination modal total input DOMs
-        decimalInputs[CURRENCIES.BOLIVAR].mask(this.totalInputDOMS.denominationsBs);
-        decimalInputs[CURRENCIES.DOLLAR].mask(this.totalInputDOMS.denominationsDollar);
-
-        // // Zelle total input DOMs
-        decimalInputs[CURRENCIES.DOLLAR].mask(this.totalInputDOMS.zelleDollar);
-
-        // Point sale input DOMS
-        decimalInputs[CURRENCIES.DOLLAR].mask(this.totalInputDOMS.pointSaleDollar);
-        decimalInputs[CURRENCIES.BOLIVAR].mask(this.totalInputDOMS.pointSaleBs);
-
-        // Point Sale Dollar Event Handler
-        this.totalInputDOMS.pointSaleDollar.addEventListener('change', this.setPropWrapper(this.setTotalPointSaleDollar))
-
-        let handlerInputDOMS = (self, key, value) => {
-            self.totalInputDOMS[key].value = value
-        }
-
-        let handlerTotalSaintDOMS = (self, key, value) => {
-            self.totalSaintDOMS[key].innerHTML = value
-        }
-
-        let handlerWrapper = (fn) => {
-            let self = this;
-            return {
-                set: function(target, key, value) {
-                    target[key] = value;
-                    fn(self, key, value)
-                    return true;
-                },
-            }
-        }
-
-        let totalInputkeys = Object.keys(this.totalInputDOMS).reduce((obj, key) => {
-            obj[key] = 0;
-            return obj;
-        }, {})
-
-        let totalSaintkeys = Object.keys(this.totalSaintDOMS).reduce((obj, key) => {
-            obj[key] = 0;
-            return obj;
-        }, {})
-
-        this.proxy = new Proxy(totalInputkeys, handlerWrapper(handlerInputDOMS))
-        this.proxyTotalSaint = new Proxy(totalSaintkeys, handlerWrapper(handlerTotalSaintDOMS))
-
-        store.subscribe(() => {
-          let state = store.getState();
-
-          if (state.lastAction === STORE_DOLLAR_EXCHANGE_VALUE ){
-            document.querySelector('p[data-dollar-exchange="dollar_exchange_date"]')
-              .innerText = state.dollarExchange.createdAt
-            document.querySelector('p[data-dollar-exchange="dollar_exchange_value"]').innerText = `${state.          dollarExchange.value} ${CURRENCY_SIGN_MAP[CURRENCIES.BOLIVAR]}`
-          }
-            document.querySelector('p[data-dollar-exchange="dollar_exchange_value"]').innerText = `${state.dollarExchange.value} ${CURRENCY_SIGN_MAP[CURRENCIES.BOLIVAR]}`
-        });
+   
     }
 }

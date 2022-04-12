@@ -6,6 +6,8 @@ interface CashRegisterRepositoryInterface {
 
 	public function getTotalsFromSafact($start_date, $end_date, $user);
 
-  public function getTotalsEPaymentMethods($start_date, $end_date, $user);
+  	public function getTotalsEPaymentMethods($start_date, $end_date, $user);
+
+	public function getTotals($id);
 	// more
 }
