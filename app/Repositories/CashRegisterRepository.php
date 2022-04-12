@@ -120,7 +120,7 @@ class CashRegisterRepository implements CashRegisterRepositoryInterface
             }
         )
         ->leftJoin(
-            DB::raw("(SELECT SUM(`pago_movil_records`.`amount`) as `total`, `pago_movil_records`.`cash_register_data_id` FROM `pago_movil_records` GROUP BY `pago_movil_records`.`cash_register_data_id`) `pago_movil_bs_join`"),
+            DB::raw("(SELECT SUM(`pago_movil_bs_records`.`amount`) as `total`, `pago_movil_bs_records`.`cash_register_data_id` FROM `pago_movil_bs_records` GROUP BY `pago_movil_bs_records`.`cash_register_data_id`) `pago_movil_bs_join`"),
             function($join) use ($id) {
                 $join->on('pago_movil_bs_join.cash_register_data_id', '=', 'cash_register_data.id');
             }

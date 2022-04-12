@@ -12,6 +12,7 @@ use App\Models\PointSaleDollarRecord;
 use App\Models\BsDenominationRecord;
 use App\Models\DollarDenominationRecord;
 use App\Models\ZelleRecord;
+use App\Models\PagoMovilRecord;
 
 class CashRegisterData extends Model
 {
@@ -48,6 +49,11 @@ class CashRegisterData extends Model
     public function bs_cash_records()
     {
         return $this->hasMany(BsCashRecord::class);
+    }
+
+    public function pago_movil_bs_records()
+    {
+        return $this->hasMany(PagoMovilRecord::class);
     }
 
     public function point_sale_bs_records()

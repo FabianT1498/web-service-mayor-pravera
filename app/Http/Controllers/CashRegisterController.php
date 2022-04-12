@@ -175,23 +175,35 @@ class CashRegisterController extends Controller
 
         if ($cash_register_data->save()){
             if (array_key_exists('dollar_cash_record', $validated)){
-                $data = array_map(function($value) use ($cash_register_data){
-                    return array('amount' => $value, 'cash_register_data_id' => $cash_register_data->id);
-                }, $validated['dollar_cash_record']);
+                $data = array_reduce($validated['dollar_cash_record'], function($acc, $value) use ($cash_register_data){
+                    if ($value > 0){
+                        return array('amount' => $value, 'cash_register_data_id' => $cash_register_data->id);
+                    }
+
+                    return $acc;
+                }, []);
                 DollarCashRecord::insert($data);
             }
 
             if (array_key_exists('bs_cash_record', $validated)){
-                $data = array_map(function($value) use ($cash_register_data){
-                    return array('amount' => $value, 'cash_register_data_id' => $cash_register_data->id);
-                }, $validated['dollar_cash_record']);
+                $data = array_reduce($validated['bs_cash_record'], function($acc, $value) use ($cash_register_data){
+                    if ($value > 0){
+                        return array('amount' => $value, 'cash_register_data_id' => $cash_register_data->id);
+                    }
+
+                    return $acc;
+                }, []);
                 BsCashRecord::insert($data);
             }
 
             if (array_key_exists('pago_movil_record', $validated)){
-                $data = array_map(function($value) use ($cash_register_data){
-                    return array('amount' => $value, 'cash_register_data_id' => $cash_register_data->id);
-                }, $validated['pago_movil_record']);
+                $data = array_reduce($validated['pago_movil_record'], function($acc, $value) use ($cash_register_data){
+                    if ($value > 0){
+                        return array('amount' => $value, 'cash_register_data_id' => $cash_register_data->id);
+                    }
+
+                    return $acc;
+                }, []);
                 PagoMovilRecord::insert($data);
             }
 
@@ -228,6 +240,7 @@ class CashRegisterController extends Controller
                     );
                 }, $validated['point_sale_bs_credit'], $validated['point_sale_bs_bank']);
 
+
                 $debit_data = array_map(function($amount, $bank) use ($cash_register_data){
                     return array(
                         'amount' => $amount,
@@ -242,7 +255,8 @@ class CashRegisterController extends Controller
                 PointSaleBsRecord::insert($data);
             }
 
-            if (array_key_exists('total_point_sale_dollar', $validated)){
+            if (array_key_exists('total_point_sale_dollar', $validated) 
+                && $validated['total_point_sale_dollar'] > 0){
                 $data = [
                     'amount' => $validated['total_point_sale_dollar'],
                     'cash_register_data_id' => $cash_register_data->id
@@ -251,9 +265,13 @@ class CashRegisterController extends Controller
             }
 
             if (array_key_exists('zelle_record', $validated)){
-                $data = array_map(function($value) use ($cash_register_data){
-                    return array('amount' => $value, 'cash_register_data_id' => $cash_register_data->id);
-                }, $validated['zelle_record']);
+                $data = array_reduce($validated['zelle_record'], function($acc, $value) use ($cash_register_data){
+                    if ($value > 0){
+                        return array('amount' => $value, 'cash_register_data_id' => $cash_register_data->id);
+                    }
+
+                    return $acc;
+                }, []);
                 ZelleRecord::insert($data);
             }
 
@@ -271,6 +289,7 @@ class CashRegisterController extends Controller
 
         $dollar_cash_records = $cash_register_data->dollar_cash_records;
         $bs_cash_records = $cash_register_data->bs_cash_records;
+        $pago_movil_bs_records = $cash_register_data->pago_movil_bs_records;
         $bs_denomination_records = $cash_register_data->bs_denomination_records;
         $dollar_denomination_records = $cash_register_data->dollar_denomination_records;
         $zelle_records = $cash_register_data->zelle_records;
@@ -337,6 +356,10 @@ class CashRegisterController extends Controller
             return $carry + $el->amount;
         }, 0);
 
+        $total_pago_movil_bs = $pago_movil_bs_records->reduce(function($carry, $el){
+            return $carry + $el->amount;
+        }, 0);
+
         $total_point_sale_bs = $point_sale_bs_records->reduce(function($carry, $el){
             return $carry + $el->amount;
         }, 0);
@@ -357,12 +380,14 @@ class CashRegisterController extends Controller
             'cash_register_data',
             'total_dollar_cash',
             'total_bs_cash',
+            'total_pago_movil_bs',
             'total_point_sale_bs',
             'total_dollar_denominations',
             'total_bs_denominations',
             'total_zelle',
             'dollar_cash_records',
             'bs_cash_records',
+            'pago_movil_bs_records',
             'point_sale_dollar_record',
             'point_sale_bs_records_arr',
             'banks',

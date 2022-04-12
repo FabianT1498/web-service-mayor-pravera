@@ -32,6 +32,13 @@
                 :currency="config('constants.CURRENCIES.DOLLAR')"
                 :records="$dollar_cash_records"
             />
+
+            <x-modal-input-list
+                :modalID="__('pago_movil_record')"
+                :currency="config('constants.CURRENCIES.BOLIVAR')"
+                :isBolivar="true"
+                :records="$pago_movil_bs_records"
+            />
     
             <x-modal-input-denominations
                 :modalID="__('dollar_denominations_record')"
@@ -222,6 +229,26 @@
                   <p>Diferencia: <span id="total_point_sale_dollar_diff">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}</p>
                 </div>
                   <!-- Cash on punto de venta ($) -->
+            </div>
+
+            <div class="w-10/12"><h3 class="h3 text-center mb-8">Transferencias y pago móviles</h3></div>
+
+            <div class="w-10/12 grid gap-4 grid-cols-[100px_300px] mb-8 mx-auto items-center">
+
+                <x-label for="total_pago_movil_bs" :value="__('Total en transferencia:')" />
+                <x-input-with-button
+                    :inputID="__('total_pago_movil_bs')"
+                    :modalID="__('pago_movil_record')"
+                    :currency="__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))"
+                    name="total_pago_movil_bs"
+                    :value="old('total_pago_movil_bs') ? old('total_pago_movil_bs') : $total_pago_movil_bs"
+                    type="text"
+                />
+
+                <div class="col-span-2">
+                    <p>Cantidad recuperada del sistema: <span id="total_pago_movil_bs_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}</p>
+                    <p>Diferencia: <span id="total_pago_movil_bs_diff">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}</p>
+                </div>
             </div>
     
             <div class="w-10/12"><h3 class="h3 text-center mb-8">Ingresos en Zelle</h3></div>
