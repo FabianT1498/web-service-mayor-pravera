@@ -479,6 +479,34 @@ class CashRegisterController extends Controller
             $cash_register_data->bs_cash_records()->upsert($data, ['id'], ['amount']);
         }
 
+        // Update Pago movilr ecords
+        $pago_movil_bs_records_coll = $cash_register_data->pago_movil_bs_records;
+
+        if (!key_exists('pago_movil_record', $validated) && $pago_movil_bs_records_coll->count() > 0){
+            $pago_movil_bs_records_coll
+                ->each(function($item, $key){
+                    $item->delete();
+                });
+        } else if(key_exists('pago_movil_record', $validated)){
+            $diff = $pago_movil_bs_records_coll->count() - count($validated['pago_movil_record']);
+
+            if ($diff > 0){
+                $to_delete = $pago_movil_bs_records_coll->splice(0, $diff);
+                $to_delete->each(function($item, $key){
+                    $item->delete();
+                });
+            }
+
+            $data = $this->mergeOldAndNewValues(
+                $cash_register_data_id,
+                'totalRecordsColsToUpdate',
+                $pago_movil_bs_records_coll->toArray(),
+                $validated['pago_movil_record'],
+            );
+
+            $cash_register_data->dollar_cash_records()->upsert($data, ['id'], ['amount']);
+        }
+
         // Dollar Denomination Records
         $dollar_denomination_records_coll = $cash_register_data->dollar_denomination_records;
 
@@ -516,12 +544,19 @@ class CashRegisterController extends Controller
         if(!key_exists('total_point_sale_dollar', $validated) && $total_point_sale_dollar){
             $total_point_sale_dollar->delete();
         } else if (key_exists('total_point_sale_dollar', $validated)) {
-            $data = [
-                'id' => $total_point_sale_dollar ? $total_point_sale_dollar->id : null,
-                'amount' => $validated['total_point_sale_dollar'],
-                'cash_register_data_id' => $cash_register_data_id
-            ];
-            $cash_register_data->point_sale_dollar_records()->upsert($data, ['id'], ['amount']);
+
+            if ($validated['total_point_sale_dollar'] === 0){
+                if ($total_point_sale_dollar){
+                    $total_point_sale_dollar->delete();
+                }
+            } else {
+                $data = [
+                    'id' => $total_point_sale_dollar ? $total_point_sale_dollar->id : null,
+                    'amount' => $validated['total_point_sale_dollar'],
+                    'cash_register_data_id' => $cash_register_data_id
+                ];
+                $cash_register_data->point_sale_dollar_records()->upsert($data, ['id'], ['amount']);
+            }
         }
 
         // Update Point Sale Bs Records

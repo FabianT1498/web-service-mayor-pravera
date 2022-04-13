@@ -35,7 +35,7 @@ class UpdateCashRegisterRequest extends FormRequest
     public function rules()
     {
         
-        $total_rules = ['required', new BadFormattedAmount, 'gt:0'];
+        $total_rules = ['required', new BadFormattedAmount, 'gte:0'];
 
         $rules = [
             'cash_register_user' => ['required', 'exists:cash_register_users,name'],
@@ -58,6 +58,10 @@ class UpdateCashRegisterRequest extends FormRequest
             $rules['bs_cash_record.*'] = $total_rules;
         }
 
+        if (count($this->pago_movil_record) > 0){
+            $rules['pago_movil_record.*'] = $total_rules;
+        }
+
         if ($this->total_dollar_denominations > 0){
             $rules['dollar_denominations_record.*'] = ['required', 'gte:0'];
         }
@@ -76,7 +80,7 @@ class UpdateCashRegisterRequest extends FormRequest
             $rules['zelle_record.*'] = $total_rules;
         }
 
-        if ($this->total_point_sale_dollar > 0){
+        if ($this->total_point_sale_dollar >= 0){
             $rules['total_point_sale_dollar'] = $total_rules;
         }
         
@@ -98,9 +102,17 @@ class UpdateCashRegisterRequest extends FormRequest
 
         // if (!is_null($inputs['total_dollar_cash']) && $inputs['total_dollar_cash'] > 0){
         if ($this->has('dollar_cash_record')){
-            $inputs['dollar_cash_record'] = array_map(function($record){
-                return $this->formatAmount($record);
-            }, $this->dollar_cash_record);
+            $inputs['dollar_cash_record'] = array_reduce($this->dollar_cash_record, function($acc, $value){
+                if ($value > 0){
+                    $acc[] = $this->formatAmount($value);
+                }
+
+                return $acc;
+            }, []);
+
+            // $inputs['dollar_cash_record'] = array_map(function($record){
+            //     return $this->formatAmount($record);
+            // }, $this->dollar_cash_record);
         } else {
             $inputs['dollar_cash_record'] = [];
         }
@@ -108,13 +120,35 @@ class UpdateCashRegisterRequest extends FormRequest
             
         // if (!is_null($inputs['total_bs_cash']) && $inputs['total_bs_cash'] > 0){
         if ($this->has('bs_cash_record')){
-            $inputs['bs_cash_record'] = array_map(function($record){
-                return $this->formatAmount($record);
-            }, $this->bs_cash_record);
+            $inputs['bs_cash_record'] = array_reduce($this->bs_cash_record, function($acc, $value){
+                if ($value > 0){
+                    $acc[] = $this->formatAmount($value);
+                }
+
+                return $acc;
+            }, []);
+            // $inputs['bs_cash_record'] = array_map(function($record){
+            //     return $this->formatAmount($record);
+            // }, $this->bs_cash_record);
         } else {
             $inputs['bs_cash_record'] = [];
         }
         // }
+
+        if ($this->has('pago_movil_record')){
+            $inputs['pago_movil_record'] = array_reduce($this->pago_movil_record, function($acc, $value){
+                if ($value > 0){
+                    $acc[] = $this->formatAmount($value);
+                }
+
+                return $acc;
+            }, []);
+            // $inputs['pago_movil_record'] = array_map(function($record){
+            //     return $this->formatAmount($record);
+            // }, $this->pago_movil_record);
+        } else {
+            $inputs['pago_movil_record'] = [];
+        }
 
         // if (!is_null($inputs['total_dollar_denominations']) && $inputs['total_dollar_denominations'] > 0){
         if ($this->has('dollar_denominations_record')){
@@ -165,9 +199,16 @@ class UpdateCashRegisterRequest extends FormRequest
         
         // if(!is_null($inputs['total_zelle']) && $inputs['total_zelle'] > 0){
         if ($this->has('zelle_record')){
-            $inputs['zelle_record'] = array_map(function($record){
-                return $this->formatAmount($record);
-            }, $this->zelle_record);
+            $inputs['zelle_record'] = array_reduce($this->zelle_record, function($acc, $value){
+                if ($value > 0){
+                    $acc[] = $this->formatAmount($value);
+                }
+
+                return $acc;
+            }, []);
+            // $inputs['zelle_record'] = array_map(function($record){
+            //     return $this->formatAmount($record);
+            // }, $this->zelle_record);
         } else {
             $inputs['zelle_record'] = [];
         }     
