@@ -45,8 +45,10 @@ class MoneyEntranceController extends Controller
             ::connection('saint_db')
             ->table('SAFACT')
             ->selectRaw("MAX(SAFACT.CodUsua) AS CodUsua, CAST(ROUND(SUM(SAFACT.CancelE * SAFACT.Signo), 2) AS decimal(18, 2))  AS bolivares,
+            CAST(ROUND((SUM(SAFACT.CancelE * SAFACT.Signo)/MAX(FactorHist.MaxFactor)), 2) AS decimal(18, 2))  AS bolivaresADolares,
             CAST(ROUND((SUM(SAFACT.CancelC * SAFACT.Signo)/MAX(FactorHist.MaxFactor)), 2) AS decimal(18, 2))  AS dolares,
             CAST(ROUND(SUM(SAFACT.Credito * SAFACT.Signo), 2) AS decimal(18, 2)) AS credito,
+            CAST(ROUND((SUM(SAFACT.Credito * SAFACT.Signo)/MAX(FactorHist.MaxFactor)), 2) AS decimal(18, 2))  AS creditoADolares,
             CAST(SAFACT.FechaE as date) as FechaE")
             ->joinSub($factors, 'FactorHist', function($query){
                 $query->on(DB::raw("CAST(SAFACT.FechaE AS date)"), '=', "FactorHist.FechaE");
@@ -79,10 +81,8 @@ class MoneyEntranceController extends Controller
         ::connection('saint_db')
         ->table('SAIPAVTA')
         ->selectRaw("MAX(SAFACT.CodUsua) as CodUsua, MAX(SAIPAVTA.CodPago) as CodPago, MAX(CAST(SAFACT.FechaE as date)) as FechaE,
-            CASE WHEN SAIPAVTA.CodPago = '07' OR SAIPAVTA.CodPago = '08' 
-                THEN CAST(ROUND((SUM(SAIPAVTA.Monto * SAFACT.Signo)/MAX(FactorHist.MaxFactor)), 2) AS decimal(18, 2))
-		    ELSE 
-                CAST(ROUND(SUM(SAIPAVTA.Monto * SAFACT.Signo), 2) AS decimal(18, 2)) END AS total"
+            CAST(ROUND(SUM(SAIPAVTA.Monto * SAFACT.Signo), 2) AS decimal(18, 2)) as totalBs,
+            CAST(ROUND((SUM(SAIPAVTA.Monto * SAFACT.Signo)/MAX(FactorHist.MaxFactor)), 2) AS decimal(18, 2)) as totalDollar"
         )
         ->joinSub($factors, 'FactorHist', function($query){
             $query->on(DB::raw("CAST(SAIPAVTA.FechaE AS date)"), '=', "FactorHist.FechaE");
@@ -121,15 +121,19 @@ class MoneyEntranceController extends Controller
             
                     if (!is_null($record)){
                         if ($value === $record->CodPago){
-                            $totals_saint[$cod_usua][$date][$value] = $record->total;
+                            $totals_saint[$cod_usua][$date][$value]['bs'] = $record->totalBs;
+                            $totals_saint[$cod_usua][$date][$value]['dollar'] = $record->totalDollar;
                         } else {
                             if (!key_exists($value, $totals_saint[$cod_usua][$date])){
-                                $totals_saint[$cod_usua][$date][$value] = 0.00;
+                                $totals_saint[$cod_usua][$date][$value]['bs'] = 0.00;
+                                $totals_saint[$cod_usua][$date][$value]['dollar'] = 0.00;
                             }
-                            $totals_saint[$cod_usua][$date][$record->CodPago] = $record->total;
+                            $totals_saint[$cod_usua][$date][$record->CodPago]['bs'] = $record->totalBs;
+                            $totals_saint[$cod_usua][$date][$record->CodPago]['dollar'] = $record->totalDollar;
                         }
                     } else if (!key_exists($value, $totals_saint[$cod_usua][$date])) {
-                        $totals_saint[$cod_usua][$date][$value] = 0.00;
+                        $totals_saint[$cod_usua][$date][$value]['bs'] = 0.00;
+                        $totals_saint[$cod_usua][$date][$value]['dollar'] = 0.00;
                     }
                 }
             }
@@ -144,9 +148,12 @@ class MoneyEntranceController extends Controller
         foreach($array as $key_user => $dates){
             $totals[$key_user] = [];
             foreach($payment_methods as $codPago => $value){
-                $totals[$key_user][$codPago] = 0;
+                $totals[$key_user][$codPago] = [];
+                $totals[$key_user][$codPago]['bs'] = 0;
+                $totals[$key_user][$codPago]['dollar'] = 0;
                 foreach($dates as $date_record){
-                    $totals[$key_user][$codPago] += $date_record[$codPago];
+                    $totals[$key_user][$codPago]['bs'] += $date_record[$codPago]['bs'];
+                    $totals[$key_user][$codPago]['dollar'] += $date_record[$codPago]['dollar'];
                 }
             }
         }
@@ -161,12 +168,17 @@ class MoneyEntranceController extends Controller
             $totals[$key_user] = [];
             $totals[$key_user]['bolivar'] = 0;
             $totals[$key_user]['dollar'] = 0;
+            $totals[$key_user]['bolivarToDollar'] = 0;
             $totals[$key_user]['credito'] = 0;
+            $totals[$key_user]['creditoToDollar'] = 0;
             
             foreach($dates as $key_date => $date_record){
                 $totals[$key_user]['bolivar'] += $date_record->first()->bolivares;
                 $totals[$key_user]['dollar'] += $date_record->first()->dolares;
+                $totals[$key_user]['bolivarToDollar'] += $date_record->first()->bolivaresADolares;
                 $totals[$key_user]['credito'] += $date_record->first()->credito;
+                $totals[$key_user]['creditoToDollar'] += $date_record->first()->creditoADolares;
+
             }
         }
 
@@ -196,11 +208,14 @@ class MoneyEntranceController extends Controller
 
         foreach($array as $key_user => $entries){
 
-            foreach($entries as $codPago => $subtotal){
+            foreach($entries as $codPago => $currencies){
                 if (!key_exists($codPago, $totals)){
-                    $totals[$codPago] = 0;
+                    $totals[$codPago] = [];
+                    $totals[$codPago]['bs'] = 0;
+                    $totals[$codPago]['dollar'] = 0;
                 } 
-                $totals[$codPago] += $subtotal;
+                $totals[$codPago]['bs'] += $currencies['bs'];
+                $totals[$codPago]['dollar'] += $currencies['dollar'];
             } 
         }
 
@@ -235,6 +250,20 @@ class MoneyEntranceController extends Controller
 
             $totals_e_payment_by_interval = $this->getTotalEPaymentByInterval($totals_e_payment_by_user);
 
+            $total_dollars = $totals_e_payment_by_interval['07']['dollar'] 
+                    + $totals_e_payment_by_interval['08']['dollar'] 
+                    + $totals_safact_by_interval['dollar'];
+            
+            $total_bs_to_dollars = $totals_e_payment_by_interval['01']['dollar'] 
+                + $totals_e_payment_by_interval['02']['dollar'] 
+                + $totals_e_payment_by_interval['03']['dollar']
+                + $totals_e_payment_by_interval['04']['dollar']
+                + $totals_e_payment_by_interval['05']['dollar']
+                + $totals_safact_by_interval['bolivarToDollar'] 
+                + $totals_safact_by_interval['creditoToDollar'];
+
+            $total = $total_dollars + $total_bs_to_dollars;
+
             $pdf = App::make('dompdf.wrapper');
             
             $view_name = 'pdf.money-entrance.money_record';
@@ -248,7 +277,10 @@ class MoneyEntranceController extends Controller
                     'start_date',
                     'end_date',
                     'totals_safact_by_interval',
-                    'totals_e_payment_by_interval'
+                    'totals_e_payment_by_interval',
+                    'total_dollars',
+                    'total_bs_to_dollars',
+                    'total'
                 ))
                 ->setOptions([
                     'defaultFont' => 'sans-serif',
