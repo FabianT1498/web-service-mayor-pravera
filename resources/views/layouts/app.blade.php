@@ -24,12 +24,12 @@
     <body class="font-sans antialiased bg-gray-100">
         @include('layouts.navigation')
 
-        <!-- strat wrapper -->
-        <div class="h-screen flex flex-row">
+        <!-- start wrapper -->
+        <div class="h-screen w-full flex flex-row justify-between">
             @include('layouts.sidebar')
             
             <!-- strat content -->
-            <div class="bg-gray-100 flex-1 p-6 md:mt-16 md:mb-16">     
+            <div class="bg-gray-100 md:mb-16 flex-1 py-8">     
                 @yield('main')
             </div>
             <!-- end content -->
