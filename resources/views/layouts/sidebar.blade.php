@@ -53,8 +53,5 @@
 
     </div>
     <!-- end sidebar content -->
-
-    <x-dollar-exchange-modal />
-
   </div>
   <!-- end sidbar -->

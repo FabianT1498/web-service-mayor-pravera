@@ -1,5 +1,5 @@
 <!-- Main modal -->
-<div id="dollar-exchange-modal" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed h-108 right-0 left-0 top-4 z-50 justify-center items-center md:h-full md:inset-0">
+<div id="dollar-exchange-modal" aria-hidden="true" class="hidden overflow-y-hidden overflow-x-hidden fixed h-108 right-0 left-0 top-4 z-50 justify-center items-center md:h-full md:inset-0">
     <div class="flex flex-col relative px-4 w-full max-w-md h-full">
          <!-- Modal header -->
          <div class="sticky top-0 flex justify-between items-start p-5 rounded-t border-b dark:border-gray-600 bg-gray-200">
