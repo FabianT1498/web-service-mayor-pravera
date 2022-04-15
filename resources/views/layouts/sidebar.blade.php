@@ -1,10 +1,10 @@
   <!-- start sidebar -->
-  <div id="sideBar" class="bg-white border-r border-gray-300 p-4 md:-ml-64 
-      md:fixed top-0 md:z-30 lg:h-screen md:shadow-xl animate__animated animate__faster basis-1/4">
+  <div id="sideBar" class="h-full bg-white border-r border-gray-300 p-4 md:-ml-64 
+      sticky top-0 md:z-30 md:shadow-xl animate__animated animate__faster basis-1/4">
 
 
     <!-- sidebar content -->
-    <div class="flex flex-col lg:h-screen ">
+    <div class="flex flex-col ">
 
       <!-- sidebar toggle -->
       <div class="text-right hidden md:block mb-4">

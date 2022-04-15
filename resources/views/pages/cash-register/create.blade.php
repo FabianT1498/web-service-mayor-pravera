@@ -243,7 +243,7 @@
             </div>
         </div>
 
-        <div class="w-10/12 flex mx-auto justify-end">
+        <div class="w-10/12 flex mx-auto justify-end mb-32">
             <x-button :variation="__('rounded')">
                 {{ __('Guardar') }}
             </x-button>

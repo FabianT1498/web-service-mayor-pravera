@@ -29,7 +29,7 @@
                                         Nro
                                     </th>
                                     <th scope="col" class="py-3 pl-3 text-xs tracking-wider text-center text-gray-700 uppercase dark:text-gray-400">
-                                        {{ "Entradas (" . $currency_sign . ")" }}
+                                        {{ "Entrada (" . $currency_sign . ")" }}
                                     </th>
                                     @if(!$isBolivar)
                                         <th scope="col" class="py-3 px-6 text-xs tracking-wider text-center text-gray-700 uppercase dark:text-gray-400">

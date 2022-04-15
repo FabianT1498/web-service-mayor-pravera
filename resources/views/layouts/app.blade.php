@@ -21,7 +21,7 @@
 
         @yield('js')
     </head>
-    <body class="font-sans antialiased bg-gray-100">
+    <body class="font-sans antialiased bg-gray-100 overflow-y-hidden">
         @include('layouts.navigation')
 
         <!-- start wrapper -->
@@ -29,7 +29,7 @@
             @include('layouts.sidebar')
             
             <!-- strat content -->
-            <div class="bg-gray-100 md:mb-16 flex-1 py-8">     
+            <div class="bg-gray-100 md:mb-16 flex-1 pt-8 overflow-y-scroll">     
                 @yield('main')
             </div>
             <!-- end content -->
