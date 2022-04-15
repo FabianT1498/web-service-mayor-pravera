@@ -27,6 +27,8 @@ const SalePointTable = function(){
         decimalInputs[this.currency].mask(input_debit);
         decimalInputs[this.currency].mask(input_credit);
 
+        input_debit.focus()
+
 
         if (prevIDArr.length > 0){
             let selectors = getBankSelectSelectors(prevIDArr);

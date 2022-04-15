@@ -25,6 +25,8 @@ const MoneyRecordTablePrototype = {
         const input = tBody.querySelector(`#${this.tableName}_${id}`);
 
         decimalInputs[this.currency].mask(input);
+
+        input.focus();
     },
     deleteRow(rowID){
         if (!this.isContainerDefined()){
