@@ -5,10 +5,10 @@
     'records' => []
 ])
 <!-- Main modal -->
-<div id={{ $modalID }} aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed h-108 right-0 left-0 top-4 z-50 justify-center items-center md:h-full md:inset-0">
+<div id={{ $modalID }} aria-hidden="true" class="hidden overflow-y-hidden overflow-x-hidden fixed h-108 right-0 left-0 top-4 z-50 justify-center items-center md:h-full md:inset-0">
     <div class="flex flex-col relative px-4 w-full max-w-md h-full">
          <!-- Modal header -->
-         <div class="sticky top-0 flex justify-between items-start p-5 rounded-t border-b dark:border-gray-600 bg-gray-200">
+         <div class="flex justify-between items-start p-5 rounded-t border-b dark:border-gray-600 bg-gray-200">
             <h3 class="text-xl font-semibold text-gray-900 lg:text-2xl dark:text-white">
                 Entrada de denominaciones ({{ $currency }})
             </h3>
@@ -17,12 +17,12 @@
             </button>
         </div>
         <!-- Modal content -->
-        <div class="flex flex-col flex-grow">
-            <div class="overflow-y-auto overflow-x-hidden shadow-md sm:rounded-lg h-full">
+        <div class="flex flex-col flex-grow overflow-x-hidden">
+            <div class="shadow-md sm:rounded-lg h-full">
                 <div class="inline-block min-w-full align-middle h-full">
-                    <div class="overflow-hidden pt-8 pb-8 bg-gray-50 h-full">
-                        <table class="min-w-full divide-y divide-gray-200 table-fixed dark:divide-gray-700">
-                            <thead class="bg-gray-100 dark:bg-gray-700">
+                    <div class="pt-8 pb-8 bg-gray-50 h-full">
+                        <table class="overflow-y-scroll min-w-full divide-y divide-gray-200 table-fixed dark:divide-gray-700">
+                            <thead class="sticky top-0 bg-gray-100 dark:bg-gray-700">
                                 <tr>
                                     <th scope="col" class="py-3 pl-6 pr-3 text-xs text-center tracking-wider  text-gray-700 uppercase dark:text-gray-400">
                                         Denominación ({{ $currency }})

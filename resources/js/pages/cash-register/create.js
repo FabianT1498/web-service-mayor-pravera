@@ -26,6 +26,8 @@ import SalePointModalView from '_views/SalePointModalView'
 import {decimalInputs} from '_utilities/decimalInput';
 import { roundNumber } from '_utilities/mathUtilities'
 
+import {default as modalBehavior} from '_app/base/modalBehavior'
+
 
 export default {
     totalInputDOMS: {
