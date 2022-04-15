@@ -253,7 +253,7 @@
             </div>
         </div>
 
-        <div class="w-10/12 flex mx-auto justify-end pt-8">
+        <div class="w-10/12 flex mx-auto justify-end mb-32">
             <x-button :variation="__('rounded')">
                 {{ __('Guardar cambios') }}
             </x-button>
@@ -263,6 +263,7 @@
         <x-modal-input-list
             :modalID="__('bs_cash_record')"
             :currency="config('constants.CURRENCIES.BOLIVAR')"
+            :title="__('Entradas de dinero')"
             :isBolivar="true"
             :records="$bs_cash_records"
         />
@@ -270,12 +271,14 @@
         <x-modal-input-list
             :modalID="__('dollar_cash_record')"
             :currency="config('constants.CURRENCIES.DOLLAR')"
+            :title="__('Entradas de dinero')"
             :records="$dollar_cash_records"
         />
 
         <x-modal-input-list
             :modalID="__('pago_movil_record')"
             :currency="config('constants.CURRENCIES.BOLIVAR')"
+            :title="__('Entradas de pago móvil y transferencias')"
             :isBolivar="true"
             :records="$pago_movil_bs_records"
         />
@@ -301,6 +304,7 @@
 
         <x-modal-input-list
             :modalID="__('zelle_record')"
+            :title="__('Entradas de zelle')"
             :currency="config('constants.CURRENCIES.DOLLAR')"
             :records="$zelle_records"
         />

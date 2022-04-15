@@ -252,22 +252,26 @@
 
         <x-modal-input-list
             :modalID="__('zelle_record')"
+            :title="__('Entradas de zelle')"
             :currency="config('constants.CURRENCIES.DOLLAR')"
         />
 
         <x-modal-input-list
             :modalID="__('dollar_cash_record')"
+            :title="__('Entradas de dinero')"
             :currency="config('constants.CURRENCIES.DOLLAR')"
         />
 
         <x-modal-input-list
             :modalID="__('bs_cash_record')"
+            :title="__('Entradas de dinero')"
             :currency="config('constants.CURRENCIES.BOLIVAR')"
             :isBolivar="true"
         />
 
         <x-modal-input-list
             :modalID="__('pago_movil_record')"
+            :title="__('Entradas de pago móvil y transferencias')"
             :currency="config('constants.CURRENCIES.BOLIVAR')"
             :isBolivar="true"
         />
@@ -284,6 +288,7 @@
         />
 
         <x-modal-point-sale-list
+            :currency="__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))"
             :modalID="__('point_sale_bs')"
         />
     </form>

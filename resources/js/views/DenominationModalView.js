@@ -18,6 +18,7 @@ const DenominationModalViewPrototype = {
     },
     keypressEventHandlerWrapper(presenter){
         return (event) => {
+            event.preventDefault();
             presenter.keyPressedOnModal({
                 key: event.key,
                 target: event.target

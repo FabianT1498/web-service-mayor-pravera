@@ -32,6 +32,7 @@ import DenominationRecord from '_models/DenominationRecord'
 import PointSaleRecord from '_models/PointSaleRecord'
 import Bank from '_models/Bank';
 
+import {default as modalBehavior} from '_app/base/modalBehavior'
 
 import { getTotalsToCashRegisterUserSaint, getTotalsToCashRegisterUser } from '_services/cash-register';
 
