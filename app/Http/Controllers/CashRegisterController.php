@@ -746,7 +746,9 @@ class CashRegisterController extends Controller
             'totals_e_payment',
             'totals_from_safact',
             'differences',
-            'currency_signs'
+            'currency_signs',
+            'user',
+            'date'
         ))
             ->setOptions([
                 'defaultFont' => 'sans-serif',

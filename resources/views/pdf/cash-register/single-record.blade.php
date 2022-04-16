@@ -5,6 +5,7 @@
 
         <!-- Styles -->
         <style>
+            /** Normalized styles */
             * {
                 box-sizing: border-box;
             }
@@ -15,14 +16,75 @@
 
             body * { 
                 box-sizing: border-box;
+                font-size: 1rem;
+            }
+
+            table {
+                display: inline-block;
+                border-collapse: collapse;
+                text-align: left;
+	            vertical-align: middle;
+                border: 1px solid black;
+                display: inline-table;
+                caption-side: top;
+            }
+
+            caption {
+                display: table-caption;
+                width: 100%;
+                border: 1px solid #ccc;
+                box-sizing: border-box;
+                border-top: none;
+            }
+
+            tbody tr:nth-child(even) {
+                background-color: #eee;
+            }
+
+            tbody th {
+                background-color: #36c;
+                color: #fff;
+                text-align: left;
+            }
+
+            tbody tr:nth-child(even) th {
+                background-color: #25c;
+            }
+
+            thead {
+                background-color: #575757;
+                color: white;
+            }
+
+            thead th {
+                width: 25%;
+            }
+
+            th, td {
+                padding: 0.2rem;
+                border: 1px solid #ccc;
             }
 
             p {
                 margin: 0;
             }
 
+            h1 {
+                font-size: 3.2rem;
+            }
+
+            .stripe {
+                background: repeating-linear-gradient(
+                45deg,
+                #606dbc,
+                #606dbc 10px,
+                #465298 10px,
+                #465298 20px
+                );
+            }
+
             .container {
-                width: 90%;
+                width: 800px;
                 margin: 0 auto;
             }
 
@@ -40,6 +102,10 @@
 
             .bg-grey-400 {
                 background-color: #e9e9e9;
+            }
+
+            .bg-grey-600 {
+                background-color: #b8b8b8;
             }
 
             .border-solid {
@@ -90,177 +156,226 @@
                 margin: 0 auto;
             }
 
-            .mb-2 {
-                margin-bottom: 1rem;
+
+            .w-30p{
+                width: 30%;
             }
 
-            .mb-1 {
-                margin-bottom: 0.5rem;
+            .w-70p{
+                width: 70%;
             }
 
-            table {
-                border-collapse: collapse;
-                text-align: left;
-	            vertical-align: middle;
-                border: 1px solid black;
+            .w-80p{
+                width: 80%;
             }
 
-            tbody tr:nth-child(even) {
-                background-color: #eee;
+            .w-90p{
+                width: 90%;
             }
 
-            tbody th {
-                background-color: #36c;
-                color: #fff;
-                text-align: left;
-            }
-
-            tbody tr:nth-child(even) th {
-                background-color: #25c;
-            }
-
-            thead {
-                background-color: #575757;
-                color: white;
-            }
-
-            thead th {
-                width: 25%;
-            }
-
-            th, td {
-                padding: 0.5rem;
+            .text-lg {
+                font-size: 2rem;
             }
 
             .font-semibold {
                 font-weight: 500;
             }
 
+            .flex {
+                display: flex;
+            }
+
+            .space-between {
+                justify-content: space-between
+            }
+
+            .mb-2 {
+                margin-bottom: 0.5rem;
+            }
+
+            .mb-4 {
+                margin-bottom: 1rem;
+            }
+
+            .mb-8 {
+                margin-bottom: 2rem;
+            }
+
+            .mb-12 {
+                margin-bottom: 3rem;
+            }
+
+            .w-full{
+                width: 100%;
+            }
+            
+            .pr-10{
+                margin-right: 5rem;
+            }
+
+            .text-center {
+                text-align: center;
+            }
+
+            .absolute {
+                position: absolute;
+            }
+
+            .left50p {
+                left: 50%;
+            }
+
+            .translate-50p{
+                transform: translate(-50%);
+            }
+
+            .relative {
+                position: relative;
+            }
+
         </style>
     </head>
     <body class="font-sans antialiased bg-gray-100">
-        <header class="container clearfix mx-auto mb-2">
-            <div class="left font-">
-                <span>El mayorista</span>
+            <div class="container">
+                <div class="w-full mb-4 clearfix">
+                    <div class="left">
+                        <span>El mayorista</span>
+                    </div>
+                    <div class="right border-solid border-1 pr-10">
+                        <p class="mb-1"><span class="font-semibold">Fecha del arqueo:</span> {{ $cash_register->date }}</p>
+                        <p class="mb-1"><span class="font-semibold">Usuario de la caja:</span> {{ $cash_register->cash_register_user }}</p>
+                        <p class="mb-1"><span class="font-semibold">Responsable de la caja:</span> {{ $cash_register->worker_name }}</p>
+                        <p><span class="font-semibold">Registro creado por:</span> {{ $cash_register->user_name }}</p>
+                    </div>
+                </div>
+                <div class="w-80p">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>&nbsp;</th>
+                                <th>Total ingresado en el sistema</th>
+                                <th>Total recuperado de SAINT</th>
+                                <th>Diferencia</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th>Dolares en efectivo</th>
+                                <td>{{ $cash_register->total_dollar_cash . ' ' . $currency_signs['dollar'] }}</td>
+                                <td>{{ $totals_from_safact->dolares . ' ' . $currency_signs['dollar'] }}</td>
+                                <td 
+                                    class="{{ $differences['dollar_cash'] > 0 
+                                        ? 'text-blue-400' 
+                                        : ( $differences['dollar_cash'] < 0 
+                                            ? 'text-red-400' 
+                                            : '' )}}"
+                                >
+                                        {{ $differences['dollar_cash'] . ' ' . $currency_signs['dollar']}}
+                                </td> 
+                            </tr>
+                            <tr>
+                                <th>Bs en efectivo</td>
+                                <td>{{ $cash_register->total_bs_cash . ' ' . $currency_signs['bs'] }}</td>
+                                <td>{{ $totals_from_safact->bolivares . ' ' . $currency_signs['bs'] }}</td>
+                                <td 
+                                    class="{{ $differences['bs_cash'] > 0 
+                                        ? 'text-blue-400' 
+                                        : ( $differences['bs_cash'] < 0 
+                                            ? 'text-red-400' 
+                                            : '' )}}"
+                                >
+                                        {{ $differences['bs_cash'] . ' ' . $currency_signs['bs'] }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Punto de venta Bs</th>
+                                <td>{{ $cash_register->total_point_sale_bs . ' ' . $currency_signs['bs'] }}</td>
+                                <td>{{ ($totals_e_payment[$user][$date]['01']['bs'] 
+                                    + $totals_e_payment[$user][$date]['02']['bs']) . ' ' . $currency_signs['bs']}}</td>
+                                <td 
+                                    class="{{ $differences['point_sale_bs'] > 0 
+                                        ? 'text-blue-400' 
+                                        : ( $differences['point_sale_bs'] < 0 
+                                            ? 'text-red-400' 
+                                            : '' )}}"
+                                >
+                                        {{ $differences['point_sale_bs'] . ' ' . $currency_signs['bs'] }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Pago móvil y transferencias</th>
+                                <td>{{ $cash_register->total_pago_movil_bs . ' ' . $currency_signs['bs'] }}</td>
+                                <td>{{ $totals_e_payment[$user][$date]['05']['bs'] . ' ' . $currency_signs['bs']}}</td>
+                                <td 
+                                    class="{{ $differences['pago_movil_bs'] > 0 
+                                        ? 'text-blue-400' 
+                                        : ( $differences['pago_movil_bs'] < 0 
+                                            ? 'text-red-400' 
+                                            : '' )}}"
+                                >
+                                        {{ $differences['pago_movil_bs'] . ' ' . $currency_signs['bs'] }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Punto de venta $</th>
+                                <td>{{ $cash_register->total_point_sale_dollar . ' ' . $currency_signs['dollar']}}</td>
+                                <td>{{ $totals_e_payment[$user][$date]['08']['dollar'] . ' ' . $currency_signs['dollar']  }}</td>
+                                <td 
+                                    class="{{ $differences['point_sale_dollar'] > 0 
+                                        ? 'text-blue-400' 
+                                        : ( $differences['point_sale_dollar'] < 0 
+                                            ? 'text-red-400' 
+                                            : '' )}}"
+                                >
+                                        {{ $differences['point_sale_dollar'] . ' ' . $currency_signs['dollar'] }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Zelle</th>
+                                <td>{{ $cash_register->total_zelle . ' ' . $currency_signs['dollar']}}</td>
+                                <td>{{ $totals_e_payment[$user][$date]['07']['dollar'] . ' ' . $currency_signs['dollar'] }}</td>
+                                <td 
+                                    class="{{ $differences['zelle'] > 0 
+                                        ? 'text-blue-400' 
+                                        : ( $differences['zelle'] < 0 
+                                            ? 'text-red-400' 
+                                            : '' )}}"
+                                >
+                                        {{ $differences['zelle'] . ' ' . $currency_signs['dollar'] }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Bolivares en físico (Denominaciones)</th>
+                                <td>{{ $cash_register->total_bs_denominations . ' ' . $currency_signs['bs'] }}</td>
+                                <td>{{ $totals_from_safact->bolivares . ' ' . $currency_signs['bs'] }}</td>
+                                <td 
+                                    class="{{ $differences['bs_denominations'] > 0 
+                                        ? 'text-blue-400' 
+                                        : ( $differences['bs_denominations'] < 0 
+                                            ? 'text-red-400' 
+                                            : '' )}}"
+                                >
+                                        {{ $differences['bs_denominations'] . ' ' . $currency_signs['bs'] }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Dolares en efectivo (Denominaciones)</th>
+                                <td>{{ $cash_register->total_dollar_denominations . ' ' . $currency_signs['dollar']}}</td>
+                                <td>{{ $totals_from_safact->dolares . ' ' . $currency_signs['dollar'] }}</td>
+                                <td 
+                                    class="{{ $differences['dollar_denominations'] > 0 
+                                        ? 'text-blue-400' 
+                                        : ( $differences['dollar_denominations'] < 0 
+                                            ? 'text-red-400' 
+                                            : '' )}}"
+                                >
+                                        {{ $differences['dollar_denominations'] . ' ' . $currency_signs['dollar'] }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="right border-solid border-1 p-2">
-                <p class="mb-1"><span class="font-semibold">Fecha del arqueo:</span> {{ $cash_register->date }}</p>
-                <p class="mb-1"><span class="font-semibold">Usuario de la caja:</span> {{ $cash_register->cash_register_user }}</p>
-                <p class="mb-1"><span class="font-semibold">Responsable de la caja:</span> {{ $cash_register->worker_name }}</p>
-                <p><span class="font-semibold">Registro creado por:</span> {{ $cash_register->user_name }}</p>
-            </div>
-        </header>
-        <section class="container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>&nbsp;</th>
-                        <th>Total ingresado en el sistema</th>
-                        <th>Total recuperado de SAINT</th>
-                        <th>Diferencia</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <th>Dolares en efectivo</th>
-                        <td>{{ $cash_register->total_dollar_cash . ' ' . $currency_signs['dollar'] }}</td>
-                        <td>{{ $totals_saint['dollar_cash'] . ' ' . $currency_signs['dollar'] }}</td>
-                        <td 
-                            class="{{ $differences['dollar_cash'] > 0 
-                                ? 'text-blue-400' 
-                                : ( $differences['dollar_cash'] < 0 
-                                    ? 'text-red-400' 
-                                    : '' )}}"
-                        >
-                                {{ $differences['dollar_cash'] . ' ' . $currency_signs['dollar']}}
-                        </td> 
-                    </tr>
-                    <tr>
-                        <th>Bs en efectivo</td>
-                        <td>{{ $cash_register->total_bs_cash . ' ' . $currency_signs['bs'] }}</td>
-                        <td>{{ $totals_saint['bs_cash'] . ' ' . $currency_signs['bs'] }}</td>
-                        <td 
-                            class="{{ $differences['bs_cash'] > 0 
-                                ? 'text-blue-400' 
-                                : ( $differences['bs_cash'] < 0 
-                                    ? 'text-red-400' 
-                                    : '' )}}"
-                        >
-                                {{ $differences['bs_cash'] . ' ' . $currency_signs['bs'] }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Punto de venta Bs</th>
-                        <td>{{ $cash_register->total_point_sale_bs . ' ' . $currency_signs['bs'] }}</td>
-                        <td>{{ ($totals_saint['bs_credit'] + $totals_saint['bs_debit']) . ' ' . $currency_signs['bs']}}</td>
-                        <td 
-                            class="{{ $differences['point_sale_bs'] > 0 
-                                ? 'text-blue-400' 
-                                : ( $differences['point_sale_bs'] < 0 
-                                    ? 'text-red-400' 
-                                    : '' )}}"
-                        >
-                                {{ $differences['point_sale_bs'] . ' ' . $currency_signs['bs'] }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Punto de venta $</th>
-                        <td>{{ $cash_register->total_point_sale_dollar . ' ' . $currency_signs['dollar']}}</td>
-                        <td>{{ $totals_saint['point_sale_dollar'] . ' ' . $currency_signs['dollar']  }}</td>
-                        <td 
-                            class="{{ $differences['point_sale_dollar'] > 0 
-                                ? 'text-blue-400' 
-                                : ( $differences['point_sale_dollar'] < 0 
-                                    ? 'text-red-400' 
-                                    : '' )}}"
-                        >
-                                {{ $differences['point_sale_dollar'] . ' ' . $currency_signs['dollar'] }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Zelle</th>
-                        <td>{{ $cash_register->total_zelle . ' ' . $currency_signs['dollar']}}</td>
-                        <td>{{ $totals_saint['zelle'] . ' ' . $currency_signs['dollar'] }}</td>
-                        <td 
-                            class="{{ $differences['zelle'] > 0 
-                                ? 'text-blue-400' 
-                                : ( $differences['zelle'] < 0 
-                                    ? 'text-red-400' 
-                                    : '' )}}"
-                        >
-                                {{ $differences['zelle'] . ' ' . $currency_signs['dollar'] }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Bolivares en físico (Denominaciones)</th>
-                        <td>{{ $cash_register->total_bs_denominations . ' ' . $currency_signs['bs'] }}</td>
-                        <td>{{ $totals_saint['bs_cash'] . ' ' . $currency_signs['bs'] }}</td>
-                        <td 
-                            class="{{ $differences['bs_denominations'] > 0 
-                                ? 'text-blue-400' 
-                                : ( $differences['bs_denominations'] < 0 
-                                    ? 'text-red-400' 
-                                    : '' )}}"
-                        >
-                                {{ $differences['bs_denominations'] . ' ' . $currency_signs['bs'] }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Dolares en efectivo (Denominaciones)</th>
-                        <td>{{ $cash_register->total_dollar_denominations . ' ' . $currency_signs['dollar']}}</td>
-                        <td>{{ $totals_saint['dollar_cash']. ' ' . $currency_signs['dollar'] }}</td>
-                        <td 
-                            class="{{ $differences['dollar_denominations'] > 0 
-                                ? 'text-blue-400' 
-                                : ( $differences['dollar_denominations'] < 0 
-                                    ? 'text-red-400' 
-                                    : '' )}}"
-                        >
-                                {{ $differences['dollar_denominations'] . ' ' . $currency_signs['dollar'] }}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
+        
     </body>
 </html>
