@@ -2,8 +2,12 @@
     <x-auth-card>
         <x-slot name="logo">
             <a href="/">
-                <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
+                <x-application-logo class="w-20 h-20" />
             </a>
+        </x-slot>
+
+        <x-slot name="title">
+            <h4 class="h4 text-center">Sistema de arqueo de cajas</h4>
         </x-slot>
 
         <div class="mb-4 text-sm text-gray-600">
