@@ -20,6 +20,7 @@ class CreateCashRegister extends Migration
             $table->string('cash_register_user');
             $table->float('total_dollar_cash');
             $table->float('total_bs_cash');
+            $table->float('total_pago_movil_bs');
             $table->float('total_dollar_denominations');
             $table->float('total_bs_denominations');
             $table->float('total_point_sale_bs');

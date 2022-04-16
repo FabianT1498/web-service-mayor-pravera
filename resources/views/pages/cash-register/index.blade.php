@@ -6,7 +6,7 @@
 
 @section('main')
     <div>
-        <div class="mb-8">
+        <div class="mb-4">
             <form class="mb-4 mx-auto w-11/12" id="form_filter" method="GET" action="{{ route('cash_register.index') }}">
                 <p class="mb-4">Parametros de busqueda</p>
                 <div id="date_range_picker" date-rangepicker class="flex justify-between items-center mb-4 w-4/5">
@@ -167,7 +167,7 @@
         @if ($records->count() === 0)
             <p class="text-center">No hay registros</p>
         @endif
-        <div id=""class="mt-8">
+        <div id="" class="mt-8 pb-32">
             {{ $records->onEachSide(1)->links('pagination::tailwind') }}
         </div>
     </div>

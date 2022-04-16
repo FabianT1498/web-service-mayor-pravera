@@ -636,6 +636,7 @@ class CashRegisterController extends Controller
         $id = $request->id;
         $cash_register_data = CashRegisterData::where('id', $id)->first();
         $cash_register_data->status = config('constants.CASH_REGISTER_STATUS.COMPLETED');
+        
         if ($cash_register_data->save()){
 
             $result = $cash_register_repo->getTotals($id);
@@ -699,29 +700,39 @@ class CashRegisterController extends Controller
     }
 
     public function singleRecordPdf(CashRegisterRepository $cash_register_repo,PrintSingleCashRegisterRequest $request){
+        
+        $id = $request->route('id');
 
-        $cash_register = CashRegister::where('cash_register_data_id', $request->route('id'))->first();
+        $cash_register = CashRegister::where('cash_register_data_id', $id)->first();
+
+        $totals = $cash_register_repo->getTotals($id);
 
         $totals_from_safact = $cash_register_repo->getTotalsFromSafact($cash_register->date,
-            $cash_register->date, $cash_register->cash_register_user);
-
-        $totals = $cash_register_repo->getTotals($cash_register->id);
+            $cash_register->date, $cash_register->cash_register_user)->first();
 
         $payment_methods = $this->getPaymentMethods();
 
-        $totals_e_payment =  $cash_register_repo->getTotalsEPaymentMethods($cash_register->date,
-            $cash_register->date, $cash_register->cash_register_user);
-
-        $totals_e_payment  = $this->mapEPaymentMethods($totals_e_payment, $payment_methods);   
-      
+        $totals_e_payment =  $cash_register_repo
+            ->getTotalsEPaymentMethods($cash_register->date, $cash_register->date,
+                $cash_register->cash_register_user)
+            ->groupBy(['CodUsua', 'FechaE']);
+        
+        $totals_e_payment  = $this
+            ->mapEPaymentMethods($totals_e_payment, $payment_methods);
+        
+        $user = $cash_register->cash_register_user;
+        $date = date('Y-m-d', strtotime($cash_register->date));
+ 
         $differences = [
-            'dollar_cash' => $totals->total_dollar_cash - $totals_from_safact[0]['dolares'],
-            'bs_cash' => $cash_register->total_bs_cash - $totals_saint['bs_cash'],
-            'point_sale_bs' => ($cash_register->total_point_sale_bs - ($totals_saint['bs_debit'] + $totals_saint['bs_credit'])),
-            'point_sale_dollar' => $cash_register->total_point_sale_dollar - $totals_saint['point_sale_dollar'],
-            'zelle' => $cash_register->total_zelle - $totals_saint['zelle'],
-            'bs_denominations' => $cash_register->total_bs_denominations - $totals_saint['bs_cash'],
-            'dollar_denominations' => $cash_register->total_dollar_denominations - $totals_saint['dollar_cash'],
+            'dollar_cash' => $totals->total_dollar_cash - $totals_from_safact->dolares,
+            'bs_cash' => $totals->total_bs_cash - $totals_from_safact->bolivares,
+            'pago_movil_bs' => $totals->total_pago_movil_bs - $totals_e_payment[$user][$date]['05']['bs'],
+            'point_sale_bs' => ($totals->total_point_sale_bs - ($totals_e_payment[$user][$date]['01']['bs'] 
+                + $totals_e_payment[$user][$date]['02']['bs'])),
+            'point_sale_dollar' => $totals->total_point_sale_dollar - $totals_e_payment[$user][$date]['08']['dollar'],
+            'zelle' => $totals->total_zelle - $totals_e_payment[$user][$date]['07']['dollar'],
+            'bs_denominations' => $totals->total_bs_denominations - $totals_from_safact->bolivares,
+            'dollar_denominations' => $totals->total_dollar_denominations - $totals_from_safact->dolares,
         ];
 
         $currency_signs = [
@@ -732,7 +743,8 @@ class CashRegisterController extends Controller
         $pdf = App::make('dompdf.wrapper');
         $pdf = $pdf->loadView('pdf.cash-register.single-record', compact(
             'cash_register',
-            'totals_saint',
+            'totals_e_payment',
+            'totals_from_safact',
             'differences',
             'currency_signs'
         ))
