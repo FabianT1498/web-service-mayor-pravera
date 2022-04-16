@@ -18,11 +18,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        \App\Models\Worker::factory(10)->create();
+        // \App\Models\Worker::factory(10)->create();
 
         $this->call([
             BankSeeder::class,
-            // CashRegisterUserSeeder::class,
+            CashRegisterUserSeeder::class,
             PaymentMethodSeeder::class
         ]);
     }

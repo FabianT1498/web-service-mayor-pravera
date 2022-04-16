@@ -47,7 +47,7 @@
                     <i class="hidden loading animate-spin text-lg text-blue-600 fad fa-spinner-third"></i>
                     <div
                         id="cash_register_users_message"
-                        class="flex justify-around items-center {{ $cash_registers_workers_id_arr->count() === 0 ? '' : 'hidden'}}"
+                        class="flex justify-around items-center {{ $cash_registers_id_arr->count() > 0 ? 'hidden' : ''}}"
                     >
                         <p class="basis-5/6">Ya se han creado arqueos para todos las cajas en esta fecha, por favor seleccione otra fecha</p>
                         <div class="rounded-full flex justify-center items-center w-8 h-8 p-2 motion-safe:animate-bounce bg-white shadow-md">
