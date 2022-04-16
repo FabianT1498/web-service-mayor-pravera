@@ -9,6 +9,15 @@ const PAYMENT_CODES  = Object.freeze({
     '08': 'pointSaleDollar'
 })
 
+const PAYMENT_CURRENCIES =  Object.freeze({
+    '01': 'bs',
+    '02': 'bs',
+    '03': 'bs',
+    '05': 'bs',
+    '07': 'dollar',
+    '08': 'dollar'
+})
+
 const TYPE_BILLS  = Object.freeze({
     'A': 'liquidMoneyBs',
     'B' : 'liquidMoneyDollar'
@@ -16,4 +25,4 @@ const TYPE_BILLS  = Object.freeze({
 
 
 
-export {PAYMENT_CODES, TYPE_BILLS};
+export {PAYMENT_CODES, TYPE_BILLS, PAYMENT_CURRENCIES};

@@ -1,6 +1,6 @@
 import { CURRENCIES, SIGN as CURRENCY_SIGN_MAP} from '_constants/currencies';
 import { PAYMENT_METHODS } from '_constants/paymentMethods';
-import { PAYMENT_CODES, TYPE_BILLS} from '_constants/paymentCodes';
+import { PAYMENT_CODES, TYPE_BILLS, PAYMENT_CURRENCIES} from '_constants/paymentCodes';
 import { AMOUNT_COLORS } from '_constants/colors';
 
 import { store } from '_store'
@@ -111,6 +111,7 @@ export default {
         if (!totals){
             Object.keys(this.proxyTotalSaint).forEach(el => {
                 this.proxyTotalSaint[el] = 0;
+                this[this.propNameToDiffTotalMethod[el]].call(this)
             })
         } else {
           // Liquid Money Payment Amounts
@@ -123,15 +124,21 @@ export default {
           this.setTotalDollarCashDiff(this);
 
           let totalsEPayments = totals.totals_e_payments;
-
+        
            // E-Payment Amounts
            totalsEPayments.forEach(el => {
+                
                 if (this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] !== undefined){
-                    if (el.CodPago === '01' || el.CodPago === '02'){
-                        this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] += roundNumber(parseFloat(el.total))
-                    } else {
-                        this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] = parseFloat(el.total)
+                    if (PAYMENT_CURRENCIES[el.CodPago] === 'bs'){
+                        if (el.CodPago === '01' || el.CodPago === '02'){
+                            this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] += roundNumber(parseFloat(el.totalBs))
+                        } else {
+                            this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] = parseFloat(el.totalBs)
+                        }
+                    } else if (PAYMENT_CURRENCIES[el.CodPago] === 'dollar'){
+                        this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] = parseFloat(el.totalDollar)
                     }
+                    
                     this[this.propNameToDiffTotalMethod[PAYMENT_CODES[el.CodPago]]].call(this)
                 };
             });

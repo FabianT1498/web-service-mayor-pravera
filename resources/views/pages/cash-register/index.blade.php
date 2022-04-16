@@ -7,7 +7,7 @@
 @section('main')
     <div>
         <div class="mb-8">
-            <form class="mb-4 px-4" id="form_filter" method="GET" action="{{ route('cash_register.index') }}">
+            <form class="mb-4 mx-auto w-11/12" id="form_filter" method="GET" action="{{ route('cash_register.index') }}">
                 <p class="mb-4">Parametros de busqueda</p>
                 <div id="date_range_picker" date-rangepicker class="flex justify-between items-center mb-4 w-4/5">
                     <span class="text-gray-500">Desde</span>
@@ -85,27 +85,29 @@
                 </div>
             @endif
         </div>
-        <table class="table table-bordered table-hover">
+        <table class="table table-bordered table-hover mx-auto w-11/12">
             <thead class="bg-blue-300">
                 <tr>
                     @foreach ($columns as $colum)
-                        <th scope="col">{{ $colum }}</th>
+                        <th scope="col text-center align-middle">{{ $colum }}</th>
                     @endforeach
                 </tr>
             </thead>
             <tbody>
-                @foreach ($records as $record)
+                @foreach ($records as $key => $value)
                     <tr>
-                        @foreach($record->getAttributes() as $key => $value)
-                            <td>{{ $value }}</td> 
-                        @endforeach
-                        <td>
-                            <div class="flex items-center justify-between h-11 text-lg">
-                                @if ($record->status === config('constants.CASH_REGISTER_STATUS.EDITING'))
+                        <td class="text-center align-middle"> {{ $key + 1 }} </td>
+                        <td class="text-center align-middle">{{ $value->user_name }}</td>
+                        <td class="text-center align-middle">{{ $value->cash_register_user }}</td>
+                        <td class="text-center align-middle">{{ date('d-m-Y H:i', strtotime($value->date)) }}</td>
+                        <td class="text-center align-middle">{{ $value->status }}</td>
+                        <td class="text-center align-middle">{{ date('d-m-Y H:i', strtotime($value->updated_at)) }}</td>
+                        <td class="text-center align-middle">
+                            <div class="flex items-center justify-center h-11 text-lg">
+                                @if ($value->status === config('constants.CASH_REGISTER_STATUS.EDITING'))
                                     <form 
                                         method="POST" 
-                                        action="{{ route('cash_register.finish', $record->id) }}" 
-                                    >
+                                        action="{{ route('cash_register.finish', $value->id) }}" >
                                         @csrf
                                         @method('PUT')
                                         <button
@@ -125,8 +127,8 @@
                                         </div> 
                                     </form>
                                     <a 
-                                        href="{{ route('cash_register.edit', $record->id) }}" 
-                                        class="font-medium hover:text-teal-600 transition ease-in-out duration-500"
+                                        href="{{ route('cash_register.edit', $value->id) }}" 
+                                        class="ml-4 font-medium hover:text-teal-600 transition ease-in-out duration-500"
                                         data-tooltip-target="edit-tooltip"
                                     >
                                         <i class="fas fa-pencil"></i>
@@ -139,9 +141,9 @@
                                         Editar
                                         <div class="tooltip-arrow" data-popper-arrow></div>
                                     </div>
-                                @elseif ($record->status === config('constants.CASH_REGISTER_STATUS.COMPLETED'))
+                                @elseif ($value->status === config('constants.CASH_REGISTER_STATUS.COMPLETED'))
                                     <a 
-                                        href="{{ URL::to(route('cash_register.single_record_pdf', $record->id)) }}" 
+                                        href="{{ URL::to(route('cash_register.single_record_pdf', $value->id)) }}" 
                                         class="font-medium hover:text-teal-600 transition ease-in-out duration-500"
                                         data-tooltip-target="single-report-tooltip"
                                     >

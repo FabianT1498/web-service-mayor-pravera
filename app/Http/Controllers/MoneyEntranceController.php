@@ -49,6 +49,7 @@ class MoneyEntranceController extends Controller
             CAST(ROUND((SUM(SAFACT.CancelC * SAFACT.Signo)/MAX(FactorHist.MaxFactor)), 2) AS decimal(18, 2))  AS dolares,
             CAST(ROUND(SUM(SAFACT.Credito * SAFACT.Signo), 2) AS decimal(18, 2)) AS credito,
             CAST(ROUND((SUM(SAFACT.Credito * SAFACT.Signo)/MAX(FactorHist.MaxFactor)), 2) AS decimal(18, 2))  AS creditoADolares,
+            CAST(ROUND(MAX(FactorHist.MaxFactor), 2) AS decimal(18, 2)) as Factor,
             CAST(SAFACT.FechaE as date) as FechaE")
             ->joinSub($factors, 'FactorHist', function($query){
                 $query->on(DB::raw("CAST(SAFACT.FechaE AS date)"), '=', "FactorHist.FechaE");
@@ -82,6 +83,7 @@ class MoneyEntranceController extends Controller
         ->table('SAIPAVTA')
         ->selectRaw("MAX(SAFACT.CodUsua) as CodUsua, MAX(SAIPAVTA.CodPago) as CodPago, MAX(CAST(SAFACT.FechaE as date)) as FechaE,
             CAST(ROUND(SUM(SAIPAVTA.Monto * SAFACT.Signo), 2) AS decimal(18, 2)) as totalBs,
+            CAST(ROUND(MAX(FactorHist.MaxFactor), 2) AS decimal(18, 2)) as Factor,
             CAST(ROUND((SUM(SAIPAVTA.Monto * SAFACT.Signo)/MAX(FactorHist.MaxFactor)), 2) AS decimal(18, 2)) as totalDollar"
         )
         ->joinSub($factors, 'FactorHist', function($query){
@@ -238,6 +240,8 @@ class MoneyEntranceController extends Controller
             $totals_safact = $this->getTotalsFromSafact($new_start_date, $new_finish_date);
             $totals_e_payment = $this->getTotalsEPaymentMethods($new_start_date, $new_finish_date);
             
+            return print_r($totals_safact);
+
             $payment_methods = $this->getPaymentMethods();
 
             $totals_e_payment  = $this->mapEPaymentMethods($totals_e_payment, $payment_methods);

@@ -38,20 +38,21 @@
                     required
                 />
 
-                <div id="cash_register_users_status" class="ml-8 flex justify-between items-center">
+                <div id="cash_register_users_status" class="ml-4 w-1/2 flex justify-around items-center">
                     <i class="hidden loading animate-spin text-lg text-blue-600 fad fa-spinner-third"></i>
                     <div
                         id="cash_register_users_message"
-                        class="flex justify-around items-center {{ $cash_registers_id_arr->count() ? 'hidden' : ''}}"
+                        class="flex items-center justify-around {{ $cash_registers_id_arr->count() > 0 ? 'hidden' : ''}}"
                     >
-                        <p class="basis-5/6">Ya se han creado arqueos para todos las cajas en esta fecha, por favor seleccione otra fecha</p>
-                        <div class="rounded-full flex justify-center items-center w-8 h-8 p-2 motion-safe:animate-bounce bg-white shadow-md">
+                        <p class="w-4/5">Ya se han creado arqueos para todos las cajas en esta fecha, por favor seleccione otra fecha</p>
+                        <div class="rounded-full flex justify-center items-center w-8 h-8 motion-safe:animate-bounce bg-white shadow-md">
                             <i class="text-lg fas fa-exclamation text-blue-600"></i>
                         </div>
                     </div>
                 </div>
 
             </div>
+
             <div class="flex items-center mb-4">
                 <x-label class="w-1/12" for="cash_register_worker" :value="__('Cajero/a:')" />
                 <x-select-input
@@ -63,6 +64,14 @@
                     :value="old('worker_id')"
                     required
                 />
+                @if ($cash_registers_workers_id_arr->count() === 0)
+                    <div id="cash_register_worker_status" class="ml-4 w-1/2 flex justify-around items-center">
+                        <p class="w-4/5">No hay ningún cajero/a registrado, por favor seleccione el checkbox 'no está registrado'</p>
+                        <div class="rounded-full flex justify-center items-center w-8 h-8 motion-safe:animate-bounce bg-white shadow-md">
+                            <i class="text-lg fas fa-exclamation text-blue-600"></i>
+                        </div>
+                    </div>
+                @endif
             </div>
 
             <div class="flex items-center mb-4">
@@ -99,7 +108,7 @@
             <x-label class="w-56" :value="__('Cotización del $:')" />
             <p data-dollar-exchange="dollar_exchange_value" id="last-dollar-exchange-bs-label">{{ $dollar_exchange?->bs_exchange ?? 0 }} Bs.S</p> -->
 
-            <div class="flex mb-8 items-center justify-around">
+            <div class="flex mb-8 items-center justify-between">
             
                 <!-- Cash on liquid input (dollars) -->
                 <x-label class="w-1/5" :value="__('Entradas de dolares en efectivo:')" />
@@ -132,7 +141,7 @@
 
             <!-- <div class="w-3/5 mx-auto bg-teal-600 h-px mb-8">&nbsp;</div>    -->
 
-            <div class="flex mb-8 items-center justify-around">
+            <div class="flex mb-8 items-center justify-between">
                 <!-- Cash on liquid input (bolivares) -->
                 <x-label class="w-1/5" :value="__('Entradas de bolivares en efectivo:')" />
                 <x-input-with-button
@@ -163,7 +172,7 @@
     
         <div class="w-10/12 mx-auto">
             <h3 class="h3 text-center mb-8">Ingresos en punto de venta</h3>
-            <div class="flex mb-8 items-center justify-around">
+            <div class="flex mb-8 items-center justify-between">
 
                 <!-- Cash on punto de venta (bs) -->
                 <x-label class="w-1/5" for="debit_card_payment_bs" :value="__('Entradas en punto de venta (Bs):')" />
@@ -176,13 +185,13 @@
                     type="text"
                 />
 
-                <div>
+                <div class="w-6/12">
                     <p>Cantidad recuperada del sistema: <span id="total_point_sale_bs_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}</p>
                     <p>Diferencia: <span id="total_point_sale_bs_diff">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}</p>
                 </div>
             </div>
 
-            <div class="flex mb-8 items-center justify-around">
+            <div class="flex mb-8 items-center justify-between">
                 <x-label class="w-1/5" for="point_sale_dollar" :value="__('Entrada en punto de venta internacional ($):')" />
                 <x-input
                     class="w-1/4"
@@ -193,7 +202,7 @@
                     :value="old('point_sale_dollar') ?? '0'"
                 />
                 
-                <div>
+                <div class="w-6/12">
                     <p>Cantidad recuperada del sistema: <span id="total_point_sale_dollar_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}</p>
                     <p>Diferencia: <span id="total_point_sale_dollar_diff">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}</p>
                 </div>
@@ -204,7 +213,7 @@
 
         <div class="w-10/12 mx-auto">
             <h3 class="h3 text-center mb-8">Transferencias y pago móviles</h3>
-            <div class="flex mb-8 items-center justify-around">
+            <div class="flex mb-8 items-center justify-between">
                 
                 <x-label class="w-1/5" for="total_pago_movil_bs" :value="__('Entradas de transferencias:')" />
                 <x-input-with-button
@@ -216,7 +225,7 @@
                     class="w-1/4"
                 />
         
-                <div>
+                <div class="w-6/12">
                     <p>Cantidad recuperada del sistema: <span id="total_pago_movil_bs_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}</p>
                     <p>Diferencia: <span id="total_pago_movil_bs_diff">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}</p>
                 </div>
@@ -227,7 +236,7 @@
         <div class="w-10/12 mx-auto">
             <h3 class="h3 text-center mb-8">Entradas de Zelle ($)</h3>
     
-            <div class="flex mb-8 items-center justify-around">
+            <div class="flex mb-8 items-center justify-between">
                 <x-label class="w-1/5" :value="__('Total en Zelle:')" />
                 <x-input-with-button
                     class="w-1/4"
@@ -236,7 +245,7 @@
                     name="total_zelle"
                     type="text"
                 />
-                <div >
+                <div class="w-6/12">
                     <p>Cantidad recuperada del sistema: <span id="total_zelle_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}</p>
                     <p>Diferencia: <span id="total_zelle_diff">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}</p>
                 </div>

@@ -14,13 +14,12 @@ use App\Models\DollarDenominationRecord;
 use App\Models\ZelleRecord;
 use App\Models\PagoMovilRecord;
 
+use Carbon\Carbon;
+
+
 class CashRegisterData extends Model
 {
     use HasFactory;
-
-    protected $casts = [
-        'date' => 'date:Y-m-d'
-    ]; 
 
     protected $fillable = [
         'user_id',
@@ -28,6 +27,10 @@ class CashRegisterData extends Model
         'date',
         'worker_id',
         'status',
+    ];
+
+    protected $casts = [
+        'date' => 'date:Y-m-d'
     ];
 
     public function __construct(array $attributes = array())
@@ -40,6 +43,11 @@ class CashRegisterData extends Model
         $this->worker_id = key_exists('worker_id', $attributes) ? $attributes['worker_id'] : '';
         $this->status = key_exists('status', $attributes) ? $attributes['status'] : config('constants.CASH_REGISTER_STATUS.EDITING');
     }
+
+    // public function getDateAttribute($date)
+    // {
+    //     return (new Carbon($date))->format('d-m-Y');
+    // }
 
     public function dollar_cash_records()
     {

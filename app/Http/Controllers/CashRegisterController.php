@@ -112,7 +112,7 @@ class CashRegisterController extends Controller
 
         $records = $query->orderBy('date', 'desc')->paginate(5);
 
-       $records->appends(['status' => $status, 'start_date' => $start_date, 'end_date' => $end_date]);
+        // $records->appends(['status' => $status, 'start_date' => $start_date, 'end_date' => $end_date]);
 
         $columns = [
             "Nro",
@@ -655,55 +655,67 @@ class CashRegisterController extends Controller
         return redirect()->route('cash_register.index');
     }
 
-    public function singleRecordPdf(PrintSingleCashRegisterRequest $request){
-
-        $cash_register = CashRegister::where('cash_register_data_id', $request->route('id'))->first();
-
-        $totals_from_db_saint = $this->getTotalsFromSaint($cash_register->cash_register_user,
-            $cash_register->date);
+    // Método para completar los métodos de pagos que no han tenido ingresos
+    // por cada caja en cada fecha.
+    private function mapEPaymentMethods($data, $payment_methods){
 
         $totals_saint = [];
 
-        // Mapping every cash record entry with its key
-        foreach(array_keys(config('constants.CASH_TIPO_FAC')) as $index => $value){
-            $record = $totals_from_db_saint['total_cash_records']->slice($index, 1)->first();
-            $key = config('constants.CASH_TIPO_FAC.'. $value);
-
-            if (!is_null($record)){
-                if ($value === $record->TipoFac){
-                    $totals_saint[$key] = $record->total_cash;
-                } else {
-                    if (!key_exists($key, $totals_saint)){
-                        $totals_saint[$key] = 0;
+        // Iterating every cash register user
+        foreach($data->keys() as $cod_usua){
+            $totals_saint[$cod_usua] = [];
+            // Iterating over every date of cash register user
+            foreach ($data[$cod_usua]->keys() as $date){
+                $totals_saint[$cod_usua][$date] = [];
+                // Mapping every total with its key
+                foreach($payment_methods->keys() as $index => $value){
+                    $record = $data[$cod_usua][$date]->slice($index, 1)->first();
+            
+                    if (!is_null($record)){
+                        if ($value === $record->CodPago){
+                            $totals_saint[$cod_usua][$date][$value]['bs'] = $record->totalBs;
+                            $totals_saint[$cod_usua][$date][$value]['dollar'] = $record->totalDollar;
+                        } else {
+                            if (!key_exists($value, $totals_saint[$cod_usua][$date])){
+                                $totals_saint[$cod_usua][$date][$value]['bs'] = 0.00;
+                                $totals_saint[$cod_usua][$date][$value]['dollar'] = 0.00;
+                            }
+                            $totals_saint[$cod_usua][$date][$record->CodPago]['bs'] = $record->totalBs;
+                            $totals_saint[$cod_usua][$date][$record->CodPago]['dollar'] = $record->totalDollar;
+                        }
+                    } else if (!key_exists($value, $totals_saint[$cod_usua][$date])) {
+                        $totals_saint[$cod_usua][$date][$value]['bs'] = 0.00;
+                        $totals_saint[$cod_usua][$date][$value]['dollar'] = 0.00;
                     }
-                    $totals_saint[config('constants.CASH_TIPO_FAC.'. $record->TipoFac)] = $record->total_cash;
                 }
-            } else if (!key_exists($key, $totals_saint)) {
-                $totals_saint[$key] = 0;
             }
         }
 
-        // Mapping every e-payment entry with its key
-        foreach(array_keys(config('constants.COD_PAGO')) as $index => $value){
-            $record = $totals_from_db_saint['total_e_payment_records']->slice($index, 1)->first();
-            $key = config('constants.COD_PAGO.'. $value);
+        return $totals_saint;
+    }
 
-            if (!is_null($record)){
-                if ($value === $record->CodPago){
-                    $totals_saint[$key] = $record->total;
-                } else {
-                    if (!key_exists($key, $totals_saint)){
-                        $totals_saint[$key] = 0;
-                    }
-                    $totals_saint[config('constants.COD_PAGO.'. $record->CodPago)] = $record->total;
-                }
-            } else if (!key_exists($key, $totals_saint)) {
-                $totals_saint[$key] = 0;
-            }
-        }
+    private function getPaymentMethods(){
+        return DB::table('payment_methods')->orderByRaw("CodPago asc")->get()->groupBy(['CodPago']);
+    }
 
+    public function singleRecordPdf(CashRegisterRepository $cash_register_repo,PrintSingleCashRegisterRequest $request){
+
+        $cash_register = CashRegister::where('cash_register_data_id', $request->route('id'))->first();
+
+        $totals_from_safact = $cash_register_repo->getTotalsFromSafact($cash_register->date,
+            $cash_register->date, $cash_register->cash_register_user);
+
+        $totals = $cash_register_repo->getTotals($cash_register->id);
+
+        $payment_methods = $this->getPaymentMethods();
+
+        $totals_e_payment =  $cash_register_repo->getTotalsEPaymentMethods($cash_register->date,
+            $cash_register->date, $cash_register->cash_register_user);
+
+        $totals_e_payment  = $this->mapEPaymentMethods($totals_e_payment, $payment_methods);   
+      
         $differences = [
-            'dollar_cash' => $cash_register->total_dollar_cash - $totals_saint['dollar_cash'],
+            'dollar_cash' => $totals->total_dollar_cash - $totals_from_safact[0]['dolares'],
             'bs_cash' => $cash_register->total_bs_cash - $totals_saint['bs_cash'],
             'point_sale_bs' => ($cash_register->total_point_sale_bs - ($totals_saint['bs_debit'] + $totals_saint['bs_credit'])),
             'point_sale_dollar' => $cash_register->total_point_sale_dollar - $totals_saint['point_sale_dollar'],
