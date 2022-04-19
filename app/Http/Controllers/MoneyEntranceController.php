@@ -240,8 +240,6 @@ class MoneyEntranceController extends Controller
             $totals_safact = $this->getTotalsFromSafact($new_start_date, $new_finish_date);
             $totals_e_payment = $this->getTotalsEPaymentMethods($new_start_date, $new_finish_date);
             
-            return print_r($totals_safact);
-
             $payment_methods = $this->getPaymentMethods();
 
             $totals_e_payment  = $this->mapEPaymentMethods($totals_e_payment, $payment_methods);

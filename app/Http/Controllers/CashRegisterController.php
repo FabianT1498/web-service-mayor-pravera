@@ -735,6 +735,19 @@ class CashRegisterController extends Controller
             'dollar_denominations' => $totals->total_dollar_denominations - $totals_from_safact->dolares,
         ];
 
+        $cash_register_data = CashRegisterData::find($id);
+       
+        $denominations_dollar = $cash_register_data->dollar_denomination_records;
+        $denominations_bolivar = $cash_register_data->bs_denomination_records;
+
+        $total_denominations_dollar = $denominations_dollar->reduce(function ($acc, $item) {
+            return $acc + ($item->quantity * $item->denomination);
+        }, 0);
+
+        $total_denominations_bolivar = $denominations_bolivar->reduce(function ($acc, $item) {
+            return $acc + ($item->quantity * $item->denomination);
+        }, 0);
+
         $currency_signs = [
             'dollar' => config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')),
             'bs' => config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR'))
@@ -745,6 +758,10 @@ class CashRegisterController extends Controller
             'cash_register',
             'totals_e_payment',
             'totals_from_safact',
+            'denominations_dollar',
+            'denominations_bolivar',
+            'total_denominations_dollar',
+            'total_denominations_bolivar',
             'differences',
             'currency_signs',
             'user',
