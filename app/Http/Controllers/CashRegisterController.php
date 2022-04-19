@@ -112,7 +112,10 @@ class CashRegisterController extends Controller
 
         $records = $query->orderBy('date', 'desc')->paginate(5);
 
+        
         // $records->appends(['status' => $status, 'start_date' => $start_date, 'end_date' => $end_date]);
+
+        // return print_r($records);
 
         $columns = [
             "Nro",
@@ -699,7 +702,7 @@ class CashRegisterController extends Controller
         return DB::table('payment_methods')->orderByRaw("CodPago asc")->get()->groupBy(['CodPago']);
     }
 
-    public function singleRecordPdf(CashRegisterRepository $cash_register_repo,PrintSingleCashRegisterRequest $request){
+    public function singleRecordPdf(CashRegisterRepository $cash_register_repo, PrintSingleCashRegisterRequest $request){
         
         $id = $request->route('id');
 
@@ -771,6 +774,189 @@ class CashRegisterController extends Controller
                 'defaultFont' => 'sans-serif',
             ]);
         return $pdf->download('arqueo-caja_' . $cash_register->cash_register_user . '_' . $cash_register->date . '.pdf');
+    }
+
+    public function intervalRecordPdf(CashRegisterRepository $cash_register_repo, PrintIntervalCashRegisterRequest $request){
+        
+        $start_date = date('Y-m-d', strtotime($request->start_date));
+        $end_date = date('Y-m-d', strtotime($request->end_date));
+
+        // Get Saint data
+        $totals_from_safact = $cash_register_repo
+            ->getTotalsFromSafact($start_date, $end_date)
+            ->groupBy(['CodUsua', 'FechaE']);
+
+        $payment_methods = $this->getPaymentMethods();
+
+        $totals_e_payment =  $cash_register_repo
+            ->getTotalsEPaymentMethods($start_date, $end_date)
+            ->groupBy(['CodUsua', 'FechaE']);
+        
+        $totals_e_payment  = $this
+            ->mapEPaymentMethods($totals_e_payment, $payment_methods);
+
+        // Get database data
+        $cash_registers = CashRegister::whereBetween('date', [$start_date, $end_date])
+            ->get()
+            ->groupBy(['cash_register_user', 'date']);
+
+        // return print_r($totals_from_safact['CAJA1']['2022-04-16']);
+        $differences = $this->calculateDiffToSaint($totals_from_safact, $totals_e_payment, $cash_registers);
+    
+        $dollar_denominations = DB::table('cash_register_data')
+            ->join('dollar_denomination_records', 'cash_register_data.id', '=', 'dollar_denomination_records.cash_register_data_id')
+            ->whereRaw("cash_register_data.date BETWEEN ? AND ?", [$start_date, $end_date])
+            ->where('cash_register_data.status', config('constants.CASH_REGISTER_STATUS.COMPLETED'))
+            ->orderByRaw("cash_register_data.cash_register_user asc, cash_register_data.date asc")
+            ->get()
+            ->groupBy(['cash_register_user', 'date']);
+
+        $bs_denominations = DB::table('cash_register_data')
+        ->join('bs_denomination_records', 'cash_register_data.id', '=', 'bs_denomination_records.cash_register_data_id')
+        ->whereRaw("cash_register_data.date BETWEEN ? AND ?", [$start_date, $end_date])
+        ->where('cash_register_data.status', config('constants.CASH_REGISTER_STATUS.COMPLETED'))
+        ->orderByRaw("cash_register_data.cash_register_user asc, cash_register_data.date asc")
+        ->get()
+        ->groupBy(['cash_register_user', 'date']);
+
+        $totals_bs_denominations = $this->sumSubTotalDenomination($bs_denominations);
+        $total_dollar_denominations = $this->sumSubTotalDenomination($dollar_denominations);
+
+        $start_date = $request->start_date;
+        $end_date = $request->end_date;
+
+        $saint_totals = $this->joinSaintMoneyEntranceCollections($totals_from_safact,
+            $totals_e_payment);
+
+        $pdf = App::make('dompdf.wrapper');
+        $pdf = $pdf->loadView('pdf.cash-register.interval-records', compact(
+            'saint_totals',
+            'cash_registers',
+            'differences',
+            'dollar_denominations',
+            'bs_denominations',
+            'totals_bs_denominations',
+            'total_dollar_denominations',
+            'start_date',
+            'end_date'
+        ))
+            ->setOptions([
+                'defaultFont' => 'sans-serif',
+            ]);
+        return $pdf->download('arqueos-de-caja_' . $start_date . '_' . $end_date . '.pdf');
+    }
+
+    private function joinSaintMoneyEntranceCollections($totals_from_safact, $totals_e_payment){
+        $saint_totals = [];
+        foreach($totals_from_safact as $key_user => $dates){
+            $saint_totals[$key_user] = [];
+            
+            if (array_key_exists($key_user, $totals_e_payment)){
+                foreach ($dates as $key_date => $date){
+                    $saint_totals[$key_user][$key_date] = [];
+                    
+                    if (array_key_exists($key_date, $totals_e_payment[$key_user])){
+                        $totals_e_payment[$key_user][$key_date]['dolares'] = $date[0]->dolares;
+                        $totals_e_payment[$key_user][$key_date]['bolivares'] = $date[0]->bolivares;
+                        $saint_totals[$key_user][$key_date] = $totals_e_payment[$key_user][$key_date];
+                    } else {
+                        $saint_totals[$key_user][$key_date]['dolares'] = $date[0]->dolares;
+                        $saint_totals[$key_user][$key_date]['bolivares'] = $date[0]->bolivares;     
+                    }
+                }
+            } else {
+                foreach ($dates as $key_date => $date){
+                    $saint_totals[$key_user][$key_date]['dolares'] = $date[0]->dolares;
+                    $saint_totals[$key_user][$key_date]['bolivares'] = $date[0]->bolivares; 
+                }
+            }
+        }
+
+        return $saint_totals;
+    }
+
+    private function sumSubTotalDenomination($denomination_records){
+
+        $totals_denominations = [];
+        foreach($denomination_records as $key_user => $dates){
+            $totals_denominations[$key_user] = [];
+
+            foreach ($dates as $key_date => $date){
+            
+                $totals_denominations[$key_user][$key_date] = $date->reduce(function($acc, $item){
+                    return $acc + ($item->quantity * $item->denomination);
+                }, 0);
+            }
+        }
+
+        return $totals_denominations;
+    }
+
+    private function calculateDiffToSaint($totals_from_safact, $totals_e_payment, $cash_registers){
+        $differences = [];
+
+        $totals_from_safact->each(function($dates, $key_user) use ($cash_registers){
+            $differences[$key_user] = [];
+            if ($cash_registers->has($key_user)){
+                $dates->each(function($date, $key_date) use ($differences, $key_user, $cash_registers){
+                    if ($cash_registers[$key_user]->has($key_date)){
+                        $differences[$key_user][$key_date] = [];
+                        $differences[$key_user][$key_date]['dollar_cash'] = $cash_registers[$key_user][$key_date]->first()->total_dollar_cash - $date[0]->dolares;
+                        $differences[$key_user][$key_date]['bs_cash'] = $cash_registers[$key_user][$key_date]->first()->total_bs_cash - $date[0]->bolivares;
+                    } else {
+                        $differences[$key_user][$key_date] = [];
+                        $differences[$key_user][$key_date]['dollar_cash'] = $date[0]->dolares * -1;
+                        $differences[$key_user][$key_date]['bs_cash'] = $date[0]->bolivares * -1;
+                    }
+                });
+            } else {
+                $dates->each(function($date, $key_date) use ($differences, $key_user){
+                    $differences[$key_user][$key_date] = [];
+                    $differences[$key_user][$key_date]['dollar_cash'] = $date[0]->dolares * -1;
+                    $differences[$key_user][$key_date]['bs_cash'] = $date[0]->bolivares * -1;
+                });
+            }
+        });
+
+        foreach($totals_e_payment as $key_user => $dates){
+            
+            if (!array_key_exists($key_user, $differences)){
+                $differences[$key_user]  = [];
+            }
+
+            if ($cash_registers->has($key_user)){
+                
+                foreach($dates as $key_date => $date){
+                    if ($cash_registers[$key_user]->has($key_date)){
+                            $differences[$key_user][$key_date]['point_sale_bs'] = $cash_registers[$key_user][$key_date]->first()->total_point_sale_bs - ($date['01']['bs'] + $date['02']['bs']);
+                            $differences[$key_user][$key_date]['point_sale_dollar'] = $cash_registers[$key_user][$key_date]->first()->total_point_sale_dollar - $date['08']['dollar'];
+                            $differences[$key_user][$key_date]['pago_movil_bs'] = $cash_registers[$key_user][$key_date]->first()->total_pago_movil_bs - $date['05']['bs'];
+                            $differences[$key_user][$key_date]['zelle'] = $cash_registers[$key_user][$key_date]->first()->total_zelle -  $date['07']['dollar'];
+                    } else {
+                        if (!array_key_exists($key_date, $differences[$key_user])){
+                            $differences[$key_user][$key_date] = [];
+                        }
+                        $differences[$key_user][$key_date]['point_sale_bs'] = ($date['01']['bs'] + $date['02']['bs']) * -1;
+                        $differences[$key_user][$key_date]['point_sale_dollar'] = $date['08']['dollar'] * -1;
+                        $differences[$key_user][$key_date]['pago_movil_bs'] = $date['05']['bs'] * -1;
+                        $differences[$key_user][$key_date]['zelle'] = $date['07']['dollar'] * -1;
+                    }
+                };
+            } else {
+                foreach($dates as $key_date => $date){
+                    if (!array_key_exists($key_date, $differences[$key_user])){
+                        $differences[$key_user][$key_date] = [];
+                    }
+
+                    $differences[$key_user][$key_date]['point_sale_bs'] = ($date['01']['bs'] + $date['02']['bs']) * -1;
+                    $differences[$key_user][$key_date]['point_sale_dollar'] = $date['08']['dollar'] * -1;
+                    $differences[$key_user][$key_date]['pago_movil_bs'] = $date['05']['bs'] * -1;
+                    $differences[$key_user][$key_date]['zelle'] = $date['07']['dollar'] * -1;
+                }
+            }
+        }
+
+        return $differences;
     }
 
     private function mergeOldAndNewValues($parent_id, $callback_name, $old_values, ...$new_values){

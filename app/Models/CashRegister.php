@@ -29,6 +29,7 @@ class CashRegister extends Model
         'total_dollar_denominations',
         'total_bs_denominations',
         'total_point_sale_bs',
+        'total_pago_movil_bs',
         'total_point_sale_dollar',
         'total_zelle',
         'date',
@@ -54,8 +55,8 @@ class CashRegister extends Model
         $this->cash_register_data_id = key_exists('id', $attributes)  ? $attributes['id'] : '';
     }
 
-    public function getDateAttribute($date)
-    {
-        return (new Carbon($date))->format('d-m-Y');
-    }
+    // public function getDateAttribute($date)
+    // {
+    //     return (new Carbon($date))->format('d-m-Y');
+    // }
 }

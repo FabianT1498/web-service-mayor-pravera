@@ -9,7 +9,7 @@ use App\Models\CashRegisterData;
 class CashRegisterRepository implements CashRegisterRepositoryInterface
 {
 
-    public function getTotalsFromSafact($start_date, $end_date, $user){
+    public function getTotalsFromSafact($start_date, $end_date, $user = null){
         /* Consulta para obtener los totales de las facturas*/
         $date_params = ($start_date === $end_date) ? [$start_date] : [$start_date, $end_date];
 
@@ -41,14 +41,14 @@ class CashRegisterRepository implements CashRegisterRepositoryInterface
             ->joinSub($factors, 'FactorHist', function($query){
                 $query->on(DB::raw("CAST(SAFACT.FechaE AS date)"), '=', "FactorHist.FechaE");
             })
-            ->whereRaw("SAFACT.CodUsua" . $user_params .  " AND " . $interval_query,
+            ->whereRaw("SAFACT.CodUsua " . $user_params .  " AND " . $interval_query,
                 $date_params)
             ->groupByRaw("SAFACT.CodUsua, CAST(SAFACT.FechaE as date)")
             ->orderByRaw("SAFACT.CodUsua asc, CAST(SAFACT.FechaE as date)")
             ->get();
     }
 
-    public function getTotalsEPaymentMethods($start_date, $end_date, $user){
+    public function getTotalsEPaymentMethods($start_date, $end_date, $user = null){
 
         /* Consulta para obtener los totales de las facturas*/
         $date_params = ($start_date === $end_date) ? [$start_date] : [$start_date, $end_date];
@@ -83,7 +83,7 @@ class CashRegisterRepository implements CashRegisterRepositoryInterface
         ->join('SAFACT', function($query){
             $query->on("SAFACT.NumeroD", '=', "SAIPAVTA.NumeroD");
         })
-        ->whereRaw("SAFACT.CodUsua" . $user_params . " AND " . $interval_query,
+        ->whereRaw("SAFACT.CodUsua " . $user_params . " AND " . $interval_query,
             $date_params)
         ->groupByRaw("SAFACT.CodUsua, CAST(SAFACT.FechaE AS date), SAIPAVTA.CodPago")
         ->orderByRaw("SAFACT.CodUsua asc, SAIPAVTA.CodPago asc")

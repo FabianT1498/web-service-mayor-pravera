@@ -19,11 +19,12 @@ class PrintIntervalCashRegisterRequest extends FormRequest
         $new_finish_date = date('Y-m-d', strtotime($this->route('end_date')));
 
         $cash_register_data = CashRegisterData
-            ::selectRaw('count(id) as number_of_records')
+            ::selectRaw('count(id) as count')
             ->where('status', config('constants.CASH_REGISTER_STATUS.COMPLETED'))
-            ->whereBetween('cash_register_data.date', [$new_start_date, $new_finish_date]);
+            ->whereBetween('cash_register_data.date', [$new_start_date, $new_finish_date])
+            ->first();
         
-        return (!is_null($cash_register_data) && $cash_register_data->number_of_records > 0);
+        return (!is_null($cash_register_data) && $cash_register_data->count > 0);
     }
 
     public function rules(){

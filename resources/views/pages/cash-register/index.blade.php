@@ -74,14 +74,13 @@
             @if (($start_date && $end_date) 
                     && $status === config('constants.CASH_REGISTER_STATUS.COMPLETED')
                             && $records->count() > 0)
-                <div class="flex">
-                    <x-nav-link-button
+                <div class="w-11/12 mx-auto">
+                    <a 
+                        class="underline text-sm text-gray-600 hover:text-gray-900 pt-4" 
                         href="{{ route('cash_register.interval_record_pdf', ['start_date' => $start_date, 'end_date' => $end_date]) }}"
-                        class="justify-around basis-40"
                     >
-                        Imprimir PDF
-                        <i class="fas fa-file-pdf"></i>
-                    </x-nav-link-button>
+                        {{ __('Generar reporte por intervalo de tiempo en formato PDF') }}
+                    </a>
                 </div>
             @endif
         </div>

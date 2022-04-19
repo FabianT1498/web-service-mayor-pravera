@@ -47,6 +47,11 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('cash_register/pdf/{id}', [CashRegisterController::class, 'singleRecordPdf'])->name('cash_register.single_record_pdf');
 
+    Route::get('cash_register/pdf/{id}', [CashRegisterController::class, 'singleRecordPdf'])->name('cash_register.single_record_pdf');
+    Route::get('cash_register/pdf/{start_date}/{end_date}', [CashRegisterController::class, 'intervalRecordPdf'])->name('cash_register.interval_record_pdf');
+
+    
+
   });
 
 Route::group(['middleware' => ['auth', 'jsonify']], function() {
