@@ -260,20 +260,55 @@
                             <tr>
                                 <th>&nbsp;</th>
                                 <th>Subtotal</th>
+                                <th>Porcentaje (%)</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>Entrada en dolares
                                 <td class="text-center">{{ number_format($total_dollars, 2) }}</td>
+                                <td class="text-center">{{ number_format($total_dollars/$total, 2) * 100 }}&nbsp;%</td>
                             </tr>
                             <tr>
                                 <td>Entrada en bolívares ($)</td>
                                 <td class="text-center">{{ number_format($total_bs_to_dollars, 2) }}</td>
+                                <td class="text-center">{{ number_format($total_bs_to_dollars/$total, 2) * 100 }}&nbsp;%</td>
                             </tr>
                             <tr class="bg-grey-600">
                                 <td class="font-semibold">Total</td>
                                 <td class="text-center">{{ number_format($total, 2) }}</td>
+                                <td class="text-center">100%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div>
+                    
+                    <table class="w-80p mb-12">
+                        <caption class="text-center w-80p bg-grey-400">IVA</caption>
+                        <thead>
+                            <tr>
+                                <th>&nbsp;</th>
+                                <th>Subtotal</th>
+                                <th>Porcentaje (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>I.V.A Fac ($)</td>
+                                <td class="text-center">{{ number_format($totals_iva[0][0]->ivaDolares, 2) }}</td>
+                                <td class="text-center">{{ number_format($totals_iva[0][0]->ivaDolares/$total_iva_dollar, 2) * 100 }}&nbsp;%</td>
+                            </tr>
+                            <tr>
+                                <td>I.V.A NT($)</td>
+                                <td class="text-center">{{ number_format($totals_iva[1][0]->ivaDolares, 2) }}</td>
+                                <td class="text-center">{{ number_format($totals_iva[1][0]->ivaDolares/$total_iva_dollar, 2) * 100 }}&nbsp;%</td>
+                            </tr>
+                            <tr class="bg-grey-600">
+                                <td class="font-semibold">Total</td>
+                                <td class="text-center">{{ number_format($total_iva_dollar, 2) }}</td>
+                                <td class="text-center">100%</td>
                             </tr>
                         </tbody>
                     </table>
