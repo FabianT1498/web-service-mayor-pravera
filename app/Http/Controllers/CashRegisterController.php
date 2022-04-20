@@ -800,14 +800,13 @@ class CashRegisterController extends Controller
             ->get()
             ->groupBy(['cash_register_user', 'date']);
 
-        // return print_r($totals_from_safact['CAJA1']['2022-04-16']);
         $differences = $this->calculateDiffToSaint($totals_from_safact, $totals_e_payment, $cash_registers);
     
         $dollar_denominations = DB::table('cash_register_data')
             ->join('dollar_denomination_records', 'cash_register_data.id', '=', 'dollar_denomination_records.cash_register_data_id')
             ->whereRaw("cash_register_data.date BETWEEN ? AND ?", [$start_date, $end_date])
             ->where('cash_register_data.status', config('constants.CASH_REGISTER_STATUS.COMPLETED'))
-            ->orderByRaw("cash_register_data.cash_register_user asc, cash_register_data.date asc")
+            ->orderByRaw("cash_register_data.cash_register_user asc, cash_register_data.date asc, dollar_denomination_records.denomination asc")
             ->get()
             ->groupBy(['cash_register_user', 'date']);
 
@@ -815,9 +814,14 @@ class CashRegisterController extends Controller
         ->join('bs_denomination_records', 'cash_register_data.id', '=', 'bs_denomination_records.cash_register_data_id')
         ->whereRaw("cash_register_data.date BETWEEN ? AND ?", [$start_date, $end_date])
         ->where('cash_register_data.status', config('constants.CASH_REGISTER_STATUS.COMPLETED'))
-        ->orderByRaw("cash_register_data.cash_register_user asc, cash_register_data.date asc")
+        ->orderByRaw("cash_register_data.cash_register_user asc, cash_register_data.date asc, bs_denomination_records.denomination asc")
         ->get()
         ->groupBy(['cash_register_user', 'date']);
+
+        $currency_signs = [
+            'dollar' => config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')),
+            'bs' => config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR'))
+        ];
 
         $totals_bs_denominations = $this->sumSubTotalDenomination($bs_denominations);
         $total_dollar_denominations = $this->sumSubTotalDenomination($dollar_denominations);
@@ -828,9 +832,11 @@ class CashRegisterController extends Controller
         $saint_totals = $this->joinSaintMoneyEntranceCollections($totals_from_safact,
             $totals_e_payment);
 
+
         $pdf = App::make('dompdf.wrapper');
-        $pdf = $pdf->loadView('pdf.cash-register.interval-records', compact(
+        $pdf = $pdf->loadView('pdf.cash-register.interval-record', compact(
             'saint_totals',
+            'currency_signs',
             'cash_registers',
             'differences',
             'dollar_denominations',
@@ -843,6 +849,8 @@ class CashRegisterController extends Controller
             ->setOptions([
                 'defaultFont' => 'sans-serif',
             ]);
+
+
         return $pdf->download('arqueos-de-caja_' . $start_date . '_' . $end_date . '.pdf');
     }
 
@@ -895,10 +903,10 @@ class CashRegisterController extends Controller
     private function calculateDiffToSaint($totals_from_safact, $totals_e_payment, $cash_registers){
         $differences = [];
 
-        $totals_from_safact->each(function($dates, $key_user) use ($cash_registers){
+        $totals_from_safact->each(function($dates, $key_user) use ($cash_registers, &$differences){
             $differences[$key_user] = [];
             if ($cash_registers->has($key_user)){
-                $dates->each(function($date, $key_date) use ($differences, $key_user, $cash_registers){
+                $dates->each(function($date, $key_date) use (&$differences, $key_user, $cash_registers){
                     if ($cash_registers[$key_user]->has($key_date)){
                         $differences[$key_user][$key_date] = [];
                         $differences[$key_user][$key_date]['dollar_cash'] = $cash_registers[$key_user][$key_date]->first()->total_dollar_cash - $date[0]->dolares;
@@ -910,7 +918,7 @@ class CashRegisterController extends Controller
                     }
                 });
             } else {
-                $dates->each(function($date, $key_date) use ($differences, $key_user){
+                $dates->each(function($date, $key_date) use (&$differences, $key_user){
                     $differences[$key_user][$key_date] = [];
                     $differences[$key_user][$key_date]['dollar_cash'] = $date[0]->dolares * -1;
                     $differences[$key_user][$key_date]['bs_cash'] = $date[0]->bolivares * -1;
