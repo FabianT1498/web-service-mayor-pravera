@@ -290,23 +290,27 @@
                         <thead>
                             <tr>
                                 <th>&nbsp;</th>
-                                <th>Subtotal</th>
+                                <th>Subtotal (Bs)</th>
+                                <th>Subtotal ($)</th>
                                 <th>Porcentaje (%)</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>I.V.A Fac ($)</td>
+                                <td class="text-center">{{ number_format($totals_iva[0][0]->iva, 2) }}</td>
                                 <td class="text-center">{{ number_format($totals_iva[0][0]->ivaDolares, 2) }}</td>
                                 <td class="text-center">{{ number_format($totals_iva[0][0]->ivaDolares/$total_iva_dollar, 2) * 100 }}&nbsp;%</td>
                             </tr>
                             <tr>
                                 <td>I.V.A NT($)</td>
+                                <td class="text-center">{{ number_format($totals_iva[1][0]->iva, 2) }}</td>
                                 <td class="text-center">{{ number_format($totals_iva[1][0]->ivaDolares, 2) }}</td>
                                 <td class="text-center">{{ number_format($totals_iva[1][0]->ivaDolares/$total_iva_dollar, 2) * 100 }}&nbsp;%</td>
                             </tr>
                             <tr class="bg-grey-600">
                                 <td class="font-semibold">Total</td>
+                                <td class="text-center">{{ number_format($total_iva_bs, 2) }}</td>
                                 <td class="text-center">{{ number_format($total_iva_dollar, 2) }}</td>
                                 <td class="text-center">100%</td>
                             </tr>

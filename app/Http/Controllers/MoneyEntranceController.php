@@ -44,7 +44,9 @@ class MoneyEntranceController extends Controller
         return DB
             ::connection('saint_db')
             ->table('SAFACT')
-            ->selectRaw("MAX(SAFACT.EsNF) as EsNF, CAST(ROUND(SUM(SAFACT.MtoTax * SAFACT.Signo)/MAX(FactorHist.MaxFactor), 2) AS decimal(18, 2))  AS ivaDolares")  
+            ->selectRaw("MAX(SAFACT.EsNF) as EsNF,
+                CAST(ROUND(SUM(SAFACT.MtoTax * SAFACT.Signo), 2) AS decimal(18, 2))  AS iva,
+                CAST(ROUND(SUM(SAFACT.MtoTax * SAFACT.Signo)/MAX(FactorHist.MaxFactor), 2) AS decimal(18, 2))  AS ivaDolares")  
             ->joinSub($factors, 'FactorHist', function($query){
                 $query->on(DB::raw("CAST(SAFACT.FechaE AS date)"), '=', "FactorHist.FechaE");
             })
@@ -273,6 +275,8 @@ class MoneyEntranceController extends Controller
 
             $total_iva_dollar = $totals_iva[0][0]->ivaDolares + $totals_iva[1][0]->ivaDolares;
 
+            $total_iva_bs = $totals_iva[0][0]->iva + $totals_iva[1][0]->iva;
+
             $payment_methods = $this->getPaymentMethods();
 
             $totals_e_payment  = $this->mapEPaymentMethods($totals_e_payment, $payment_methods);
@@ -317,7 +321,8 @@ class MoneyEntranceController extends Controller
                     'total_bs_to_dollars',
                     'total',
                     'totals_iva',
-                    'total_iva_dollar'
+                    'total_iva_dollar',
+                    'total_iva_bs'
                 ))
                 ->setOptions([
                     'defaultFont' => 'sans-serif',
