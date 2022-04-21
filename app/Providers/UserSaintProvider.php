@@ -36,9 +36,11 @@ class UserSaintProvider implements UserProvider
         //
         // If you want I can make an modified version exemplifying 
         // how you could do this.
+        
         return new GenericUser([
             'id' => $identifier,
             'CodUsua' => $identifier,
+            'remember_token' => ''
         ]);
     }
 
@@ -61,6 +63,7 @@ class UserSaintProvider implements UserProvider
         return new GenericUser([
             'id' => $credentials['CodUsua'],
             'CodUsua' => $credentials['CodUsua'],
+            'remember_token' => ''
         ]);
     }
 
@@ -80,11 +83,9 @@ class UserSaintProvider implements UserProvider
         //     'Pass' => $credentials['Pass'],
         // ]);
 
-        $authenticated_user = DB::connection('saint_db')->select("CALL APP_LOGIN(" . $user->CodUsua .
-        ", " . $credentials['CodEsta'] . ", " . $credentials['Pass'] . ")");
+        $authenticated_user = DB::connection('saint_db')->select('EXEC app_login ?, ?, ?',
+            array($user->CodUsua, $credentials['CodEsta'], $credentials['Pass']));
 
-        // return $response->ok();
-
-        return print_r($authenticated_user);
+        return count($authenticated_user) > 0 && !property_exists($authenticated_user[0], 'RETORNO');
     }
 }

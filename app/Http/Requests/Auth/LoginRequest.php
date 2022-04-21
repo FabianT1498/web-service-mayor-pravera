@@ -46,6 +46,7 @@ class LoginRequest extends FormRequest
     public function authenticate()
     {
         $validated = $this->validated();
+        
         $CodEsta =  DB::connection('saint_db')->table('SAESTA')
             ->select('CodEsta')
             ->where("CodUsua", $validated['CodUsua'])

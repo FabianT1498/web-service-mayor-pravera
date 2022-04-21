@@ -29,7 +29,7 @@
             @include('layouts.sidebar')
             
             <!-- strat content -->
-            <div id="main" class="bg-gray-100 md:mb-16 flex-1 pt-8 overflow-y-scroll">     
+            <div id="main" class="bg-gray-100 md:mb-16 flex-1 pt-8 overflow-y-scroll">
                 @yield('main')
             </div>
             <!-- end content -->
