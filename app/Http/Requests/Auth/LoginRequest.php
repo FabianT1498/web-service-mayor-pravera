@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
+use Illuminate\Support\Facades\DB;
+
 class LoginRequest extends FormRequest
 {
     /**
@@ -43,9 +45,17 @@ class LoginRequest extends FormRequest
      */
     public function authenticate()
     {
+        $validated = $this->validated();
+        $CodEsta =  DB::connection('saint_db')->table('SAESTA')
+            ->select('CodEsta')
+            ->where("CodUsua", $validated['CodUsua'])
+            ->first();
+
+        $validated['CodEsta'] = $CodEsta->CodEsta;
+
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('CodUsua', 'Pass'), $this->boolean('remember'))) {
+        if (! Auth::attempt($validated, $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([

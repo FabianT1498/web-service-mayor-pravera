@@ -19,20 +19,20 @@
         <form method="POST" action="{{ route('login') }}">
             @csrf
 
-            <!-- Email Address -->
+            <!-- CodUsua -->
             <div>
-                <x-label for="email" :value="__('Correo electronico')" />
+                <x-label for="CodUsua" :value="__('Usuario')" />
 
-                <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus />
+                <x-input id="Usuario" class="block mt-1 w-full" type="text" name="CodUsua" :value="old('CodUsua')" required autofocus />
             </div>
 
             <!-- Password -->
             <div class="mt-4">
-                <x-label for="password" :value="__('Contraseña')" />
+                <x-label for="Pass" :value="__('Contraseña')" />
 
-                <x-input id="password" class="block mt-1 w-full"
+                <x-input id="Pass" class="block mt-1 w-full"
                                 type="password"
-                                name="password"
+                                name="Pass"
                                 required autocomplete="current-password" />
             </div>
 
@@ -48,19 +48,19 @@
                 <x-button class="mb-4">
                     {{ __('Iniciar sesión') }}
                 </x-button>
-                @if (Route::has('password.request'))
+                <!-- @if (Route::has('password.request'))
                     <a class="underline text-sm text-gray-600 hover:text-gray-900" href="{{ route('password.request') }}">
                         {{ __('Olvidaste tu contraseña?') }}
                     </a>
-                @endif
+                @endif -->
             </div>
 
             <div class="flex items-center justify-center">
-                @if (Route::has('register'))
+                <!-- @if (Route::has('register'))
                     <a class="underline text-sm text-gray-600 hover:text-gray-900 pt-4" href="{{ route('register') }}">
                         {{ __('No tienes una cuenta?') }}
                     </a>
-                @endif
+                @endif -->
             </div>
         </form>
     </x-auth-card>
