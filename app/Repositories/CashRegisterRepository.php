@@ -96,7 +96,7 @@ class CashRegisterRepository implements CashRegisterRepositoryInterface
             cash_register_data.date as date,
             cash_register_data.cash_register_user as cash_register_user,
             workers.name as worker_name,
-            users.name as user_name,
+            cash_register_data.user_id as user_name,
             CAST(ROUND(COALESCE(dol_c_join.total, 0), 2) AS decimal(18, 2)) as total_dollar_cash,
             CAST(ROUND(COALESCE(bs_c_join.total, 0), 2) AS decimal(18, 2)) as total_bs_cash,
             CAST(ROUND(COALESCE(pago_movil_bs_join.total, 0), 2) AS decimal(18, 2)) as total_pago_movil_bs,
@@ -107,7 +107,6 @@ class CashRegisterRepository implements CashRegisterRepositoryInterface
             CAST(ROUND(COALESCE(zelle_join.total, 0), 2) AS decimal(18, 2)) as total_zelle
             '
         )
-        ->join('users', 'cash_register_data.user_id', '=', 'users.id')
         ->join('workers', 'cash_register_data.worker_id', '=', 'workers.id')
         ->leftJoin(
             DB::raw("(SELECT SUM(`dollar_cash_records`.`amount`) as `total`, `dollar_cash_records`.`cash_register_data_id` FROM `dollar_cash_records` GROUP BY `dollar_cash_records`.`cash_register_data_id`) `dol_c_join`"),

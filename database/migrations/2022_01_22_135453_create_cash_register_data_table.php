@@ -15,14 +15,13 @@ class CreateCashRegisterDataTable extends Migration
     {
         Schema::connection('caja_mayorista')->create('cash_register_data', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id')->unsigned();
+            $table->string('user_id');
             $table->string('cash_register_user', 50);
             $table->unsignedBigInteger('worker_id');
             $table->enum('status', array_values(config('constants.CASH_REGISTER_STATUS')));
             $table->date('date');
             $table->timestamps();
      
-            $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('worker_id')->references('id')->on('workers');
             $table->foreign('cash_register_user')->references('name')->on('cash_register_users');
 

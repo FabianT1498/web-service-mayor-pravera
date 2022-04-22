@@ -83,14 +83,12 @@ class CashRegisterController extends Controller
 
         $query = CashRegisterData::select([
             'cash_register_data.id',
-            'users.name as user_name',
+            'cash_register_data.user_id as user_name',
             'cash_register_data.cash_register_user',
             'cash_register_data.date',
             'cash_register_data.status',
             'cash_register_data.updated_at',
         ]);
-
-        $query = $query->join('users', 'cash_register_data.user_id', '=', 'users.id');
 
         if ($status !== "ALL"){
             $query = $query->where('cash_register_data.status', '=', $status);
@@ -166,7 +164,7 @@ class CashRegisterController extends Controller
     {
         $validated = $request->validated();
 
-        $validated += ["user_id" => Auth::id()];
+        $validated += ["user_id" => Auth::user()->CodUsua];
 
         if (array_key_exists('new_cash_register_worker', $validated)){
             $worker = new Worker(array('name' => $validated['new_cash_register_worker']));
