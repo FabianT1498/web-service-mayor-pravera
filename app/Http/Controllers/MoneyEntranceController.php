@@ -27,6 +27,37 @@ class MoneyEntranceController extends Controller
         return view('pages.money-entrance.index', compact('start_date', 'end_date'));
     }
 
+    private function getTotalIvaFromSafact($start_date, $end_date){
+        /* Consulta para obtener los totales de las facturas*/
+        $queryParams = ($start_date === $end_date) ? [$start_date] : [$start_date, $end_date];
+
+        $interval_query = ($start_date === $end_date) 
+            ? "CAST(SAFACT.FechaE as date) = ?"
+            : "CAST(SAFACT.FechaE as date) BETWEEN CAST(? as date) AND CAST(? as date)";
+
+        $factors = DB::connection('saint_db')
+            ->table('SAFACT')
+            ->selectRaw("ROUND(MAX(SAFACT.Factor), 2) as MaxFactor, CAST(SAFACT.FechaE as date) as FechaE")
+            ->whereRaw($interval_query, $queryParams)
+            ->groupByRaw("CAST(SAFACT.FechaE as date)");
+
+        return DB
+            ::connection('saint_db')
+            ->table('SAFACT')
+            ->selectRaw("MAX(SAFACT.EsNF) as EsNF,
+                CAST(ROUND(SUM(SAFACT.MtoTax * SAFACT.Signo), 2) AS decimal(18, 2))  AS iva,
+                CAST(ROUND(SUM(SAFACT.MtoTax * SAFACT.Signo)/MAX(FactorHist.MaxFactor), 2) AS decimal(18, 2))  AS ivaDolares")  
+            ->joinSub($factors, 'FactorHist', function($query){
+                $query->on(DB::raw("CAST(SAFACT.FechaE AS date)"), '=', "FactorHist.FechaE");
+            })
+            ->whereRaw("SAFACT.CodUsua IN ('CAJA1', 'CAJA2', 'CAJA3', 'CAJA4', 'CAJA5',
+                'CAJA6' , 'CAJA7', 'DELIVERY') AND " . $interval_query,
+                $queryParams)
+            ->groupByRaw("SAFACT.EsNF")
+            ->get()
+            ->groupBy(['EsNF']);
+    }
+
     private function getTotalsFromSafact($start_date, $end_date){
         /* Consulta para obtener los totales de las facturas*/
         $queryParams = ($start_date === $end_date) ? [$start_date] : [$start_date, $end_date];
@@ -239,7 +270,13 @@ class MoneyEntranceController extends Controller
 
             $totals_safact = $this->getTotalsFromSafact($new_start_date, $new_finish_date);
             $totals_e_payment = $this->getTotalsEPaymentMethods($new_start_date, $new_finish_date);
-            
+
+            $totals_iva = $this->getTotalIvaFromSafact($new_start_date, $new_finish_date);
+
+            $total_iva_dollar = $totals_iva[0][0]->ivaDolares + $totals_iva[1][0]->ivaDolares;
+
+            $total_iva_bs = $totals_iva[0][0]->iva + $totals_iva[1][0]->iva;
+
             $payment_methods = $this->getPaymentMethods();
 
             $totals_e_payment  = $this->mapEPaymentMethods($totals_e_payment, $payment_methods);
@@ -282,7 +319,10 @@ class MoneyEntranceController extends Controller
                     'totals_e_payment_by_interval',
                     'total_dollars',
                     'total_bs_to_dollars',
-                    'total'
+                    'total',
+                    'totals_iva',
+                    'total_iva_dollar',
+                    'total_iva_bs'
                 ))
                 ->setOptions([
                     'defaultFont' => 'sans-serif',
