@@ -16,7 +16,7 @@
         @csrf
 
         <div id="cash_register_data" class="w-10/12 mb-8 mx-auto">
-            <h3 class="h3 text-center mb-8">Datos de la caja</h3>
+            <h2 class="h2 text-center mb-8">Datos de la caja</h2>
 
             <!-- Cash register date -->
             <div class="flex items-center mb-4">
@@ -101,7 +101,8 @@
         </div>
 
         <div class="w-10/12 mb-8 mx-auto">
-            <h3 class="h3 text-center mb-8">Ingresos en fisico</h3>
+            <h2 class="h2">Ingresos en fisico</h2>
+            <h3 class="h3">Dolares</h3>
             <!-- <x-label :value="__('Fecha de registro de la última tasa: ')" />
             <p data-dollar-exchange="dollar_exchange_date">{{ $dollar_exchange?->created_at ?? 'No ha sido registrada ninguna tasa' }}</p>
 
@@ -119,101 +120,225 @@
                     :currencySign="__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))"
                     name="total_dollar_cash"
                     type="text"
-                    class="w-1/4"
+                    class="w-1/4 ml-4"
                 />
                                 
-                <x-label class="w-1/5 ml-8" for="liquid_money_dollars_total" :value="__('Entradas de dolares tangibles:')" />
+                <x-label class="w-1/5 ml-8" for="liquid_money_dollars_total" :value="__('Cantidad de billetes por denominación ($):')" />
             
                 <x-input-with-button
                     :inputID="__('total_dollar_denominations')"
                     :modalID="__('dollar_denominations_record')"
                     name="total_dollar_denominations"
                     type="text"
-                    class="w-1/4"
+                    class="w-1/4 ml-4"
                 />
             
             </div>
 
             <div class="mb-8">
-                <p>Cantidad recuperada del sistema: <span id="total_dollar_cash_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}</p>
-                <p>Diferencia: <span id="total_dollar_cash_diff">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}</p>
+                <table class="w-full text-sm text-center text-gray-600 dark:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="px-4 py-2">
+                                Referencia
+                            </th>
+                            <th scope="col" class="px-4 py-2">
+                                Total ingresado
+                            </th>
+                            <th scope="col" class="px-4 py-2">
+                                Total SAINT
+                            </th>
+                            <th scope="col" class="px-4 py-2">
+                                Diferencia
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                            <th scope="row" class="px-4 py-2 font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                                Total de los detalles
+                            </th>
+                            <td>&nbsp;</td>
+                            <td>
+                                <span id="total_dollar_cash_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}
+                            </td>
+                            <td class="px-4 py-2">
+                                <span id="total_dollar_cash_diff">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}
+                            </td>
+                        </tr>
+                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                            <th scope="row" class="px-4 py-2 font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                                Total de las cantidades
+                            </th>
+                            <td>&nbsp;</td>
+                            <td>
+                            <span id="total_dollar_cash_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}
+                            </td>
+                            <td class="px-4 py-2">
+                                <span id="total_dollar_cash_diff">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
             <!-- <div class="w-3/5 mx-auto bg-teal-600 h-px mb-8">&nbsp;</div>    -->
+            
+            <h3 class="h3">Bolívares</h3>
 
-            <div class="flex mb-8 items-center justify-between">
-                <!-- Cash on liquid input (bolivares) -->
-                <x-label class="w-1/5" :value="__('Entradas de bolivares en efectivo:')" />
-                <x-input-with-button
-                    :inputID="__('total_bs_cash')"
-                    :modalID="__('bs_cash_record')"
-                    :currencySign="__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))"
-                    name="total_bs_cash"
-                    type="text"
-                    class="w-1/4"
-                />
-                <x-label  :value="__('Entrada de bolívares tangibles:')" class="w-1/5 ml-8"/>
+            <div class="flex mb-8 items-center">
+                <x-label  :value="__('Cantidad de billetes por denominación (Bs):')" class="w-1/4"/>
                 <x-input-with-button
                     :inputID="__('total_bs_denominations')"
                     :modalID="__('bs_denominations_record')"
                     :currencySign="__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))"
                     name="total_bs_denominations"
                     type="text"
-                    class="w-1/4"
+                    class="w-1/4 ml-4"
                 />
-
             </div>
-            
+
             <div class="mb-8">
-                <p>Cantidad recuperada del sistema: <span id="total_bs_cash_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}</p>
-                <p>Diferencia: <span id="total_bs_cash_diff">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}</p>
+                <table class="w-full text-sm text-center text-gray-600 dark:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="px-4 py-2">
+                                Referencia
+                            </th>
+                            <th scope="col" class="px-4 py-2">
+                                Total ingresado
+                            </th>
+                            <th scope="col" class="px-4 py-2">
+                                Total SAINT
+                            </th>
+                            <th scope="col" class="px-4 py-2">
+                                Diferencia
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                            <th scope="row" class="px-4 py-2 font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                                Total de las cantidades
+                            </th>
+                            <td>&nbsp;</td>
+                            <td>
+                                <span id="total_bs_cash_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}
+                            </td>
+                            <td class="px-4 py-2">
+                                <span id="total_bs_cash_diff">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     
         <div class="w-10/12 mx-auto">
-            <h3 class="h3 text-center mb-8">Ingresos en punto de venta</h3>
-            <div class="flex mb-8 items-center justify-between">
+            <h2 class="h2">Ingresos en punto de venta</h2>
+            <h3 class="h3">Bolívares</h3>
 
+            <div class="flex mb-8 items-center">
                 <!-- Cash on punto de venta (bs) -->
                 <x-label class="w-1/5" for="debit_card_payment_bs" :value="__('Entradas en punto de venta (Bs):')" />
                 <x-input-with-button
-                    class="w-1/4"
+                    class="w-1/4 ml-4"
                     :inputID="__('total_point_sale_bs')"
                     :modalID="__('point_sale_bs')"
                     :currency="__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))"
                     name="total_point_sale_bs"
                     type="text"
                 />
-
-                <div class="w-6/12">
-                    <p>Cantidad recuperada del sistema: <span id="total_point_sale_bs_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}</p>
-                    <p>Diferencia: <span id="total_point_sale_bs_diff">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}</p>
-                </div>
+            </div>
+            <div class="mb-8">
+                <table class="w-full text-sm text-center text-gray-600 dark:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="px-4 py-2">
+                                Referencia
+                            </th>
+                            <th scope="col" class="px-4 py-2">
+                                Total ingresado
+                            </th>
+                            <th scope="col" class="px-4 py-2">
+                                Total SAINT
+                            </th>
+                            <th scope="col" class="px-4 py-2">
+                                Diferencia
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                            <th scope="row" class="px-4 py-2 font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                                Total de los detalles
+                            </th>
+                            <td>&nbsp;</td>
+                            <td>
+                                <span id="total_point_sale_bs_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}
+                            </td>
+                            <td class="px-4 py-2">
+                                <span id="total_point_sale_bs_diff">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
-            <div class="flex mb-8 items-center justify-between">
-                <x-label class="w-1/5" for="point_sale_dollar" :value="__('Entrada en punto de venta internacional ($):')" />
+            <h3 class="h3">Dolares</h3>
+
+            <div class="flex mb-8 items-center">
+                <x-label class="w-1/4" for="point_sale_dollar" :value="__('Entrada en punto de venta internacional ($):')" />
                 <x-input
-                    class="w-1/4"
+                    class="w-1/4 ml-4"
                     placeholder="{{'0.00 ' . config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR'))}}"
                     id="total_point_sale_dollar"
                     type="text"
                     name="total_point_sale_dollar"
                     :value="old('point_sale_dollar') ?? '0'"
                 />
-                
-                <div class="w-6/12">
-                    <p>Cantidad recuperada del sistema: <span id="total_point_sale_dollar_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}</p>
-                    <p>Diferencia: <span id="total_point_sale_dollar_diff">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}</p>
-                </div>
+            </div>
+            <div class="mb-8">
+                <table class="w-full text-sm text-center text-gray-600 dark:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="px-4 py-2">
+                                Referencia
+                            </th>
+                            <th scope="col" class="px-4 py-2">
+                                Total ingresado
+                            </th>
+                            <th scope="col" class="px-4 py-2">
+                                Total SAINT
+                            </th>
+                            <th scope="col" class="px-4 py-2">
+                                Diferencia
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                            <th scope="row" class="px-4 py-2 font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                                Total de los detalles
+                            </th>
+                            <td>&nbsp;</td>
+                            <td>
+                                <span id="total_point_sale_dollar_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}
+                            </td>
+                            <td class="px-4 py-2">
+                                <span id="total_point_sale_dollar_diff">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
             <!-- Cash on punto de venta ($) -->
 
         </div>
 
         <div class="w-10/12 mx-auto">
-            <h3 class="h3 text-center mb-8">Transferencias y pago móviles</h3>
-            <div class="flex mb-8 items-center justify-between">
+            <h2 class="h2 text-center mb-8">Transferencias y pago móviles</h2>
+            <div class="flex mb-8 items-center">
                 
                 <x-label class="w-1/5" for="total_pago_movil_bs" :value="__('Entradas de transferencias:')" />
                 <x-input-with-button
@@ -222,34 +347,93 @@
                     :currency="__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))"
                     name="total_pago_movil_bs"
                     type="text"
-                    class="w-1/4"
+                    class="w-1/4 ml-4"
                 />
-        
-                <div class="w-6/12">
-                    <p>Cantidad recuperada del sistema: <span id="total_pago_movil_bs_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}</p>
-                    <p>Diferencia: <span id="total_pago_movil_bs_diff">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}</p>
-                </div>
             </div>
-            
+            <div class="mb-8">
+                <table class="w-full text-sm text-center text-gray-600 dark:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="px-4 py-2">
+                                Referencia
+                            </th>
+                            <th scope="col" class="px-4 py-2">
+                                Total ingresado
+                            </th>
+                            <th scope="col" class="px-4 py-2">
+                                Total SAINT
+                            </th>
+                            <th scope="col" class="px-4 py-2">
+                                Diferencia
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                            <th scope="row" class="px-4 py-2 font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                                Total de los detalles
+                            </th>
+                            <td>&nbsp;</td>
+                            <td>
+                                <span id="total_pago_movil_bs_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}
+                            </td>
+                            <td class="px-4 py-2">
+                                <span id="total_pago_movil_bs_diff">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>    
         </div>
         
         <div class="w-10/12 mx-auto">
-            <h3 class="h3 text-center mb-8">Entradas de Zelle ($)</h3>
+            <h2 class="h2 text-center mb-8">Entradas de Zelle ($)</h2>
     
-            <div class="flex mb-8 items-center justify-between">
+            <div class="flex mb-8 items-center">
                 <x-label class="w-1/5" :value="__('Total en Zelle:')" />
                 <x-input-with-button
-                    class="w-1/4"
+                    class="w-1/4 ml-4"
                     :inputID="__('total_zelle')"
                     :modalID="__('zelle_record')"
                     name="total_zelle"
                     type="text"
                 />
-                <div class="w-6/12">
-                    <p>Cantidad recuperada del sistema: <span id="total_zelle_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}</p>
-                    <p>Diferencia: <span id="total_zelle_diff">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}</p>
-                </div>
             </div>
+
+            <div class="mb-8">
+                <table class="w-full text-sm text-center text-gray-600 dark:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="px-4 py-2">
+                                Referencia
+                            </th>
+                            <th scope="col" class="px-4 py-2">
+                                Total ingresado
+                            </th>
+                            <th scope="col" class="px-4 py-2">
+                                Total SAINT
+                            </th>
+                            <th scope="col" class="px-4 py-2">
+                                Diferencia
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                            <th scope="row" class="px-4 py-2 font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                                Total de los detalles
+                            </th>
+                            <td>&nbsp;</td>
+                            <td>
+                                <span id="total_zelle_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}
+                            </td>
+                            <td class="px-4 py-2">
+                                <span id="total_zelle_diff">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div> 
         </div>
 
         <div class="w-10/12 flex mx-auto justify-end mb-32">
@@ -271,12 +455,12 @@
             :currency="config('constants.CURRENCIES.DOLLAR')"
         />
 
-        <x-modal-input-list
+        <!-- <x-modal-input-list
             :modalID="__('bs_cash_record')"
             :title="__('Entradas de dinero')"
             :currency="config('constants.CURRENCIES.BOLIVAR')"
             :isBolivar="true"
-        />
+        /> -->
 
         <x-modal-input-list
             :modalID="__('pago_movil_record')"
