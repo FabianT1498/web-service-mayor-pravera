@@ -38,30 +38,40 @@ import { getTotalsToCashRegisterUserSaint, getTotalsToCashRegisterUser } from '_
 
 export default {
     totalInputDOMS: {
-      liquidMoneyBs: document.querySelector('#total_bs_cash'),
-      liquidMoneyDollar: document.querySelector('#total_dollar_cash'),
-      pagoMovilBs: document.querySelector('#total_pago_movil_bs'),
-      denominationsBs: document.querySelector('#total_bs_denominations'),
-      denominationsDollar: document.querySelector('#total_dollar_denominations'),
-      zelleDollar: document.querySelector('#total_zelle'),
-      pointSaleDollar: document.querySelector('#total_point_sale_dollar'),
-      pointSaleBs: document.querySelector('#total_point_sale_bs')
+        // liquidMoneyBs: document.querySelector('#total_bs_cash'),
+        liquidMoneyDollar: document.querySelector('#total_dollar_cash_input'),
+        pagoMovilBs: document.querySelector('#total_pago_movil_bs_input'),
+        denominationsBs: document.querySelector('#total_bs_denominations_input'),
+        denominationsDollar: document.querySelector('#total_dollar_denominations_input'),
+        zelleDollar: document.querySelector('#total_zelle_input'),
+        pointSaleDollar: document.querySelector('#total_point_sale_dollar_input'),
+        pointSaleBs: document.querySelector('#total_point_sale_bs_input'),
+    },
+    totalDOMS: {
+        liquidMoneyDollar: document.querySelector('#total_dollar_cash'),
+        pagoMovilBs: document.querySelector('#total_pago_movil_bs'),
+        denominationsBs: document.querySelector('#total_bs_denominations'),
+        denominationsDollar: document.querySelector('#total_dollar_denominations'),
+        zelleDollar: document.querySelector('#total_zelle'),
+        pointSaleDollar: document.querySelector('#total_point_sale_dollar'),
+        pointSaleBs: document.querySelector('#total_point_sale_bs'),
     },
     totalSaintDOMS: {
-      liquidMoneyBs: document.querySelector('#total_bs_cash_saint'),
-      liquidMoneyDollar: document.querySelector('#total_dollar_cash_saint'),
-      pagoMovilBs: document.querySelector('#total_pago_movil_bs_saint'),
-      pointSaleDollar: document.querySelector('#total_point_sale_dollar_saint'),
-      pointSaleBs: document.querySelector('#total_point_sale_bs_saint'),
-      zelleDollar: document.querySelector('#total_zelle_saint'),
+        liquidMoneyBs: document.querySelector('#total_bs_cash_saint'),
+        liquidMoneyDollar: document.querySelectorAll('.total_dollar_cash_saint'),
+        pointSaleDollar: document.querySelector('#total_point_sale_dollar_saint'),
+        pointSaleBs: document.querySelector('#total_point_sale_bs_saint'),
+        pagoMovilBs: document.querySelector('#total_pago_movil_bs_saint'),
+        zelleDollar: document.querySelector('#total_zelle_saint'),
     },
     totalDiffDOMS: {
-      liquidMoneyBs: document.querySelector('#total_bs_cash_diff'),
-      liquidMoneyDollar: document.querySelector('#total_dollar_cash_diff'),
-      pagoMovilBs: document.querySelector('#total_pago_movil_bs_diff'),
-      pointSaleDollar: document.querySelector('#total_point_sale_dollar_diff'),
-      pointSaleBs: document.querySelector('#total_point_sale_bs_diff'),
-      zelleDollar: document.querySelector('#total_zelle_diff'),
+        liquidMoneyBs: document.querySelector('#total_bs_cash_diff'),
+        liquidMoneyDollar: document.querySelector('#total_dollar_cash_diff'),
+        liquidMoneyDollarDenomination: document.querySelector('#total_dollar_cash_denomination_diff'),
+        pagoMovilBs: document.querySelector('#total_pago_movil_bs_diff'),
+        pointSaleDollar: document.querySelector('#total_point_sale_dollar_diff'),
+        pointSaleBs: document.querySelector('#total_point_sale_bs_diff'),
+        zelleDollar: document.querySelector('#total_zelle_diff'),
     },
     propNameToDiffTotalMethod: {
         liquidMoneyBs: 'setTotalBsCashDiff',
@@ -87,9 +97,11 @@ export default {
     },
     setTotalDenominationBs(total){
         this.proxy.denominationsBs = total
+        this.setTotalBsCashDiff();        
     },
     setTotalDenominationDollar(total){
         this.proxy.denominationsDollar = total
+        this.setTotalDollarCashDenominationDiff();
     },
     setTotalZelleDollar(total){
         this.proxy.zelleDollar = total
@@ -113,6 +125,8 @@ export default {
                 this.proxyTotalSaint[el] = 0;
                 this[this.propNameToDiffTotalMethod[el]].call(this)
             })
+
+            this.setTotalDollarCashDenominationDiff();
         } else {
           // Liquid Money Payment Amounts
           let totalsFromSafact = totals.totals_from_safact[0];
@@ -122,6 +136,7 @@ export default {
 
           this.proxyTotalSaint['liquidMoneyDollar'] = parseFloat(totalsFromSafact.dolares);
           this.setTotalDollarCashDiff(this);
+          this.setTotalDollarCashDenominationDiff(this);
 
           let totalsEPayments = totals.totals_e_payments;
         
@@ -153,13 +168,23 @@ export default {
         }
         this.totalDiffDOMS.liquidMoneyDollar.innerHTML = roundNumber(diff);
     },
+    setTotalDollarCashDenominationDiff(){
+        let diff = this.proxy.denominationsDollar - this.proxyTotalSaint.liquidMoneyDollar;
+        let color = this.getAmountColor(diff);
+        this.totalDiffDOMS.liquidMoneyDollarDenomination.className = '';
+        if (color !== ''){
+            this.totalDiffDOMS.liquidMoneyDollarDenomination.classList.add(color);
+        } 
+          
+        this.totalDiffDOMS.liquidMoneyDollarDenomination.innerHTML = roundNumber(diff);
+    },
     setTotalBsCashDiff(){
-        let diff = this.proxy.liquidMoneyBs - this.proxyTotalSaint.liquidMoneyBs;
+        let diff = this.proxy.denominationsBs - this.proxyTotalSaint.liquidMoneyBs;
         let color = this.getAmountColor(diff);
         this.totalDiffDOMS.liquidMoneyBs.className = '';
         if (color !== ''){
             this.totalDiffDOMS.liquidMoneyBs.classList.add(color);
-        }        
+        }   
         this.totalDiffDOMS.liquidMoneyBs.innerHTML = roundNumber(diff);
     },
     setTotalPointSaleBsDiff(){
@@ -213,10 +238,17 @@ export default {
     initData(){
         let handlerInputDOMS = (self, key, value) => {
             self.totalInputDOMS[key].value = value;
+            self.totalDOMS[key].innerHTML = value
         }
 
         let handlerTotalSaintDOMS = (self, key, value) => {
-            self.totalSaintDOMS[key].innerHTML = value
+            if (NodeList.prototype.isPrototypeOf(self.totalSaintDOMS[key])){
+                self.totalSaintDOMS[key].forEach(el => {
+                    el.innerHTML = value
+                })
+            } else {
+                self.totalSaintDOMS[key].innerHTML = value
+            }
         }
 
         let handlerWrapper = (fn) => {
@@ -245,7 +277,7 @@ export default {
     },
     initEventListeners(){
         // // Cash register modal total input DOMs
-        decimalInputs[CURRENCIES.BOLIVAR].mask(this.totalInputDOMS.liquidMoneyBs);
+        // decimalInputs[CURRENCIES.BOLIVAR].mask(this.totalInputDOMS.liquidMoneyBs);
         decimalInputs[CURRENCIES.DOLLAR].mask(this.totalInputDOMS.liquidMoneyDollar);
 
         // // Pago movil modal total input DOMs
@@ -281,7 +313,8 @@ export default {
           .then(res => {
             if ([201, 200].includes(res.status)){
                 let data = res.data.data;
-                this.setTotalLiquidMoneyBs(parseFloat(data.total_bs_cash));
+                this.setTotalDenominationBs(parseFloat(data.total_bs_denominations));
+                this.setTotalDenominationDollar(parseFloat(data.total_dollar_denominations))
                 this.setTotalLiquidMoneyDollar(parseFloat(data.total_dollar_cash));
                 this.setTotalPointSaleBs(parseFloat(data.total_point_sale_bs));
                 this.setTotalPointSaleDollar(parseFloat(data.total_point_sale_dollar));
@@ -322,23 +355,23 @@ export default {
         cashRegisterDataView.init(cashRegisterContainer)
 
         // Cash records bs
-        let liquidMoneyBsRegisterModal = document.querySelector('#bs_cash_record');
-        let cashBsRecordsElements = liquidMoneyBsRegisterModal.querySelector('tbody').children;
-        let cashBsRecords = Array.prototype.map.call(cashBsRecordsElements, function(el, key){
-            let input = el.querySelector('input[id^="bs_cash_record_"]');
-            decimalInputs[CURRENCIES.BOLIVAR].mask(input);
-            let amount = parseFloat(input.value);
-            return new MoneyRecord(amount,  CURRENCIES.BOLIVAR, PAYMENT_METHODS.CASH, key);
-        });
-        let bolivarRecordMoneyPresenter = new MoneyRecordModalPresenter(
-            CURRENCIES.BOLIVAR,
-            PAYMENT_METHODS.CASH,
-            this.setPropWrapper(this.setTotalLiquidMoneyBs),
-            cashBsRecords
-        );
-        let bolivarRecordMoneyView = new MoneyRecordModalView(bolivarRecordMoneyPresenter);
-        let moneyRecordTable = new MoneyRecordTable()
-        bolivarRecordMoneyView.init(liquidMoneyBsRegisterModal, 'bs_cash_record', moneyRecordTable)
+        // let liquidMoneyBsRegisterModal = document.querySelector('#bs_cash_record');
+        // let cashBsRecordsElements = liquidMoneyBsRegisterModal.querySelector('tbody').children;
+        // let cashBsRecords = Array.prototype.map.call(cashBsRecordsElements, function(el, key){
+        //     let input = el.querySelector('input[id^="bs_cash_record_"]');
+        //     decimalInputs[CURRENCIES.BOLIVAR].mask(input);
+        //     let amount = parseFloat(input.value);
+        //     return new MoneyRecord(amount,  CURRENCIES.BOLIVAR, PAYMENT_METHODS.CASH, key);
+        // });
+        // let bolivarRecordMoneyPresenter = new MoneyRecordModalPresenter(
+        //     CURRENCIES.BOLIVAR,
+        //     PAYMENT_METHODS.CASH,
+        //     this.setPropWrapper(this.setTotalLiquidMoneyBs),
+        //     cashBsRecords
+        // );
+        // let bolivarRecordMoneyView = new MoneyRecordModalView(bolivarRecordMoneyPresenter);
+        // let moneyRecordTable = new MoneyRecordTable()
+        // bolivarRecordMoneyView.init(liquidMoneyBsRegisterModal, 'bs_cash_record', moneyRecordTable)
 
         // Pago movil bs
         let pagoMovilBsModal = document.querySelector('#pago_movil_record');
