@@ -115,7 +115,7 @@
                 <x-label class="w-1/5" :value="__('Entradas de dolares en efectivo:')" />
 
                 <x-input-with-button
-                    :inputID="__('total_dollar_cash')"
+                    :inputID="__('total_dollar_cash_input')"
                     :modalID="__('dollar_cash_record')"
                     :currencySign="__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))"
                     name="total_dollar_cash"
@@ -126,7 +126,7 @@
                 <x-label class="w-1/5 ml-8" for="liquid_money_dollars_total" :value="__('Cantidad de billetes por denominación ($):')" />
             
                 <x-input-with-button
-                    :inputID="__('total_dollar_denominations')"
+                    :inputID="__('total_dollar_denominations_input')"
                     :modalID="__('dollar_denominations_record')"
                     name="total_dollar_denominations"
                     type="text"
@@ -158,9 +158,11 @@
                             <th scope="row" class="px-4 py-2 font-medium text-gray-900 dark:text-white whitespace-nowrap">
                                 Total de los detalles
                             </th>
-                            <td>&nbsp;</td>
                             <td>
-                                <span id="total_dollar_cash_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}
+                                <span id="total_dollar_cash">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}
+                            </td>
+                            <td>
+                                <span class="total_dollar_cash_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}
                             </td>
                             <td class="px-4 py-2">
                                 <span id="total_dollar_cash_diff">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}
@@ -170,12 +172,14 @@
                             <th scope="row" class="px-4 py-2 font-medium text-gray-900 dark:text-white whitespace-nowrap">
                                 Total de las cantidades
                             </th>
-                            <td>&nbsp;</td>
                             <td>
-                            <span id="total_dollar_cash_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}
+                                <span id="total_dollar_denominations">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}
+                            </td>
+                            <td>
+                                <span class="total_dollar_cash_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}
                             </td>
                             <td class="px-4 py-2">
-                                <span id="total_dollar_cash_diff">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}
+                                <span id="total_dollar_cash_denomination_diff">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}
                             </td>
                         </tr>
                     </tbody>
@@ -189,7 +193,7 @@
             <div class="flex mb-8 items-center">
                 <x-label  :value="__('Cantidad de billetes por denominación (Bs):')" class="w-1/4"/>
                 <x-input-with-button
-                    :inputID="__('total_bs_denominations')"
+                    :inputID="__('total_bs_denominations_input')"
                     :modalID="__('bs_denominations_record')"
                     :currencySign="__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))"
                     name="total_bs_denominations"
@@ -221,7 +225,9 @@
                             <th scope="row" class="px-4 py-2 font-medium text-gray-900 dark:text-white whitespace-nowrap">
                                 Total de las cantidades
                             </th>
-                            <td>&nbsp;</td>
+                            <td>
+                                <span id="total_bs_denominations">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}
+                            </td>
                             <td>
                                 <span id="total_bs_cash_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}
                             </td>
@@ -243,7 +249,7 @@
                 <x-label class="w-1/5" for="debit_card_payment_bs" :value="__('Entradas en punto de venta (Bs):')" />
                 <x-input-with-button
                     class="w-1/4 ml-4"
-                    :inputID="__('total_point_sale_bs')"
+                    :inputID="__('total_point_sale_bs_input')"
                     :modalID="__('point_sale_bs')"
                     :currency="__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))"
                     name="total_point_sale_bs"
@@ -273,7 +279,9 @@
                             <th scope="row" class="px-4 py-2 font-medium text-gray-900 dark:text-white whitespace-nowrap">
                                 Total de los detalles
                             </th>
-                            <td>&nbsp;</td>
+                            <td>
+                                <span id="total_point_sale_bs">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}
+                            </td>
                             <td>
                                 <span id="total_point_sale_bs_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}
                             </td>
@@ -292,7 +300,7 @@
                 <x-input
                     class="w-1/4 ml-4"
                     placeholder="{{'0.00 ' . config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR'))}}"
-                    id="total_point_sale_dollar"
+                    id="total_point_sale_dollar_input"
                     type="text"
                     name="total_point_sale_dollar"
                     :value="old('point_sale_dollar') ?? '0'"
@@ -321,7 +329,9 @@
                             <th scope="row" class="px-4 py-2 font-medium text-gray-900 dark:text-white whitespace-nowrap">
                                 Total de los detalles
                             </th>
-                            <td>&nbsp;</td>
+                            <td>
+                                <span id="total_point_sale_dollar">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}
+                            </td>
                             <td>
                                 <span id="total_point_sale_dollar_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}
                             </td>
@@ -342,7 +352,7 @@
                 
                 <x-label class="w-1/5" for="total_pago_movil_bs" :value="__('Entradas de transferencias:')" />
                 <x-input-with-button
-                    :inputID="__('total_pago_movil_bs')"
+                    :inputID="__('total_pago_movil_bs_input')"
                     :modalID="__('pago_movil_record')"
                     :currency="__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))"
                     name="total_pago_movil_bs"
@@ -373,7 +383,9 @@
                             <th scope="row" class="px-4 py-2 font-medium text-gray-900 dark:text-white whitespace-nowrap">
                                 Total de los detalles
                             </th>
-                            <td>&nbsp;</td>
+                            <td>
+                                <span id="total_pago_movil_bs">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}
+                            </td>
                             <td>
                                 <span id="total_pago_movil_bs_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}
                             </td>
@@ -393,7 +405,7 @@
                 <x-label class="w-1/5" :value="__('Total en Zelle:')" />
                 <x-input-with-button
                     class="w-1/4 ml-4"
-                    :inputID="__('total_zelle')"
+                    :inputID="__('total_zelle_input')"
                     :modalID="__('zelle_record')"
                     name="total_zelle"
                     type="text"
@@ -423,7 +435,9 @@
                             <th scope="row" class="px-4 py-2 font-medium text-gray-900 dark:text-white whitespace-nowrap">
                                 Total de los detalles
                             </th>
-                            <td>&nbsp;</td>
+                            <td>
+                                <span id="total_zelle">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}
+                            </td>
                             <td>
                                 <span id="total_zelle_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}
                             </td>

@@ -32,6 +32,15 @@ import {default as modalBehavior} from '_app/base/modalBehavior'
 export default {
     totalInputDOMS: {
         // liquidMoneyBs: document.querySelector('#total_bs_cash'),
+        liquidMoneyDollar: document.querySelector('#total_dollar_cash_input'),
+        pagoMovilBs: document.querySelector('#total_pago_movil_bs_input'),
+        denominationsBs: document.querySelector('#total_bs_denominations_input'),
+        denominationsDollar: document.querySelector('#total_dollar_denominations_input'),
+        zelleDollar: document.querySelector('#total_zelle_input'),
+        pointSaleDollar: document.querySelector('#total_point_sale_dollar_input'),
+        pointSaleBs: document.querySelector('#total_point_sale_bs_input'),
+    },
+    totalDOMS: {
         liquidMoneyDollar: document.querySelector('#total_dollar_cash'),
         pagoMovilBs: document.querySelector('#total_pago_movil_bs'),
         denominationsBs: document.querySelector('#total_bs_denominations'),
@@ -42,7 +51,7 @@ export default {
     },
     totalSaintDOMS: {
         liquidMoneyBs: document.querySelector('#total_bs_cash_saint'),
-        liquidMoneyDollar: document.querySelector('#total_dollar_cash_saint'),
+        liquidMoneyDollar: document.querySelectorAll('.total_dollar_cash_saint'),
         pagoMovilBs: document.querySelector('#total_pago_movil_bs_saint'),
         pointSaleDollar: document.querySelector('#total_point_sale_dollar_saint'),
         pointSaleBs: document.querySelector('#total_point_sale_bs_saint'),
@@ -51,6 +60,7 @@ export default {
     totalDiffDOMS: {
         liquidMoneyBs: document.querySelector('#total_bs_cash_diff'),
         liquidMoneyDollar: document.querySelector('#total_dollar_cash_diff'),
+        liquidMoneyDollarDenomination: document.querySelector('#total_dollar_cash_denomination_diff'),
         pagoMovilBs: document.querySelector('#total_pago_movil_bs_diff'),
         pointSaleDollar: document.querySelector('#total_point_sale_dollar_diff'),
         pointSaleBs: document.querySelector('#total_point_sale_bs_diff'),
@@ -80,9 +90,11 @@ export default {
     },
     setTotalDenominationBs(total){
         this.proxy.denominationsBs = total
+        this.setTotalBsCashDiff();
     },
     setTotalDenominationDollar(total){
         this.proxy.denominationsDollar = total
+        this.setTotalDollarCashDenominationDiff();
     },
     setTotalZelleDollar(total){
         this.proxy.zelleDollar = total
@@ -107,17 +119,19 @@ export default {
                 this[this.propNameToDiffTotalMethod[el]].call(this)
             })
 
+            this.setTotalDollarCashDenominationDiff();
+
         } else {
 
             // Liquid Money Payment Amounts
             let totalsFromSafact = totals.totals_from_safact[0];
-
 
             this.proxyTotalSaint['liquidMoneyBs'] = parseFloat(totalsFromSafact.bolivares);
             this.setTotalBsCashDiff(this);
 
             this.proxyTotalSaint['liquidMoneyDollar'] = parseFloat(totalsFromSafact.dolares);
             this.setTotalDollarCashDiff(this);
+            this.setTotalDollarCashDenominationDiff(this);
 
             let totalsEPayments = totals.totals_e_payments;
 
@@ -142,15 +156,25 @@ export default {
     setTotalDollarCashDiff(){
         let diff = this.proxy.liquidMoneyDollar - this.proxyTotalSaint.liquidMoneyDollar;
         let color = this.getAmountColor(diff);
-        console.log(color)
         this.totalDiffDOMS.liquidMoneyDollar.className = '';
         if (color !== ''){
             this.totalDiffDOMS.liquidMoneyDollar.classList.add(color);
-        }   
+        } 
+          
         this.totalDiffDOMS.liquidMoneyDollar.innerHTML = roundNumber(diff);
     },
+    setTotalDollarCashDenominationDiff(){
+        let diff = this.proxy.denominationsDollar - this.proxyTotalSaint.liquidMoneyDollar;
+        let color = this.getAmountColor(diff);
+        this.totalDiffDOMS.liquidMoneyDollarDenomination.className = '';
+        if (color !== ''){
+            this.totalDiffDOMS.liquidMoneyDollarDenomination.classList.add(color);
+        } 
+          
+        this.totalDiffDOMS.liquidMoneyDollarDenomination.innerHTML = roundNumber(diff);
+    },
     setTotalBsCashDiff(){
-        let diff = this.proxy.liquidMoneyBs - this.proxyTotalSaint.liquidMoneyBs;
+        let diff = this.proxy.denominationsBs - this.proxyTotalSaint.liquidMoneyBs;
         let color = this.getAmountColor(diff);
         this.totalDiffDOMS.liquidMoneyBs.className = '';
         if (color !== ''){
@@ -209,10 +233,17 @@ export default {
     initData(){
         let handlerInputDOMS = (self, key, value) => {
             self.totalInputDOMS[key].value = value;
+            self.totalDOMS[key].innerHTML = value
         }
 
         let handlerTotalSaintDOMS = (self, key, value) => {
-            self.totalSaintDOMS[key].innerHTML = value
+            if (NodeList.prototype.isPrototypeOf(self.totalSaintDOMS[key])){
+                self.totalSaintDOMS[key].forEach(el => {
+                    el.innerHTML = value
+                })
+            } else {
+                self.totalSaintDOMS[key].innerHTML = value
+            }
         }
 
         let handlerWrapper = (fn) => {
