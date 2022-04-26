@@ -1,5 +1,5 @@
 import { postDollarExchange} from '_services/dollar-exchange';
-import { boundStoreDollarExchange } from '_store/action'
+import { boundStoreCurrentDollarExchange } from '_store/action'
 
 import { getDollarExchange } from '_services/dollar-exchange';
 
@@ -39,7 +39,7 @@ const DollarExchangeModalPresenterPrototype = {
                     this.view.showMessage(this.message, SUCCESS)
                     
                     // Change value in global state
-                    boundStoreDollarExchange(dollarExchange)
+                    boundStoreCurrentDollarExchange(dollarExchange)
                     this.view.hideLoading();
 
                     if (this.closeBtnDisabled){
@@ -76,12 +76,13 @@ const DollarExchangeModalPresenterPrototype = {
                     this.closeBtnDisabled = true
                     return;
                 }
-
+                
                 let dollarExchange = {
                     value: data.bs_exchange,
                     createdAt: data.created_at
                 }
-                boundStoreDollarExchange(dollarExchange)
+
+                boundStoreCurrentDollarExchange(dollarExchange)
             })
         .catch(err => {
             console.log(err)

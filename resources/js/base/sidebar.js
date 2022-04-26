@@ -1,5 +1,5 @@
 import { store } from '_store'
-import { STORE_DOLLAR_EXCHANGE_VALUE } from '_store/action'
+import { STORE_CURRENT_DOLLAR_EXCHANGE_VALUE } from '_store/action'
 import { CURRENCIES, SIGN as CURRENCY_SIGN_MAP} from '_constants/currencies';
 
 export default (function(){
@@ -45,9 +45,9 @@ export default (function(){
     store.subscribe(() => {
         let state = store.getState();
 
-        if (state.lastAction === STORE_DOLLAR_EXCHANGE_VALUE ){
-          document.querySelector('span[data-dollar-exchange="dollar_exchange_date"]').innerText = state.dollarExchange.createdAt
-          document.querySelector('span[data-dollar-exchange="dollar_exchange_value"]').innerText = `${state.dollarExchange.value} ${CURRENCY_SIGN_MAP[CURRENCIES.BOLIVAR]}`
+        if (state.lastAction === STORE_CURRENT_DOLLAR_EXCHANGE_VALUE ){
+          document.querySelector('span[data-dollar-exchange="dollar_exchange_date"]').innerText = state.currentDollarExchange.createdAt
+          document.querySelector('span[data-dollar-exchange="dollar_exchange_value"]').innerText = `${state.currentDollarExchange.value} ${CURRENCY_SIGN_MAP[CURRENCIES.BOLIVAR]}`
         }
     });
 })()

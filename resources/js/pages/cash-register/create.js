@@ -3,7 +3,9 @@ import { PAYMENT_METHODS } from '_constants/paymentMethods';
 import { PAYMENT_CODES, TYPE_BILLS, PAYMENT_CURRENCIES} from '_constants/paymentCodes';
 import { AMOUNT_COLORS } from '_constants/colors';
 
-
+import { store } from '_store'
+import { STORE_CURRENT_DOLLAR_EXCHANGE_VALUE } from '_store/action'
+import { boundStoreDollarExchange } from '_store/action'
 
 import MoneyRecordModalView from '_views/MoneyRecordModalView'
 import MoneyRecordModalPresenter from '_presenters/MoneyRecordModalPresenter'
@@ -289,6 +291,14 @@ export default {
 
         // Point Sale Dollar Event Handler
         this.totalInputDOMS.pointSaleDollar.addEventListener('change', this.setPropWrapper(this.handlePointSaleDollar)) 
+    
+        store.subscribe(() => {
+            let state = store.getState();
+    
+            if (state.lastAction === STORE_CURRENT_DOLLAR_EXCHANGE_VALUE ){
+                boundStoreDollarExchange(state.currentDollarExchange)
+            }
+        });
     },
     init(){
 
