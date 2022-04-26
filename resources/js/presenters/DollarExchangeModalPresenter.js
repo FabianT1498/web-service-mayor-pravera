@@ -17,7 +17,7 @@ const DollarExchangeModalPresenterPrototype = {
         this.view.hideMessage();
 
         if (amountConverted <= 0){
-            this.message = 'La tasa del dolar debe ser mayor a cero'
+            this.message = 'La tasa del dolar debe ser mayor que cero'
             this.view.showMessage(this.message, ERROR)
             return;
         }

@@ -23,6 +23,7 @@ use App\Models\DollarDenominationRecord;
 use App\Models\PointSaleBsRecord;
 use App\Models\PointSaleDollarRecord;
 use App\Models\ZelleRecord;
+use App\Models\DollarExchange;
 
 use App\Http\Requests\StoreCashRegisterRequest;
 use App\Http\Requests\EditCashRegisterRequest;
@@ -288,6 +289,11 @@ class CashRegisterController extends Controller
 
         $cash_register_data = CashRegisterData::where('id', $request->id)->first();
 
+        // Last value to dollar exchange for date
+        $dollar_exchange = DollarExchange::whereDate('created_at', '=', $cash_register_data->date)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
         $dollar_cash_records = $cash_register_data->dollar_cash_records;
         $bs_cash_records = $cash_register_data->bs_cash_records;
         $pago_movil_bs_records = $cash_register_data->pago_movil_bs_records;
@@ -397,7 +403,8 @@ class CashRegisterController extends Controller
             'zelle_records',
             'cash_registers_id_arr',
             'cash_registers_workers_id_arr',
-            'date'
+            'date',
+            'dollar_exchange'
         ));
     }
 
