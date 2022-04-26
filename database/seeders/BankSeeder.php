@@ -10,7 +10,8 @@ use Illuminate\Support\Str;
 
 class BankSeeder extends Seeder
 {
-    private $banks = ['Venezuela', 'Del Sur', 'Banesco', 'Mercantil'];
+    private $banks = ['Venezuela', 'Del Sur', 'Banesco',
+        'Mercantil', 'Banplus', 'Banco Nacional de Credito', 'Exterior', 'Provincial'];
 
     /**
      * Run the database seeds.

@@ -3,8 +3,7 @@ import { PAYMENT_METHODS } from '_constants/paymentMethods';
 import { PAYMENT_CODES, TYPE_BILLS, PAYMENT_CURRENCIES} from '_constants/paymentCodes';
 import { AMOUNT_COLORS } from '_constants/colors';
 
-import { store } from '_store'
-import { STORE_DOLLAR_EXCHANGE_VALUE } from '_store/action'
+
 
 import MoneyRecordModalView from '_views/MoneyRecordModalView'
 import MoneyRecordModalPresenter from '_presenters/MoneyRecordModalPresenter'
@@ -27,7 +26,6 @@ import {decimalInputs} from '_utilities/decimalInput';
 import { roundNumber } from '_utilities/mathUtilities'
 
 import {default as modalBehavior} from '_app/base/modalBehavior'
-
 
 export default {
     totalInputDOMS: {
@@ -291,15 +289,6 @@ export default {
 
         // Point Sale Dollar Event Handler
         this.totalInputDOMS.pointSaleDollar.addEventListener('change', this.setPropWrapper(this.handlePointSaleDollar)) 
-
-        store.subscribe(() => {
-            let state = store.getState();
-  
-            if (state.lastAction === STORE_DOLLAR_EXCHANGE_VALUE ){
-            //   document.querySelector('p[data-dollar-exchange="dollar_exchange_date"]').innerText = state.dollarExchange.createdAt
-            //   document.querySelector('p[data-dollar-exchange="dollar_exchange_value"]').innerText = `${state.dollarExchange.value} ${CURRENCY_SIGN_MAP[CURRENCIES.BOLIVAR]}`
-            }
-        });
     },
     init(){
 

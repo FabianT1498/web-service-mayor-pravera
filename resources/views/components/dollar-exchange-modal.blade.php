@@ -17,7 +17,7 @@
                     <div class="overflow-hidden bg-gray-50 h-full">
                         <div class="p-8">
                             <p>Último valor de la tasa: <span id="dollar_exchange_value_bs" class="font-bold">{{ $dollar_exchange?->bs_exchange ?? 0 }} Bs.S</span></p>
-                            <p>Fecha de registro: <span id="dollar_exchange_date_bs" class="font-bold">{{ date('d-m-Y H:i', strtotime($dollar_exchange?->created_at)) ?? 'Ninguna registrada' }}<span></p>
+                            <p>Fecha de registro: <span id="dollar_exchange_date_bs" class="font-bold">{{ date('d-m-Y', strtotime($dollar_exchange?->created_at)) ?? 'Ninguna registrada' }}<span></p>
                             <div class="my-8 border-solid pb-2 border-b-2 mx-auto border-gray-300 w-2/3">
                                 <p class="text-center ">Actualizar el valor de la tasa</p>
                             </div>

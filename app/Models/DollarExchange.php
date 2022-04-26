@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Date;
+use Carbon\Carbon;
 
 class DollarExchange extends Model
 {
@@ -28,8 +29,6 @@ class DollarExchange extends Model
 
     public function getCreatedAtAttribute($date)
     {
-        return Date::createFromFormat('Y-m-d H:i:s', $date)->format('Y-m-d H:i');
-    }
-
-    
+        return (new Carbon($date))->format('d-m-Y');
+    }  
 }
