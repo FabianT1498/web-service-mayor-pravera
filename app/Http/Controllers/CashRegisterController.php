@@ -290,7 +290,7 @@ class CashRegisterController extends Controller
         $cash_register_data = CashRegisterData::where('id', $request->id)->first();
 
         // Last value to dollar exchange for date
-        $dollar_exchange = DollarExchange::whereDate('created_at', '=', $cash_register_data->date)
+        $old_dollar_exchange = DollarExchange::whereDate('created_at', '=', $cash_register_data->date)
             ->orderBy('created_at', 'desc')
             ->first();
 
@@ -404,7 +404,7 @@ class CashRegisterController extends Controller
             'cash_registers_id_arr',
             'cash_registers_workers_id_arr',
             'date',
-            'dollar_exchange'
+            'old_dollar_exchange'
         ));
     }
 

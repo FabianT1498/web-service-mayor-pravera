@@ -19,88 +19,94 @@
         @method('PUT')
 
         <input id="id" type="hidden" value="{{$cash_register_data->id}}">
-
+        
         <div id="cash_register_data" class="w-10/12 mb-8 mx-auto">
             <h2 class="h2 text-center mb-8">Datos de la caja</h2>
-            
-            <!-- Cash register date -->
-            <div class="flex items-center mb-4">
-                <x-label class="w-1/12" for="date" :value="__('Fecha')" />
-                <x-input class="ml-8 w-1/4" name="date" id="date" type="text" :value="$date" readonly/>
-            </div>
-        
-            <!-- Cash register number-->
-            <div class="flex items-center mb-4">
-                <x-label class="w-1/12" for="cash_register" :value="__('Caja')" />
-                <x-select-input
-                    class="ml-8 w-1/4"
-                    :options="$cash_registers_id_arr"
-                    :defaultOptTitle="__('Seleccione la caja')"
-                    id="cash_register_id"
-                    :name="__('cash_register_user')"
-                    :value="old('cash_register_user') ? old('cash_register_user') : $cash_register_data->cash_register_user"
-                    required
-                />
-
-                <div id="cash_register_users_status" class="ml-4 w-1/2 flex justify-around items-center">
-                    <i class="hidden loading animate-spin text-lg text-blue-600 fad fa-spinner-third"></i>
-                    <div
-                        id="cash_register_users_message"
-                        class="flex items-center justify-around {{ $cash_registers_id_arr->count() > 0 ? 'hidden' : ''}}"
-                    >
-                        <p class="w-4/5">Ya se han creado arqueos para todos las cajas en esta fecha, por favor seleccione otra fecha</p>
-                        <div class="rounded-full flex justify-center items-center w-8 h-8 motion-safe:animate-bounce bg-white shadow-md">
-                            <i class="text-lg fas fa-exclamation text-blue-600"></i>
-                        </div>
-                    </div>
+            <div>
+                <!-- Cash register date -->
+                <div class="flex items-center mb-4">
+                    <x-label class="w-1/12" for="date" :value="__('Fecha')" />
+                    <x-input class="ml-8 w-1/4" name="date" id="date" type="text" :value="$date" readonly/>
                 </div>
-
-            </div>
-            <div class="flex items-center mb-4">
-                <x-label class="w-1/12" for="cash_register_worker" :value="__('Cajero/a:')" />
-                <x-select-input
-                    id="cash_register_worker"
-                    class="ml-8 w-1/4"
-                    :options="$cash_registers_workers_id_arr"
-                    :defaultOptTitle="__('Seleccione el cajero/a')"
-                    :name="__('worker_id')"
-                    :value="old('worker_id') ? old('worker_id') : $cash_register_data->worker_id"
-                    required
-                />
-                @if ($cash_registers_workers_id_arr->count() === 0)
-                    <div id="cash_register_worker_status" class="ml-4 w-1/2 flex justify-around items-center">
-                        <p class="w-4/5">No hay ningún cajero/a registrado, por favor seleccione el checkbox 'no está registrado'</p>
-                        <div class="rounded-full flex justify-center items-center w-8 h-8 motion-safe:animate-bounce bg-white shadow-md">
-                            <i class="text-lg fas fa-exclamation text-blue-600"></i>
-                        </div>
-                    </div>
-                @endif
-            </div>
-
-            <div class="flex items-center mb-4">
-                <div>
-                    <x-label class="inline" for="exist_cash_register_worker" :value="__('No esta registrado el cajero/a ?')" />
-                    <input
-                        class="ml-1"
-                            id="cash_register_worker_exist_check"
-                            type="checkbox"
-                            name="exist_cash_register_worker"
-                            value="{{ old('exist_cash_register_worker') ? old('exist_cash_register_worker') : 0 }}"
-                    />    
-                </div>
-            </div>
-            <div id="new_cash_register_worker_container" class="hidden">
-                <div class="flex items-center">
-                    <x-label  for="cash_register_worker" :value="__('Nombre del nuevo cajero/a:')" />
-                    <x-input
-                        placeholder="Nombre del cajero"
+                        
+                <!-- Cash register number-->
+                <div class="flex items-center mb-4">
+                    <x-label class="w-1/12" for="cash_register" :value="__('Caja')" />
+                    <x-select-input
                         class="ml-8 w-1/4"
-                        type="text"
-                        name="new_cash_register_worker"
-                        :value="old('new_cash_register_worker') ? old('new_cash_register_worker') : ''"
+                        :options="$cash_registers_id_arr"
+                        :defaultOptTitle="__('Seleccione la caja')"
+                        id="cash_register_id"
+                        :name="__('cash_register_user')"
+                        :value="old('cash_register_user') ? old('cash_register_user') : $cash_register_data->cash_register_user"
+                        required
                     />
+
+                    <div id="cash_register_users_status" class="ml-4 w-1/2 flex justify-around items-center">
+                        <i class="hidden loading animate-spin text-lg text-blue-600 fad fa-spinner-third"></i>
+                        <div
+                            id="cash_register_users_message"
+                            class="flex items-center justify-around {{ $cash_registers_id_arr->count() > 0 ? 'hidden' : ''}}"
+                        >
+                            <p class="w-4/5">Ya se han creado arqueos para todos las cajas en esta fecha, por favor seleccione otra fecha</p>
+                            <div class="rounded-full flex justify-center items-center w-8 h-8 motion-safe:animate-bounce bg-white shadow-md">
+                                <i class="text-lg fas fa-exclamation text-blue-600"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="flex items-center mb-4">
+                    <x-label class="w-1/12" for="cash_register_worker" :value="__('Cajero/a:')" />
+                    <x-select-input
+                        id="cash_register_worker"
+                        class="ml-8 w-1/4"
+                        :options="$cash_registers_workers_id_arr"
+                        :defaultOptTitle="__('Seleccione el cajero/a')"
+                        :name="__('worker_id')"
+                        :value="old('worker_id') ? old('worker_id') : $cash_register_data->worker_id"
+                        required
+                    />
+                    @if ($cash_registers_workers_id_arr->count() === 0)
+                        <div id="cash_register_worker_status" class="ml-4 w-1/2 flex justify-around items-center">
+                            <p class="w-4/5">No hay ningún cajero/a registrado, por favor seleccione el checkbox 'no está registrado'</p>
+                            <div class="rounded-full flex justify-center items-center w-8 h-8 motion-safe:animate-bounce bg-white shadow-md">
+                                <i class="text-lg fas fa-exclamation text-blue-600"></i>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+
+                <div class="flex items-center mb-4">
+                    <div>
+                        <x-label class="inline" for="exist_cash_register_worker" :value="__('No esta registrado el cajero/a ?')" />
+                        <input
+                            class="ml-1"
+                                id="cash_register_worker_exist_check"
+                                type="checkbox"
+                                name="exist_cash_register_worker"
+                                value="{{ old('exist_cash_register_worker') ? old('exist_cash_register_worker') : 0 }}"
+                        />    
+                    </div>
+                </div>
+                <div id="new_cash_register_worker_container" class="hidden">
+                    <div class="flex items-center">
+                        <x-label  for="cash_register_worker" :value="__('Nombre del nuevo cajero/a:')" />
+                        <x-input
+                            placeholder="Nombre del cajero"
+                            class="ml-8 w-1/4"
+                            type="text"
+                            name="new_cash_register_worker"
+                            :value="old('new_cash_register_worker') ? old('new_cash_register_worker') : ''"
+                        />
+                    </div>
                 </div>
             </div>
+        </div>
+
+        <div id="cash_register_data" class="w-10/12 mb-8 mx-auto">
+            <h2 class="h2 text-center mb-8">Valor de la tasa durante esta fecha</h2>
+            <p><span class="font-semibold">Valor del dolar:</span>&nbsp;<span>{{ $old_dollar_exchange?->bs_exchange ?? 0 }} Bs.S</span></p>
         </div>
 
         <div class="w-10/12 mb-8 mx-auto">
