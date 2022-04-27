@@ -784,7 +784,7 @@ class CashRegisterController extends Controller
             ->setOptions([
                 'defaultFont' => 'sans-serif',
             ]);
-        return $pdf->download('arqueo-caja_' . $cash_register->cash_register_user . '_' . $cash_register->date . '.pdf');
+        return $pdf->stream('arqueo-caja_' . $cash_register->cash_register_user . '_' . $cash_register->date . '.pdf');
     }
 
     public function intervalRecordPdf(CashRegisterRepository $cash_register_repo, PrintIntervalCashRegisterRequest $request){
@@ -862,7 +862,7 @@ class CashRegisterController extends Controller
             ]);
 
 
-        return $pdf->download('arqueos-de-caja_' . $start_date . '_' . $end_date . '.pdf');
+        return $pdf->stream('arqueos-de-caja_' . $start_date . '_' . $end_date . '.pdf');
     }
 
     private function joinSaintMoneyEntranceCollections($totals_from_safact, $totals_e_payment){

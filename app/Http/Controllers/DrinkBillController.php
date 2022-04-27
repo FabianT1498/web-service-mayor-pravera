@@ -173,7 +173,7 @@ class DrinkBillController extends Controller
                     'isPhpEnabled' => true
                 ]);
 
-            return $pdf->download('facturas_fiscales'  . '_' . $start_date . '.pdf');
+            return $pdf->stream('facturas_fiscales'  . '_' . $start_date . '.pdf');
         }
 
     }

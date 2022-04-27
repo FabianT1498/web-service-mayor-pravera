@@ -253,7 +253,7 @@
                         <span>El mayorista</span>
                     </div>
                     <div class="right border-solid border-1 pr-10">
-                        <p class="mb-1"><span class="font-semibold">Fecha del arqueo:</span> {{ $cash_register->date }}</p>
+                        <p class="mb-1"><span class="font-semibold">Fecha del arqueo:</span> {{ date('d-m-Y', strtotime($cash_register->date)) }}</p>
                         <p class="mb-1"><span class="font-semibold">Usuario de la caja:</span> {{ $cash_register->cash_register_user }}</p>
                         <p class="mb-1"><span class="font-semibold">Responsable de la caja:</span> {{ $cash_register->worker_name }}</p>
                         <p><span class="font-semibold">Registro creado por:</span> {{ $cash_register->user_name }}</p>

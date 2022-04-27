@@ -329,7 +329,7 @@ class MoneyEntranceController extends Controller
                     'isPhpEnabled' => true
                 ]);
 
-            return $pdf->download('entrada_dinero'  . '_' . $start_date . '.pdf');
+            return $pdf->stream('entrada_dinero'  . '_' . $start_date . '.pdf');
         }
 
     }
