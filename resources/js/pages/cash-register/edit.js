@@ -32,6 +32,10 @@ import Bank from '_models/Bank';
 import {default as modalBehavior} from '_app/base/modalBehavior'
 
 import { getTotalsToCashRegisterUserSaint, getTotalsToCashRegisterUser } from '_services/cash-register';
+import { getDollarExchangeToDate } from '_services/dollar-exchange';
+
+import { boundStoreDollarExchange } from '_store/action'
+
 
 export default {
     totalInputDOMS: {
@@ -296,38 +300,56 @@ export default {
     },
     fetchInitialData(){
         let id = document.querySelector('#id').value;
+
+        let date = '';
        
         getTotalsToCashRegisterUser(id)
-          .then(res => {
-            if ([201, 200].includes(res.status)){
-                let data = res.data.data;
-                this.setTotalDenominationBs(parseFloat(data.total_bs_denominations));
-                this.setTotalDenominationDollar(parseFloat(data.total_dollar_denominations))
-                this.setTotalLiquidMoneyDollar(parseFloat(data.total_dollar_cash));
-                this.setTotalPointSaleBs(parseFloat(data.total_point_sale_bs));
-                this.setTotalPointSaleDollar(parseFloat(data.total_point_sale_dollar));
-                this.setTotalZelleDollar(parseFloat(data.total_zelle));
-               
-                const params = {
-                    date: data.date,
-                    cashRegisterUser: data.cash_register_user
-                };
+            .then(res => {
+                if ([201, 200].includes(res.status)){
+                    let data = res.data.data;
+                    this.setTotalDenominationBs(parseFloat(data.total_bs_denominations));
+                    this.setTotalDenominationDollar(parseFloat(data.total_dollar_denominations))
+                    this.setTotalLiquidMoneyDollar(parseFloat(data.total_dollar_cash));
+                    this.setTotalPointSaleBs(parseFloat(data.total_point_sale_bs));
+                    this.setTotalPointSaleDollar(parseFloat(data.total_point_sale_dollar));
+                    this.setTotalZelleDollar(parseFloat(data.total_zelle));
+                    
+                    date = data.date;
 
-                return getTotalsToCashRegisterUserSaint(params);
-            }
-          })
-          .then(res => {
-            if ([201, 200].includes(res.status)){
-                let data = res.data.data;
+                    const params = {
+                        date,
+                        cashRegisterUser: data.cash_register_user
+                    };
 
-                console.log(data);
+                    return getTotalsToCashRegisterUserSaint(params);
+                }
+            })
+            .then(res => {
+              
+                if ([201, 200].includes(res.status)){
+                    let data = res.data.data;
 
-                this.setTotalSaintDOMS(data)
-              }
-          })
-          .catch(err => {
-            console.log(err);
-          })
+                    this.setTotalSaintDOMS(data)
+
+                    return getDollarExchangeToDate(date)
+                }
+            })
+            .then(res => {
+       
+                if ([201, 200].includes(res.status)){
+                    let data = res.data.data;
+
+                    let dollarExchange = {
+                        value: data.bs_exchange,
+                        createdAt: data.created_at
+                    }
+
+                    boundStoreDollarExchange(dollarExchange)
+                }
+            })
+            .catch(err => {
+                console.log(err);
+            })
     },
     init(){
         this.initData();

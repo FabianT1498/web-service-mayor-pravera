@@ -8,6 +8,10 @@ const getDollarExchange = function(){
     return asyncFunction(axiosClient.get('/dollar_exchange'))
 };
 
+const getDollarExchangeToDate = function(date){
+    return asyncFunction(axiosClient.get(`/dollar_exchange/${date}`))
+};
+
 const asyncFunction = (promise) => promise.then(res => res).catch(err => err)
 
-export { postDollarExchange, getDollarExchange };
+export { postDollarExchange, getDollarExchange, getDollarExchangeToDate};

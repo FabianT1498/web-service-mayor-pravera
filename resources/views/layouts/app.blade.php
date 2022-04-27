@@ -34,7 +34,7 @@
             </div>
             <!-- end content -->
         </div>
-        <x-dollar-exchange-modal />
         @flasher_render
+        <x-dollar-exchange-modal />
     </body>
 </html>

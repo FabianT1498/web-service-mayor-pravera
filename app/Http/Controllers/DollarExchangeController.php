@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Http\Requests\StoreDollarExchangeRequest;
 use App\Models\DollarExchange;
 use App\Http\Resources\DollarExchangeResource;
@@ -28,6 +29,17 @@ class DollarExchangeController extends Controller
     public function get(DollarExchangeRepository $dollar_repo)
     {  
         $model = $dollar_repo->getLast();
+
+        return new DollarExchangeResource($model);
+    }
+
+    public function getLastToDate(DollarExchangeRepository $dollar_repo, $date)
+    {  
+        $model = $dollar_repo->getLastToDate($date);
+
+        if (!$model){
+            return $this->get($dollar_repo);
+        }
 
         return new DollarExchangeResource($model);
     }

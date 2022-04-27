@@ -289,10 +289,16 @@ class CashRegisterController extends Controller
 
         $cash_register_data = CashRegisterData::where('id', $request->id)->first();
 
-        // Last value to dollar exchange for date
-        $old_dollar_exchange = DollarExchange::whereDate('created_at', '=', $cash_register_data->date)
+        // Obtener el ultimo valor registrado para la tasa en esta fecha o una fecha anterior al arqueo
+        $old_dollar_exchange = DollarExchange::whereDate('created_at', '<=', $cash_register_data->date)
             ->orderBy('created_at', 'desc')
             ->first();
+
+        // Si no hay ninguna tasa registrada en la misma fecha o previo al arqueo, entonces recuperar la ultima tasa
+        if (!$old_dollar_exchange){
+            $old_dollar_exchange = DollarExchange::orderBy('created_at', 'desc')
+            ->first();
+        }
 
         $dollar_cash_records = $cash_register_data->dollar_cash_records;
         $bs_cash_records = $cash_register_data->bs_cash_records;

@@ -105,8 +105,8 @@
         </div>
 
         <div id="cash_register_data" class="w-10/12 mb-8 mx-auto">
-            <h2 class="h2 text-center mb-8">Valor de la tasa durante esta fecha</h2>
-            <p><span class="font-semibold">Valor del dolar:</span>&nbsp;<span>{{ $old_dollar_exchange?->bs_exchange ?? 0 }} Bs.S</span></p>
+            <h2 class="h2 text-center mb-8">Valor de la tasa en esta fecha</h2>
+            <p><span class="font-semibold">Cotización del dolar:</span>&nbsp;<span>{{ $old_dollar_exchange?->bs_exchange ?? 0 }} Bs.S</span></p>
         </div>
 
         <div class="w-10/12 mb-8 mx-auto">

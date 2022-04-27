@@ -10,8 +10,8 @@ class DollarExchangeRepository implements DollarExchangeRepositoryInterface
 		return DollarExchange::orderBy('created_at', 'desc')->first();
 	}
 
-	public function getLastByDate($date){
-		DollarExchange::whereDate('created_at', '=', $date)
+	public function getLastToDate($date){
+		return DollarExchange::whereDate('created_at', '<=', $date)
 			->orderBy('created_at', 'desc')
 			->first();	
 	}

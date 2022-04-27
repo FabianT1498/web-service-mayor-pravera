@@ -4,7 +4,7 @@
 
     <div class="mb-6 pb-2 border-b border-slate-400 text-sm">
       <p class="text-base font-bold text-gray-600 mb-2">Última tasa del dolar</p>
-      <p><span class="font-semibold ">Fecha:</span>&nbsp;<span data-dollar-exchange="dollar_exchange_date">{{ date('d-m-Y', strtotime($dollar_exchange?->created_at)) ?? 'No hay ninguna tasa registrada' }}</span></p>
+      <p><span class="font-semibold ">Fecha:</span>&nbsp;<span data-dollar-exchange="dollar_exchange_date">{{ $dollar_exchange?->created_at ? date('d-m-Y', strtotime($dollar_exchange->created_at)) : 'No hay ninguna tasa registrada' }}</span></p>
       <p><span class="font-semibold">Valor:</span>&nbsp;<span data-dollar-exchange="dollar_exchange_value">{{ $dollar_exchange?->bs_exchange ?? 0 }} Bs.S</span></p>
     </div>
 

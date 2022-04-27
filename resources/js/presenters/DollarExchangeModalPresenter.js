@@ -45,6 +45,11 @@ const DollarExchangeModalPresenterPrototype = {
                     if (this.closeBtnDisabled){
                         this.view.unlockCloseBtn();
                         this.closeBtnDisabled = false
+                        setTimeout(() => {
+                            this.view.hideModal();
+                            this.view.unlockCloseBtn();
+                            this.closeBtnDisabled = false
+                        }, 2500)
                     }
 
                     this.view.updateDollarData(dollarExchange)                    

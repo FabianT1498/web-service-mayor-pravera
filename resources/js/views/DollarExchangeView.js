@@ -1,11 +1,11 @@
 import { decimalInputs } from "_utilities/decimalInput";
 import { CURRENCIES, SIGN as CURRENCIES_MAP_SIGN } from '_constants/currencies'
 import { ERROR, SUCCESS } from '_constants/message-status'
- 
 
 const DollarExchangeModalViewPrototype = {
     init(container){
         this.container = container;
+        this.modal = new Modal(this.container)
         const dollarExchangeButton = this.container.querySelector('#store_dollar_exchange_btn')
         const dollarExchangeInput = this.container.querySelector('#dollar-exchange-bs-input');
         decimalInputs[CURRENCIES.BOLIVAR].mask(dollarExchangeInput)
@@ -63,10 +63,10 @@ const DollarExchangeModalViewPrototype = {
         message.innerText = '';
     },
     showModal(){
-        toggleModal(this.container.getAttribute('id'), true);
+        this.modal.show();
     },
     hideModal(){
-        toggleModal(this.container.getAttribute('id'), false);
+        this.modal.hide();
     },
     updateDollarData(dollarExchange){
         this.container.querySelector('#dollar_exchange_value_bs').innerText = `${dollarExchange.value} ${CURRENCIES_MAP_SIGN[CURRENCIES.BOLIVAR]}`

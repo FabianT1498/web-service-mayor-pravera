@@ -1,10 +1,10 @@
 import Alpine from 'alpinejs';
 import { create } from 'lodash';
 
-import * as base from './base'
+import * as bootstrap from './bootstrap'
+import * as external from './external'
 
-require('./bootstrap');
-require('./external')
+import * as base from './base'
 
 // require('./charts')
 window.Alpine = Alpine;
