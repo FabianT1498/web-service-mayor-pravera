@@ -3,7 +3,8 @@
     'modalID' => '', 
     'inputID' => '', 
     'currencySign' => "$",
-    'value' => ''
+    'value' => '',
+    'name' => ''
 ])
 
 <div {!! $attributes->merge(['class' => 'p-0 h-10 flex bg-white items-center justify-between rounded-md shadow-md border-gray-300 focus-within:border-indigo-300 focus-within:ring focus-within:ring-indigo-200 focus-within:ring-opacity-50']) !!} >
@@ -12,6 +13,7 @@
         placeholder="{{ ($value !== '' ? $value : '0.00') . ' ' . $currencySign }}"
         value={{ $value !== '' ? $value : '0'}}
         data-currency={{ $currencySign }}
+        name="{{ $name }}"
         class="min-w-0 h-full rounded-tl-sm basis-4/6 rounded-bl-sm border-transparent focus:outline-none focus:shadow-none focus:border-transparent focus:ring-0"
         id={{ $inputID }}
     >

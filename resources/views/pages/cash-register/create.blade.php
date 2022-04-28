@@ -21,7 +21,7 @@
             <!-- Cash register date -->
             <div class="flex items-center mb-4">
                 <x-label class="w-1/12" for="date" :value="__('Fecha')" />
-                <x-input class="ml-8 w-1/4" name="date" id="date" type="text" :value="$today_date" readonly/>
+                <x-input class="ml-8 w-1/4" name="date" id="date" type="text" :value="old('date') ? date('d-m-Y', strtotime(old('date'))) : $today_date" readonly/>
             </div>
         
 
@@ -34,7 +34,7 @@
                     :defaultOptTitle="__('Seleccione la caja')"
                     id="cash_register_id"
                     :name="__('cash_register_user')"
-                    :value="old('cash_register_user')"
+                    :value="old('cash_register_user') ? old('cash_register_user') : ''"
                     required
                 />
 
@@ -61,7 +61,7 @@
                     :options="$cash_registers_workers_id_arr"
                     :defaultOptTitle="__('Seleccione el cajero/a')"
                     :name="__('worker_id')"
-                    :value="old('worker_id')"
+                    :value="old('worker_id') ? old('worker_id') : '' "
                     required
                 />
                 @if ($cash_registers_workers_id_arr->count() === 0)
@@ -118,9 +118,10 @@
                     :inputID="__('total_dollar_cash_input')"
                     :modalID="__('dollar_cash_record')"
                     :currencySign="__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))"
-                    name="total_dollar_cash"
+                    :name="__('total_dollar_cash')"
                     type="text"
                     class="w-1/4 ml-4"
+                    :value="old('total_dollar_cash') ? old('total_dollar_cash') : ''"
                 />
                                 
                 <x-label class="w-1/5 ml-8" for="liquid_money_dollars_total" :value="__('Cantidad de billetes por denominación ($):')" />
@@ -128,7 +129,8 @@
                 <x-input-with-button
                     :inputID="__('total_dollar_denominations_input')"
                     :modalID="__('dollar_denominations_record')"
-                    name="total_dollar_denominations"
+                    :name="__('total_dollar_denominations')"
+                    :value="old('total_dollar_denominations') ? old('total_dollar_denominations') : ''"
                     type="text"
                     class="w-1/4 ml-4"
                 />
@@ -196,7 +198,8 @@
                     :inputID="__('total_bs_denominations_input')"
                     :modalID="__('bs_denominations_record')"
                     :currencySign="__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))"
-                    name="total_bs_denominations"
+                    :name="__('total_bs_denominations')"
+                    :value="old('total_bs_denominations') ? old('total_bs_denominations') : ''"
                     type="text"
                     class="w-1/4 ml-4"
                 />
@@ -252,7 +255,8 @@
                     :inputID="__('total_point_sale_bs_input')"
                     :modalID="__('point_sale_bs')"
                     :currency="__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))"
-                    name="total_point_sale_bs"
+                    :name="__('total_point_sale_bs')"
+                    :value="old('total_point_sale_bs') ? old('total_point_sale_bs') : ''"
                     type="text"
                 />
             </div>
@@ -302,8 +306,8 @@
                     placeholder="{{'0.00 ' . config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR'))}}"
                     id="total_point_sale_dollar_input"
                     type="text"
-                    name="total_point_sale_dollar"
-                    :value="old('point_sale_dollar') ?? '0'"
+                    :name="__('total_point_sale_dollar')"
+                    :value="old('total_point_sale_dollar') ? old('total_point_sale_dollar') : ''"
                 />
             </div>
             <div class="mb-8">
@@ -355,7 +359,8 @@
                     :inputID="__('total_pago_movil_bs_input')"
                     :modalID="__('pago_movil_record')"
                     :currency="__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))"
-                    name="total_pago_movil_bs"
+                    :name="__('total_pago_movil_bs')"
+                    :value="old('total_pago_movil_bs') ? old('total_pago_movil_bs') : ''"
                     type="text"
                     class="w-1/4 ml-4"
                 />
@@ -407,7 +412,8 @@
                     class="w-1/4 ml-4"
                     :inputID="__('total_zelle_input')"
                     :modalID="__('zelle_record')"
-                    name="total_zelle"
+                    :name="__('total_zelle')"
+                    :value="old('total_zelle') ? old('total_zelle') : ''"
                     type="text"
                 />
             </div>
