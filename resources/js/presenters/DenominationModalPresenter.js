@@ -3,6 +3,9 @@ import DenominationRecord from '_models/DenominationRecord'
 
 import CURRENCIES_DENOMINATIONS from '_constants/currenciesDenominations'
 
+import { roundNumber } from '_utilities/mathUtilities'
+
+
 const DenominationModalPresenterPrototype = {
 	clickOnModal({ target }) {
 		const closest = target.closest('button');
@@ -11,7 +14,7 @@ const DenominationModalPresenterPrototype = {
           const modaToggleID = closest.getAttribute('data-modal-toggle');
           
         	if (modaToggleID){ // Checking if it's closing the modal
-				const total = this.denominationRecord.getAll().reduce((acc, curr) => acc + curr.total, 0)
+				const total = roundNumber(this.denominationRecord.getAll().reduce((acc, curr) => acc + curr.total, 0))
 				this.setTotalAmount(total)
         	}
       	}
@@ -43,7 +46,6 @@ const DenominationModalPresenterPrototype = {
 		
 		if (index !== -1){
 			this.denominationRecord.setElementAtIndex(index, {amount: amountInt, total})
-			console.log(this.denominationRecord.getElementByIndex(index))
 		}
 	},
 	calculateTotal(amount, denomination){

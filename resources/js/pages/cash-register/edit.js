@@ -132,10 +132,10 @@ export default {
           // Liquid Money Payment Amounts
           let totalsFromSafact = totals.totals_from_safact[0];
 
-          this.proxyTotalSaint['liquidMoneyBs'] = parseFloat(totalsFromSafact.bolivares);
+          this.proxyTotalSaint['liquidMoneyBs'] = roundNumber(parseFloat(totalsFromSafact.bolivares));
           this.setTotalBsCashDiff(this);
 
-          this.proxyTotalSaint['liquidMoneyDollar'] = parseFloat(totalsFromSafact.dolares);
+          this.proxyTotalSaint['liquidMoneyDollar'] = roundNumber(parseFloat(totalsFromSafact.dolares));
           this.setTotalDollarCashDiff(this);
           this.setTotalDollarCashDenominationDiff(this);
 
@@ -149,10 +149,10 @@ export default {
                         if (el.CodPago === '01' || el.CodPago === '02'){
                             this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] += roundNumber(parseFloat(el.totalBs))
                         } else {
-                            this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] = parseFloat(el.totalBs)
+                            this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] = roundNumber(parseFloat(el.totalBs))
                         }
                     } else if (PAYMENT_CURRENCIES[el.CodPago] === 'dollar'){
-                        this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] = parseFloat(el.totalDollar)
+                        this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] = roundNumber(parseFloat(el.totalDollar))
                     }
                     
                     this[this.propNameToDiffTotalMethod[PAYMENT_CODES[el.CodPago]]].call(this)
@@ -307,12 +307,12 @@ export default {
             .then(res => {
                 if ([201, 200].includes(res.status)){
                     let data = res.data.data;
-                    this.setTotalDenominationBs(parseFloat(data.total_bs_denominations));
-                    this.setTotalDenominationDollar(parseFloat(data.total_dollar_denominations))
-                    this.setTotalLiquidMoneyDollar(parseFloat(data.total_dollar_cash));
-                    this.setTotalPointSaleBs(parseFloat(data.total_point_sale_bs));
-                    this.setTotalPointSaleDollar(parseFloat(data.total_point_sale_dollar));
-                    this.setTotalZelleDollar(parseFloat(data.total_zelle));
+                    this.setTotalDenominationBs(roundNumber(parseFloat(data.total_bs_denominations)));
+                    this.setTotalDenominationDollar(roundNumber(parseFloat(data.total_dollar_denominations)))
+                    this.setTotalLiquidMoneyDollar(roundNumber(parseFloat(data.total_dollar_cash)));
+                    this.setTotalPointSaleBs(roundNumber(parseFloat(data.total_point_sale_bs)));
+                    this.setTotalPointSaleDollar(roundNumber(parseFloat(data.total_point_sale_dollar)));
+                    this.setTotalZelleDollar(roundNumber(parseFloat(data.total_zelle)));
                     
                     date = data.date;
 
@@ -389,7 +389,7 @@ export default {
         let pagoMovilBsRecords = Array.prototype.map.call(pagoMovilBsRecordsElements, function(el, key){
             let input = el.querySelector('input[id^="pago_movil_record_"]');
             decimalInputs[CURRENCIES.BOLIVAR].mask(input);
-            let amount = parseFloat(input.value);
+            let amount = roundNumber(parseFloat(input.value));
             return new MoneyRecord(amount,  CURRENCIES.BOLIVAR, PAYMENT_METHODS.CASH, key);
         });
         let pagoMovilBsPresenter = new MoneyRecordModalPresenter(
@@ -408,7 +408,7 @@ export default {
         let cashDollarRecords = Array.prototype.map.call(cashDollarRecordsElements, function(el, key){
             let input = el.querySelector('input[id^="dollar_cash_record_"]');
             decimalInputs[CURRENCIES.DOLLAR].mask(input);
-            let amount = parseFloat(input.value);
+            let amount = roundNumber(parseFloat(input.value));
             return new MoneyRecord(amount,  CURRENCIES.DOLLAR, PAYMENT_METHODS.CASH, key);
         });
         let dollarRecordMoneyPresenter = new ForeignMoneyRecordModalPresenter(
@@ -486,8 +486,8 @@ export default {
                         let debitInput = curr.querySelector('input[id^="point_sale_bs_debit_"]');
                         decimalInputs[CURRENCIES.BOLIVAR].mask(creditInput);
                         decimalInputs[CURRENCIES.BOLIVAR].mask(debitInput);
-                        let credit = parseFloat(creditInput.value);
-                        let debit = parseFloat(debitInput.value);
+                        let credit = roundNumber(parseFloat(creditInput.value));
+                        let debit = roundNumber(parseFloat(debitInput.value));
                         obj['credit'].push(new PointSaleRecord(CURRENCIES.BOLIVAR, credit, bankObj, index));
                         obj['debit'].push(new PointSaleRecord(CURRENCIES.BOLIVAR, debit, bankObj, index));
                         obj['bank'].push(bankObj);
@@ -509,7 +509,7 @@ export default {
         let zelleRecords = Array.prototype.map.call(zelleRecordsElements, function(el, key){
             let input = el.querySelector('input[id^="zelle_record_"]');
             decimalInputs[CURRENCIES.DOLLAR].mask(input);
-            let amount = parseFloat(input.value);
+            let amount = roundNumber(parseFloat(input.value));
             return new MoneyRecord(amount,  CURRENCIES.DOLLAR, PAYMENT_METHODS.ZELLE, key);
         });
         let zelleRecordMoneyPresenter = new ForeignMoneyRecordModalPresenter(

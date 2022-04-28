@@ -82,10 +82,10 @@
                         <x-label class="inline" for="exist_cash_register_worker" :value="__('No esta registrado el cajero/a ?')" />
                         <input
                             class="ml-1"
-                                id="cash_register_worker_exist_check"
-                                type="checkbox"
-                                name="exist_cash_register_worker"
-                                value="{{ old('exist_cash_register_worker') ? old('exist_cash_register_worker') : 0 }}"
+                            id="cash_register_worker_exist_check"
+                            type="checkbox"
+                            name="exist_cash_register_worker"
+                            value="{{ old('exist_cash_register_worker') ? old('exist_cash_register_worker') : 0 }}"
                         />    
                     </div>
                 </div>
@@ -104,7 +104,7 @@
             </div>
         </div>
 
-        <div id="cash_register_data" class="w-10/12 mb-8 mx-auto">
+        <div class="w-10/12 mb-8 mx-auto">
             <h2 class="h2 text-center mb-8">Valor de la tasa en esta fecha</h2>
             <p><span class="font-semibold">Cotización del dolar:</span>&nbsp;<span>{{ $old_dollar_exchange?->bs_exchange ?? 0 }} Bs.S</span></p>
         </div>
@@ -112,11 +112,6 @@
         <div class="w-10/12 mb-8 mx-auto">
             <h2 class="h2">Ingresos en fisico</h2>
             <h3 class="h3">Dolares</h3>
-            <!-- <x-label :value="__('Fecha de registro de la última tasa: ')" />
-            <p data-dollar-exchange="dollar_exchange_date">{{ $dollar_exchange?->created_at ?? 'No ha sido registrada ninguna tasa' }}</p>
-
-            <x-label class="w-56" :value="__('Cotización del $:')" />
-            <p data-dollar-exchange="dollar_exchange_value" id="last-dollar-exchange-bs-label">{{ $dollar_exchange?->bs_exchange ?? 0 }} Bs.S</p> -->
 
             <div class="flex mb-8 items-center justify-between">
             

@@ -142,10 +142,10 @@ export default {
                         if (el.CodPago === '01' || el.CodPago === '02'){
                             this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] += roundNumber(parseFloat(el.totalBs))
                         } else {
-                            this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] = parseFloat(el.totalBs)
+                            this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] = roundNumber(parseFloat(el.totalBs))
                         }
                     } else if (PAYMENT_CURRENCIES[el.CodPago] === 'dollar'){
-                        this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] = parseFloat(el.totalDollar)
+                        this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] = roundNumber(parseFloat(el.totalDollar))
                     }
                     
                     this[this.propNameToDiffTotalMethod[PAYMENT_CODES[el.CodPago]]].call(this)

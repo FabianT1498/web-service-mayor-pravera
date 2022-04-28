@@ -6,9 +6,14 @@ const CashRegisterDataViewPrototype = {
         this.container = container;
         let date = this.container.querySelector('#date');
         Object.assign(Datepicker.locales, es);
+        
+        let today = new Date();
+        let todayFormatted = today.getDate() + '-' + (today.getMonth() + 1) + '-'+today.getFullYear();
+        
         new Datepicker(date, {
             format: 'dd-mm-yyyy',
-            language: 'es'
+            language: 'es',
+            maxDate: todayFormatted
         })
         this.container.addEventListener("change", this.changeEventHandlerWrapper(this.presenter));
         date.addEventListener('changeDate', this.changeDateEventHandlerWrapper(this.presenter))

@@ -5,7 +5,7 @@ import { getAllBanks } from '_services/banks'
 
 import POINT_SALE_TYPE from '_constants/point-sale-type'
 
-import { formatAmount } from '_utilities/mathUtilities'
+import { formatAmount, roundNumber } from '_utilities/mathUtilities'
 
 import PointSaleRecord from '_models/PointSaleRecord'
 import Bank from '_models/Bank'
@@ -76,7 +76,7 @@ const SalePointModalPresenterPrototype = {
 			} else if(modalToggleID){
 				const totalCredit = this.pointSaleCredit.getAll().reduce((acc, curr) => acc + curr.total, 0)
 				const totalDebit = this.pointSaleDebit.getAll().reduce((acc, curr) => acc + curr.total, 0)
-				this.setTotalAmount(totalCredit + totalDebit)
+				this.setTotalAmount(roundNumber(totalCredit + totalDebit))
 			}
 		}
    	},

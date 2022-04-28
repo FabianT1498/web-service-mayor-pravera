@@ -39,7 +39,7 @@ class UpdateCashRegisterRequest extends FormRequest
 
         $rules = [
             'cash_register_user' => ['required', 'exists:cash_register_users,name'],
-            'date' => ['required', 'date_format:Y-m-d']
+            'date' => ['required', 'date_format:Y-m-d', 'before_or_equal:' . Carbon::now()->format('Y-m-d')]
         ];
 
         if ($this->has('exist_cash_register_worker') 
@@ -62,13 +62,13 @@ class UpdateCashRegisterRequest extends FormRequest
             $rules['pago_movil_record.*'] = $total_rules;
         }
 
-        if ($this->total_dollar_denominations > 0){
+        // if ($this->total_dollar_denominations > 0){
             $rules['dollar_denominations_record.*'] = ['required', 'gte:0'];
-        }
+        // }
 
-        if ($this->total_bs_denominations > 0){
+        // if ($this->total_bs_denominations > 0){
             $rules['bs_denominations_record.*'] = ['required', 'gte:0'];
-        }
+        // }
 
         if (count($this->point_sale_bs_bank) > 0){
             $rules['point_sale_bs_bank.*'] = ['exists:caja_mayorista.banks,name'];

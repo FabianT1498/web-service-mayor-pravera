@@ -1,7 +1,7 @@
 import MoneyRecordCollection from '_collections/moneyRecordCollection'
 import MoneyRecord from '_models/moneyRecord'
 
-import { formatAmount } from '_utilities/mathUtilities'
+import { formatAmount, roundNumber } from '_utilities/mathUtilities'
 
 const MoneyRecordModalPresenterPrototype = {
 	clickOnModal({ target }) {
@@ -28,7 +28,7 @@ const MoneyRecordModalPresenterPrototype = {
 				}
 			}
 		  	else if (modalToggleID){ // Checking if it's closing the modal
-				const total = this.moneyRecordCollection.getAll().reduce((acc, curr) => acc + curr.amount, 0)
+				const total = roundNumber(this.moneyRecordCollection.getAll().reduce((acc, curr) => acc + curr.amount, 0))
 				this.setTotalAmount(total)
 		  	}
 		}

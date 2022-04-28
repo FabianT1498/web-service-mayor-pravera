@@ -34,7 +34,7 @@ class StoreCashRegisterRequest extends FormRequest
 
         $rules = [
             'cash_register_user' => ['required', 'exists:cash_register_users,name'],
-            'date' => ['required', 'date_format:Y-m-d']
+            'date' => ['required', 'date_format:Y-m-d', 'before_or_equal:' . Carbon::now()->format('Y-m-d')]
         ];
 
         if ($this->has('exist_cash_register_worker') 

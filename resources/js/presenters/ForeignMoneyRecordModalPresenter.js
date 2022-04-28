@@ -2,7 +2,7 @@ import MoneyRecordModalPresenter from './MoneyRecordModalPresenter';
 
 import { CURRENCIES, SIGN as CURRENCY_SYMBOLS_MAP } from '_constants/currencies'
 
-import { formatAmount } from '_utilities/mathUtilities'
+import { formatAmount, roundNumber } from '_utilities/mathUtilities'
 
 import { store } from '_store'
 import { STORE_DOLLAR_EXCHANGE_VALUE } from '_store/action'
@@ -47,7 +47,7 @@ const ForeignMoneyRecordModalPresenter = function (currency, method, setTotalAmo
 	}
 
 	const calculateConvertion = function(amount, exchangeValue){
-		return (Math.round(((exchangeValue * amount) + Number.EPSILON) * 100) / 100)
+		return roundNumber(exchangeValue * amount)
 	}
 
 	const getAllConvertions =  function(records, exchangeValue){
