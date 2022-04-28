@@ -165,8 +165,6 @@ class CashRegisterController extends Controller
     {
         $validated = $request->validated();
 
-        return print_r($validated);
-
         $validated += ["user_id" => Auth::user()->CodUsua];
 
         if (array_key_exists('new_cash_register_worker', $validated)){

@@ -140,12 +140,12 @@ export default {
                 if (this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] !== undefined){
                     if (PAYMENT_CURRENCIES[el.CodPago] === 'bs'){
                         if (el.CodPago === '01' || el.CodPago === '02'){
-                            this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] += roundNumber(parseFloat(el.totalBs))
+                            this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] += parseFloat(el.totalBs)
                         } else {
-                            this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] = roundNumber(parseFloat(el.totalBs))
+                            this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] = parseFloat(el.totalBs)
                         }
                     } else if (PAYMENT_CURRENCIES[el.CodPago] === 'dollar'){
-                        this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] = roundNumber(parseFloat(el.totalDollar))
+                        this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] = parseFloat(el.totalDollar)
                     }
                     
                     this[this.propNameToDiffTotalMethod[PAYMENT_CODES[el.CodPago]]].call(this)
@@ -239,10 +239,10 @@ export default {
         let handlerTotalSaintDOMS = (self, key, value) => {
             if (NodeList.prototype.isPrototypeOf(self.totalSaintDOMS[key])){
                 self.totalSaintDOMS[key].forEach(el => {
-                    el.innerHTML = value.format()
+                    el.innerHTML = roundNumber(value).format()
                 })
             } else {
-                self.totalSaintDOMS[key].innerHTML = value.format()
+                self.totalSaintDOMS[key].innerHTML = roundNumber(value).format()
             }
         }
 

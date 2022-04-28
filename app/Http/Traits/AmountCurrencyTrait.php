@@ -24,6 +24,10 @@ trait AmountCurrencyTrait {
         $integer = $arrNumber["0"] ?? null;
         $decimal = $arrNumber["1"] ?? null;
 
+        $integerArr = explode(',', $integer);
+
+        $integer = implode('', $integerArr);
+
         if (is_null($decimal) && is_numeric($integer)){
             return intval($integer);
         } else if (is_numeric($integer) && is_numeric($decimal)){

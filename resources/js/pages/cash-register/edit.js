@@ -22,7 +22,7 @@ import CashRegisterDataView from '_views/CashRegisterDataView'
 
 import {decimalInputs} from '_utilities/decimalInput';
 import numericInput from '_utilities/numericInput';
-import { roundNumber } from '_utilities/mathUtilities'
+import { roundNumber, formatAmount } from '_utilities/mathUtilities'
 
 import MoneyRecord from '_models/moneyRecord'
 import DenominationRecord from '_models/DenominationRecord'
@@ -117,7 +117,7 @@ export default {
         this.setTotalPointSaleDollarDiff();
     },
     handlePointSaleDollar(event){
-        let total = event.target.value ? parseFloat(event.target.value) : 0
+        let total = event.target.value ? formatAmount(event.target.value) : 0
         this.setTotalPointSaleDollar(total)
     },
     setTotalSaintDOMS(totals = null){
@@ -132,10 +132,10 @@ export default {
           // Liquid Money Payment Amounts
           let totalsFromSafact = totals.totals_from_safact[0];
 
-          this.proxyTotalSaint['liquidMoneyBs'] = roundNumber(parseFloat(totalsFromSafact.bolivares));
+          this.proxyTotalSaint['liquidMoneyBs'] = parseFloat(totalsFromSafact.bolivares);
           this.setTotalBsCashDiff(this);
 
-          this.proxyTotalSaint['liquidMoneyDollar'] = roundNumber(parseFloat(totalsFromSafact.dolares));
+          this.proxyTotalSaint['liquidMoneyDollar'] = parseFloat(totalsFromSafact.dolares);
           this.setTotalDollarCashDiff(this);
           this.setTotalDollarCashDenominationDiff(this);
 
@@ -147,12 +147,12 @@ export default {
                 if (this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] !== undefined){
                     if (PAYMENT_CURRENCIES[el.CodPago] === 'bs'){
                         if (el.CodPago === '01' || el.CodPago === '02'){
-                            this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] += roundNumber(parseFloat(el.totalBs))
+                            this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] += parseFloat(el.totalBs)
                         } else {
-                            this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] = roundNumber(parseFloat(el.totalBs))
+                            this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] = parseFloat(el.totalBs)
                         }
                     } else if (PAYMENT_CURRENCIES[el.CodPago] === 'dollar'){
-                        this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] = roundNumber(parseFloat(el.totalDollar))
+                        this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] = parseFloat(el.totalDollar)
                     }
                     
                     this[this.propNameToDiffTotalMethod[PAYMENT_CODES[el.CodPago]]].call(this)
@@ -167,7 +167,7 @@ export default {
         if (color !== ''){
             this.totalDiffDOMS.liquidMoneyDollar.classList.add(color);
         }
-        this.totalDiffDOMS.liquidMoneyDollar.innerHTML = roundNumber(diff);
+        this.totalDiffDOMS.liquidMoneyDollar.innerHTML = roundNumber(diff).format();
     },
     setTotalDollarCashDenominationDiff(){
         let diff = this.proxy.denominationsDollar - this.proxyTotalSaint.liquidMoneyDollar;
@@ -177,7 +177,7 @@ export default {
             this.totalDiffDOMS.liquidMoneyDollarDenomination.classList.add(color);
         } 
           
-        this.totalDiffDOMS.liquidMoneyDollarDenomination.innerHTML = roundNumber(diff);
+        this.totalDiffDOMS.liquidMoneyDollarDenomination.innerHTML = roundNumber(diff).format();
     },
     setTotalBsCashDiff(){
         let diff = this.proxy.denominationsBs - this.proxyTotalSaint.liquidMoneyBs;
@@ -186,7 +186,7 @@ export default {
         if (color !== ''){
             this.totalDiffDOMS.liquidMoneyBs.classList.add(color);
         }   
-        this.totalDiffDOMS.liquidMoneyBs.innerHTML = roundNumber(diff);
+        this.totalDiffDOMS.liquidMoneyBs.innerHTML = roundNumber(diff).format();
     },
     setTotalPointSaleBsDiff(){
         let diff = this.proxy.pointSaleBs - this.proxyTotalSaint.pointSaleBs;
@@ -195,7 +195,7 @@ export default {
         if (color !== ''){
             this.totalDiffDOMS.pointSaleBs.classList.add(color);
         }
-        this.totalDiffDOMS.pointSaleBs.innerHTML = roundNumber(diff);
+        this.totalDiffDOMS.pointSaleBs.innerHTML = roundNumber(diff).format();
     },
     setTotalPointSaleDollarDiff(){
         let diff = this.proxy.pointSaleDollar - this.proxyTotalSaint.pointSaleDollar;
@@ -204,7 +204,7 @@ export default {
         if (color !== ''){
             this.totalDiffDOMS.pointSaleDollar.classList.add(color);
         }        
-        this.totalDiffDOMS.pointSaleDollar.innerHTML = roundNumber(diff);
+        this.totalDiffDOMS.pointSaleDollar.innerHTML = roundNumber(diff).format();
     },
     setTotalZelleDiff(){
         let diff = this.proxy.zelleDollar - this.proxyTotalSaint.zelleDollar;
@@ -213,7 +213,7 @@ export default {
         if (color !== ''){
             this.totalDiffDOMS.zelleDollar.classList.add(color);
         }        
-        this.totalDiffDOMS.zelleDollar.innerHTML = roundNumber(diff);
+        this.totalDiffDOMS.zelleDollar.innerHTML = roundNumber(diff).format();
     },
     setTotalPagoMovilBsDiff(){
         let diff = this.proxy.pagoMovilBs - this.proxyTotalSaint.pagoMovilBs;
@@ -222,7 +222,7 @@ export default {
         if (color !== ''){
             this.totalDiffDOMS.pagoMovilBs.classList.add(color);
         }        
-        this.totalDiffDOMS.pagoMovilBs.innerHTML = roundNumber(diff);
+        this.totalDiffDOMS.pagoMovilBs.innerHTML = roundNumber(diff).format();
     },
     setPropWrapper(fn){
         return fn.bind(this)
@@ -239,16 +239,16 @@ export default {
     initData(){
         let handlerInputDOMS = (self, key, value) => {
             self.totalInputDOMS[key].value = value;
-            self.totalDOMS[key].innerHTML = value
+            self.totalDOMS[key].innerHTML = value.format();
         }
 
         let handlerTotalSaintDOMS = (self, key, value) => {
             if (NodeList.prototype.isPrototypeOf(self.totalSaintDOMS[key])){
                 self.totalSaintDOMS[key].forEach(el => {
-                    el.innerHTML = value
+                    el.innerHTML = roundNumber(value).format();
                 })
             } else {
-                self.totalSaintDOMS[key].innerHTML = value
+                self.totalSaintDOMS[key].innerHTML = roundNumber(value).format();
             }
         }
 
