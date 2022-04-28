@@ -2,7 +2,7 @@ import Inputmask from "inputmask";
 import { SIGN as CURRENCY_SYMBOLS_MAP, CURRENCIES} from '_constants/currencies';
 
 const decimalMaskOptions = {
-    alias:'decimal',
+    alias:'currency',
     positionCaretOnClick: "radixFocus",
     digits: 2,
     radixPoint: ".",

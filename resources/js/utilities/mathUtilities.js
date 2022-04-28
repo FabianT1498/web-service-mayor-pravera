@@ -19,7 +19,10 @@ const formatAmount = (amount, defaultValue = '0.00') => {
     let arr = amount.split('.', 2);
     let integer = arr[0] ?? null;
     let decimal = arr[1] ?? null;
-            
+
+    let integerArr = integer.split(',');
+    integer = integerArr.join('');
+
     // Check if it is an integer number
     if (!decimal){
         return parseInt(integer);
@@ -27,7 +30,7 @@ const formatAmount = (amount, defaultValue = '0.00') => {
 
     let numberString = integer + '.' + decimal;
 
-    return (Math.round((parseFloat(numberString) + Number.EPSILON) * 100) / 100)
+    return roundNumber(parseFloat(numberString))
 };
 
 const roundNumber = (number, decimals = 2) => {

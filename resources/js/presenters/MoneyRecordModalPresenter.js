@@ -59,7 +59,7 @@ const MoneyRecordModalPresenterPrototype = {
 	},
 	updateMoneyRecord(id, inputValue){
 		let index = this.moneyRecordCollection.getIndexByID(parseInt(id));
-    let value = formatAmount(inputValue);
+    	let value = formatAmount(inputValue);
 		this.moneyRecordCollection.setElementAtIndex(index, { amount: value })
 	},
 }

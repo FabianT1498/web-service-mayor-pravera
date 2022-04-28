@@ -47,7 +47,7 @@ const ForeignMoneyRecordModalPresenter = function (currency, method, setTotalAmo
 	}
 
 	const calculateConvertion = function(amount, exchangeValue){
-		return roundNumber(exchangeValue * amount)
+		return roundNumber(exchangeValue * amount).format()
 	}
 
 	const getAllConvertions =  function(records, exchangeValue){

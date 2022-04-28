@@ -25,7 +25,7 @@ import SalePointModalPresenter from '_presenters/SalePointModalPresenter'
 import SalePointModalView from '_views/SalePointModalView'
 
 import {decimalInputs} from '_utilities/decimalInput';
-import { roundNumber } from '_utilities/mathUtilities'
+import { formatAmount, roundNumber } from '_utilities/mathUtilities'
 
 import {default as modalBehavior} from '_app/base/modalBehavior'
 
@@ -109,7 +109,7 @@ export default {
         this.setTotalPointSaleDollarDiff();
     },
     handlePointSaleDollar(event){
-        let total = event.target.value ? parseFloat(event.target.value) : 0
+        let total = event.target.value ? formatAmount(event.target.value) : 0
         this.setTotalPointSaleDollar(total)
     },
     setTotalSaintDOMS(totals = null){
@@ -161,7 +161,7 @@ export default {
             this.totalDiffDOMS.liquidMoneyDollar.classList.add(color);
         } 
           
-        this.totalDiffDOMS.liquidMoneyDollar.innerHTML = roundNumber(diff);
+        this.totalDiffDOMS.liquidMoneyDollar.innerHTML = roundNumber(diff).format();
     },
     setTotalDollarCashDenominationDiff(){
         let diff = this.proxy.denominationsDollar - this.proxyTotalSaint.liquidMoneyDollar;
@@ -171,7 +171,7 @@ export default {
             this.totalDiffDOMS.liquidMoneyDollarDenomination.classList.add(color);
         } 
           
-        this.totalDiffDOMS.liquidMoneyDollarDenomination.innerHTML = roundNumber(diff);
+        this.totalDiffDOMS.liquidMoneyDollarDenomination.innerHTML = roundNumber(diff).format();
     },
     setTotalBsCashDiff(){
         let diff = this.proxy.denominationsBs - this.proxyTotalSaint.liquidMoneyBs;
@@ -180,7 +180,7 @@ export default {
         if (color !== ''){
             this.totalDiffDOMS.liquidMoneyBs.classList.add(color);
         }   
-        this.totalDiffDOMS.liquidMoneyBs.innerHTML = roundNumber(diff);
+        this.totalDiffDOMS.liquidMoneyBs.innerHTML = roundNumber(diff).format();
     },
     setTotalPointSaleBsDiff(){
         let diff = this.proxy.pointSaleBs - this.proxyTotalSaint.pointSaleBs;
@@ -189,7 +189,7 @@ export default {
         if (color !== ''){
             this.totalDiffDOMS.pointSaleBs.classList.add(color);
         }   
-        this.totalDiffDOMS.pointSaleBs.innerHTML = roundNumber(diff);
+        this.totalDiffDOMS.pointSaleBs.innerHTML = roundNumber(diff).format();
     },
     setTotalPointSaleDollarDiff(){
         let diff = this.proxy.pointSaleDollar - this.proxyTotalSaint.pointSaleDollar;
@@ -198,7 +198,7 @@ export default {
         if (color !== ''){
             this.totalDiffDOMS.pointSaleDollar.classList.add(color);
         }   
-        this.totalDiffDOMS.pointSaleDollar.innerHTML = roundNumber(diff);
+        this.totalDiffDOMS.pointSaleDollar.innerHTML = roundNumber(diff).format();
     },
     setTotalZelleDiff(){
         let diff = this.proxy.zelleDollar - this.proxyTotalSaint.zelleDollar;
@@ -207,7 +207,7 @@ export default {
         if (color !== ''){
             this.totalDiffDOMS.zelleDollar.classList.add(color);
         }        
-        this.totalDiffDOMS.zelleDollar.innerHTML = roundNumber(diff);
+        this.totalDiffDOMS.zelleDollar.innerHTML = roundNumber(diff).format();
     },
     setTotalPagoMovilBsDiff(){
         let diff = this.proxy.pagoMovilBs - this.proxyTotalSaint.pagoMovilBs;
@@ -216,7 +216,7 @@ export default {
         if (color !== ''){
             this.totalDiffDOMS.pagoMovilBs.classList.add(color);
         }        
-        this.totalDiffDOMS.pagoMovilBs.innerHTML = roundNumber(diff);
+        this.totalDiffDOMS.pagoMovilBs.innerHTML = roundNumber(diff).format();
     },
     setPropWrapper(fn){
         return fn.bind(this)
@@ -233,16 +233,16 @@ export default {
     initData(){
         let handlerInputDOMS = (self, key, value) => {
             self.totalInputDOMS[key].value = value;
-            self.totalDOMS[key].innerHTML = value
+            self.totalDOMS[key].innerHTML = value.format();
         }
 
         let handlerTotalSaintDOMS = (self, key, value) => {
             if (NodeList.prototype.isPrototypeOf(self.totalSaintDOMS[key])){
                 self.totalSaintDOMS[key].forEach(el => {
-                    el.innerHTML = value
+                    el.innerHTML = value.format()
                 })
             } else {
-                self.totalSaintDOMS[key].innerHTML = value
+                self.totalSaintDOMS[key].innerHTML = value.format()
             }
         }
 
