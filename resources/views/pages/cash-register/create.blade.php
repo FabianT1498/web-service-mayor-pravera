@@ -5,13 +5,6 @@
 @endsection
 
 @section('main')
-    <ul class="w-3/6">
-        @foreach ($errors->all() as $error)
-            <li>
-                {{ $error }}
-            </li>
-        @endforeach
-    </ul>
     <form id="form" autocomplete="off" method="POST" action="{{ route('cash_register.store') }}">
         @csrf
 
@@ -19,14 +12,16 @@
             <h2 class="h2 text-center mb-8">Datos de la caja</h2>
 
             <!-- Cash register date -->
-            <div class="flex items-center mb-4">
+            <div class="flex items-center {{ $errors->first('date') ? 'mb-2' : 'mb-4' }}">
                 <x-label class="w-1/12" for="date" :value="__('Fecha')" />
                 <x-input class="ml-8 w-1/4" name="date" id="date" type="text" :value="old('date') ? date('d-m-Y', strtotime(old('date'))) : $today_date" readonly/>
             </div>
+            @if($errors->first('date'))
+                <p class="mb-4 text-sm text-red-600 dark:text-red-500">{{ $errors->first('date') }}</p>
+            @endif
         
-
             <!-- Cash register number-->
-            <div class="flex items-center mb-4">
+            <div class="flex items-center {{ $errors->first('cash_register_user') ? 'mb-2' : 'mb-4' }}">
                 <x-label class="w-1/12" for="cash_register" :value="__('Caja')" />
                 <x-select-input
                     class="ml-8 w-1/4"
@@ -52,8 +47,11 @@
                 </div>
 
             </div>
+            @if($errors->first('cash_register_user'))
+                <p class="mb-4 text-sm text-red-600 dark:text-red-500">{{ $errors->first('cash_register_user') }}</p>
+            @endif
 
-            <div class="flex items-center mb-4">
+            <div class="flex items-center {{ $errors->first('worker_id') ? 'mb-2' : 'mb-4' }}">
                 <x-label class="w-1/12" for="cash_register_worker" :value="__('Cajero/a:')" />
                 <x-select-input
                     id="cash_register_worker"
@@ -73,6 +71,9 @@
                     </div>
                 @endif
             </div>
+            @if($errors->first('worker_id'))
+                <p class="mb-4 text-sm text-red-600 dark:text-red-500">{{ $errors->first('worker_id') }}</p>
+            @endif
 
             <div class="flex items-center mb-4">
                 <div>
@@ -86,7 +87,7 @@
                     />    
                 </div>
             </div>
-            <div id="new_cash_register_worker_container" class="hidden">
+            <div id="new_cash_register_worker_container" class="hidden {{ $errors->first('new_cash_register_worker') ? 'mb-2' : 'mb-4' }}">
                 <div class="flex items-center">
                     <x-label  for="cash_register_worker" :value="__('Nombre del nuevo cajero/a:')" />
                     <x-input
@@ -98,6 +99,9 @@
                     />
                 </div>
             </div>
+            @if($errors->first('new_cash_register_worker'))
+                <p class="mb-4 text-sm text-red-600 dark:text-red-500">{{ $errors->first('new_cash_register_worker') }}</p>
+            @endif
         </div>
 
         <div class="w-10/12 mb-8 mx-auto">

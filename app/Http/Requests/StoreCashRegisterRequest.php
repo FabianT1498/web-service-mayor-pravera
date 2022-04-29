@@ -188,4 +188,23 @@ class StoreCashRegisterRequest extends FormRequest
         
         $this->merge($inputs);
     }
+
+    public function attributes()
+    {
+        return [
+            'cash_register_user' => 'codigo de usuario',
+            'date' => 'fecha',
+            'worker_id' => 'nombre del trabajador',
+            'new_cash_register_worker' => 'nombre del nuevo trabajador',
+            'dollar_cash_record' => 'entrada de dolar',
+            'pago_movil_record' => 'entrada de pago movil',
+            'dollar_denominations_record' => 'denominación de dolar',
+            'bs_denominations_record' => 'denominación de bolivar',
+            'point_sale_bs.bank' => 'banco',
+            'point_sale_bs.debit' => 'entrada de tarjeta de debito',
+            'point_sale_bs.credit' => 'entrada de tarjeta de credito',
+            'zelle_record' => 'entrada de zelle',
+            'total_point_sale_dollar' => 'entrada del punto de venta internacional'
+        ];
+    }
 }
