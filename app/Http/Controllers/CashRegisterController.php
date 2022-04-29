@@ -231,7 +231,7 @@ class CashRegisterController extends Controller
                 BsDenominationRecord::insert($data);
             }
 
-            if (array_key_exists('point_sale_bs_bank', $validated)){
+            if (array_key_exists('point_sale_bs', $validated)){
 
                 $credit_data = array_map(function($amount, $bank) use ($cash_register_data){
                     return array(
@@ -240,7 +240,7 @@ class CashRegisterController extends Controller
                         'cash_register_data_id' => $cash_register_data->id,
                         'bank_name' => $bank
                     );
-                }, $validated['point_sale_bs_credit'], $validated['point_sale_bs_bank']);
+                }, $validated['point_sale_bs']['credit'], $validated['point_sale_bs']['bank']);
 
 
                 $debit_data = array_map(function($amount, $bank) use ($cash_register_data){
@@ -250,7 +250,7 @@ class CashRegisterController extends Controller
                         'cash_register_data_id' => $cash_register_data->id,
                         'bank_name' => $bank
                     );
-                }, $validated['point_sale_bs_debit'], $validated['point_sale_bs_bank']);
+                }, $validated['point_sale_bs']['debit'], $validated['point_sale_bs']['bank']);
 
                 $data = array_merge($credit_data, $debit_data);
 

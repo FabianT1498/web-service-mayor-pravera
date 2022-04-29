@@ -467,12 +467,14 @@
             :modalID="__('zelle_record')"
             :title="__('Entradas de zelle')"
             :currency="config('constants.CURRENCIES.DOLLAR')"
+            :records="old('zelle_record') ? old('zelle_record') : []"
         />
 
         <x-modal-input-list
             :modalID="__('dollar_cash_record')"
             :title="__('Entradas de dinero')"
             :currency="config('constants.CURRENCIES.DOLLAR')"
+            :records="old('dollar_cash_record') ? old('dollar_cash_record') : []"
         />
 
         <!-- <x-modal-input-list
@@ -487,22 +489,28 @@
             :title="__('Entradas de pago móvil y transferencias')"
             :currency="config('constants.CURRENCIES.BOLIVAR')"
             :isBolivar="true"
+            :records="old('pago_movil_record') ? old('pago_movil_record') : []"
+
         />
 
         <x-modal-input-denominations
             :modalID="__('dollar_denominations_record')"
             :denominations="['0.50', '1', '2', '5', '10', '20','50', '100']"
+            :records="old('dollar_denominations_record') ? old('dollar_denominations_record') : []"
         />
 
         <x-modal-input-denominations
             :modalID="__('bs_denominations_record')"
             :denominations="['0.50', '1', '2', '5', '10', '20', '50','100', '200', '500']"
             :currency="__('Bs.S')"
+            :records="old('bs_denominations_record') ? old('bs_denominations_record') : []"
+
         />
 
         <x-modal-point-sale-list
             :currency="__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))"
             :modalID="__('point_sale_bs')"
+            :records="old('point_sale_bs') ? old('point_sale_bs') : []"
         />
     </form>
   

@@ -74,6 +74,9 @@ const SalePointModalPresenterPrototype = {
 					});
 				}
 			} else if(modalToggleID){
+				console.log(this.pointSaleCredit.getAll());
+				console.log(this.pointSaleDebit.getAll());
+
 				const totalCredit = this.pointSaleCredit.getAll().reduce((acc, curr) => acc + curr.total, 0)
 				const totalDebit = this.pointSaleDebit.getAll().reduce((acc, curr) => acc + curr.total, 0)
 				this.setTotalAmount(roundNumber(totalCredit + totalDebit))

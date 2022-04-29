@@ -61,12 +61,12 @@
                                                 id="{{ $modalID . "_" . $key }}" 
                                                 name="{{ $modalID . "[]" }}"
                                                 class="w-36 rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                                value="{{ $record->amount }}"
+                                                value="{{ is_object($record) ? $record->amount : $record }}"
                                             >
                                         </td>
                                         @if(!$isBolivar)
                                             <td data-table="convertion-col" class="py-4 px-6 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                                {{ (($dollar_exchange?->bs_exchange ?? 0) * $record->amount) . " " . config("constants.CURRENCY_SIGNS." . $bolivar) }}
+                                                {{ (($dollar_exchange?->bs_exchange ?? 0) * (is_object($record) ? $record->amount : floatval($record . 'El'))) . " " . config("constants.CURRENCY_SIGNS." . $bolivar) }}
                                             </td>
                                         @endif
                                         <td class="py-4 pl-3 pr-6 text-sm text-center font-medium whitespace-nowrap">

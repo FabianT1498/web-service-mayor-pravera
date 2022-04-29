@@ -65,10 +65,10 @@ class StoreCashRegisterRequest extends FormRequest
         $rules['bs_denominations_record.*'] = ['required', 'gte:0'];
         // }
 
-        if (count($this->point_sale_bs_bank) > 0){
-            $rules['point_sale_bs_bank.*'] = ['exists:caja_mayorista.banks,name'];
-            $rules['point_sale_bs_debit.*'] = ['required', new BadFormattedAmount];
-            $rules['point_sale_bs_credit.*'] = ['required', new BadFormattedAmount];
+        if (count($this->point_sale_bs) > 0){
+            $rules['point_sale_bs.bank.*'] = ['exists:caja_mayorista.banks,name'];
+            $rules['point_sale_bs.debit.*'] = ['required', new BadFormattedAmount];
+            $rules['point_sale_bs.credit.*'] = ['required', new BadFormattedAmount];
         }
 
         if (count($this->zelle_record) > 0){
@@ -145,23 +145,24 @@ class StoreCashRegisterRequest extends FormRequest
         // }
 
         if ($this->has('point_sale_bs_bank')){
+            $inputs['point_sale_bs'] = [];
+
+            $inputs['point_sale_bs']['bank'] = $this->point_sale_bs_bank;
+
             if ($this->has('point_sale_bs_debit')){
-                $inputs['point_sale_bs_debit'] = array_map(function($value){
+                $inputs['point_sale_bs']['debit'] = array_map(function($value){
                     return $this->formatAmount($value);
                 }, $this->point_sale_bs_debit);
-            } else {
-                $inputs['point_sale_bs_debit'] = [];
             }
     
             if ($this->has('point_sale_bs_credit')){
-                $inputs['point_sale_bs_credit'] = array_map(function($value){
+                $inputs['point_sale_bs']['credit'] = array_map(function($value){
                     return $this->formatAmount($value);
                 }, $this->point_sale_bs_credit);
-            } else {
-                $inputs['point_sale_bs_credit'] = [];
             }
+
         } else {
-            $inputs['point_sale_bs_bank'] = [];
+            $inputs['point_sale_bs'] = [];
         }
 
         

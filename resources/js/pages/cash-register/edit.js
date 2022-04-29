@@ -388,8 +388,8 @@ export default {
         let pagoMovilBsRecordsElements = pagoMovilBsModal.querySelector('tbody').children;
         let pagoMovilBsRecords = Array.prototype.map.call(pagoMovilBsRecordsElements, function(el, key){
             let input = el.querySelector('input[id^="pago_movil_record_"]');
-            decimalInputs[CURRENCIES.BOLIVAR].mask(input);
             let amount = roundNumber(parseFloat(input.value));
+            decimalInputs[CURRENCIES.BOLIVAR].mask(input);
             return new MoneyRecord(amount,  CURRENCIES.BOLIVAR, PAYMENT_METHODS.CASH, key);
         });
         let pagoMovilBsPresenter = new MoneyRecordModalPresenter(
@@ -407,8 +407,8 @@ export default {
         let cashDollarRecordsElements = cashDollarRecordModal.querySelector('tbody').children;
         let cashDollarRecords = Array.prototype.map.call(cashDollarRecordsElements, function(el, key){
             let input = el.querySelector('input[id^="dollar_cash_record_"]');
-            decimalInputs[CURRENCIES.DOLLAR].mask(input);
             let amount = roundNumber(parseFloat(input.value));
+            decimalInputs[CURRENCIES.DOLLAR].mask(input);
             return new MoneyRecord(amount,  CURRENCIES.DOLLAR, PAYMENT_METHODS.CASH, key);
         });
         let dollarRecordMoneyPresenter = new ForeignMoneyRecordModalPresenter(
@@ -484,10 +484,10 @@ export default {
                         let bankObj = new Bank(bank, index)
                         let creditInput = curr.querySelector('input[id^="point_sale_bs_credit_"]');
                         let debitInput = curr.querySelector('input[id^="point_sale_bs_debit_"]');
-                        decimalInputs[CURRENCIES.BOLIVAR].mask(creditInput);
-                        decimalInputs[CURRENCIES.BOLIVAR].mask(debitInput);
                         let credit = roundNumber(parseFloat(creditInput.value));
                         let debit = roundNumber(parseFloat(debitInput.value));
+                        decimalInputs[CURRENCIES.BOLIVAR].mask(creditInput);
+                        decimalInputs[CURRENCIES.BOLIVAR].mask(debitInput);
                         obj['credit'].push(new PointSaleRecord(CURRENCIES.BOLIVAR, credit, bankObj, index));
                         obj['debit'].push(new PointSaleRecord(CURRENCIES.BOLIVAR, debit, bankObj, index));
                         obj['bank'].push(bankObj);
@@ -508,8 +508,8 @@ export default {
         let zelleRecordsElements = zelleRecordModal.querySelector('tbody').children;
         let zelleRecords = Array.prototype.map.call(zelleRecordsElements, function(el, key){
             let input = el.querySelector('input[id^="zelle_record_"]');
-            decimalInputs[CURRENCIES.DOLLAR].mask(input);
             let amount = roundNumber(parseFloat(input.value));
+            decimalInputs[CURRENCIES.DOLLAR].mask(input);
             return new MoneyRecord(amount,  CURRENCIES.DOLLAR, PAYMENT_METHODS.ZELLE, key);
         });
         let zelleRecordMoneyPresenter = new ForeignMoneyRecordModalPresenter(
