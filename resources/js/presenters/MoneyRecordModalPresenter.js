@@ -34,15 +34,21 @@ const MoneyRecordModalPresenterPrototype = {
 		}
    },
    keyPressedOnModal({target, key}){
-   		if (key === 13 || key === 'Enter'){ // Handle new table's row creation
+   		if (key === 13 || key === 'Enter'){ // Handle new table's row creation or jump to next input
+			
+			const targetRow = target.closest('tr');
+			let simbling = targetRow.nextElementSibling;
 
-			if (this.moneyRecordCollection.getAll().findIndex((el) => el.amount === 0) !== -1){ // Check If there's a zero value
-				return;
+			let current = this.moneyRecordCollection.getElementByID(parseInt(targetRow.getAttribute('data-id')));
+
+			if (simbling){ // Check If there's a zero value
+				this.view.setFocusOnInput(simbling);
+			} else if (!simbling && current.amount != 0){
+				let moneyRecord = new MoneyRecord(0, this.currency, this.method);
+				moneyRecord = this.moneyRecordCollection.pushElement(moneyRecord)
+			 	this.view.addRow({ ...moneyRecord, total: this.moneyRecordCollection.getLength()});
 			}
 
-   			let moneyRecord = new MoneyRecord(0, this.currency, this.method);
-   			moneyRecord = this.moneyRecordCollection.pushElement(moneyRecord)
-            this.view.addRow({ ...moneyRecord, total: this.moneyRecordCollection.getLength()});
         } else if (isFinite(key)){
 			let id = target.closest('tr').getAttribute('data-id');
 			this.updateMoneyRecord(parseInt(id), target.value)

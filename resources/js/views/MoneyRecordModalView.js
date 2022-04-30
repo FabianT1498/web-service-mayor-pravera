@@ -15,6 +15,10 @@ const MoneyRecordModalViewPrototype = {
     resetLastInput(id){
         this.table.resetLastInput(id)
     },
+    setFocusOnInput(row){
+        let input = row.querySelector('input');
+        input.focus();
+    },
     addRow(obj){
         this.table.addRow(obj);
     },
