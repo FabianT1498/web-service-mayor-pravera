@@ -518,7 +518,7 @@ class CashRegisterController extends Controller
                 $validated['pago_movil_record'],
             );
 
-            $cash_register_data->dollar_cash_records()->upsert($data, ['id'], ['amount']);
+            $cash_register_data->pago_movil_bs_records()->upsert($data, ['id'], ['amount']);
         }
 
         // Dollar Denomination Records
