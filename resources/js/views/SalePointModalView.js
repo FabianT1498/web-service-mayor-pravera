@@ -18,6 +18,10 @@ const SalePointModalViewPrototype = {
     deleteRow(obj){
         this.table.deleteRow(obj);
     },
+    setFocusOnInput(row){
+        let input = row.querySelector('input');
+        input.focus();
+    },
     changeSelect(obj){
         this.table.changeSelect(obj)
     },

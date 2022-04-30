@@ -3,6 +3,13 @@ const CollectionPrototype = {
     getAll(){
         return this.elements
     },
+    getLast(){
+        if (this.getLength() === 0){
+            return null;
+        }
+
+        return this.elements[this.getLength() - 1]
+    },
     getLength(){
         return this.elements.length;
     },
