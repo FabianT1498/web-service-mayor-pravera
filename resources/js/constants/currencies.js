@@ -7,7 +7,7 @@ const CURRENCIES = Object.freeze(
 
 const SIGN  = Object.freeze({
     [CURRENCIES.DOLLAR]: '$',
-    [CURRENCIES.BOLIVAR]: 'Bs.s',
+    [CURRENCIES.BOLIVAR]: 'Bs',
 })
 
 export { CURRENCIES, SIGN };

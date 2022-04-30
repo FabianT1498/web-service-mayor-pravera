@@ -17,7 +17,7 @@ const decimalMaskOptions = {
 }
 
 const decimalInputs =  {
-    [CURRENCIES.BOLIVAR]: new Inputmask({...decimalMaskOptions, suffix: ' '.concat(CURRENCY_SYMBOLS_MAP[CURRENCIES.BOLIVAR])}),
+    [CURRENCIES.BOLIVAR]: new Inputmask({...decimalMaskOptions, suffix: ' '. concat(CURRENCY_SYMBOLS_MAP[CURRENCIES.BOLIVAR])}),
     [CURRENCIES.DOLLAR]: new Inputmask({...decimalMaskOptions, suffix: ' '. concat(CURRENCY_SYMBOLS_MAP[CURRENCIES.DOLLAR])}),
 }
 
