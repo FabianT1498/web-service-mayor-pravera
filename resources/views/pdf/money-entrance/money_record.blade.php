@@ -286,30 +286,42 @@
                 <div>
                     
                     <table class="w-80p mb-12">
-                        <caption class="text-center w-80p bg-grey-400">IVA</caption>
+                        <caption class="text-center w-80p bg-grey-400">Resumen de ventas</caption>
                         <thead>
                             <tr>
                                 <th>&nbsp;</th>
-                                <th>Subtotal (Bs)</th>
-                                <th>Subtotal ($)</th>
-                                <th>Porcentaje (%)</th>
+                                <th>Ventas Bs</th>
+                                <th>Ventas Bs ($)</th>
+                                <th>%</th>
+                                <th>I.V.A Bs</th>
+                                <th>I.V.A Bs ($)</th>
+                                <th>%</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>I.V.A Fac ($)</td>
+                                <td>Fact.</td>
+                                <td class="text-center">{{ number_format($totals_iva[0][0]->baseImponible, 2) }}</td>
+                                <td class="text-center">{{ number_format($totals_iva[0][0]->baseImponibleADolares, 2) }}</td>
+                                <td class="text-center">{{ $total_base_imponible_bs > 0 ? (number_format($totals_iva[0][0]->baseImponible/$total_base_imponible_bs, 2) * 100) : 0 }}&nbsp;%</td>
                                 <td class="text-center">{{ number_format($totals_iva[0][0]->iva, 2) }}</td>
                                 <td class="text-center">{{ number_format($totals_iva[0][0]->ivaDolares, 2) }}</td>
                                 <td class="text-center">{{ number_format($totals_iva[0][0]->ivaDolares/$total_iva_dollar, 2) * 100 }}&nbsp;%</td>
                             </tr>
                             <tr>
-                                <td>I.V.A NT($)</td>
+                                <td>N.E.</td>
+                                <td class="text-center">{{ number_format($totals_iva[1][0]->baseImponible, 2) }}</td>
+                                <td class="text-center">{{ number_format($totals_iva[1][0]->baseImponibleADolares, 2) }}</td>
+                                <td class="text-center">{{ $total_base_imponible_dollar > 0 ? (number_format($totals_iva[1][0]->baseImponible/$total_base_imponible_dollar, 2) * 100) : 0 }}&nbsp;%</td>
                                 <td class="text-center">{{ number_format($totals_iva[1][0]->iva, 2) }}</td>
                                 <td class="text-center">{{ number_format($totals_iva[1][0]->ivaDolares, 2) }}</td>
                                 <td class="text-center">{{ number_format($totals_iva[1][0]->ivaDolares/$total_iva_dollar, 2) * 100 }}&nbsp;%</td>
                             </tr>
                             <tr class="bg-grey-600">
                                 <td class="font-semibold">Total</td>
+                                <td class="text-center">{{ number_format($total_base_imponible_bs, 2) }}</td>
+                                <td class="text-center">{{ number_format($total_base_imponible_dollar, 2) }}</td>
+                                <td class="text-center">100%</td>
                                 <td class="text-center">{{ number_format($total_iva_bs, 2) }}</td>
                                 <td class="text-center">{{ number_format($total_iva_dollar, 2) }}</td>
                                 <td class="text-center">100%</td>
