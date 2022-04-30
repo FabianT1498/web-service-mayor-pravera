@@ -32,6 +32,10 @@ const DenominationModalViewPrototype = {
                 target: event.target
             })
         }
+    },
+    setFocusOnInput(row){
+        let input = row.querySelector('input');
+        input.focus();
     }
 }
 

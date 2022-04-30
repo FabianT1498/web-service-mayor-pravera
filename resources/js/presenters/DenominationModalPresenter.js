@@ -23,6 +23,13 @@ const DenominationModalPresenterPrototype = {
 		if (isFinite(key)){
 			let denomination = target.getAttribute('data-denomination');
 			this.updateDenominationRecord(denomination, target.value)
+		} else if (key === 13 || key === 'Enter'){ // Handle focus in next input
+			const targetRow = target.closest('tr');
+			let simbling = targetRow.nextElementSibling;
+			
+			if (simbling){
+				this.view.setFocusOnInput(simbling);
+			}
 		}
 	},
 	keyDownOnModal({target, key}){
