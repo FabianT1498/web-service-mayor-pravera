@@ -7,7 +7,7 @@ const decimalMaskOptions = {
     digits: 2,
     radixPoint: ".",
     _radixDance: true,
-    numericInput: true,
+    numericInput: false,
     placeholder: "0",
     definitions: {
         "0": {
