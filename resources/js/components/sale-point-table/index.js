@@ -24,10 +24,11 @@ const SalePointTable = function(){
         const input_debit = tBody.querySelector(`#${this.name}_debit_${newID}`);
         const input_credit = tBody.querySelector(`#${this.name}_credit_${newID}`);
 
+        input_debit.focus()
+        
         decimalInputs[this.currency].mask(input_debit);
         decimalInputs[this.currency].mask(input_credit);
 
-        input_debit.focus()
 
 
         if (prevIDArr.length > 0){
