@@ -312,7 +312,7 @@
                                 <td>N.E.</td>
                                 <td class="text-center">{{ number_format($totals_iva[1][0]->baseImponible, 2) }}</td>
                                 <td class="text-center">{{ number_format($totals_iva[1][0]->baseImponibleADolares, 2) }}</td>
-                                <td class="text-center">{{ $total_base_imponible_dollar > 0 ? (number_format($totals_iva[1][0]->baseImponible/$total_base_imponible_dollar, 2) * 100) : 0 }}&nbsp;%</td>
+                                <td class="text-center">{{ $total_base_imponible_bs > 0 ? (number_format($totals_iva[1][0]->baseImponible/$total_base_imponible_bs, 2) * 100) : 0 }}&nbsp;%</td>
                                 <td class="text-center">{{ number_format($totals_iva[1][0]->iva, 2) }}</td>
                                 <td class="text-center">{{ number_format($totals_iva[1][0]->ivaDolares, 2) }}</td>
                                 <td class="text-center">{{ number_format($totals_iva[1][0]->ivaDolares/$total_iva_dollar, 2) * 100 }}&nbsp;%</td>
