@@ -140,23 +140,22 @@
                                         Editar
                                         <div class="tooltip-arrow" data-popper-arrow></div>
                                     </div>
-                                @elseif ($value->status === config('constants.CASH_REGISTER_STATUS.COMPLETED'))
-                                    <a 
-                                        href="{{ URL::to(route('cash_register.single_record_pdf', $value->id)) }}" 
-                                        class="font-medium hover:text-teal-600 transition ease-in-out duration-500"
-                                        data-tooltip-target="single-report-tooltip"
-                                    >
-                                        <i class="fas fa-file-pdf"></i>
-                                    </a>
-                                    <div 
-                                        id="single-report-tooltip"
-                                        role="tooltip" 
-                                        class="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 transition-opacity duration-300 tooltip dark:bg-gray-700"
-                                    >
-                                        Imprimir reporte
-                                        <div class="tooltip-arrow" data-popper-arrow></div>
-                                    </div>
                                 @endif
+                                <a 
+                                    href="{{ URL::to(route('cash_register.single_record_pdf', $value->id)) }}" 
+                                    class="font-medium hover:text-teal-600 transition ease-in-out duration-500 {{ $value->status === config('constants.CASH_REGISTER_STATUS.COMPLETED') ? '' : 'ml-4' }}"
+                                    data-tooltip-target="single-report-tooltip"
+                                >
+                                    <i class="fas fa-file-pdf"></i>
+                                </a>
+                                <div 
+                                    id="single-report-tooltip"
+                                    role="tooltip" 
+                                    class="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 transition-opacity duration-300 tooltip dark:bg-gray-700"
+                                >
+                                    Imprimir reporte
+                                    <div class="tooltip-arrow" data-popper-arrow></div>
+                                </div>
                             </div>
                         </td>
                     </tr>

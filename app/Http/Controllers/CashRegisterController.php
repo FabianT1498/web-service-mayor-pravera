@@ -719,7 +719,10 @@ class CashRegisterController extends Controller
 
         $cash_register = CashRegister::where('cash_register_data_id', $id)->first();
 
-        $totals = $cash_register_repo->getTotals($id);
+        if ($cash_register){
+            $totals = $cash_register_repo->getTotals($id);
+        }
+
 
         $totals_from_safact = $cash_register_repo->getTotalsFromSafact($cash_register->date,
             $cash_register->date, $cash_register->cash_register_user)->first();
