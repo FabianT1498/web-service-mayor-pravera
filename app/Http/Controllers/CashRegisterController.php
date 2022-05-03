@@ -717,53 +717,40 @@ class CashRegisterController extends Controller
         
         $id = $request->route('id');
 
-        $cash_register = CashRegister::where('cash_register_data_id', $id)->first();
-
-        if ($cash_register){
-            $totals = $cash_register_repo->getTotals($id);
-        }
-
-
-        $totals_from_safact = $cash_register_repo->getTotalsFromSafact($cash_register->date,
-            $cash_register->date, $cash_register->cash_register_user)->first();
+        $cash_register_totals = $cash_register_repo->getTotals($id);
+        
+        $totals_from_safact = $cash_register_repo->getTotalsFromSafact($cash_register_totals->date,
+            $cash_register_totals->date, $cash_register_totals->cash_register_user)->first();
 
         $payment_methods = $this->getPaymentMethods();
 
         $totals_e_payment =  $cash_register_repo
-            ->getTotalsEPaymentMethods($cash_register->date, $cash_register->date,
-                $cash_register->cash_register_user)
+            ->getTotalsEPaymentMethods($cash_register_totals->date, $cash_register_totals->date,
+                $cash_register_totals->cash_register_user)
             ->groupBy(['CodUsua', 'FechaE']);
         
         $totals_e_payment  = $this
             ->mapEPaymentMethods($totals_e_payment, $payment_methods);
         
-        $user = $cash_register->cash_register_user;
-        $date = date('Y-m-d', strtotime($cash_register->date));
- 
+        $user =  $cash_register_totals->cash_register_user;
+        $date = date('Y-m-d', strtotime( $cash_register_totals->date));
+        
         $differences = [
-            'dollar_cash' => $totals->total_dollar_cash - $totals_from_safact->dolares,
-            'bs_cash' => $totals->total_bs_cash - $totals_from_safact->bolivares,
-            'pago_movil_bs' => $totals->total_pago_movil_bs - $totals_e_payment[$user][$date]['05']['bs'],
-            'point_sale_bs' => ($totals->total_point_sale_bs - ($totals_e_payment[$user][$date]['01']['bs'] 
+            'dollar_cash' => $cash_register_totals->total_dollar_cash - $totals_from_safact->dolares,
+            'bs_cash' => $cash_register_totals->total_bs_denominations - $totals_from_safact->bolivares,
+            'pago_movil_bs' => $cash_register_totals->total_pago_movil_bs - $totals_e_payment[$user][$date]['05']['bs'],
+            'point_sale_bs' => ($cash_register_totals->total_point_sale_bs - ($totals_e_payment[$user][$date]['01']['bs'] 
                 + $totals_e_payment[$user][$date]['02']['bs'])),
-            'point_sale_dollar' => $totals->total_point_sale_dollar - $totals_e_payment[$user][$date]['08']['dollar'],
-            'zelle' => $totals->total_zelle - $totals_e_payment[$user][$date]['07']['dollar'],
-            'bs_denominations' => $totals->total_bs_denominations - $totals_from_safact->bolivares,
-            'dollar_denominations' => $totals->total_dollar_denominations - $totals_from_safact->dolares,
+            'point_sale_dollar' => $cash_register_totals->total_point_sale_dollar - $totals_e_payment[$user][$date]['08']['dollar'],
+            'zelle' => $cash_register_totals->total_zelle - $totals_e_payment[$user][$date]['07']['dollar'],
+            'bs_denominations' => $cash_register_totals->total_bs_denominations - $totals_from_safact->bolivares,
+            'dollar_denominations' => $cash_register_totals->total_dollar_denominations - $totals_from_safact->dolares,
         ];
 
         $cash_register_data = CashRegisterData::find($id);
        
         $denominations_dollar = $cash_register_data->dollar_denomination_records;
         $denominations_bolivar = $cash_register_data->bs_denomination_records;
-
-        $total_denominations_dollar = $denominations_dollar->reduce(function ($acc, $item) {
-            return $acc + ($item->quantity * $item->denomination);
-        }, 0);
-
-        $total_denominations_bolivar = $denominations_bolivar->reduce(function ($acc, $item) {
-            return $acc + ($item->quantity * $item->denomination);
-        }, 0);
 
         $currency_signs = [
             'dollar' => config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')),
@@ -772,13 +759,11 @@ class CashRegisterController extends Controller
 
         $pdf = App::make('dompdf.wrapper');
         $pdf = $pdf->loadView('pdf.cash-register.single-record', compact(
-            'cash_register',
+            'cash_register_totals',
             'totals_e_payment',
             'totals_from_safact',
             'denominations_dollar',
             'denominations_bolivar',
-            'total_denominations_dollar',
-            'total_denominations_bolivar',
             'differences',
             'currency_signs',
             'user',
@@ -787,7 +772,7 @@ class CashRegisterController extends Controller
             ->setOptions([
                 'defaultFont' => 'sans-serif',
             ]);
-        return $pdf->stream('arqueo-caja_' . $cash_register->cash_register_user . '_' . $cash_register->date . '.pdf');
+        return $pdf->stream('arqueo-caja_' . $cash_register_totals->cash_register_user . '_' . $cash_register_totals->date . '.pdf');
     }
 
     public function intervalRecordPdf(CashRegisterRepository $cash_register_repo, PrintIntervalCashRegisterRequest $request){

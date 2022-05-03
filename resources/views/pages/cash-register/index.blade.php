@@ -84,7 +84,7 @@
                 </div>
             @endif
         </div>
-        <table class="table table-bordered table-hover mx-auto w-11/12">
+        <table class="table table-bordered table-hover mx-auto w-11/12 text-center">
             <thead class="bg-blue-300">
                 <tr>
                     @foreach ($columns as $colum)
@@ -95,13 +95,13 @@
             <tbody>
                 @foreach ($records as $key => $value)
                     <tr>
-                        <td class="text-center align-middle"> {{ $key + 1 }} </td>
-                        <td class="text-center align-middle">{{ $value->user_name }}</td>
-                        <td class="text-center align-middle">{{ $value->cash_register_user }}</td>
-                        <td class="text-center align-middle">{{ date('d-m-Y H:i', strtotime($value->date)) }}</td>
-                        <td class="text-center align-middle">{{ $value->status }}</td>
-                        <td class="text-center align-middle">{{ date('d-m-Y H:i', strtotime($value->updated_at)) }}</td>
-                        <td class="text-center align-middle">
+                        <td class="text-center"> {{ $key + 1 }} </td>
+                        <td class="text-center">{{ $value->user_name }}</td>
+                        <td class="text-center">{{ $value->cash_register_user }}</td>
+                        <td class="text-center">{{ date('d-m-Y', strtotime($value->date)) }}</td>
+                        <td class="text-center">{{ $value->status }}</td>
+                        <td class="text-center">{{ date('d-m-Y H:i', strtotime($value->updated_at)) }}</td>
+                        <td class="text-center">
                             <div class="flex items-center justify-center h-11 text-lg">
                                 @if ($value->status === config('constants.CASH_REGISTER_STATUS.EDITING'))
                                     <form 

@@ -253,10 +253,10 @@
                         <span>El mayorista</span>
                     </div>
                     <div class="right border-solid border-1 pr-10">
-                        <p class="mb-1"><span class="font-semibold">Fecha del arqueo:</span> {{ date('d-m-Y', strtotime($cash_register->date)) }}</p>
-                        <p class="mb-1"><span class="font-semibold">Usuario de la caja:</span> {{ $cash_register->cash_register_user }}</p>
-                        <p class="mb-1"><span class="font-semibold">Responsable de la caja:</span> {{ $cash_register->worker_name }}</p>
-                        <p><span class="font-semibold">Registro creado por:</span> {{ $cash_register->user_name }}</p>
+                        <p class="mb-1"><span class="font-semibold">Fecha del arqueo:</span> {{ date('d-m-Y', strtotime($date)) }}</p>
+                        <p class="mb-1"><span class="font-semibold">Usuario de la caja:</span> {{ $user }}</p>
+                        <p class="mb-1"><span class="font-semibold">Responsable de la caja:</span> {{ $cash_register_totals->worker_name }}</p>
+                        <p><span class="font-semibold">Registro creado por:</span> {{ $cash_register_totals->user_name }}</p>
                     </div>
                 </div>
 
@@ -276,9 +276,9 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <th>Dolares en efectivo</th>
-                                <td class="text-center">{{ $cash_register->total_dollar_cash . ' ' . $currency_signs['dollar'] }}</td>
-                                <td class="text-center">{{ $totals_from_safact->dolares . ' ' . $currency_signs['dollar'] }}</td>
+                                <th>Detalles de dolares en efectivo ($)</th>
+                                <td class="text-center">{{ number_format($cash_register_totals->total_dollar_cash, 2) }}</td>
+                                <td class="text-center">{{ number_format($totals_from_safact->dolares, 2)  }}</td>
                                 <td 
                                     class="text-center {{  $differences['dollar_cash'] > 0 
                                         ? 'text-blue-400' 
@@ -286,13 +286,27 @@
                                             ? 'text-red-400' 
                                             : '' ) }}"
                                 >
-                                        {{ $differences['dollar_cash'] . ' ' . $currency_signs['dollar']}}
+                                        {{  number_format($differences['dollar_cash'], 2) }}
                                 </td> 
                             </tr>
                             <tr>
-                                <th>Bs en efectivo</td>
-                                <td class="text-center">{{ $cash_register->total_bs_cash . ' ' . $currency_signs['bs'] }}</td>
-                                <td class="text-center">{{ $totals_from_safact->bolivares . ' ' . $currency_signs['bs'] }}</td>
+                                <th>Dolares en físico ($)</th>
+                                <td class="text-center">{{ number_format($cash_register_totals->total_dollar_denominations, 2) }}</td>
+                                <td class="text-center">{{ number_format($totals_from_safact->dolares, 2)  }}</td>
+                                <td 
+                                    class="text-center {{  $differences['dollar_cash'] > 0 
+                                        ? 'text-blue-400' 
+                                        : ( $differences['dollar_cash'] < 0 
+                                            ? 'text-red-400' 
+                                            : '' ) }}"
+                                >
+                                        {{  number_format($differences['dollar_denominations'], 2) }}
+                                </td> 
+                            </tr>
+                            <tr>
+                                <th>Bolívares en físico (Bs)</td>
+                                <td class="text-center">{{ number_format($cash_register_totals->total_bs_denominations, 2) }}</td>
+                                <td class="text-center">{{ number_format($totals_from_safact->bolivares, 2)  }}</td>
                                 <td 
                                     class="text-center {{ ($differences['bs_cash'] > 0) 
                                         ? 'text-blue-400' 
@@ -300,14 +314,14 @@
                                             ? 'text-red-400' 
                                             : '' )}}"
                                 >
-                                        {{ $differences['bs_cash'] . ' ' . $currency_signs['bs'] }}
+                                        {{  number_format($differences['bs_cash'], 2) }}
                                 </td>
                             </tr>
                             <tr>
-                                <th>Punto de venta Bs</th>
-                                <td class="text-center">{{ $cash_register->total_point_sale_bs . ' ' . $currency_signs['bs'] }}</td>
-                                <td class="text-center">{{ ($totals_e_payment[$user][$date]['01']['bs'] 
-                                    + $totals_e_payment[$user][$date]['02']['bs']) . ' ' . $currency_signs['bs']}}</td>
+                                <th>Punto de venta (Bs)</th>
+                                <td class="text-center">{{ number_format($cash_register_totals->total_point_sale_bs, 2)  }}</td>
+                                <td class="text-center">{{  number_format($totals_e_payment[$user][$date]['01']['bs'] 
+                                    + $totals_e_payment[$user][$date]['02']['bs'], 2)  }}</td>
                                 <td 
                                     class="text-center {{ $differences['point_sale_bs'] > 0 
                                         ? 'text-blue-400' 
@@ -315,13 +329,13 @@
                                             ? 'text-red-400' 
                                             : '' )}}"
                                 >
-                                        {{ $differences['point_sale_bs'] . ' ' . $currency_signs['bs'] }}
+                                        {{  number_format($differences['point_sale_bs'], 2)  }}
                                 </td>
                             </tr>
                             <tr>
-                                <th>Pago móvil y transferencias</th>
-                                <td class="text-center">{{ $cash_register->total_pago_movil_bs . ' ' . $currency_signs['bs'] }}</td>
-                                <td class="text-center">{{ $totals_e_payment[$user][$date]['05']['bs'] . ' ' . $currency_signs['bs']}}</td>
+                                <th>Pago móvil y transferencias (Bs)</th>
+                                <td class="text-center">{{ number_format($cash_register_totals->total_pago_movil_bs, 2) }}</td>
+                                <td class="text-center">{{ number_format($totals_e_payment[$user][$date]['05']['bs'], 2) }}</td>
                                 <td 
                                     class="text-center {{$differences['pago_movil_bs'] > 0 
                                         ? 'text-blue-400' 
@@ -329,13 +343,13 @@
                                             ? 'text-red-400' 
                                             : '' )}}"
                                 >
-                                        {{ $differences['pago_movil_bs'] . ' ' . $currency_signs['bs'] }}
+                                        {{  number_format($differences['pago_movil_bs'], 2) }}
                                 </td>
                             </tr>
                             <tr>
-                                <th>Punto de venta $</th>
-                                <td class="text-center">{{ $cash_register->total_point_sale_dollar . ' ' . $currency_signs['dollar']}}</td>
-                                <td class="text-center">{{ $totals_e_payment[$user][$date]['08']['dollar'] . ' ' . $currency_signs['dollar']  }}</td>
+                                <th>Punto de venta int. ($)</th>
+                                <td class="text-center">{{ number_format($cash_register_totals->total_point_sale_dollar, 2) }}</td>
+                                <td class="text-center">{{ number_format($totals_e_payment[$user][$date]['08']['dollar'], 2) }}</td>
                                 <td 
                                     class="text-center  {{ $differences['point_sale_dollar'] > 0 
                                         ? 'text-blue-400' 
@@ -343,13 +357,13 @@
                                             ? 'text-red-400' 
                                             : '' )}}"
                                 >
-                                        {{ $differences['point_sale_dollar'] . ' ' . $currency_signs['dollar'] }}
+                                        {{ number_format($differences['point_sale_dollar'], 2) }}
                                 </td>
                             </tr>
                             <tr>
                                 <th>Zelle</th>
-                                <td class="text-center">{{ $cash_register->total_zelle . ' ' . $currency_signs['dollar']}}</td>
-                                <td class="text-center">{{ $totals_e_payment[$user][$date]['07']['dollar'] . ' ' . $currency_signs['dollar'] }}</td>
+                                <td class="text-center">{{ number_format($cash_register_totals->total_zelle, 2) }}</td>
+                                <td class="text-center">{{ number_format($totals_e_payment[$user][$date]['07']['dollar'], 2)  }}</td>
                                 <td 
                                     class="text-center {{ $differences['zelle'] > 0 
                                         ? 'text-blue-400' 
@@ -357,7 +371,7 @@
                                             ? 'text-red-400' 
                                             : '' )}}"
                                 >
-                                        {{ $differences['zelle'] . ' ' . $currency_signs['dollar'] }}
+                                        {{  number_format($differences['zelle'], 2)  }}
                                 </td>
                             </tr>
                         </tbody>
@@ -390,7 +404,7 @@
                                 <tr class="bg-grey-600">
                                     <td>&nbsp;</td>
                                     <td class="font-semibold">Total</td>
-                                    <td class="bg-grey-600 text-center">{{ $total_denominations_bolivar }}</td>
+                                    <td class="bg-grey-600 text-center">{{ number_format($cash_register_totals->total_bs_denominations, 2) }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -416,7 +430,7 @@
                                 <tr class="bg-grey-600">
                                     <td>&nbsp;</td>
                                     <td class="font-semibold">Total</td>
-                                    <td class="text-center">{{ $total_denominations_dollar }}</td>
+                                    <td class="text-center">{{ number_format($cash_register_totals->total_dollar_denominations, 2) }}</td>
                                 </tr>
                             </tbody>
                         </table>

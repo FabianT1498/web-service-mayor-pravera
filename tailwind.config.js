@@ -36,7 +36,8 @@ module.exports = {
       require('flowbite/plugin'),
       require('tailwindcss-tables')({
         tableHoverBackgroundColor: 'rgba(0,0,0,.075)',  // default: rgba(0,0,0,.075)
-        cellPadding: '.25rem'
+        cellPadding: '.25rem',
+        verticalAlign: 'center'
       }),
       require('@tailwindcss/forms'),
       require('tailwindcss-animatecss')({
