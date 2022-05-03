@@ -166,4 +166,87 @@ class CashRegisterRepository implements CashRegisterRepositoryInterface
 
         return $query->first();
     }
+
+    public function getTotalsByInterval($start_date, $end_date){
+
+        $date_params = [$start_date, $end_date];
+
+        $interval_query = "cash_register_data.date BETWEEN ? AND ?";
+
+        $query = DB
+            ::table('cash_register_data')
+            ->selectRaw(
+                'cash_register_data.cash_register_user as cash_register_user,
+                cash_register_data.date as date,
+                CAST(ROUND(COALESCE(MAX(dol_c_join.total), 0), 2) AS decimal(18, 2)) as total_dollar_cash,
+                CAST(ROUND(COALESCE(MAX(bs_c_join.total), 0), 2) AS decimal(18, 2)) as total_bs_cash,
+                CAST(ROUND(COALESCE(MAX(pago_movil_bs_join.total), 0), 2) AS decimal(18, 2)) as total_pago_movil_bs,
+                CAST(ROUND(COALESCE(MAX(ps_bs_join.total), 0), 2) AS decimal(18, 2)) as total_point_sale_bs,
+                CAST(ROUND(COALESCE(MAX(ps_dol_join.total), 0), 2) AS decimal(18, 2)) as total_point_sale_dollar,
+                CAST(ROUND(COALESCE(MAX(bs_denomination_join.total), 0), 2) AS decimal(18, 2)) as total_bs_denominations,
+                CAST(ROUND(COALESCE(MAX(dollar_denomination_join.total), 0), 2) AS decimal(18, 2)) as total_dollar_denominations,
+                CAST(ROUND(COALESCE(MAX(zelle_join.total), 0), 2) AS decimal(18, 2)) as total_zelle
+                '
+            )
+            ->join('workers', 'cash_register_data.worker_id', '=', 'workers.id')
+            ->leftJoin(
+                DB::raw("(SELECT SUM(`dollar_cash_records`.`amount`) as `total`, `dollar_cash_records`.`cash_register_data_id` FROM `dollar_cash_records` GROUP BY `dollar_cash_records`.`cash_register_data_id`) `dol_c_join`"),
+                function($join)  {
+                    $join->on('dol_c_join.cash_register_data_id', '=', 'cash_register_data.id');
+                }
+            )
+            ->leftJoin(
+                DB::raw("(SELECT SUM(`bs_cash_records`.`amount`) as `total`, `bs_cash_records`.`cash_register_data_id` FROM `bs_cash_records` GROUP BY `bs_cash_records`.`cash_register_data_id`) `bs_c_join`"),
+                function($join)  {
+                    $join->on('bs_c_join.cash_register_data_id', '=', 'cash_register_data.id');
+                }
+            )
+            ->leftJoin(
+                DB::raw("(SELECT SUM(`pago_movil_bs_records`.`amount`) as `total`, `pago_movil_bs_records`.`cash_register_data_id` FROM `pago_movil_bs_records` GROUP BY `pago_movil_bs_records`.`cash_register_data_id`) `pago_movil_bs_join`"),
+                function($join)  {
+                    $join->on('pago_movil_bs_join.cash_register_data_id', '=', 'cash_register_data.id');
+                }
+            )
+            ->leftJoin(
+                DB::raw("(SELECT SUM(`point_sale_bs_records`.`amount`) as `total`, `point_sale_bs_records`.`cash_register_data_id` FROM `point_sale_bs_records` GROUP BY `point_sale_bs_records`.`cash_register_data_id`) `ps_bs_join`"),
+                function($join)  {
+                    $join->on('ps_bs_join.cash_register_data_id', '=', 'cash_register_data.id');
+                }
+            )
+            ->leftJoin(
+                DB::raw("
+                    (SELECT SUM(`point_sale_dollar_records`.`amount`) as `total`,
+                    `point_sale_dollar_records`.`cash_register_data_id`
+                    FROM `point_sale_dollar_records`
+                    GROUP BY
+                        `point_sale_dollar_records`.`cash_register_data_id`
+                    ) `ps_dol_join`"),
+                function($join)  {
+                    $join->on('ps_dol_join.cash_register_data_id', '=', 'cash_register_data.id');
+                }
+            )
+            ->leftJoin(
+                DB::raw("(SELECT SUM(`bs_denomination_records`.`quantity` * `bs_denomination_records`.`denomination`) as `total`, `bs_denomination_records`.`cash_register_data_id` FROM `bs_denomination_records` GROUP BY `bs_denomination_records`.`cash_register_data_id`) `bs_denomination_join`"),
+                function($join)  {
+                    $join->on('bs_denomination_join.cash_register_data_id', '=', 'cash_register_data.id');
+                }
+            )
+            ->leftJoin(
+                DB::raw("(SELECT SUM(`dollar_denomination_records`.`quantity` * `dollar_denomination_records`.`denomination`) as `total`, `dollar_denomination_records`.`cash_register_data_id` FROM `dollar_denomination_records` GROUP BY `dollar_denomination_records`.`cash_register_data_id`) `dollar_denomination_join`"),
+                function($join)  {
+                    $join->on('dollar_denomination_join.cash_register_data_id', '=', 'cash_register_data.id');
+                }
+            )
+            ->leftJoin(
+                DB::raw("(SELECT SUM(`zelle_records`.`amount`) as `total`, `zelle_records`.`cash_register_data_id` FROM `zelle_records` GROUP BY `zelle_records`.`cash_register_data_id`) `zelle_join`"),
+                function($join)  {
+                    $join->on('zelle_join.cash_register_data_id', '=', 'cash_register_data.id');
+                }
+            )
+            ->whereRaw($interval_query, $date_params)
+            ->groupByRaw("cash_register_user, date")
+            ->orderByRaw("cash_register_user asc, date asc");
+
+        return $query->get();
+    }
 }

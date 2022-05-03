@@ -780,6 +780,11 @@ class CashRegisterController extends Controller
         $start_date = date('Y-m-d', strtotime($request->start_date));
         $end_date = date('Y-m-d', strtotime($request->end_date));
 
+        // Get database data
+        $cash_registers_totals = $cash_register_repo
+            ->getTotalsByInterval($start_date, $end_date)
+            ->groupBy(['cash_register_user', 'date']);
+        
         // Get Saint data
         $totals_from_safact = $cash_register_repo
             ->getTotalsFromSafact($start_date, $end_date)
@@ -794,12 +799,7 @@ class CashRegisterController extends Controller
         $totals_e_payment  = $this
             ->mapEPaymentMethods($totals_e_payment, $payment_methods);
 
-        // Get database data
-        $cash_registers = CashRegister::whereBetween('date', [$start_date, $end_date])
-            ->get()
-            ->groupBy(['cash_register_user', 'date']);
-
-        $differences = $this->calculateDiffToSaint($totals_from_safact, $totals_e_payment, $cash_registers);
+        $differences = $this->calculateDiffToSaint($totals_from_safact, $totals_e_payment, $cash_registers_totals);
     
         $dollar_denominations = DB::table('cash_register_data')
             ->join('dollar_denomination_records', 'cash_register_data.id', '=', 'dollar_denomination_records.cash_register_data_id')
@@ -810,17 +810,21 @@ class CashRegisterController extends Controller
             ->groupBy(['cash_register_user', 'date']);
 
         $bs_denominations = DB::table('cash_register_data')
-        ->join('bs_denomination_records', 'cash_register_data.id', '=', 'bs_denomination_records.cash_register_data_id')
-        ->whereRaw("cash_register_data.date BETWEEN ? AND ?", [$start_date, $end_date])
-        ->where('cash_register_data.status', config('constants.CASH_REGISTER_STATUS.COMPLETED'))
-        ->orderByRaw("cash_register_data.cash_register_user asc, cash_register_data.date asc, bs_denomination_records.denomination asc")
-        ->get()
-        ->groupBy(['cash_register_user', 'date']);
+            ->join('bs_denomination_records', 'cash_register_data.id', '=', 'bs_denomination_records.cash_register_data_id')
+            ->whereRaw("cash_register_data.date BETWEEN ? AND ?", [$start_date, $end_date])
+            ->where('cash_register_data.status', config('constants.CASH_REGISTER_STATUS.COMPLETED'))
+            ->orderByRaw("cash_register_data.cash_register_user asc, cash_register_data.date asc, bs_denomination_records.denomination asc")
+            ->get()
+            ->groupBy(['cash_register_user', 'date']);
 
+            
         $currency_signs = [
             'dollar' => config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')),
             'bs' => config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR'))
         ];
+            
+        $total_quantity_dollar_denominations = $this->sumQuantityCashRegisterDenominations($dollar_denominations);
+        $total_quantity_bs_denominations = $this->sumQuantityCashRegisterDenominations($bs_denominations);
 
         $totals_bs_denominations = $this->sumSubTotalDenomination($bs_denominations);
         $total_dollar_denominations = $this->sumSubTotalDenomination($dollar_denominations);
@@ -836,12 +840,14 @@ class CashRegisterController extends Controller
         $pdf = $pdf->loadView('pdf.cash-register.interval-record', compact(
             'saint_totals',
             'currency_signs',
-            'cash_registers',
+            'cash_registers_totals',
             'differences',
             'dollar_denominations',
             'bs_denominations',
             'totals_bs_denominations',
             'total_dollar_denominations',
+            'total_quantity_dollar_denominations',
+            'total_quantity_bs_denominations',
             'start_date',
             'end_date'
         ))
@@ -851,6 +857,20 @@ class CashRegisterController extends Controller
 
 
         return $pdf->stream('arqueos-de-caja_' . $start_date . '_' . $end_date . '.pdf');
+    }
+
+    private function sumQuantityCashRegisterDenominations($denomination_records){
+        $total_quantity = [];
+        foreach($denomination_records as $dates){
+            foreach ($dates as $record){
+                if (!key_exists($record[0]->denomination, $total_quantity)){
+                    $total_quantity[$record[0]->denomination] = 0;
+                }
+                $total_quantity[$record[0]->denomination] += $record[0]->quantity;
+            }
+        }
+
+        return $total_quantity;
     }
 
     private function joinSaintMoneyEntranceCollections($totals_from_safact, $totals_e_payment){
@@ -910,10 +930,15 @@ class CashRegisterController extends Controller
                         $differences[$key_user][$key_date] = [];
                         $differences[$key_user][$key_date]['dollar_cash'] = $cash_registers[$key_user][$key_date]->first()->total_dollar_cash - $date[0]->dolares;
                         $differences[$key_user][$key_date]['bs_cash'] = $cash_registers[$key_user][$key_date]->first()->total_bs_cash - $date[0]->bolivares;
+                        $differences[$key_user][$key_date]['bs_denominations'] = $cash_registers[$key_user][$key_date]->first()->total_bs_denominations - $date[0]->bolivares;
+                        $differences[$key_user][$key_date]['dollar_denominations'] = $cash_registers[$key_user][$key_date]->first()->total_dollar_denominations - $date[0]->dolares;
                     } else {
                         $differences[$key_user][$key_date] = [];
                         $differences[$key_user][$key_date]['dollar_cash'] = $date[0]->dolares * -1;
                         $differences[$key_user][$key_date]['bs_cash'] = $date[0]->bolivares * -1;
+                        $differences[$key_user][$key_date]['bs_denominations'] = $date[0]->bolivares * -1;
+                        $differences[$key_user][$key_date]['dollar_denominations'] = $date[0]->dolares * -1;
+
                     }
                 });
             } else {
@@ -921,6 +946,8 @@ class CashRegisterController extends Controller
                     $differences[$key_user][$key_date] = [];
                     $differences[$key_user][$key_date]['dollar_cash'] = $date[0]->dolares * -1;
                     $differences[$key_user][$key_date]['bs_cash'] = $date[0]->bolivares * -1;
+                    $differences[$key_user][$key_date]['bs_denominations'] = $date[0]->bolivares * -1;
+                    $differences[$key_user][$key_date]['dollar_denominations'] = $date[0]->dolares * -1;
                 });
             }
         });
@@ -939,7 +966,7 @@ class CashRegisterController extends Controller
                             $differences[$key_user][$key_date]['point_sale_dollar'] = $cash_registers[$key_user][$key_date]->first()->total_point_sale_dollar - $date['08']['dollar'];
                             $differences[$key_user][$key_date]['pago_movil_bs'] = $cash_registers[$key_user][$key_date]->first()->total_pago_movil_bs - $date['05']['bs'];
                             $differences[$key_user][$key_date]['zelle'] = $cash_registers[$key_user][$key_date]->first()->total_zelle -  $date['07']['dollar'];
-                    } else {
+                        } else {
                         if (!array_key_exists($key_date, $differences[$key_user])){
                             $differences[$key_user][$key_date] = [];
                         }

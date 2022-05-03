@@ -273,25 +273,13 @@
                 </div>
             </div>
 
-            <div class="w-80p mb-8 border-solid border-1 p-2">
-                <p>Notas:</p>
-                <ul>
-                    <li>
-                        Si el cierre de caja no aparece en el reporte, es debido a que no se ha creado un cierre de caja para 
-                        un determinado usario de caja y/o fecha.
-                    </li>
-                    <li>
-                        Si no aparece un cierre de caja que ha sido creado, es debido a que a que la caja no tuvo ninguna facturación durante
-                        determinada fecha.
-                    </li>
-                </ul>
-            </div>
+            
 
             @foreach($saint_totals as $key_user => $dates)
                 <div class="w-80p mb-8">
-                    @if ($cash_registers->has($key_user))
+                    @if ($cash_registers_totals->has($key_user))
                         @foreach($dates as $key_date => $date)
-                            @if($cash_registers[$key_user]->has($key_date))
+                            @if($cash_registers_totals[$key_user]->has($key_date))
                                 <table class="w-80p mb-8">
                                     <caption class="text-center w-80p bg-grey-400">{{ $key_user }}</caption>
                                     <caption class="text-center w-80p bg-grey-400">{{ date('d-m-Y', strtotime($key_date)) }}</caption>
@@ -305,9 +293,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <th>Dolares en efectivo</th>
-                                            <td class="text-center">{{ $cash_registers[$key_user][$key_date][0]->total_dollar_cash . ' ' . $currency_signs['dollar'] }}</td>
-                                            <td class="text-center">{{ $saint_totals[$key_user][$key_date]['dolares'] . ' ' . $currency_signs['dollar'] }}</td>
+                                            <th>Detalles de dolares en efectivo ($)</th>
+                                            <td class="text-center">{{ number_format($cash_registers_totals[$key_user][$key_date][0]->total_dollar_cash, 2) }}</td>
+                                            <td class="text-center">{{ number_format($saint_totals[$key_user][$key_date]['dolares'], 2) }}</td>
                                             <td 
                                                 class="text-center {{  $differences[$key_user][$key_date]['dollar_cash'] > 0 
                                                     ? 'text-blue-400' 
@@ -315,13 +303,27 @@
                                                         ? 'text-red-400' 
                                                         : '' ) }}"
                                             >
-                                                    {{ $differences[$key_user][$key_date]['dollar_cash'] . ' ' . $currency_signs['dollar']}}
+                                                    {{ number_format($differences[$key_user][$key_date]['dollar_cash'], 2) }}
                                             </td> 
                                         </tr>
                                         <tr>
-                                            <th>Bs en efectivo</td>
-                                            <td class="text-center">{{ $cash_registers[$key_user][$key_date][0]->total_bs_cash . ' ' . $currency_signs['bs'] }}</td>
-                                            <td class="text-center">{{ $saint_totals[$key_user][$key_date]['bolivares'] . ' ' . $currency_signs['bs'] }}</td>
+                                            <th>Dolares en físico ($)</th>
+                                            <td class="text-center">{{ number_format($cash_registers_totals[$key_user][$key_date][0]->total_dollar_denominations, 2) }}</td>
+                                            <td class="text-center">{{ number_format($saint_totals[$key_user][$key_date]['dolares'], 2)  }}</td>
+                                            <td 
+                                                class="text-center {{ $differences[$key_user][$key_date]['dollar_cash'] > 0 
+                                                    ? 'text-blue-400' 
+                                                    : ( $differences[$key_user][$key_date]['dollar_cash'] < 0 
+                                                        ? 'text-red-400' 
+                                                        : '' ) }}"
+                                            >
+                                                    {{  number_format($differences[$key_user][$key_date]['dollar_denominations'], 2) }}
+                                            </td> 
+                                        </tr>
+                                        <tr>
+                                            <th>Bs en físico (Bs)</td>
+                                            <td class="text-center">{{  number_format($cash_registers_totals[$key_user][$key_date][0]->total_bs_denominations, 2) }}</td>
+                                            <td class="text-center">{{  number_format($saint_totals[$key_user][$key_date]['bolivares'], 2) }}</td>
                                             <td 
                                                 class="text-center {{ ($differences[$key_user][$key_date]['bs_cash'] > 0) 
                                                     ? 'text-blue-400' 
@@ -329,14 +331,14 @@
                                                         ? 'text-red-400' 
                                                         : '' )}}"
                                             >
-                                                    {{ $differences[$key_user][$key_date]['bs_cash'] . ' ' . $currency_signs['bs'] }}
+                                                    {{ number_format($differences[$key_user][$key_date]['bs_denominations'], 2) }}
                                             </td>
                                         </tr>
                                         <tr>
-                                            <th>Punto de venta Bs</th>
-                                            <td class="text-center">{{ $cash_registers[$key_user][$key_date][0]->total_point_sale_bs . ' ' . $currency_signs['bs'] }}</td>
-                                            <td class="text-center">{{ ($saint_totals[$key_user][$key_date]['01']['bs'] 
-                                                + $saint_totals[$key_user][$key_date]['02']['bs']) . ' ' . $currency_signs['bs']}}</td>
+                                            <th>Punto de venta (Bs)</th>
+                                            <td class="text-center">{{ number_format($cash_registers_totals[$key_user][$key_date][0]->total_point_sale_bs, 2)  }}</td>
+                                            <td class="text-center">{{ number_format($saint_totals[$key_user][$key_date]['01']['bs'] 
+                                                + $saint_totals[$key_user][$key_date]['02']['bs'], 2) }}</td>
                                             <td 
                                                 class="text-center {{ $differences[$key_user][$key_date]['point_sale_bs'] > 0 
                                                     ? 'text-blue-400' 
@@ -344,13 +346,13 @@
                                                         ? 'text-red-400' 
                                                         : '' )}}"
                                             >
-                                                    {{ $differences[$key_user][$key_date]['point_sale_bs'] . ' ' . $currency_signs['bs'] }}
+                                                    {{ number_format($differences[$key_user][$key_date]['point_sale_bs'], 2)  }}
                                             </td>
                                         </tr>
                                         <tr>
                                             <th>Pago móvil y transferencias</th>
-                                            <td class="text-center">{{ $cash_registers[$key_user][$key_date][0]->total_pago_movil_bs . ' ' . $currency_signs['bs'] }}</td>
-                                            <td class="text-center">{{ $saint_totals[$key_user][$key_date]['05']['bs'] . ' ' . $currency_signs['bs']}}</td>
+                                            <td class="text-center">{{ number_format($cash_registers_totals[$key_user][$key_date][0]->total_pago_movil_bs, 2)  }}</td>
+                                            <td class="text-center">{{ number_format($saint_totals[$key_user][$key_date]['05']['bs'], 2) }}</td>
                                             <td 
                                                 class="text-center {{$differences[$key_user][$key_date]['pago_movil_bs'] > 0 
                                                     ? 'text-blue-400' 
@@ -358,13 +360,13 @@
                                                         ? 'text-red-400' 
                                                         : '' )}}"
                                             >
-                                                    {{ $differences[$key_user][$key_date]['pago_movil_bs'] . ' ' . $currency_signs['bs'] }}
+                                                    {{ number_format($differences[$key_user][$key_date]['pago_movil_bs'], 2)  }}
                                             </td>
                                         </tr>
                                         <tr>
-                                            <th>Punto de venta $</th>
-                                            <td class="text-center">{{ $cash_registers[$key_user][$key_date][0]->total_point_sale_dollar . ' ' . $currency_signs['dollar']}}</td>
-                                            <td class="text-center">{{ $saint_totals[$key_user][$key_date]['08']['dollar'] . ' ' . $currency_signs['dollar']  }}</td>
+                                            <th>Punto de venta int. ($)</th>
+                                            <td class="text-center">{{ number_format($cash_registers_totals[$key_user][$key_date][0]->total_point_sale_dollar, 2)}}</td>
+                                            <td class="text-center">{{ number_format($saint_totals[$key_user][$key_date]['08']['dollar'], 2)  }}</td>
                                             <td 
                                                 class="text-center {{ $differences[$key_user][$key_date]['point_sale_dollar'] > 0 
                                                     ? 'text-blue-400' 
@@ -372,13 +374,13 @@
                                                         ? 'text-red-400' 
                                                         : '' )}}"
                                             >
-                                                    {{ $differences[$key_user][$key_date]['point_sale_dollar'] . ' ' . $currency_signs['dollar'] }}
+                                                    {{ number_format($differences[$key_user][$key_date]['point_sale_dollar'], 2) }}
                                             </td>
                                         </tr>
                                         <tr>
                                             <th>Zelle</th>
-                                            <td class="text-center">{{ $cash_registers[$key_user][$key_date][0]->total_zelle . ' ' . $currency_signs['dollar']}}</td>
-                                            <td class="text-center">{{ $saint_totals[$key_user][$key_date]['07']['dollar'] . ' ' . $currency_signs['dollar'] }}</td>
+                                            <td class="text-center">{{ number_format($cash_registers_totals[$key_user][$key_date][0]->total_zelle, 2)}}</td>
+                                            <td class="text-center">{{ number_format($saint_totals[$key_user][$key_date]['07']['dollar'], 2) }}</td>
                                             <td 
                                                 class="text-center {{ $differences[$key_user][$key_date]['zelle'] > 0 
                                                     ? 'text-blue-400' 
@@ -386,7 +388,7 @@
                                                         ? 'text-red-400' 
                                                         : '' )}}"
                                             >
-                                                    {{ $differences[$key_user][$key_date]['zelle'] . ' ' . $currency_signs['dollar'] }}
+                                                    {{ number_format($differences[$key_user][$key_date]['zelle'], 2) }}
                                             </td>
                                         </tr>
                                     </tbody>
