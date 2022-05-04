@@ -9,6 +9,7 @@
         <div class="mb-4">
             <form class="mb-4 mx-auto w-11/12" id="form_filter" method="GET" action="{{ route('cash_register.index') }}">
                 <p class="mb-4">Parametros de busqueda</p>
+                <input id="page" name="page" type="hidden" value="1">
                 <div id="date_range_picker" date-rangepicker class="flex justify-between items-center mb-4 w-4/5">
                     <span class="text-gray-500">Desde</span>
                     <div class="relative basis-1/3">
@@ -66,12 +67,8 @@
                         class="basis-1/3"
                     />
                 </div>
-                <div>
-                    <x-button>Filtrar</x-button>
-                </div>
-
             </form>
-            @if ($start_date && $end_date && $records->count() > 0)
+            @if ($start_date && $end_date && $paginator->count() > 0)
                 <div class="w-11/12 mx-auto">
                     <a 
                         class="underline text-sm text-gray-600 hover:text-gray-900 pt-4" 
@@ -91,7 +88,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($records as $key => $value)
+                @foreach ($paginator as $key => $value)
                     <tr>
                         <td class="text-center"> {{ $key + 1 }} </td>
                         <td class="text-center">{{ $value->user_name }}</td>
@@ -160,11 +157,13 @@
                 @endforeach
             </tbody>
         </table>
-        @if ($records->count() === 0)
-            <p class="text-center">No hay registros</p>
-        @endif
-        <div id="" class="mt-8 pb-32">
-            {{ $records->onEachSide(1)->links('pagination::tailwind') }}
+        <div class="w-11/12 mx-auto">
+            @if ($paginator->count() === 0)
+                <p class="text-center">No hay registros</p>
+            @endif
+            <div class="mt-8 pb-32">
+                {{ $paginator->onEachSide(1)->links('pagination::tailwind') }}
+            </div>
         </div>
     </div>
 @endsection

@@ -313,9 +313,9 @@
                                             <td class="text-center">{{ number_format($cash_registers_totals[$key_user][$key_date][0]->total_dollar_denominations, 2) }}</td>
                                             <td class="text-center">{{ number_format($saint_totals[$key_user][$key_date]['dolares'], 2)  }}</td>
                                             <td 
-                                                class="text-center {{ $differences[$key_user][$key_date]['dollar_cash'] > 0 
+                                                class="text-center {{ $differences[$key_user][$key_date]['dollar_denominations'] > 0 
                                                     ? 'text-blue-400' 
-                                                    : ( $differences[$key_user][$key_date]['dollar_cash'] < 0 
+                                                    : ( $differences[$key_user][$key_date]['dollar_denominations'] < 0 
                                                         ? 'text-red-400' 
                                                         : '' ) }}"
                                             >
@@ -327,9 +327,9 @@
                                             <td class="text-center">{{  number_format($cash_registers_totals[$key_user][$key_date][0]->total_bs_denominations, 2) }}</td>
                                             <td class="text-center">{{  number_format($saint_totals[$key_user][$key_date]['bolivares'], 2) }}</td>
                                             <td 
-                                                class="text-center {{ ($differences[$key_user][$key_date]['bs_cash'] > 0) 
+                                                class="text-center {{ ($differences[$key_user][$key_date]['bs_denominations'] > 0) 
                                                     ? 'text-blue-400' 
-                                                    : ( $differences[$key_user][$key_date]['bs_cash'] < 0 
+                                                    : ( $differences[$key_user][$key_date]['bs_denominations'] < 0 
                                                         ? 'text-red-400' 
                                                         : '' )}}"
                                             >

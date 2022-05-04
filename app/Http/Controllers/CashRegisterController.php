@@ -81,6 +81,7 @@ class CashRegisterController extends Controller
         $status = $request->query('status', config('constants.CASH_REGISTER_STATUS.EDITING'));
         $start_date = $request->query('start_date', '');
         $end_date = $request->query('end_date', '');
+        $page = $request->query('page', '');
 
         $query = CashRegisterData::select([
             'cash_register_data.id',
@@ -108,13 +109,13 @@ class CashRegisterController extends Controller
             (object) ['key' => config('constants.CASH_REGISTER_STATUS.COMPLETED'), 'value' => 'Completado'],
         ];
 
+        $query = $query->orderBy('date', 'desc');
 
-        $records = $query->orderBy('date', 'desc')->paginate(5);
+        $paginator = $query->paginate(5);
 
-        
-        // $records->appends(['status' => $status, 'start_date' => $start_date, 'end_date' => $end_date]);
-
-        // return print_r($records);
+        if ($paginator->lastPage() < $page){
+            $paginator = $query->paginate(5, ['*'], 'page', 1);
+        }
 
         $columns = [
             "Nro",
@@ -128,7 +129,7 @@ class CashRegisterController extends Controller
 
         return view('pages.cash-register.index', compact(
             'columns',
-            'records',
+            'paginator',
             'status',
             'status_options',
             'start_date',
