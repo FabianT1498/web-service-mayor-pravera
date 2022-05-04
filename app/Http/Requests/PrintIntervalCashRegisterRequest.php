@@ -20,7 +20,7 @@ class PrintIntervalCashRegisterRequest extends FormRequest
 
         $cash_register_data = CashRegisterData
             ::selectRaw('count(id) as count')
-            ->where('status', config('constants.CASH_REGISTER_STATUS.COMPLETED'))
+            // ->where('status', config('constants.CASH_REGISTER_STATUS.COMPLETED'))
             ->whereBetween('cash_register_data.date', [$new_start_date, $new_finish_date])
             ->first();
         

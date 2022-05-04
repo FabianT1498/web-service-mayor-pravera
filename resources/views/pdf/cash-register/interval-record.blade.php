@@ -10,6 +10,10 @@
                 box-sizing: border-box;
             }
 
+            .page-break {
+                page-break-after: always;
+            }
+
             html {
                 font-size: 16px;
             }
@@ -256,7 +260,7 @@
     </head>
     <body class="font-sans antialiased bg-gray-100">
         <div class="container">
-            <div class="w-full mb-8 clearfix">
+            <div class="w-full mb-4 clearfix">
                 <div class="left">
                     <span>El mayorista</span>
                 </div>
@@ -273,10 +277,8 @@
                 </div>
             </div>
 
-            
-
             @foreach($saint_totals as $key_user => $dates)
-                <div class="w-80p mb-8">
+                <div class="w-80p mb-8 mx-auto">
                     @if ($cash_registers_totals->has($key_user))
                         @foreach($dates as $key_date => $date)
                             @if($cash_registers_totals[$key_user]->has($key_date))
@@ -394,7 +396,7 @@
                                     </tbody>
                                 </table>
 
-                                <div class="w-80p mb-8 clearfix">
+                                <div class="w-80p clearfix">
                                     <div class="w-40p left">
                                         <table class="w-full">
                                             <caption class="text-center bg-grey-400 w-full">Cantidad de billetes por denominación (Bolivares)</caption>
@@ -410,13 +412,13 @@
                                                     <tr>
                                                         <td class="text-center">{{ $record->denomination }}</td>
                                                         <td class="text-center">{{ $record->quantity }}</td>
-                                                        <td class="text-center">{{ $record->quantity * $record->denomination }}</td>
+                                                        <td class="text-center">{{ number_format($record->quantity * $record->denomination, 2) }}</td>
                                                     </tr>
                                                 @endforeach
                                                 <tr class="bg-grey-600">
                                                     <td>&nbsp;</td>
                                                     <td class="font-semibold">Total</td>
-                                                    <td class="bg-grey-600 text-center">{{ $totals_bs_denominations[$key_user][$key_date] }}</td>
+                                                    <td class="bg-grey-600 text-center">{{ number_format($totals_bs_denominations[$key_user][$key_date], 2) }}</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -436,23 +438,94 @@
                                                     <tr>
                                                         <td class="text-center">{{ $record->denomination }}</td>
                                                         <td class="text-center">{{ $record->quantity }}</td>
-                                                        <td class="text-center">{{ $record->quantity * $record->denomination }}</td>
+                                                        <td class="text-center">{{ number_format($record->quantity * $record->denomination, 2) }}</td>
                                                     </tr>
                                                 @endforeach
                                                 <tr class="bg-grey-600">
                                                     <td>&nbsp;</td>
                                                     <td class="font-semibold">Total</td>
-                                                    <td class="text-center">{{ $total_dollar_denominations[$key_user][$key_date] }}</td>
+                                                    <td class="text-center">{{ number_format($total_dollar_denominations[$key_user][$key_date], 2) }}</td>
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
+                                
+                                <div class="page-break"></div>
                             @endif
                         @endforeach
-                    @endif
+                    @endif                               
                 </div>
-            @endforeach        
+            @endforeach
+            
+            <div class="w-90p mb-8">
+                <h1 class="text-center">Resumen de entrada de dinero en efectivo</h1>
+            </div>
+            <div class="w-80p clearfix">
+                <div class="w-40p left">
+                    <table class="w-full">
+                        <caption class="text-center bg-grey-400 w-full">Cantidad de billetes por denominación (Bs)</caption>
+                        <thead>
+                            <tr>
+                                <th>Denominación</th>
+                                <th>Cantidad</th>
+                                <th>Subtotal (Bs)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($total_quantity_bs_denominations as $denomination => $quantity)
+                                <tr>
+                                    <td class="text-center">{{ $denomination }}</td>
+                                    <td class="text-center">{{ $quantity }}</td>
+                                    <td class="text-center">{{ number_format($quantity * floatval($denomination), 2) }}</td>
+                                </tr>
+                            @endforeach
+                            <tr class="bg-grey-600">
+                                <td>&nbsp;</td>
+                                <td class="font-semibold">Total</td>
+                                <td class="bg-grey-600 text-center">{{ number_format($total_bs_denominations_summary, 2) }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="w-40p right">
+                    <table class="w-full">
+                        <caption class="text-center bg-grey-400 w-full">Cantidad de billetes por denominación ($)</caption>
+                        <thead>
+                            <tr>
+                                <th>Denominación</th>
+                                <th>Cantidad</th>
+                                <th>Total ($)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($total_quantity_dollar_denominations as $denomination => $quantity)
+                                <tr>
+                                    <td class="text-center">{{ $denomination }}</td>
+                                    <td class="text-center">{{ $quantity }}</td>
+                                    <td class="text-center">{{ number_format($quantity * floatval($denomination), 2) }}</td>
+                                </tr>
+                            @endforeach
+                            <tr class="bg-grey-600">
+                                <td>&nbsp;</td>
+                                <td class="font-semibold">Total</td>
+                                <td class="text-center">{{ number_format($total_dollar_denominations_summary, 2) }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
+        <script type="text/php">
+            if (isset($pdf)) {
+                $text = "page {PAGE_NUM} / {PAGE_COUNT}";
+                $size = 10;
+                $font = $fontMetrics->getFont("Verdana");
+                $width = $fontMetrics->get_text_width($text, $font, $size) / 2;
+                $x = ($pdf->get_width() - $width) / 2;
+                $y = $pdf->get_height() - 35;
+                $pdf->page_text($x, $y, $text, $font, $size);
+            }
+        </script>
     </body>
 </html>

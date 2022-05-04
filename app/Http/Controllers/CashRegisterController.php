@@ -804,7 +804,6 @@ class CashRegisterController extends Controller
         $dollar_denominations = DB::table('cash_register_data')
             ->join('dollar_denomination_records', 'cash_register_data.id', '=', 'dollar_denomination_records.cash_register_data_id')
             ->whereRaw("cash_register_data.date BETWEEN ? AND ?", [$start_date, $end_date])
-            ->where('cash_register_data.status', config('constants.CASH_REGISTER_STATUS.COMPLETED'))
             ->orderByRaw("cash_register_data.cash_register_user asc, cash_register_data.date asc, dollar_denomination_records.denomination asc")
             ->get()
             ->groupBy(['cash_register_user', 'date']);
@@ -812,20 +811,15 @@ class CashRegisterController extends Controller
         $bs_denominations = DB::table('cash_register_data')
             ->join('bs_denomination_records', 'cash_register_data.id', '=', 'bs_denomination_records.cash_register_data_id')
             ->whereRaw("cash_register_data.date BETWEEN ? AND ?", [$start_date, $end_date])
-            ->where('cash_register_data.status', config('constants.CASH_REGISTER_STATUS.COMPLETED'))
             ->orderByRaw("cash_register_data.cash_register_user asc, cash_register_data.date asc, bs_denomination_records.denomination asc")
             ->get()
             ->groupBy(['cash_register_user', 'date']);
 
-            
         $currency_signs = [
             'dollar' => config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')),
             'bs' => config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR'))
         ];
             
-        $total_quantity_dollar_denominations = $this->sumQuantityCashRegisterDenominations($dollar_denominations);
-        $total_quantity_bs_denominations = $this->sumQuantityCashRegisterDenominations($bs_denominations);
-
         $totals_bs_denominations = $this->sumSubTotalDenomination($bs_denominations);
         $total_dollar_denominations = $this->sumSubTotalDenomination($dollar_denominations);
 
@@ -835,6 +829,18 @@ class CashRegisterController extends Controller
         $saint_totals = $this->joinSaintMoneyEntranceCollections($totals_from_safact,
             $totals_e_payment);
 
+        $total_quantity_dollar_denominations = $this->sumQuantityCashRegisterDenominations($dollar_denominations);
+        $total_quantity_bs_denominations = $this->sumQuantityCashRegisterDenominations($bs_denominations);
+      
+        $total_bs_denominations_summary = 0;
+        foreach($total_quantity_bs_denominations as $denomination => $quantity){
+            $total_bs_denominations_summary += floatval($denomination) * $quantity;
+        }
+
+        $total_dollar_denominations_summary = 0;
+        foreach($total_quantity_dollar_denominations as $denomination => $quantity){
+            $total_dollar_denominations_summary += floatval($denomination) * $quantity;
+        }
 
         $pdf = App::make('dompdf.wrapper');
         $pdf = $pdf->loadView('pdf.cash-register.interval-record', compact(
@@ -848,12 +854,15 @@ class CashRegisterController extends Controller
             'total_dollar_denominations',
             'total_quantity_dollar_denominations',
             'total_quantity_bs_denominations',
+            'total_bs_denominations_summary',
+            'total_dollar_denominations_summary',
             'start_date',
             'end_date'
         ))
-            ->setOptions([
-                'defaultFont' => 'sans-serif',
-            ]);
+        ->setOptions([
+            'defaultFont' => 'sans-serif',
+            'isPhpEnabled' => true
+        ]);
 
 
         return $pdf->stream('arqueos-de-caja_' . $start_date . '_' . $end_date . '.pdf');
@@ -861,12 +870,15 @@ class CashRegisterController extends Controller
 
     private function sumQuantityCashRegisterDenominations($denomination_records){
         $total_quantity = [];
-        foreach($denomination_records as $dates){
-            foreach ($dates as $record){
-                if (!key_exists($record[0]->denomination, $total_quantity)){
-                    $total_quantity[$record[0]->denomination] = 0;
-                }
-                $total_quantity[$record[0]->denomination] += $record[0]->quantity;
+        foreach($denomination_records as $key_user => $dates){
+            foreach ($dates as $key_date => $date){
+                
+                $date->each(function($item, $key) use (&$total_quantity){
+                    if (!key_exists(number_format($item->denomination, 2,'.',''), $total_quantity)){
+                        $total_quantity[number_format($item->denomination, 2,'.','')] = 0;
+                    }
+                    $total_quantity[number_format($item->denomination, 2,'.','')] += $item->quantity;
+                });
             }
         }
 
