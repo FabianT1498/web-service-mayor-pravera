@@ -385,7 +385,7 @@
                 <div class="w-80p mb-8 clearfix">
                     <div class="w-40p left">
                         <table>
-                            <caption class="text-center bg-grey-400 ">Cantidad de billetes por denominación (Bolivares)</caption>
+                            <caption class="text-center bg-grey-400 ">Cantidad de billetes por denominación (Bs)</caption>
                             <thead>
                                 <tr>
                                     <th>Denominación</th>
@@ -398,7 +398,7 @@
                                     <tr>
                                         <td class="text-center">{{ $record->denomination }}</td>
                                         <td class="text-center">{{ $record->quantity }}</td>
-                                        <td class="text-center">{{ $record->quantity * $record->denomination }}</td>
+                                        <td class="text-center">{{ number_format($record->quantity * $record->denomination, 2) }}</td>
                                     </tr>
                                 @endforeach
                                 <tr class="bg-grey-600">
@@ -424,7 +424,7 @@
                                     <tr>
                                         <td class="text-center">{{ $record->denomination }}</td>
                                         <td class="text-center">{{ $record->quantity }}</td>
-                                        <td class="text-center">{{ $record->quantity * $record->denomination }}</td>
+                                        <td class="text-center">{{ number_format($record->quantity * $record->denomination, 2) }}</td>
                                     </tr>
                                 @endforeach
                                 <tr class="bg-grey-600">
