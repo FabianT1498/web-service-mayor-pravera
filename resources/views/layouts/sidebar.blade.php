@@ -41,6 +41,14 @@
       </a>
       <!-- end link -->
 
+      <p class="text-base font-bold text-gray-600 mb-2">Gestión de impresoras fiscales</p>
+
+      <!-- link -->
+      <a href="{{ route('z_bill.index') }}" class="mb-2 capitalize font-medium  hover:text-teal-600 transition ease-in-out duration-500">
+        Consultar registros de impresoras
+      </a>
+      <!-- end link -->
+
       <p class="text-base font-bold text-gray-600 mb-3">Reportes</p>
       <a  href="{{ route('money_entrance.index') }}" class="mb-2 capitalize font-medium  hover:text-teal-600 transition ease-in-out duration-500">Entrada de dinero en cajas</a>
       <a  href="{{ route('drink-bills.index') }}" class="mb-2 capitalize font-medium  hover:text-teal-600 transition ease-in-out duration-500">Facturas fiscales con items de bebidas alcoholicas</a>

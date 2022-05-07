@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\CashRegisterController;
+use App\Http\Controllers\ZBillController;
 use App\Http\Controllers\MoneyEntranceController;
 use App\Http\Controllers\DrinkBillController;
 use App\Http\Controllers\CashRegisterWorkerController;
@@ -50,8 +51,12 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('cash_register/pdf/{id}', [CashRegisterController::class, 'singleRecordPdf'])->name('cash_register.single_record_pdf');
     Route::get('cash_register/pdf/{start_date}/{end_date}', [CashRegisterController::class, 'intervalRecordPdf'])->name('cash_register.interval_record_pdf');
 
-    
+    // Z Bill routes
+    Route::get('z_bill', [ZBillController::class, 'index'])->name('z_bill.index');
+    Route::get('z_bill/create', [ZBillController::class, 'generateReport'])->name('z_bill.generate-report');
 
+    Route::get('z_bill/pdf/{id}', [ZBillController::class, 'singleRecordPdf'])->name('z_bill.single_record_pdf');
+    Route::get('z_bill/pdf/{start_date}/{end_date}', [ZBillController::class, 'intervalRecordPdf'])->name('z_bill.interval_record_pdf');
   });
 
 Route::group(['middleware' => ['auth', 'jsonify']], function() {

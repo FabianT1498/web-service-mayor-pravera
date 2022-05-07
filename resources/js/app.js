@@ -27,4 +27,8 @@ import("./pages/fiscal-bill/index" /* webpackChunkName: "/js/fiscal_bill_index" 
    indexFiscalBill.init()
 });
 
+import("./pages/z-bill/index" /* webpackChunkName: "/js/z_bill_index" */).then(({default: indexZBill}) => {
+   indexZBill.init()
+});
+
 import LogoIsotipo from './../assets/logo-isotipo.svg';
