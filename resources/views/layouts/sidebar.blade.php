@@ -5,7 +5,7 @@
     <div class="mb-6 pb-2 border-b border-slate-400 text-sm">
       <p class="text-base font-bold text-gray-600 mb-2">Última tasa del dolar</p>
       <p><span class="font-semibold ">Fecha:</span>&nbsp;<span data-dollar-exchange="dollar_exchange_date">{{ $dollar_exchange?->created_at ? date('d-m-Y', strtotime($dollar_exchange->created_at)) : 'No hay ninguna tasa registrada' }}</span></p>
-      <p><span class="font-semibold">Valor:</span>&nbsp;<span data-dollar-exchange="dollar_exchange_value">{{ $dollar_exchange?->bs_exchange ?? 0 }} Bs.S</span></p>
+      <p><span class="font-semibold">Valor:</span>&nbsp;<span data-dollar-exchange="dollar_exchange_value">{{ $dollar_exchange?->bs_exchange ? number_format($dollar_exchange->bs_exchange, 2) : 0 }} Bs.S</span></p>
     </div>
 
     <!-- sidebar content -->
@@ -41,17 +41,12 @@
       </a>
       <!-- end link -->
 
-      <p class="text-base font-bold text-gray-600 mb-2">Gestión de impresoras fiscales</p>
-
-      <!-- link -->
-      <a href="{{ route('z_bill.index') }}" class="mb-2 capitalize font-medium  hover:text-teal-600 transition ease-in-out duration-500">
-        Consultar registros de impresoras
-      </a>
-      <!-- end link -->
-
       <p class="text-base font-bold text-gray-600 mb-3">Reportes</p>
       <a  href="{{ route('money_entrance.index') }}" class="mb-2 capitalize font-medium  hover:text-teal-600 transition ease-in-out duration-500">Entrada de dinero en cajas</a>
       <a  href="{{ route('drink-bills.index') }}" class="mb-2 capitalize font-medium  hover:text-teal-600 transition ease-in-out duration-500">Facturas fiscales con items de bebidas alcoholicas</a>
+      <a href="{{ route('z_bill.index') }}" class="mb-2 capitalize font-medium  hover:text-teal-600 transition ease-in-out duration-500">
+        Resumen de facturas fiscales
+      </a>
 
       <p class="text-base font-bold text-gray-600 mb-3">Configuraciones</p>
       <!-- link -->

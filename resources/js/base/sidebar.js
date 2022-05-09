@@ -2,6 +2,8 @@ import { store } from '_store'
 import { STORE_CURRENT_DOLLAR_EXCHANGE_VALUE } from '_store/action'
 import { CURRENCIES, SIGN as CURRENCY_SIGN_MAP} from '_constants/currencies';
 
+import { roundNumber, formatAmount } from '_utilities/mathUtilities'
+
 export default (function(){
     // work with sidebar
     var btn     = document.getElementById('sliderBtn'),
@@ -47,7 +49,7 @@ export default (function(){
 
         if (state.lastAction === STORE_CURRENT_DOLLAR_EXCHANGE_VALUE ){
           document.querySelector('span[data-dollar-exchange="dollar_exchange_date"]').innerText = state.currentDollarExchange.createdAt
-          document.querySelector('span[data-dollar-exchange="dollar_exchange_value"]').innerText = `${state.currentDollarExchange.value} ${CURRENCY_SIGN_MAP[CURRENCIES.BOLIVAR]}`
+          document.querySelector('span[data-dollar-exchange="dollar_exchange_value"]').innerText = `${roundNumber(state.currentDollarExchange.value).format()} ${CURRENCY_SIGN_MAP[CURRENCIES.BOLIVAR]}`
         }
     });
 })()

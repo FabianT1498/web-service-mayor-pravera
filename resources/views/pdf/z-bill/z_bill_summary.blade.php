@@ -19,19 +19,23 @@
                 font-size: 1rem;
             }
 
+            .page-break {
+                page-break-after: always;
+            }
+
             table {
-                display: inline-block;
+                display: block;
                 border-collapse: collapse;
-                text-align: left;
+                text-align: center;
 	            vertical-align: middle;
                 border: 1px solid black;
                 display: inline-table;
                 caption-side: top;
+                table-layout: fixed;
             }
 
             caption {
                 display: table-caption;
-                width: 100%;
                 border: 1px solid #ccc;
                 box-sizing: border-box;
                 border-top: none;
@@ -56,13 +60,15 @@
                 color: white;
             }
 
-            thead th {
-                width: 25%;
+            th, td {
+                border: 1px solid #ccc;
+                overflow: hidden;
+                width: 120px;
+                padding: 2px 2px;
             }
 
-            th, td {
-                padding: 0.2rem;
-                border: 1px solid #ccc;
+            td {
+                height: 20px;
             }
 
             p {
@@ -84,7 +90,7 @@
             }
 
             .container {
-                width: 800px;
+                width: 1050px;
                 margin: 0 auto;
             }
 
@@ -174,11 +180,11 @@
             }
 
             .text-lg {
-                font-size: 2rem;
+                font-size: 1.5rem;
             }
 
             .font-semibold {
-                font-weight: 500;
+                font-weight: 400;
             }
 
             .flex {
@@ -217,6 +223,11 @@
                 text-align: center;
             }
 
+            .text-right {
+                text-align: right;
+            }
+
+
             .absolute {
                 position: absolute;
             }
@@ -251,65 +262,108 @@
                     </p>
                 </div>
             </div>
-            <div> 
-                @foreach($total_exento as $key_codusua => $dates)
-                    <table class="w-80p mb-12">
-                        <caption class="text-center w-80p bg-grey-400">$key_codusua</caption>
+            <div class="w-full"> 
+               
+                <table class="w-full mb-12">
+                    <caption class="text-center w-full bg-grey-400 text-lg font-semibold">Resumen general</caption>
+                    <thead>
+                        <tr>
+                            <th>&nbsp;</th>
+                            <th>Total ventas (Con I.V.A)</th>
+                            <th>Base imponible</th>
+                            <th>Alicuota<br/>16%</th>
+                            <th>Base imponible</th>
+                            <th>Alicuota<br/>8%</th>
+                            <th>Venta del dia</th>
+                            <th>Ventas<br/>De Licores</th>
+                            <th>Ventas gravadas<br/>Viveres</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($totals_by_user as $key_codusua => $totals)
+                            <tr>
+                                <td>{{$key_codusua}}</td>
+                                @foreach($totals as $total)
+                                    <td>{{ number_format($total, 2) }}</td>
+                                @endforeach
+                            </tr>
+                        @endforeach
+                        <tr class="bg-grey-600">
+                            <td class="font-semibold">Total:</td>
+                            @foreach($total_general as $total)
+                                <td class="text-center">{{ number_format($total, 2) }}</td>
+                            @endforeach
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="page-break"></div>
+               
+
+                @foreach($totals_from_safact as $key_codusua => $dates)
+                    <table class="w-full mb-12">
+                        <caption class="text-center w-full bg-grey-400 text-lg font-semibold">{{ $key_codusua }}</caption>
                         <thead>
                             <tr>
                                 <th>Fecha de la factura</th>
                                 <th>Serial Fiscal</th>
-                                <th>N◦ de reporte "Z"</th>
+                                <th>N.de reporte "Z"</th>
                                 <th>Total ventas (Con I.V.A)</th>
                                 <th>Base imponible</th>
-                                <th>
-                                    <td>Alicuota</td>
-                                    <td>16%</td>
-                                </th>
+                                <th>Alicuota<br/>16%</th>
                                 <th>Base imponible</th>
-                                <th>
-                                    <td>Alicuota</td>
-                                    <td>8%</td>
-                                </th>
+                                <th>Alicuota<br/>8%</th>
                                 <th>Venta del dia</th>
-                                <th>
-                                    <td>Ventas Gravadas</td>
-                                    <td>DE LICORES</td>
-                                </th>
-                                <th>
-                                    <td>Ventas Gravadas</td>
-                                    <td>VIVERES</td>
-                                </th>
+                                <th>Ventas<br/>De Licores</th>
+                                <th>Ventas gravadas<br/>Viveres</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($dates as $key_date => $printers)
                                 @foreach($printers as $key_printer => $z_numbers)
                                     @foreach($z_numbers as $key_z_number => $record)
-                                        <td>{{ $key_date }}</td>
-                                        <td>{{ $key_printer }}</td>
-                                        <td>{{ $key_z_number }}</td>
-                                        <td>0</td>
-                                        <td>{{ $total_base_imponible_by_tax[$key_codusua][$key_date][$key_printer][$key_z_number]['IVA'] }}</td>
-                                        <td>{{ $total_base_imponible_by_tax[$key_codusua][$key_date][$key_printer][$key_z_number]['IVA'] * 0.16 }}</td>
-                                        <td>{{ $total_base_imponible_by_tax[$key_codusua][$key_date][$key_printer][$key_z_number]['IVA8'] }}</td>
-                                        <td>{{ $total_base_imponible_by_tax[$key_codusua][$key_date][$key_printer][$key_z_number]['IVA8'] * 0.08 }}</td>
-                                        <td>{{ $record->first()->ventaTotalExenta }}</td>
-                                        <td>{{ 
-                                            $total_licores->has($key_codusua) 
-                                                ? $total_licores[$key_codusua][$key_date][$key_printer][$key_z_number]->first()->ventaLicoresBS
-                                                : 0.00
-                                        }}
-                                        </td>
-                                        <td>{{ $record->first()->ventaTotalExenta - ($total_licores->has($key_codusua) 
-                                            ? $total_licores[$key_codusua][$key_date][$key_printer][$key_z_number]->first()->ventaLicoresBS
-                                            : 0.00)
-                                        }}</td>
+                                        <tr>
+                                            <td>{{ date('d-m-Y', strtotime($key_date)) }}</td>
+                                            <td>{{ $key_printer }}</td>
+                                            <td>{{ $key_z_number }}</td>
+                                            <td>{{ number_format($record->first()->ventaTotalIVA, 2) }}</td>
+                                            @if (count($total_base_imponible_by_tax) > 0 && key_exists($key_codusua, $total_base_imponible_by_tax)
+                                                    && key_exists($key_date, $total_base_imponible_by_tax[$key_codusua])
+                                                        && key_exists($key_printer, $total_base_imponible_by_tax[$key_codusua][$key_date]))
+                                                <td>{{ number_format($total_base_imponible_by_tax[$key_codusua][$key_date][$key_printer][$key_z_number]['IVA'], 2) }} </td>
+                                                <td>{{ number_format($total_base_imponible_by_tax[$key_codusua][$key_date][$key_printer][$key_z_number]['IVA'] * 0.16, 2) }} </td>
+                                                <td>{{ number_format($total_base_imponible_by_tax[$key_codusua][$key_date][$key_printer][$key_z_number]['IVA8'], 2) }}</td>
+                                                <td>{{ number_format($total_base_imponible_by_tax[$key_codusua][$key_date][$key_printer][$key_z_number]['IVA8'] * 0.08, 2) }}</td>
+                                            @else
+                                                <td>0.00</td>
+                                                <td>0.00</td>
+                                                <td>0.00</td>
+                                                <td>0.00</td>
+                                            @endif
+                                            <td>{{ number_format($record->first()->ventaTotalExenta, 2) }}</td>
+                                            @if ($total_licores->count() > 0 && $total_licores->has($key_codusua)
+                                                    && $total_licores[$key_codusua]->has($key_date) && $total_licores[$key_codusua][$key_date]->has($key_printer))
+                                                <td>{{ number_format($total_licores[$key_codusua][$key_date][$key_printer][$key_z_number]->first()->ventaLicoresBS, 2) }}</td>
+                                                <td>{{ number_format($record->first()->ventaTotalExenta - $total_licores[$key_codusua][$key_date][$key_printer][$key_z_number]->first()->ventaLicoresBS, 2) }}</td>
+                                            @else
+                                                <td>0.00</td>
+                                                <td>{{ number_format($record->first()->ventaTotalExenta, 2) }}</td>
+                                            @endif
+                                        </tr>
                                     @endforeach
                                 @endforeach
                             @endforeach
+                            <tr class="bg-grey-600">
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                                @foreach($totals_by_user[$key_codusua] as $total)
+                                    <td class="text-center">{{ number_format($total, 2) }}</td>
+                                @endforeach
+                            </tr>
                         </tbody>
-                    </table>     
+                    </table>
+                    
+                    <div class="page-break"></div>
                 @endforeach
             </div>
         </div>
