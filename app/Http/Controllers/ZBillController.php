@@ -40,7 +40,8 @@ class ZBillController extends Controller
             ->table('SAFACT')
             ->selectRaw("MAX(SAFACT.CodUsua) as CodUsua, CAST(SAFACT.FechaE as date) as FechaE,  COALESCE(MAX(SAFACT.NumeroP), 'N.A') as NumeroP,
                  COALESCE(MAX(SAFACT.NumeroZ), 'N.A') as NumeroZ, CAST(COALESCE(SUM(SAFACT.TExento * SAFACT.Signo), 0.00) AS decimal(10,2)) as ventaTotalExenta,
-                 CAST(SUM(SAFACT.MtoTotal * SAFACT.Signo) AS decimal(10,2)) as ventaTotalIVA")  
+                 CAST(SUM(SAFACT.MtoTotal * SAFACT.Signo) AS decimal(10,2)) as ventaTotalIVA, COUNT(SAFACT.NumeroD) AS nroFacturas,
+                 MAX(SAFACT.NumeroD)  AS ultimoNroFactura")  
             ->whereRaw("SAFACT.EsNF = 0 AND SAFACT.CodUsua IN ('CAJA1', 'CAJA2', 'CAJA3', 'CAJA4', 'CAJA5',
                 'CAJA6' , 'CAJA7', 'DELIVERY') AND " . $interval_query, $queryParams)
             ->groupByRaw("SAFACT.CodUsua, CAST(SAFACT.FechaE as date), SAFACT.NumeroP, SAFACT.NumeroZ")

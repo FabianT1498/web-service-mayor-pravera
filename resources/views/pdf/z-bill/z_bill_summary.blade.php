@@ -306,7 +306,9 @@
                             <tr>
                                 <th>Fecha de la factura</th>
                                 <th>Serial Fiscal</th>
-                                <th>N.de reporte "Z"</th>
+                                <th>N.º de reporte "Z"</th>
+                                <th>N.º de facturas</th>
+                                <th>Último n.º de factura</th>
                                 <th>Total ventas (Con I.V.A)</th>
                                 <th>Base imponible</th>
                                 <th>Alicuota<br/>16%</th>
@@ -325,6 +327,8 @@
                                             <td>{{ date('d-m-Y', strtotime($key_date)) }}</td>
                                             <td>{{ $key_printer }}</td>
                                             <td>{{ $key_z_number }}</td>
+                                            <td>{{ $record->first()->nroFacturas }}</td>
+                                            <td>{{ $record->first()->ultimoNroFactura }}</td>
                                             <td>{{ number_format($record->first()->ventaTotalIVA, 2) }}</td>
                                             @if (count($total_base_imponible_by_tax) > 0 && key_exists($key_codusua, $total_base_imponible_by_tax)
                                                     && key_exists($key_date, $total_base_imponible_by_tax[$key_codusua])
@@ -353,6 +357,8 @@
                                 @endforeach
                             @endforeach
                             <tr class="bg-grey-600">
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
                                 <td>&nbsp;</td>
                                 <td>&nbsp;</td>
                                 <td>&nbsp;</td>
