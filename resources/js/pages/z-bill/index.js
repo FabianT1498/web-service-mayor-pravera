@@ -5,9 +5,8 @@ import es from '@themesberg/tailwind-datepicker/locales/es';
 export default {
     DOMElements: {
         dateRangePicker: document.querySelector('#date_range_picker'),
-        pagesLinksContainer: document.querySelector('#pages_links_container'),
-        formFilter: document.querySelector('#form_filter'),
-        pageInput: document.querySelector('#page')
+        linkReporPDF: document.querySelector('#link_report_pdf'),
+        linkReportExcel: document.querySelector('#link_report_excel'),
     },
     init(){
         Object.assign(Datepicker.locales, es);
@@ -16,5 +15,27 @@ export default {
             format: 'dd-mm-yyyy',
             language: 'es'
         });
+
+        let changeDateEventHandlerWrapper = (DOMElements, dateRangePicker) => {
+            return (event) => {
+         
+
+                let queryString = DOMElements.linkReporPDF.search;
+
+                let dateQueries = queryString.split("&");
+
+                dateQueries[0] = dateQueries[0].split('=')[0]
+                dateQueries[1] = dateQueries[1].split('=')[0]
+
+                queryString = dateQueries[0] + '=' + dateRangePicker.datepickers[0].inputField.value 
+                    + '&' + dateQueries[1] + '=' + dateRangePicker.datepickers[1].inputField.value
+
+                DOMElements.linkReporPDF.href = DOMElements.linkReporPDF.href.slice(0, DOMElements.linkReporPDF.href.indexOf("?")) + queryString
+                DOMElements.linkReportExcel.href = DOMElements.linkReportExcel.href.slice(0, DOMElements.linkReportExcel.href.indexOf("?")) + queryString
+            }
+        }
+
+        dateRangePicker.datepickers[0].element.addEventListener('hide', changeDateEventHandlerWrapper(this.DOMElements, dateRangePicker));
+        dateRangePicker.datepickers[1].element.addEventListener('hide', changeDateEventHandlerWrapper(this.DOMElements, dateRangePicker));
     }
 }

@@ -13,8 +13,11 @@
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
         "laraveles/spanish": "^1.5",
+        "maatwebsite/excel": "^3.1",
         "php-flasher/flasher-laravel": "^0.9.8",
-        "php-flasher/flasher-sweet-alert-laravel": "^0.9.8"
+        "php-flasher/flasher-sweet-alert-laravel": "^0.9.8",
+        "phpoffice/phpspreadsheet": "1.21",
+        "psr/simple-cache": "1.0"
     },
     "require-dev": {
         "facade/ignition": "^2.5",

@@ -307,8 +307,8 @@
                                 <th>Fecha de la factura</th>
                                 <th>Serial Fiscal</th>
                                 <th>N.º de reporte "Z"</th>
-                                <th>N.º de facturas</th>
-                                <th>Último n.º de factura</th>
+                                <th>Cant. facturas</th>
+                                <th>Último n.º factura</th>
                                 <th>Total ventas (Con I.V.A)</th>
                                 <th>Base imponible</th>
                                 <th>Alicuota<br/>16%</th>

@@ -53,10 +53,8 @@ Route::group(['middleware' => ['auth']], function () {
 
     // Z Bill routes
     Route::get('z_bill', [ZBillController::class, 'index'])->name('z_bill.index');
-    Route::get('z_bill/create', [ZBillController::class, 'generateReport'])->name('z_bill.generate-report');
-
-    Route::get('z_bill/pdf/{id}', [ZBillController::class, 'singleRecordPdf'])->name('z_bill.single_record_pdf');
-    Route::get('z_bill/pdf/{start_date}/{end_date}', [ZBillController::class, 'intervalRecordPdf'])->name('z_bill.interval_record_pdf');
+    Route::get('z_bill/report/pdf', [ZBillController::class, 'generatePDF'])->name('z_bill.generate-pdf');
+    Route::get('z_bill/report/excel', [ZBillController::class, 'generateExcel'])->name('z_bill.generate-excel');
   });
 
 Route::group(['middleware' => ['auth', 'jsonify']], function() {
