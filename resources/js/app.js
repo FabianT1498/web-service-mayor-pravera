@@ -31,4 +31,8 @@ import("./pages/z-bill/index" /* webpackChunkName: "/js/z_bill_index" */).then((
    indexZBill.init()
 });
 
+import("./pages/igtf-tax/index" /* webpackChunkName: "/js/igtf_tax_index" */).then(({default: indexIGTF}) => {
+   indexIGTF.init()
+});
+
 import LogoIsotipo from './../assets/logo-isotipo.svg';

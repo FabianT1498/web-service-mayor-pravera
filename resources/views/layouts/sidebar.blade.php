@@ -47,6 +47,9 @@
       <a href="{{ route('z_bill.index') }}" class="mb-2 capitalize font-medium  hover:text-teal-600 transition ease-in-out duration-500">
         Resumen de facturas fiscales
       </a>
+      <a href="{{ route('igtf_tax.index') }}" class="mb-2 capitalize font-medium  hover:text-teal-600 transition ease-in-out duration-500">
+        Impuesto IGTF
+      </a>
 
       <p class="text-base font-bold text-gray-600 mb-3">Configuraciones</p>
       <!-- link -->

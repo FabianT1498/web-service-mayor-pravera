@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\CashRegisterController;
 use App\Http\Controllers\ZBillController;
+use App\Http\Controllers\IGTFController;
 use App\Http\Controllers\MoneyEntranceController;
 use App\Http\Controllers\DrinkBillController;
 use App\Http\Controllers\CashRegisterWorkerController;
@@ -55,6 +56,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('z_bill', [ZBillController::class, 'index'])->name('z_bill.index');
     Route::get('z_bill/report/pdf', [ZBillController::class, 'generatePDF'])->name('z_bill.generate-pdf');
     Route::get('z_bill/report/excel', [ZBillController::class, 'generateExcel'])->name('z_bill.generate-excel');
+
+    // IGTF routes
+    Route::get('igtf_tax', [IGTFController::class, 'index'])->name('igtf_tax.index');
+    Route::get('igtf_tax/report/excel', [IGTFController::class, 'generateExcel'])->name('igtf_tax.generate-excel');
   });
 
 Route::group(['middleware' => ['auth', 'jsonify']], function() {
