@@ -201,6 +201,7 @@ class ZBillController extends Controller
             $new_finish_date = date('Y-m-d', strtotime($end_date));
 
             $data = $this->getZBillData($new_start_date, $new_finish_date, $repo);
+
             $data['start_date'] = $start_date;
             $data['end_date'] = $end_date;
 

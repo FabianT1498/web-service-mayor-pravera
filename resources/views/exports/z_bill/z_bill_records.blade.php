@@ -4,12 +4,14 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     </head>
     <body class="font-sans antialiased bg-gray-100">
-        
         <table class="w-full mb-12">
-            <caption class="text-center w-full bg-grey-400 text-lg font-semibold">Resumen general</caption>
             <thead>
                 <tr>
-                    <th>&nbsp;</th>
+                    <th>Fecha de la factura</th>
+                    <th>Serial Fiscal</th>
+                    <th>N.º de reporte "Z"</th>
+                    <th>Cant. facturas</th>
+                    <th>Último n.º factura</th>
                     <th>Total ventas (Con I.V.A)</th>
                     <th>Base imponible</th>
                     <th>Alicuota<br/>16%</th>
@@ -21,44 +23,10 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($totals_by_user as $key_codusua => $totals)
+                @foreach($totals_from_safact as $key_codusua => $dates)
                     <tr>
-                        <td>{{$key_codusua}}</td>
-                        @foreach($totals as $total)
-                            <td>{{ number_format($total, 2) }}</td>
-                        @endforeach
+                        <td>{{ $key_codusua }}</td>
                     </tr>
-                @endforeach
-                <tr class="bg-grey-600">
-                    <td class="font-semibold">Total:</td>
-                    @foreach($total_general as $total)
-                        <td class="text-center">{{ number_format($total, 2) }}</td>
-                    @endforeach
-                </tr>
-            </tbody>
-        </table>
-
-        @foreach($totals_from_safact as $key_codusua => $dates)
-            <table class="w-full mb-12">
-                <caption class="text-center w-full bg-grey-400 text-lg font-semibold">{{ $key_codusua }}</caption>
-                <thead>
-                    <tr>
-                        <th>Fecha de la factura</th>
-                        <th>Serial Fiscal</th>
-                        <th>N.º de reporte "Z"</th>
-                        <th>Cant. facturas</th>
-                        <th>Último n.º factura</th>
-                        <th>Total ventas (Con I.V.A)</th>
-                        <th>Base imponible</th>
-                        <th>Alicuota<br/>16%</th>
-                        <th>Base imponible</th>
-                        <th>Alicuota<br/>8%</th>
-                        <th>Venta del dia</th>
-                        <th>Ventas<br/>De Licores</th>
-                        <th>Ventas gravadas<br/>Viveres</th>
-                    </tr>
-                </thead>
-                <tbody>
                     @foreach($dates as $key_date => $printers)
                         @foreach($printers as $key_printer => $z_numbers)
                             @foreach($z_numbers as $key_z_number => $record)
@@ -95,18 +63,18 @@
                             @endforeach
                         @endforeach
                     @endforeach
-                    <tr class="bg-grey-600">
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        @foreach($totals_by_user[$key_codusua] as $total)
-                            <td class="text-center">{{ number_format($total, 2) }}</td>
-                        @endforeach
-                    </tr>
-                </tbody>
-            </table>
-        @endforeach
+                @endforeach
+                <tr class="bg-grey-600">
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    @foreach($totals_by_user[$key_codusua] as $total)
+                        <td class="text-center">{{ number_format($total, 2) }}</td>
+                    @endforeach
+                </tr>
+            </tbody>
+        </table>      
     </body>
 </html>
