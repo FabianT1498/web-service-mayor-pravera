@@ -63,17 +63,17 @@
                             @endforeach
                         @endforeach
                     @endforeach
+                    <tr class="bg-grey-600">
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        @foreach($totals_by_user[$key_codusua] as $total)
+                            <td class="text-center">{{ number_format($total, 2) }}</td>
+                        @endforeach
+                    </tr>
                 @endforeach
-                <tr class="bg-grey-600">
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    @foreach($totals_by_user[$key_codusua] as $total)
-                        <td class="text-center">{{ number_format($total, 2) }}</td>
-                    @endforeach
-                </tr>
             </tbody>
         </table>      
     </body>

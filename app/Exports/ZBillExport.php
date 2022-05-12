@@ -22,8 +22,7 @@ class ZBillExport implements FromView, WithEvents
     public function __construct(array $data)
     {
         $this->data = $data;
-        $this->row_count_by_user = $this->getTotalRowsWorkSheet($data['totals_from_safact']);
-        $this->worksheet_row_count += (1 + (count($this->worksheet_row_count) * 2));
+        $this->row_count_by_user = $this->getTotalRowsWorkSheetByUser($data['totals_from_safact']);
     }
 
     private function getTotalRowsWorkSheetByUser($totals_from_safact){
@@ -36,6 +35,8 @@ class ZBillExport implements FromView, WithEvents
                     $row_count[$key_codusua] += $z_numbers->count();   
                 }
             }
+
+            $row_count[$key_codusua] += 2;
         }
 
         return $row_count;
@@ -91,70 +92,35 @@ class ZBillExport implements FromView, WithEvents
                     ]
                 );
 
-                $event->sheet->styleCells(
-                    'A1:F' . $this->data->count() + 1,
-                    [
-                        'borders' => [
-                            'allBorders' => [
-                                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                                'color' => ['argb' => '000'],
-                            ],
-                        ],
-                        'alignment' => [
-                            'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-                        ],
-                    ]
-                );
+                /** Usuarios de caja */
+                $prev = null;
+                $start = 2;
+                foreach($this->row_count_by_user as $user_row_count){
+                    if ($prev){
+                        $start += $prev;
+                    }
 
-                $event->sheet->styleCells(
-                    'A' . $this->data->count() + 1 . ':F' . $this->data->count() + 1,
-                    [
-                        'fill' => [
-                            'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-                            'startColor' => [
-                                'argb' => 'FFA0A0A0',
+                    $event->sheet->styleCells(
+                        'A'. $start . ':M' . $start,
+                        [
+                            'fill' => [
+                                'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                                'startColor' => [
+                                    'argb' => 'FFA0A0A0',
+                                ],
+                                'endColor' => [
+                                    'argb' => 'FFFFFFFF',
+                                ],
                             ],
-                            'endColor' => [
-                                'argb' => 'FFFFFFFF',
+                            'font' => [
+                                'bold' => true,
                             ],
-                        ],
-                        'font' => [
-                            'bold' => true,
-                        ],
-                    ]
-                );
-
-                $event->sheet->styleCells(
-                    'E1:F' . $this->data->count() + 1,
-                    [
-                        'numberFormat' => [
-                            'formatCode' => \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
-                          
+                            'mergeCells'
                         ]
-                    ]
-                );
+                    );
 
-                
-            },
-        ];
-    }
-
-    public function registerEvents(): array
-    {
-        return [
-            AfterSheet::class => function(AfterSheet $event) {
-
-                $event->sheet->styleCells(
-                    'A1:I1',
-                    [
-                        'borders' => [
-                            'outline' => [
-                                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
-                                'color' => ['argb' => '000'],
-                            ],
-                        ]
-                    ]
-                );
+                    $prev = $user_row_count;
+                } 
             },
         ];
     }
