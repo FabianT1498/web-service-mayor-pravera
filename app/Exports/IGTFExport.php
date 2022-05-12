@@ -54,8 +54,26 @@ class IGTFExport implements FromCollection, WithEvents, WithHeadings, WithColumn
                 $event->sheet->styleCells(
                     'A1:F1',
                     [
+                        'fill' => [
+                            'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                            'startColor' => [
+                                'argb' => 'FFA0A0A0',
+                            ],
+                            'endColor' => [
+                                'argb' => 'FFFFFFFF',
+                            ],
+                        ],
+                        'font' => [
+                            'bold' => true,
+                        ],
+                    ]
+                );
+
+                $event->sheet->styleCells(
+                    'A1:F' . $this->data->count() + 1,
+                    [
                         'borders' => [
-                            'outline' => [
+                            'allBorders' => [
                                 'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
                                 'color' => ['argb' => '000'],
                             ],
@@ -65,6 +83,36 @@ class IGTFExport implements FromCollection, WithEvents, WithHeadings, WithColumn
                         ],
                     ]
                 );
+
+                $event->sheet->styleCells(
+                    'A' . $this->data->count() + 1 . ':F' . $this->data->count() + 1,
+                    [
+                        'fill' => [
+                            'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                            'startColor' => [
+                                'argb' => 'FFA0A0A0',
+                            ],
+                            'endColor' => [
+                                'argb' => 'FFFFFFFF',
+                            ],
+                        ],
+                        'font' => [
+                            'bold' => true,
+                        ],
+                    ]
+                );
+
+                $event->sheet->styleCells(
+                    'E1:F' . $this->data->count() + 1,
+                    [
+                        'numberFormat' => [
+                            'formatCode' => \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+                          
+                        ]
+                    ]
+                );
+
+                
             },
         ];
     }

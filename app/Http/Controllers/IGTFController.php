@@ -33,9 +33,9 @@ class IGTFController extends Controller
             ::connection('saint_db')
             ->table('SAFACT')
             ->selectRaw("ROW_NUMBER() OVER(ORDER BY SAFACT.FechaE, SAFACT.CodClie asc) AS Row, FORMAT(CAST(SAFACT.FechaE as date), 'dd-MM-yyyy') as FechaE, SAFACT.NumeroD as NumeroD,
-                SAFACT.CodClie as CedulaClie, CAST((SAFACT.CancelE * SAFACT.Signo) AS decimal(10, 2)) as baseImponible,
-                CAST((SAFACT.CancelE * SAFACT.Signo * 0.03) AS decimal(10, 2)) as IGTF")  
-            ->whereRaw("SAFACT.CancelE > 0 AND SAFACT.CodUsua IN ('CAJA1', 'CAJA2', 'CAJA3', 'CAJA4', 'CAJA5',
+                SAFACT.CodClie as CedulaClie, CAST((SAFACT.CancelC * SAFACT.Signo) AS decimal(10, 2)) as baseImponible,
+                CAST((SAFACT.CancelC * SAFACT.Signo * 0.03) AS decimal(10, 2)) as IGTF")  
+            ->whereRaw("SAFACT.CancelC > 0 AND SAFACT.CodUsua IN ('CAJA1', 'CAJA2', 'CAJA3', 'CAJA4', 'CAJA5',
                 'CAJA6' , 'CAJA7', 'DELIVERY') AND " . $interval_query, $queryParams)
             ->get();
     }
@@ -51,9 +51,9 @@ class IGTFController extends Controller
         return DB
             ::connection('saint_db')
             ->table('SAFACT')
-            ->selectRaw("CAST(SUM((SAFACT.CancelE * SAFACT.Signo)) AS decimal(10, 2)) as baseImponible,
-                CAST((SUM(SAFACT.CancelE * SAFACT.Signo * 0.03)) AS decimal(10, 2)) as IGTF")  
-            ->whereRaw("SAFACT.CancelE > 0 AND SAFACT.CodUsua IN ('CAJA1', 'CAJA2', 'CAJA3', 'CAJA4', 'CAJA5',
+            ->selectRaw("CAST(SUM((SAFACT.CancelC * SAFACT.Signo)) AS decimal(10, 2)) as baseImponible,
+                CAST((SUM(SAFACT.CancelC * SAFACT.Signo * 0.03)) AS decimal(10, 2)) as IGTF")  
+            ->whereRaw("SAFACT.CancelC > 0 AND SAFACT.CodUsua IN ('CAJA1', 'CAJA2', 'CAJA3', 'CAJA4', 'CAJA5',
                 'CAJA6' , 'CAJA7', 'DELIVERY') AND " . $interval_query, $queryParams)
             ->get()
             ->first();
@@ -66,7 +66,7 @@ class IGTFController extends Controller
         $total = $total + array('Row' => '');
         $total = $total + array('FechaE' => '');
         $total = $total + array('NumeroD' => '');
-        $total = $total + array('CedulaClie' => '');
+        $total = $total + array('CedulaClie' => 'Total');
         $total = $total + ((array) $this->getTotalIGTFRecords($start_date, $end_date));
         $total = (object) $total;
         
@@ -79,13 +79,22 @@ class IGTFController extends Controller
         $start_date = $request->query('start_date', '');
         $end_date = $request->query('end_date', '');
 
-        if ($start_date && $end_date){
-            $new_start_date = date('Y-m-d', strtotime($start_date));
-            $new_finish_date = date('Y-m-d', strtotime($end_date));
-
-            $data = $this->getIGTFData($new_start_date, $new_finish_date);
-     
-            return Excel::download(new IGTFExport($data), 'IGTF_Tax.xlsx');
+        if (!$start_date && !$end_date){
+            $start_date = Carbon::now()->format('Y-m-d');
+            $end_date = Carbon::now()->format('Y-m-d');
         }
+        
+        $new_start_date = date('Y-m-d', strtotime($start_date));
+        $new_finish_date = date('Y-m-d', strtotime($end_date));
+
+        $data = $this->getIGTFData($new_start_date, $new_finish_date);
+
+        $name = 'IGTF_Tax_' . ($new_start_date === $new_finish_date 
+            ? $start_date 
+            : $start_date . 'hasta' . $end_date
+            )
+            . '.xlsx';
+
+        return Excel::download(new IGTFExport($data), $name);
     }
 }
