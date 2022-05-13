@@ -12,7 +12,7 @@ use Carbon\Carbon;
 use Excel;
 
 
-use App\Exports\ZBillExport;
+use App\Exports\ZBillDataExport;
 use App\Repositories\ZBillRepository;
 
 use Flasher\SweetAlert\Prime\SweetAlertFactory;
@@ -201,10 +201,17 @@ class ZBillController extends Controller
             $new_finish_date = date('Y-m-d', strtotime($end_date));
 
             $data = $this->getZBillData($new_start_date, $new_finish_date, $repo);
+
             $data['start_date'] = $start_date;
             $data['end_date'] = $end_date;
 
-            return Excel::download(new ZBillExport($data), 'safact_totals.xlsx');
+            $name = 'facturas_z_' . ($new_start_date === $new_finish_date 
+            ? $start_date 
+            : $start_date . 'hasta' . $end_date
+            )
+            . '.xlsx';
+
+            return Excel::download(new ZBillDataExport($data), $name);
         }
     }
 }
