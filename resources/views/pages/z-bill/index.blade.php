@@ -65,7 +65,7 @@
            <p class="text-center">Generar el reporte en formato 
                 <x-nav-link href="{{ route('z_bill.generate-pdf') . '?start_date=' . $start_date . '&end_date=' . $end_date }}" id="link_report_pdf">PDF</x-nav-link>
                 o en formato
-                <x-nav-link href="{{ route('z_bill.generate-excel') . '?start_date=' . $start_date . '&end_date=' . $end_date }}" id="report_excel">Excel</x-nav-link>.
+                <x-nav-link href="{{ route('z_bill.generate-excel') . '?start_date=' . $start_date . '&end_date=' . $end_date }}" id="link_report_excel">Excel</x-nav-link>.
             </p>
       </div>
     </div>
