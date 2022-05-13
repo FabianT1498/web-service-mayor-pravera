@@ -51,7 +51,7 @@ class ZBillRepository implements ZBillRepositoryInterface
             ->join('SAFACT', function($query){
                 $query
                     ->on("SAFACT.NumeroD", '=', "SAITEMFAC.NumeroD")
-                    ->whereRaw("SAFACT.EsNF = 0 AND SAFACT.CodUsua IN ('CAJA1', 'CAJA2', 'CAJA3', 'CAJA4', 'CAJA5',
+                    ->whereRaw("SAFACT.EsNF = 0 AND SAFACT.TipoFac = 'A' AND SAFACT.CodUsua IN ('CAJA1', 'CAJA2', 'CAJA3', 'CAJA4', 'CAJA5',
                     'CAJA6' , 'CAJA7', 'DELIVERY')");
             })
             ->whereRaw("SAITEMFAC.EsExento = 1 AND " . $interval_query, $queryParams)
@@ -79,7 +79,7 @@ class ZBillRepository implements ZBillRepositoryInterface
             $query
                 ->on("SATAXVTA.NumeroD", '=', "SAFACT.NumeroD");
         })
-        ->whereRaw("SAFACT.EsNF = 0 AND SATAXVTA.CodTaxs IN ('IVA', 'IVA8') AND SAFACT.CodUsua IN ('CAJA1', 'CAJA2', 'CAJA3', 'CAJA4', 'CAJA5',
+        ->whereRaw("SAFACT.EsNF = 0 AND SAFACT.TipoFac = 'A' AND SATAXVTA.CodTaxs IN ('IVA', 'IVA8') AND SAFACT.CodUsua IN ('CAJA1', 'CAJA2', 'CAJA3', 'CAJA4', 'CAJA5',
             'CAJA6' , 'CAJA7', 'DELIVERY') AND " . $interval_query, $queryParams)
         ->groupByRaw("SAFACT.CodUsua, CAST(SAFACT.FechaE as date), SAFACT.NumeroP, SAFACT.NumeroZ, SATAXVTA.CodTaxs")
         ->orderByRaw("SAFACT.CodUsua asc, CAST(SAFACT.FechaE as date), SATAXVTA.CodTaxs desc")
