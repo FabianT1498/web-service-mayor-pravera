@@ -37,7 +37,7 @@
                 @foreach($printers as $key_printer => $z_numbers)
                     @foreach($z_numbers as $key_z_number => $record)
                         <tr>
-                            <td>{{ $key_date }}</td>
+                            <td>{{ date('d-m-Y', strtotime($key_date)) }}</td>
                             <td>{{ $key_printer }}</td>
                             <td>{{ $key_z_number }}</td>
                             <td>{{ $record->first()->nroFacturas }}</td>
