@@ -7,18 +7,18 @@
         <table class="w-full mb-12">
             <thead>
                 <tr>
-                    <th>Fecha de la factura</th>
+                    <th>Fecha<br/>factura</th>
                     <th>Serial Fiscal</th>
-                    <th>N.º de reporte "Z"</th>
-                    <th>Cant. facturas</th>
-                    <th>Último n.º factura</th>
-                    <th>Total ventas (Con I.V.A)</th>
-                    <th>Base imponible</th>
+                    <th>N.º reporte<br/>"Z"</th>
+                    <th>Cant.<br/>facturas</th>
+                    <th>Último<br/>n.º factura</th>
+                    <th>Total ventas<br/>(Con I.V.A)</th>
+                    <th>Base<br/>imponible</th>
                     <th>Alicuota<br/>16%</th>
-                    <th>Base imponible</th>
+                    <th>Base<br/>imponible</th>
                     <th>Alicuota<br/>8%</th>
-                    <th>Venta del dia</th>
-                    <th>Ventas<br/>De Licores</th>
+                    <th>Venta<br/>del dia</th>
+                    <th>Ventas<br/>Licores</th>
                     <th>Ventas gravadas<br/>Viveres</th>
                 </tr>
             </thead>

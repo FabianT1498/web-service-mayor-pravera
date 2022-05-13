@@ -8,7 +8,7 @@ use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Events\AfterSheet;
 use \Maatwebsite\Excel\Sheet;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
-use Maatwebsite\Excel\Concerns\WithColumnWidths;
+
 
 Sheet::macro('styleCells', function (Sheet $sheet, string $cellRange, array $style) {
     $sheet->getDelegate()->getStyle($cellRange)->applyFromArray($style);
@@ -23,6 +23,7 @@ class ZBillExport implements FromView, WithEvents
     {
         $this->data = $data;
         $this->row_count_by_user = $this->getTotalRowsWorkSheetByUser($data['totals_from_safact']);
+        $this->total_rows = $this->getTotalRows($this->row_count_by_user);
     }
 
     private function getTotalRowsWorkSheetByUser($totals_from_safact){
@@ -42,31 +43,18 @@ class ZBillExport implements FromView, WithEvents
         return $row_count;
     }
 
+    private function getTotalRows($row_count_by_user){
+        return array_reduce($row_count_by_user, function($acc, $el){
+            return $acc + $el;
+        }, 0);
+    }
+
     /**
     * @return \Illuminate\Support\Collection
     */
     public function view(): View
     {
         return view('exports.z_bill.z_bill_records', $this->data);
-    }
-
-    public function columnWidths(): array
-    {
-        return [
-            'A' => 20,
-            'B' => 20,
-            'C' => 20,
-            'D' => 20,
-            'E' => 20,
-            'F' => 20,     
-            'G' => 20,
-            'H' => 20,
-            'I' => 20,
-            'J' => 20,
-            'K' => 20,
-            'L' => 20,
-            'M' => 20,
-        ];
     }
 
     public function registerEvents(): array
@@ -89,6 +77,10 @@ class ZBillExport implements FromView, WithEvents
                         'font' => [
                             'bold' => true,
                         ],
+                        'alignment' => [
+                            'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                        ],
+                        
                     ]
                 );
 
@@ -106,7 +98,7 @@ class ZBillExport implements FromView, WithEvents
                             'fill' => [
                                 'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
                                 'startColor' => [
-                                    'argb' => 'FFA0A0A0',
+                                    'argb' => 'FFA0A0AF',
                                 ],
                                 'endColor' => [
                                     'argb' => 'FFFFFFFF',
@@ -115,12 +107,51 @@ class ZBillExport implements FromView, WithEvents
                             'font' => [
                                 'bold' => true,
                             ],
-                            'mergeCells'
+                            'alignment' => [
+                                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                            ],
                         ]
                     );
-
+                    
+                    $event->sheet->mergeCells('A'. $start . ':M' . $start);
+                    
                     $prev = $user_row_count;
-                } 
+                }
+                
+                $event->sheet->styleCells(
+                    'A:M',
+                    [
+                        'alignment' => [
+                            'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                        ],
+                    ]
+                );
+
+                $event->sheet->styleCells(
+                    'A1:M' . $this->total_rows + 1,
+                    [
+                        'borders' => [
+                            'allBorders' => [
+                                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                                'color' => ['argb' => '000'],
+                            ],
+                        ],
+                    ]
+                );
+
+                $event->sheet->getColumnDimension('A')->setWidth(90, 'px');
+                $event->sheet->getColumnDimension('B')->setWidth(90, 'px');
+                $event->sheet->getColumnDimension('C')->setWidth(90, 'px');
+                $event->sheet->getColumnDimension('D')->setWidth(60, 'px');
+                $event->sheet->getColumnDimension('E')->setWidth(85, 'px');
+                $event->sheet->getColumnDimension('F')->setWidth(90, 'px');
+                $event->sheet->getColumnDimension('G')->setWidth(90, 'px');
+                $event->sheet->getColumnDimension('H')->setWidth(90, 'px');
+                $event->sheet->getColumnDimension('I')->setWidth(90, 'px');
+                $event->sheet->getColumnDimension('J')->setWidth(90, 'px');
+                $event->sheet->getColumnDimension('K')->setWidth(90, 'px');
+                $event->sheet->getColumnDimension('L')->setWidth(90, 'px');
+                $event->sheet->getColumnDimension('M')->setWidth(90, 'px');
             },
         ];
     }
