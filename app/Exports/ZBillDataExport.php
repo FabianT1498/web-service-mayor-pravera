@@ -6,6 +6,7 @@ use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 use App\Exports\ZBillRecordExport;
 use App\Exports\ZBillSummaryExport;
+use App\Exports\ZBillNumbersByPrinterExport;
 
 class ZBillDataExport implements WithMultipleSheets
 {
@@ -25,6 +26,7 @@ class ZBillDataExport implements WithMultipleSheets
 
         $sheets[] = new ZBillRecordExport($this->data);
         $sheets[] = new ZBillSummaryExport($this->data);
+        $sheets[] = new ZBillNumbersByPrinterExport($this->data);
 
         return $sheets;
     }

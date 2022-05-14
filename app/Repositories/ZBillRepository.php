@@ -106,4 +106,26 @@ class ZBillRepository implements ZBillRepositoryInterface
         ->get()
         ->groupBy(['CodUsua', 'FechaE', 'NumeroP', 'NumeroZ']);
     }
+
+    public function getZNumbersByPrinter($start_date, $end_date){
+
+        /* Consulta para obtener los totales de las facturas*/      
+        $queryParams = ($start_date === $end_date) ? [$start_date] : [$start_date, $end_date];
+
+        $interval_query = ($start_date === $end_date) 
+            ? "CAST(SAFACT.FechaE as date) = ?"
+            : "CAST(SAFACT.FechaE as date) BETWEEN CAST(? as date) AND CAST(? as date)";
+
+        return DB
+            ::connection('saint_db')
+            ->table('SAFACT')
+            ->selectRaw("CAST(SAFACT.FechaE as date) as FechaE, CASE WHEN MAX(SAFACT.TipoFac) = 'A' THEN 'TKZ' ELSE 'NKZ' END AS TipoFac,
+                COALESCE(SAFACT.NumeroP, '—') AS NumeroP, COALESCE(MAX(SAFACT.NumeroZ), '—') AS NumeroZ,
+                COALESCE(MIN(SAFACT.NumeroF), '—') AS MinNumeroF, COALESCE(MAX(SAFACT.NumeroF), '—') AS MaxNumeroF")  
+            ->whereRaw("SAFACT.NumeroP IS NOT NULL AND SAFACT.EsNF = 0 AND SAFACT.TipoFac IN ('A', 'B') AND SAFACT.CodUsua IN ('CAJA1', 'CAJA2', 'CAJA3', 'CAJA4', 'CAJA5',
+            'CAJA6' , 'CAJA7', 'DELIVERY') AND " . $interval_query, $queryParams)
+            ->groupByRaw("CAST(SAFACT.FechaE AS date), SAFACT.TipoFac, SAFACT.NumeroP, SAFACT.NumeroZ")
+            ->orderByRaw("CAST(SAFACT.FechaE AS date) ASC, SAFACT.NumeroP ASC")
+            ->get();
+    }
 }

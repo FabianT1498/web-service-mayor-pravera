@@ -155,6 +155,8 @@ class ZBillController extends Controller
 
         $totals_by_user = $this->getTotalsByUser($totals_from_safact, $total_licores,  $total_base_imponible_by_tax);
 
+        $z_numbers_by_printer = $repo->getZNumbersByPrinter($start_date, $end_date);
+
         $total_general = $this->getTotals($totals_by_user);
 
         return compact(
@@ -163,7 +165,8 @@ class ZBillController extends Controller
             'total_licores',
             'total_base_imponible_by_tax',
             'totals_by_user',
-            'total_general'
+            'total_general',
+            'z_numbers_by_printer'
         );
     }
 

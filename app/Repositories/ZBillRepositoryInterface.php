@@ -12,4 +12,5 @@ interface ZBillRepositoryInterface {
 
 	public function getAmountBills($start_date, $end_date);
 
+	public function getZNumbersByPrinter($start_date, $end_date);
 }
