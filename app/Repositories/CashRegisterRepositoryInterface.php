@@ -11,5 +11,7 @@ interface CashRegisterRepositoryInterface {
 	public function getTotals($id);
 
 	public function getTotalsByInterval($start_date, $end_date);
+
+	public function getZelleRecords($start_date, $end_date);
 	// more
 }

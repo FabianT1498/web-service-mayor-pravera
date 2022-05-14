@@ -10,6 +10,7 @@ use App\Http\Controllers\DrinkBillController;
 use App\Http\Controllers\CashRegisterWorkerController;
 use App\Http\Controllers\DollarExchangeController;
 use App\Http\Controllers\BankController;
+use App\Http\Controllers\ZelleReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -60,7 +61,12 @@ Route::group(['middleware' => ['auth']], function () {
     // IGTF routes
     Route::get('igtf_tax', [IGTFController::class, 'index'])->name('igtf_tax.index');
     Route::get('igtf_tax/report/excel', [IGTFController::class, 'generateExcel'])->name('igtf_tax.generate-excel');
-  });
+
+    // Zelle report route
+    Route::get('entradas_zelle', [ZelleReportController::class, 'index'])->name('entradas_zelle.index');
+    Route::get('entradas_zelle/report/pdf', [ZelleReportController::class, 'generateExcel'])->name('entradas_zelle.generate-excel');
+
+});
 
 Route::group(['middleware' => ['auth', 'jsonify']], function() {
     Route::post('dollar_exchange', [DollarExchangeController::class, 'store']);

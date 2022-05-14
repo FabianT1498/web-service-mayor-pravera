@@ -42,11 +42,6 @@ class CashRegisterController extends Controller
         $this->flasher = $flasher;
     }
 
-    // private function contains_step_route($sub_route){
-    //     return str_contains($sub_route, 'create-step');
-    // }
-
-
     private function getWorkers(){
         $cash_register_workers = DB::table('workers')
             ->select()

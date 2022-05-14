@@ -249,4 +249,24 @@ class CashRegisterRepository implements CashRegisterRepositoryInterface
 
         return $query->get();
     }
+
+    public function getZelleRecords($start_date, $end_date){
+        $date_params = [$start_date, $end_date];
+
+        $interval_query = "cash_register_data.date BETWEEN ? AND ?";
+
+        return DB
+            ::table('cash_register_data')
+            ->selectRaw('
+                cash_register_data.date as date,
+                cash_register_data.cash_register_user as cash_register_user,
+                CAST(ROUND(zelle_records.amount, 2) AS decimal(10, 2)) as amount
+            ')
+            ->join("zelle_records", function($join) {
+                $join->on('zelle_records.cash_register_data_id', '=', 'cash_register_data.id');
+            })
+            ->whereRaw($interval_query, $date_params)
+            ->orderByRaw("cash_register_data.cash_register_user asc, cash_register_data.date asc")
+            ->get();
+    }
 }

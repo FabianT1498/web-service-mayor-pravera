@@ -50,6 +50,9 @@
       <a href="{{ route('igtf_tax.index') }}" class="mb-2 capitalize font-medium  hover:text-teal-600 transition ease-in-out duration-500">
         Impuesto IGTF
       </a>
+      <a href="{{ route('entradas_zelle.index') }}" class="mb-2 capitalize font-medium  hover:text-teal-600 transition ease-in-out duration-500">
+        Registros de entradas por Zelle
+      </a>
 
       <p class="text-base font-bold text-gray-600 mb-3">Configuraciones</p>
       <!-- link -->

@@ -35,4 +35,8 @@ import("./pages/igtf-tax/index" /* webpackChunkName: "/js/igtf_tax_index" */).th
    indexIGTF.init()
 });
 
+import("./pages/zelle-report/index" /* webpackChunkName: "/js/zelle_report_index" */).then(({default: indexZelleReport}) => {
+   indexZelleReport.init()
+});
+
 import LogoIsotipo from './../assets/logo-isotipo.svg';
