@@ -145,6 +145,9 @@ class ZBillController extends Controller
         $iva_codes = ['IVA', 'IVA8'];
 
         $totals_from_safact = $repo->getTotalsFromSafact($start_date, $end_date);
+
+        $amount_bills_from_safact = $repo->getAmountBills($start_date, $end_date);
+
         $total_licores = $repo->getTotalLicores($start_date, $end_date);
         $total_base_imponible_by_tax = $repo->getBaseImponibleByTax($start_date, $end_date);
 
@@ -156,6 +159,7 @@ class ZBillController extends Controller
 
         return compact(
             'totals_from_safact',
+            'amount_bills_from_safact',
             'total_licores',
             'total_base_imponible_by_tax',
             'totals_by_user',

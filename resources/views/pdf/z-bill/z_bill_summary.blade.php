@@ -327,8 +327,13 @@
                                             <td>{{ date('d-m-Y', strtotime($key_date)) }}</td>
                                             <td>{{ $key_printer }}</td>
                                             <td>{{ $key_z_number }}</td>
-                                            <td>{{ $record->first()->nroFacturas }}</td>
-                                            <td>{{ $record->first()->ultimoNroFactura }}</td>
+                                            @if ($amount_bills_from_safact[$key_codusua][$key_date]->has($key_printer))
+                                                <td>{{ $amount_bills_from_safact[$key_codusua][$key_date][$key_printer][$key_z_number]->first()->nroFacturas }}</td>
+                                                <td>{{ $amount_bills_from_safact[$key_codusua][$key_date][$key_printer][$key_z_number]->first()->ultimoNroFactura }}</td>
+                                            @else
+                                                <td>0</td>
+                                                <td>—</td>
+                                            @endif
                                             <td>{{ number_format($record->first()->ventaTotalIVA, 2) }}</td>
                                             @if (count($total_base_imponible_by_tax) > 0 && key_exists($key_codusua, $total_base_imponible_by_tax)
                                                     && key_exists($key_date, $total_base_imponible_by_tax[$key_codusua])
