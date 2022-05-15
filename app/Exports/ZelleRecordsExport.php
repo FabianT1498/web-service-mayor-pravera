@@ -72,7 +72,7 @@ class ZelleRecordsExport implements FromView, WithEvents, WithTitle
                 $prev = null;
                 $start = 1;
 
-                foreach($this->row_count_by_user as $user_row_count){
+                foreach($this->row_count_by_user as $key_user => $user_row_count){
                     if (!is_null($prev)){
                         $start += $prev;
                     }
@@ -94,10 +94,67 @@ class ZelleRecordsExport implements FromView, WithEvents, WithTitle
                             ],
                             'alignment' => [
                                 'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
                             ],
                             
                         ]
                     );
+
+                    $event->sheet->styleCells(
+                        'A'. ($start + 1) . ':D'. ($start + 1),
+                        [
+                            'fill' => [
+                                'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                                'startColor' => [
+                                    'argb' => 'FFA0A0A0',
+                                ],
+                                'endColor' => [
+                                    'argb' => 'FFFFFFFF',
+                                ],
+                            ],
+                            'font' => [
+                                'bold' => true,
+                            ],
+                            'alignment' => [
+                                'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                            ],
+                            
+                        ]
+                    );
+                    
+                    $event->sheet->mergeCells('A'. ($start + 1) . ':D'. ($start + 1));
+
+                    $start_dates = $start + 2;
+
+                    foreach($this->data['zelle_records']->get($key_user) as $dates){
+                        foreach($dates as $records){
+                            $event->sheet->styleCells(
+                                'A'. ($start_dates) . ':D'. ($start_dates),
+                                [
+                                    'fill' => [
+                                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                                        'startColor' => [
+                                            'argb' => 'FFA0A0A0',
+                                        ],
+                                        'endColor' => [
+                                            'argb' => 'FFFFFFFF',
+                                        ],
+                                    ],
+                                    'font' => [
+                                        'bold' => true,
+                                    ],
+                                    'alignment' => [
+                                        'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                                        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                                    ],
+                                    
+                                ]
+                            );
+                        }
+                        
+                    }
+
 
                     $prev = $user_row_count;
 
@@ -122,7 +179,7 @@ class ZelleRecordsExport implements FromView, WithEvents, WithTitle
                     //     ]
                     // );
                     
-                    // $event->sheet->mergeCells('A'. $start . ':M' . $start);
+                    
                     
                     
                 }
