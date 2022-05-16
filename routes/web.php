@@ -11,6 +11,7 @@ use App\Http\Controllers\CashRegisterWorkerController;
 use App\Http\Controllers\DollarExchangeController;
 use App\Http\Controllers\BankController;
 use App\Http\Controllers\ZelleReportController;
+use App\Http\Controllers\BillController;
 
 /*
 |--------------------------------------------------------------------------
@@ -66,6 +67,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('entradas_zelle', [ZelleReportController::class, 'index'])->name('entradas_zelle.index');
     Route::get('entradas_zelle/report/pdf', [ZelleReportController::class, 'generateExcel'])->name('entradas_zelle.generate-excel');
 
+    Route::get('vales_vueltos_facturas', [BillController::class, 'index'])->name('vales_vueltos_facturas.index');
+    Route::get('vales_vueltos_facturas/report/pdf', [BillController::class, 'generatePDF'])->name('vales_vueltos_facturas.generate-pdf');
 });
 
 Route::group(['middleware' => ['auth', 'jsonify']], function() {
