@@ -266,7 +266,24 @@ class CashRegisterRepository implements CashRegisterRepositoryInterface
                 $join->on('zelle_records.cash_register_data_id', '=', 'cash_register_data.id');
             })
             ->whereRaw($interval_query, $date_params)
-            ->orderByRaw("cash_register_data.cash_register_user asc, cash_register_data.date asc")
+            ->orderByRaw("cash_register_data.cash_register_user asc, cash_register_data.date asc, amount asc")
+            ->get();
+    }
+
+    public function getFactorByDate($start_date, $end_date){
+        /* Consulta para obtener el valor del factor por cada dia */
+        $date_params = ($start_date === $end_date) ? [$start_date] : [$start_date, $end_date];
+
+        $interval_query = ($start_date === $end_date)
+            ? "CAST(SAFACT.FechaE as date) = ?"
+            : "CAST(SAFACT.FechaE as date) BETWEEN CAST(? as date) AND CAST(? as date)";
+
+        return DB::connection('saint_db')
+            ->table('SAFACT')
+            ->selectRaw("ROUND(MAX(COALESCE(SAFACT.Factor, 0)), 2) as MaxFactor, CAST(SAFACT.FechaE as date) as FechaE")
+            ->whereRaw($interval_query, $date_params)
+            ->groupByRaw("CAST(SAFACT.FechaE as date)")
+            ->orderByRaw("CAST(SAFACT.FechaE as date)")
             ->get();
     }
 }

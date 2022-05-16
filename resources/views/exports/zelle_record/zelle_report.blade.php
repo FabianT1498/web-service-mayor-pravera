@@ -14,7 +14,6 @@
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
-                <td>&nbsp;</td>
             </tr>
             @foreach($dates as $key_date => $records)
                 <tr>
@@ -22,18 +21,22 @@
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
-                    <td>&nbsp;</td>
                 </tr>
                 @foreach($records as $record)
                     <tr>
                         <td>{{ $record->amount }}</td>
-                        <td>{{ $record->amount }}</td>
-                        <td>{{ $record->amount }}</td>
-                        <td>{{ $record->amount }}</td>
-                        <td>&nbsp;</td>    
+                        <td>{{ $factors[$key_date]->first()->MaxFactor }}</td>
+                        <td>{{ number_format($record->amount * $factors[$key_date]->first()->MaxFactor, 2) }}</td>
+                        <td>{{ '' }}</td>   
                     </tr>
                 @endforeach
             @endforeach
+            <tr>
+                <td>{{ $total_zelle_amount_by_user[$key_codusua]['dollar'] }}</td>
+                <td>&nbsp;</td>
+                <td>{{ $total_zelle_amount_by_user[$key_codusua]['bs'] }}</td>
+                <td>&nbsp;</td>
+            </tr>
         </tbody>
     </table>      
 @endforeach
