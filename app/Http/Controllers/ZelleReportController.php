@@ -33,7 +33,7 @@ class ZelleReportController extends Controller
             $zelle_records = $cash_register_repo
                 ->getZelleRecords($new_start_date, $new_finish_date)
                 ->groupBy(['cash_register_user', 'date']);
-            
+
             $file_name = 'Zelle_Records' . ($new_start_date === $new_finish_date 
                 ? $start_date 
                 : $start_date . 'hasta' . $end_date

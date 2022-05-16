@@ -59,15 +59,15 @@ class ZelleRecordsExport implements FromView, WithEvents, WithTitle
         return [
             AfterSheet::class => function(AfterSheet $event) {
 
-                // $event->sheet->styleCells(
-                //     'F:M', 
-                //     [
-                //         'numberFormat' => [
-                //             'formatCode' => \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+                $event->sheet->styleCells(
+                    'A:C', 
+                    [
+                        'numberFormat' => [
+                            'formatCode' => \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
                           
-                //         ]
-                //     ]
-                // );
+                        ]
+                    ]
+                );
 
                 $prev = null;
                 $start = 1;
@@ -78,15 +78,27 @@ class ZelleRecordsExport implements FromView, WithEvents, WithTitle
                     }
 
                     $event->sheet->styleCells(
+                        'A' . $start . ':D' . (is_null($prev) ? ($user_row_count - 1) : ($start + $user_row_count - 2)),
+                        [
+                            'borders' => [
+                                'allBorders' => [
+                                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                                    'color' => ['argb' => '000'],
+                                ],
+                            ],
+                        ]
+                    );
+
+                    $event->sheet->styleCells(
                         'A'. $start . ':D'. $start,
                         [
                             'fill' => [
                                 'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
                                 'startColor' => [
-                                    'argb' => 'FFA0A0A0',
+                                    'rgb' => '858585',
                                 ],
                                 'endColor' => [
-                                    'argb' => 'FFFFFFFF',
+                                    'rgb' => '858585',
                                 ],
                             ],
                             'font' => [
@@ -126,88 +138,59 @@ class ZelleRecordsExport implements FromView, WithEvents, WithTitle
                     $event->sheet->mergeCells('A'. ($start + 1) . ':D'. ($start + 1));
 
                     $start_dates = $start + 2;
-
-                    foreach($this->data['zelle_records']->get($key_user) as $dates){
-                        foreach($dates as $records){
-                            $event->sheet->styleCells(
-                                'A'. ($start_dates) . ':D'. ($start_dates),
-                                [
-                                    'fill' => [
-                                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-                                        'startColor' => [
-                                            'argb' => 'FFA0A0A0',
-                                        ],
-                                        'endColor' => [
-                                            'argb' => 'FFFFFFFF',
-                                        ],
-                                    ],
-                                    'font' => [
-                                        'bold' => true,
-                                    ],
-                                    'alignment' => [
-                                        'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
-                                        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-                                    ],
-                                    
-                                ]
-                            );
-                        }
+                    $prev_dates = null;
+                    
+                    foreach($this->data['zelle_records'][$key_user] as $dates){
                         
+
+                        if (!is_null($prev_dates)){
+                            $start_dates += ($prev_dates + 1);
+                        }
+
+                        $event->sheet->styleCells(
+                            'A'. ($start_dates) . ':D'. ($start_dates),
+                            [
+                                'fill' => [
+                                    'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                                    'startColor' => [
+                                        'rgb' => 'c5c5c5',
+                                    ],
+                                    'endColor' => [
+                                        'rgb' => 'c5c5c5',
+                                    ],
+                                ],
+                                'font' => [
+                                    'bold' => true,
+                                ],
+                                'alignment' => [
+                                    'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                                ],
+                                
+                            ]
+                        );
+
+                        $event->sheet->mergeCells('A'. ($start_dates) . ':D'. ($start_dates));
+
+                        $prev_dates = $dates->count();
+                  
                     }
 
-
-                    $prev = $user_row_count;
-
-                    // $event->sheet->styleCells(
-                    //     'A'. $start . ':M' . $start,
-                    //     [
-                    //         'fill' => [
-                    //             'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-                    //             'startColor' => [
-                    //                 'argb' => 'FFA0A0AF',
-                    //             ],
-                    //             'endColor' => [
-                    //                 'argb' => 'FFFFFFFF',
-                    //             ],
-                    //         ],
-                    //         'font' => [
-                    //             'bold' => true,
-                    //         ],
-                    //         'alignment' => [
-                    //             'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-                    //         ],
-                    //     ]
-                    // );
-                    
-                    
-                    
-                    
+                    $prev = $user_row_count;                    
                 }
                 
-                // $event->sheet->styleCells(
-                //     'A:M',
-                //     [
-                //         'alignment' => [
-                //             'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-                //         ],
-                //     ]
-                // );
+                $event->sheet->styleCells(
+                    'A:M',
+                    [
+                        'alignment' => [
+                            'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                        ],
+                    ]
+                );
 
-                // $event->sheet->styleCells(
-                //     'A1:M' . $this->total_rows + 1,
-                //     [
-                //         'borders' => [
-                //             'allBorders' => [
-                //                 'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                //                 'color' => ['argb' => '000'],
-                //             ],
-                //         ],
-                //     ]
-                // );
-
-                $event->sheet->getColumnDimension('A')->setWidth(90, 'px');
-                $event->sheet->getColumnDimension('B')->setWidth(90, 'px');
-                $event->sheet->getColumnDimension('C')->setWidth(90, 'px');
+                $event->sheet->getColumnDimension('A')->setWidth(100, 'px');
+                $event->sheet->getColumnDimension('B')->setWidth(100, 'px');
+                $event->sheet->getColumnDimension('C')->setWidth(100, 'px');
                 $event->sheet->getColumnDimension('D')->setWidth(120, 'px');
             },
         ];
@@ -215,6 +198,6 @@ class ZelleRecordsExport implements FromView, WithEvents, WithTitle
 
     public function title(): string
     {
-        return 'Detalles';
+        return 'Detalles Zelle';
     }
 }

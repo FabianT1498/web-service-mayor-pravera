@@ -18,7 +18,7 @@
             </tr>
             @foreach($dates as $key_date => $records)
                 <tr>
-                    <td>{{ $key_date }}</td>
+                    <td>{{ date('d-m-Y', strtotime($key_date)) }}</td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
