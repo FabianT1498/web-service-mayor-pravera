@@ -80,6 +80,14 @@ class UpdateCashRegisterRequest extends FormRequest
             $rules['zelle_record.*'] = $total_rules;
         }
 
+        if (count($this->amex_record) > 0){
+            $rules['amex_record.*'] = $total_rules;
+        }
+
+        if (count($this->todoticket_record) > 0){
+            $rules['todoticket_record.*'] = $total_rules;
+        }
+
         if ($this->total_point_sale_dollar >= 0){
             $rules['total_point_sale_dollar'] = $total_rules;
         }
@@ -211,7 +219,23 @@ class UpdateCashRegisterRequest extends FormRequest
             // }, $this->zelle_record);
         } else {
             $inputs['zelle_record'] = [];
-        }     
+        }
+        
+        if ($this->has('amex_record')){
+            $inputs['amex_record'] = array_map(function($record){
+                return $this->formatAmount($record);
+            }, $this->amex_record);
+        } else {
+            $inputs['amex_record'] = [];
+        } 
+
+        if ($this->has('todoticket_record')){
+            $inputs['todoticket_record'] = array_map(function($record){
+                return $this->formatAmount($record);
+            }, $this->todoticket_record);
+        } else {
+            $inputs['todoticket_record'] = [];
+        } 
         // }
 
         // if (isset($this->new_cash_register_worker)){
@@ -236,7 +260,9 @@ class UpdateCashRegisterRequest extends FormRequest
             'point_sale_bs.debit' => 'entrada de tarjeta de debito',
             'point_sale_bs.credit' => 'entrada de tarjeta de credito',
             'zelle_record' => 'entrada de zelle',
-            'total_point_sale_dollar' => 'entrada del punto de venta internacional'
+            'total_point_sale_dollar' => 'entrada del punto de venta internacional',
+            'amex_record' => 'entrada en AMEX',
+            'todoticket_record' => 'entrada de todoticket'
         ];
     }
 }

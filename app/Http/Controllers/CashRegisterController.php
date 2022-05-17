@@ -23,6 +23,8 @@ use App\Models\DollarDenominationRecord;
 use App\Models\PointSaleBsRecord;
 use App\Models\PointSaleDollarRecord;
 use App\Models\ZelleRecord;
+use App\Models\TodoticketRecord;
+use App\Models\AmexRecord;
 use App\Models\DollarExchange;
 
 use App\Http\Requests\StoreCashRegisterRequest;
@@ -205,6 +207,28 @@ class CashRegisterController extends Controller
                 PagoMovilRecord::insert($data);
             }
 
+            if (array_key_exists('amex_record', $validated)){
+                $data = array_reduce($validated['amex_record'], function($acc, $value) use ($cash_register_data){
+                    if ($value > 0){
+                        return array('amount' => $value, 'cash_register_data_id' => $cash_register_data->id);
+                    }
+
+                    return $acc;
+                }, []);
+                AmexRecord::insert($data);
+            }
+
+            if (array_key_exists('todoticket_record', $validated)){
+                $data = array_reduce($validated['todoticket_record'], function($acc, $value) use ($cash_register_data){
+                    if ($value > 0){
+                        return array('amount' => $value, 'cash_register_data_id' => $cash_register_data->id);
+                    }
+
+                    return $acc;
+                }, []);
+                TodoticketRecord::insert($data);
+            }
+
             if (array_key_exists('dollar_denominations_record', $validated)){
                 $data = array_map(function($quantity, $denomination) use ($cash_register_data){
                     return array(
@@ -302,6 +326,8 @@ class CashRegisterController extends Controller
         $bs_denomination_records = $cash_register_data->bs_denomination_records;
         $dollar_denomination_records = $cash_register_data->dollar_denomination_records;
         $zelle_records = $cash_register_data->zelle_records;
+        $amex_records = $cash_register_data->amex_records;
+        $todoticket_records = $cash_register_data->todoticket_records;
 
         $point_sale_dollar_record = $cash_register_data
             ->point_sale_dollar_records()
@@ -385,6 +411,14 @@ class CashRegisterController extends Controller
             return $carry + $el->amount;
         }, 0);
 
+        $total_todoticket_bs = $todoticket_records->reduce(function($carry, $el){
+            return $carry + $el->amount;
+        }, 0);
+
+        $total_amex_bs = $amex_records->reduce(function($carry, $el){
+            return $carry + $el->amount;
+        }, 0);
+
         return view('pages.cash-register.edit', compact(
             'cash_register_data',
             'total_dollar_cash',
@@ -394,6 +428,10 @@ class CashRegisterController extends Controller
             'total_dollar_denominations',
             'total_bs_denominations',
             'total_zelle',
+            'total_todoticket_bs',
+            'total_amex_bs',
+            'amex_records',
+            'todoticket_records',
             'dollar_cash_records',
             'bs_cash_records',
             'pago_movil_bs_records',
@@ -515,6 +553,62 @@ class CashRegisterController extends Controller
             );
 
             $cash_register_data->pago_movil_bs_records()->upsert($data, ['id'], ['amount']);
+        }
+
+        // Amex Records
+        $amex_bs_records_coll = $cash_register_data->amex_records;
+
+        if (!key_exists('amex_record', $validated) && $amex_bs_records_coll->count() > 0){
+            $amex_bs_records_coll
+                ->each(function($item, $key){
+                    $item->delete();
+                });
+        } else if(key_exists('amex_record', $validated)){
+            $diff = $amex_bs_records_coll->count() - count($validated['amex_record']);
+
+            if ($diff > 0){
+                $to_delete = $amex_bs_records_coll->splice(0, $diff);
+                $to_delete->each(function($item, $key){
+                    $item->delete();
+                });
+            }
+
+            $data = $this->mergeOldAndNewValues(
+                $cash_register_data_id,
+                'totalRecordsColsToUpdate',
+                $amex_bs_records_coll->toArray(),
+                $validated['amex_record'],
+            );
+
+            $cash_register_data->amex_records()->upsert($data, ['id'], ['amount']);
+        }
+
+        // Todoticket Records
+        $todoticket_bs_records_coll = $cash_register_data->todoticket_records;
+
+        if (!key_exists('todoticket_record', $validated) && $todoticket_bs_records_coll->count() > 0){
+            $todoticket_bs_records_coll
+                ->each(function($item, $key){
+                    $item->delete();
+                });
+        } else if(key_exists('todoticket_record', $validated)){
+            $diff = $todoticket_bs_records_coll->count() - count($validated['todoticket_record']);
+
+            if ($diff > 0){
+                $to_delete = $todoticket_bs_records_coll->splice(0, $diff);
+                $to_delete->each(function($item, $key){
+                    $item->delete();
+                });
+            }
+
+            $data = $this->mergeOldAndNewValues(
+                $cash_register_data_id,
+                'totalRecordsColsToUpdate',
+                $todoticket_bs_records_coll->toArray(),
+                $validated['todoticket_record'],
+            );
+
+            $cash_register_data->todoticket_records()->upsert($data, ['id'], ['amount']);
         }
 
         // Dollar Denomination Records

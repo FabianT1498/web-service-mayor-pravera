@@ -13,6 +13,8 @@ use App\Models\BsDenominationRecord;
 use App\Models\DollarDenominationRecord;
 use App\Models\ZelleRecord;
 use App\Models\PagoMovilRecord;
+use App\Models\AmexRecord;
+use App\Models\TodoticketRecord;
 
 use Carbon\Carbon;
 
@@ -88,4 +90,14 @@ class CashRegisterData extends Model
     {
         return $this->hasMany(ZelleRecord::class);
     }    
+
+    public function amex_records()
+    {
+        return $this->hasMany(AmexRecord::class);
+    } 
+
+    public function todoticket_records()
+    {
+        return $this->hasMany(TodoticketRecord::class);
+    } 
 }

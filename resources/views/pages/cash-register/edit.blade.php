@@ -602,14 +602,14 @@
             :modalID="__('todoticket_record')"
             :title="__('Entradas de todoticket')"
             :currency="config('constants.CURRENCIES.BOLIVAR')"
-            :records="old('todoticket_record') ? old('todoticket_record') : []"
+            :records="$todoticket_records"
         />
 
         <x-modal-input-list
             :modalID="__('amex_record')"
             :title="__('Entradas de AMEX')"
             :currency="config('constants.CURRENCIES.BOLIVAR')"
-            :records="old('amex_record') ? old('amex_record') : []"
+            :records="$amex_records"
         />
 
         <x-modal-input-list
