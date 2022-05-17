@@ -22,6 +22,21 @@ class BillController extends Controller
         return view('pages.vales-vueltos-facturas.index', compact('start_date', 'end_date'));
     }
 
+    private function getBillData($new_start_date, $new_finish_date, BillRepository $bill_repo){
+        $bill_vueltos = $bill_repo
+            ->getValesAndVueltos($new_start_date, $new_finish_date)
+            ->groupBy(['CodUsua', 'FechaE']);
+
+        $total_bill_vales_vueltos_by_user = $bill_repo
+            ->getTotalValesAndVueltosByUser($new_start_date, $new_finish_date)
+            ->groupBy(['CodUsua']);
+        
+        return compact([
+            'bill_vueltos',
+            'total_bill_vales_vueltos_by_user'
+        ]);
+    }
+
     public function generatePDF(Request $request, BillRepository $bill_repo){
         $start_date = $request->query('start_date', '');
         $end_date = $request->query('end_date', '');
@@ -31,28 +46,16 @@ class BillController extends Controller
             $new_start_date = date('Y-m-d', strtotime($start_date));
             $new_finish_date = date('Y-m-d', strtotime($end_date));
 
-            $bill_vueltos = $bill_repo
-                ->getValesAndVueltos($new_start_date, $new_finish_date)
-                ->groupBy(['CodUsua', 'FechaE']);
-
-                
-            $total_bill_vales_vueltos_by_user = $bill_repo
-                ->getTotalValesAndVueltosByUser($new_start_date, $new_finish_date)
-                ->groupBy(['CodUsua']);
-
-                
             $file_name = 'Detalles_vales_vueltos' . ($new_start_date === $new_finish_date 
                 ? $start_date 
                 : 'desde_' . $start_date . '_hasta_' . $end_date
                 )
                 . '.pdf';
 
-            $data = compact(
-                'bill_vueltos',
-                'total_bill_vales_vueltos_by_user',
-                'start_date',
-                'end_date'
-            );
+            $data = $this->getBillData($new_start_date, $new_finish_date, $bill_repo);
+            
+            $data['start_date'] = $start_date;
+            $data['end_date'] = $end_date;
 
             $pdf = App::make('dompdf.wrapper');
             
