@@ -32,6 +32,8 @@ class CashRegister extends Model
         'total_pago_movil_bs',
         'total_point_sale_dollar',
         'total_zelle',
+        'total_amex',
+        'total_todoticket',
         'date',
         'cash_register_data_id'
     ];
@@ -51,6 +53,8 @@ class CashRegister extends Model
         $this->total_point_sale_bs = key_exists('total_point_sale_bs', $attributes) ? $attributes['total_point_sale_bs'] : 0;
         $this->total_point_sale_dollar = key_exists('total_point_sale_dollar', $attributes) ? $attributes['total_point_sale_dollar'] : 0;
         $this->total_zelle = key_exists('total_zelle', $attributes) ? $attributes['total_zelle'] : 0;
+        $this->total_amex = key_exists('total_amex', $attributes) ? $attributes['total_amex'] : 0;
+        $this->total_todoticket = key_exists('total_todoticket', $attributes) ? $attributes['total_todoticket'] : 0;
         $this->date = key_exists('date', $attributes) ? $attributes['date'] : '';
         $this->cash_register_data_id = key_exists('id', $attributes)  ? $attributes['id'] : '';
     }
