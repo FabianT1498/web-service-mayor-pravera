@@ -89,6 +89,113 @@ class VueltosFacturasExport implements FromView, WithEvents, WithTitle
                 );
 
                 if ($this->data['bill_vueltos']->count() > 0){
+
+                    /** Resumen total */
+                    $event->sheet->setCellValue('G4', 'Resumen');
+                    $event->sheet->mergeCells('G4:L4');
+
+                    $event->sheet->setCellValue('G5', 'Caja');
+                    $event->sheet->mergeCells('G5:H5');
+                    $event->sheet->setCellValue('I5', 'Vuelto (Bs)');
+                    $event->sheet->mergeCells('I5:J5');
+                    $event->sheet->setCellValue('K5', 'Vuelto ($)');
+                    $event->sheet->mergeCells('K5:L5');
+
+                    $i = 6;
+                    foreach($this->data['total_bill_vales_vueltos_by_user'] as $key_codusua => $states_bills){
+                        $event->sheet->setCellValue('G' . $i, $key_codusua);
+                        $event->sheet->mergeCells('G' . $i . ':H' . $i);
+                        $event->sheet->setCellValue('I' . $i, $states_bills->first()->MontoBs);
+                        $event->sheet->mergeCells('I' . $i . ':J' . $i);
+                        $event->sheet->setCellValue('K' . $i, $states_bills->first()->MontoDiv);
+                        $event->sheet->mergeCells('K' . $i . ':L' . $i);
+                        $i++;
+                    }
+
+                    $event->sheet->styleCells(
+                        'G4:L4',
+                        [
+                            'fill' => [
+                                'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                                'startColor' => [
+                                    'rgb' => 'c5c5c5',
+                                ],
+                                'endColor' => [
+                                    'rgb' => 'c5c5c5',
+                                ],
+                            ],
+                            'font' => [
+                                'bold' => true,
+                            ],
+                            'alignment' => [
+                                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                            ],
+                        ]
+                    );
+
+                    $event->sheet->styleCells(
+                        'G5:L5',
+                        [
+                            'font' => [
+                                'bold' => true,
+                            ],
+                            'alignment' => [
+                                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                            ],
+                        ]
+                    );
+                    
+                    $start_summary_row = 4;
+                    $event->sheet->styleCells(
+                        'G4:L' . ($start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count()),
+                        [
+                            'borders' => [
+                                'allBorders' => [
+                                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                                    'color' => ['argb' => '000'],
+                                ],
+                            ],
+                            'numberFormat' => [
+                                'formatCode' => \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+                            
+                            ]
+                        ]
+                    );
+
+                    $event->sheet->setCellValue('G' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count(),
+                     'Total:');
+                    $event->sheet->mergeCells('G' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count() .
+                        ':H' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count());
+                    $event->sheet->setCellValue('I' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count(),
+                        $this->data['total_bill_vueltos']['MontoBs']);
+                    $event->sheet->mergeCells('I' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count() .
+                        ':J' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count());
+                    $event->sheet->setCellValue('K' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count(),
+                        $this->data['total_bill_vueltos']['MontoDiv']);
+                    $event->sheet->mergeCells('K' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count() .
+                        ':L' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count());
+
+                    $event->sheet->styleCells('G' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count() .
+                        ':L' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count(),
+                        [
+                            'fill' => [
+                                'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                                'startColor' => [
+                                    'rgb' => 'c5c5c5',
+                                ],
+                                'endColor' => [
+                                    'rgb' => 'c5c5c5',
+                                ],
+                            ],
+                            'font' => [
+                                'bold' => true,
+                            ],
+                            'alignment' => [
+                                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                            ],
+                        ]
+                    );
+                        
                     $event->sheet->styleCells(
                         'C:E', 
                         [
@@ -231,7 +338,7 @@ class VueltosFacturasExport implements FromView, WithEvents, WithTitle
 
                         $prev = $user_row_count;                    
                     }
-                    
+                        
                     $event->sheet->styleCells(
                         'A:M',
                         [

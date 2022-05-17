@@ -22,6 +22,15 @@ class BillController extends Controller
         return view('pages.vales-vueltos-facturas.index', compact('start_date', 'end_date'));
     }
 
+    private function getTotalVueltos($total_bill_vuelto_by_user){
+        return $total_bill_vuelto_by_user->reduce(function($acc, $item){
+            $acc['MontoBs'] += $item->first()->MontoBs;
+            $acc['MontoDiv'] += $item->first()->MontoDiv;
+
+            return $acc;
+        }, ['MontoBs' => 0, 'MontoDiv' => 0]);
+    }
+
     private function getBillData($new_start_date, $new_finish_date, BillRepository $bill_repo){
         $bill_vueltos = $bill_repo
             ->getValesAndVueltos($new_start_date, $new_finish_date)
@@ -30,10 +39,13 @@ class BillController extends Controller
         $total_bill_vales_vueltos_by_user = $bill_repo
             ->getTotalValesAndVueltosByUser($new_start_date, $new_finish_date)
             ->groupBy(['CodUsua']);
+
+        $total_bill_vueltos = $this->getTotalVueltos($total_bill_vales_vueltos_by_user);
         
         return compact([
             'bill_vueltos',
-            'total_bill_vales_vueltos_by_user'
+            'total_bill_vales_vueltos_by_user',
+            'total_bill_vueltos'
         ]);
     }
 
