@@ -69,6 +69,8 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('vales_vueltos_facturas', [BillController::class, 'index'])->name('vales_vueltos_facturas.index');
     Route::get('vales_vueltos_facturas/report/pdf', [BillController::class, 'generatePDF'])->name('vales_vueltos_facturas.generate-pdf');
+    Route::get('vales_vueltos_facturas/report/excel', [BillController::class, 'generateExcel'])->name('vales_vueltos_facturas.generate-excel');
+
 });
 
 Route::group(['middleware' => ['auth', 'jsonify']], function() {

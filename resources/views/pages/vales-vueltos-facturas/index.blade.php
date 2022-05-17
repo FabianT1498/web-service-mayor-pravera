@@ -64,7 +64,7 @@
 
            <p class="text-center">
                 <x-nav-link-button href="{{ route('vales_vueltos_facturas.generate-pdf') . '?start_date=' . $start_date . '&end_date=' . $end_date }}" id="link_report_pdf">Reporte en PDF</x-nav-link-button>
-                <x-nav-link-button href="{{ route('z_bill.generate-excel') . '?start_date=' . $start_date . '&end_date=' . $end_date }}" id="link_report_excel">Reporte en Excel</x-nav-link-button>.
+                <x-nav-link-button href="{{ route('vales_vueltos_facturas.generate-excel') . '?start_date=' . $start_date . '&end_date=' . $end_date }}" id="link_report_excel">Reporte en Excel</x-nav-link-button>.
             </p>
       </div>
     </div>

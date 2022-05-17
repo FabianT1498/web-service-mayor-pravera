@@ -10,7 +10,7 @@ use Excel;
 use Illuminate\Support\Facades\App;
 
 use App\Repositories\BillRepository;
-use App\Exports\ZelleRecordsExport;
+use App\Exports\VueltosFacturasExport;
 
 class BillController extends Controller
 {
@@ -74,6 +74,30 @@ class BillController extends Controller
                 ]);
 
             return $pdf->stream($name);
+        }
+    }
+
+    public function generateExcel(Request $request, BillRepository $bill_repo){
+        $start_date = $request->query('start_date', '');
+        $end_date = $request->query('end_date', '');
+
+        if ($start_date && $end_date){
+            
+            $new_start_date = date('Y-m-d', strtotime($start_date));
+            $new_finish_date = date('Y-m-d', strtotime($end_date));
+
+            $data = $this->getBillData($new_start_date, $new_finish_date, $bill_repo);
+            
+            $data['start_date'] = $start_date;
+            $data['end_date'] = $end_date;
+                
+            $file_name = 'Vueltos_Facturas_' . ($new_start_date === $new_finish_date 
+                ? $start_date 
+                : 'desde_' . $start_date . '_hasta_' . $end_date
+                )
+                . '.xlsx';
+
+            return Excel::download(new VueltosFacturasExport($data), $file_name);
         }
     }
 }
