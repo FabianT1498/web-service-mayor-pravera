@@ -417,6 +417,122 @@
             
         </div>
 
+        <div class="w-10/12 mb-8 mx-auto">
+            <h2 class="h2">Ingresos en AMEX</h2>
+            <h3 class="h3">Bolívares</h3>
+
+            <div class="flex mb-8 items-center justify-between">
+            
+                <!-- Cash on liquid input (dollars) -->
+                <x-label class="w-1/5" :value="__('Entradas de AMEX:')" />
+
+                <x-input-with-button
+                    :inputID="__('total_amex_input')"
+                    :modalID="__('amex_record')"
+                    :currencySign="__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))"
+                    :name="__('total_amex')"
+                    type="text"
+                    class="w-1/4 ml-4"
+                    :value="old('total_amex') ? old('total_amex') : $total_amex_bs"
+                />
+            </div>
+
+            <div class="mb-8">
+                <table class="w-full text-sm text-center text-gray-600 dark:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-300 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="px-4 py-2">
+                                Referencia
+                            </th>
+                            <th scope="col" class="px-4 py-2">
+                                Total ingresado
+                            </th>
+                            <th scope="col" class="px-4 py-2">
+                                Total SAINT
+                            </th>
+                            <th scope="col" class="px-4 py-2">
+                                Diferencia
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                            <th scope="row" class="px-4 py-2 font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                                Total de los detalles
+                            </th>
+                            <td>
+                                <span id="total_amex">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}
+                            </td>
+                            <td>
+                                <span class="total_amex_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}
+                            </td>
+                            <td class="px-4 py-2">
+                                <span id="total_amex_diff">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="w-10/12 mb-8 mx-auto">
+            <h2 class="h2">Ingresos en Todoticket</h2>
+            <h3 class="h3">Bolívares</h3>
+
+            <div class="flex mb-8 items-center justify-between">
+            
+                <!-- Cash on liquid input (dollars) -->
+                <x-label class="w-1/5" :value="__('Entradas de Todoticket:')" />
+
+                <x-input-with-button
+                    :inputID="__('total_todoticket_input')"
+                    :modalID="__('todoticket_record')"
+                    :currencySign="__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))"
+                    :name="__('total_todoticket')"
+                    type="text"
+                    class="w-1/4 ml-4"
+                    :value="old('total_todoticket') ? old('total_todoticket') : $total_todoticket_bs"
+                />
+            </div>
+
+            <div class="mb-8">
+                <table class="w-full text-sm text-center text-gray-600 dark:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-300 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="px-4 py-2">
+                                Referencia
+                            </th>
+                            <th scope="col" class="px-4 py-2">
+                                Total ingresado
+                            </th>
+                            <th scope="col" class="px-4 py-2">
+                                Total SAINT
+                            </th>
+                            <th scope="col" class="px-4 py-2">
+                                Diferencia
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                            <th scope="row" class="px-4 py-2 font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                                Total de los detalles
+                            </th>
+                            <td>
+                                <span id="total_todoticket">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}
+                            </td>
+                            <td>
+                                <span class="total_todoticket_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}
+                            </td>
+                            <td class="px-4 py-2">
+                                <span id="total_todoticket_diff">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
         <div class="w-10/12 mx-auto">
             <h2 class="h2 text-center mb-8">Entradas de Zelle ($)</h2>    
             <div class="flex mb-8 items-center">
@@ -475,19 +591,25 @@
 
         </div>
 
-        <!-- <x-modal-input-list
-            :modalID="__('bs_cash_record')"
-            :currency="config('constants.CURRENCIES.BOLIVAR')"
-            :title="__('Entradas de dinero')"
-            :isBolivar="true"
-            :records="$bs_cash_records"
-        /> -->
-
         <x-modal-input-list
             :modalID="__('dollar_cash_record')"
             :currency="config('constants.CURRENCIES.DOLLAR')"
             :title="__('Entradas de dinero')"
             :records="$dollar_cash_records"
+        />
+
+        <x-modal-input-list
+            :modalID="__('todoticket_record')"
+            :title="__('Entradas de todoticket')"
+            :currency="config('constants.CURRENCIES.BOLIVAR')"
+            :records="old('todoticket_record') ? old('todoticket_record') : []"
+        />
+
+        <x-modal-input-list
+            :modalID="__('amex_record')"
+            :title="__('Entradas de AMEX')"
+            :currency="config('constants.CURRENCIES.BOLIVAR')"
+            :records="old('amex_record') ? old('amex_record') : []"
         />
 
         <x-modal-input-list
