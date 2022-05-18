@@ -421,7 +421,7 @@
             <h2 class="h2">Ingresos en AMEX</h2>
             <h3 class="h3">Bolívares</h3>
 
-            <div class="flex mb-8 items-center justify-between">
+            <div class="flex mb-8 items-center">
             
                 <!-- Cash on liquid input (dollars) -->
                 <x-label class="w-1/5" :value="__('Entradas de AMEX:')" />
@@ -479,7 +479,7 @@
             <h2 class="h2">Ingresos en Todoticket</h2>
             <h3 class="h3">Bolívares</h3>
 
-            <div class="flex mb-8 items-center justify-between">
+            <div class="flex mb-8 items-center">
             
                 <!-- Cash on liquid input (dollars) -->
                 <x-label class="w-1/5" :value="__('Entradas de Todoticket:')" />
