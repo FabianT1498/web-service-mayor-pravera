@@ -74,18 +74,13 @@ class UpdateCashRegisterRequest extends FormRequest
             $rules['point_sale_bs_bank.*'] = ['exists:caja_mayorista.banks,name'];
             $rules['point_sale_bs_debit.*'] = ['required', new BadFormattedAmount];
             $rules['point_sale_bs_credit.*'] = ['required', new BadFormattedAmount];
+            $rules['point_sale_bs_amex.*'] = ['required', new BadFormattedAmount];
+            $rules['point_sale_bs_todoticket.*'] = ['required', new BadFormattedAmount];
+
         }
 
         if (count($this->zelle_record) > 0){
             $rules['zelle_record.*'] = $total_rules;
-        }
-
-        if (count($this->amex_record) > 0){
-            $rules['amex_record.*'] = $total_rules;
-        }
-
-        if (count($this->todoticket_record) > 0){
-            $rules['todoticket_record.*'] = $total_rules;
         }
 
         if ($this->total_point_sale_dollar >= 0){
@@ -179,6 +174,7 @@ class UpdateCashRegisterRequest extends FormRequest
         // }
 
         if ($this->has('point_sale_bs_bank')){
+            
             if ($this->has('point_sale_bs_debit')){
                 $inputs['point_sale_bs_debit'] = array_map(function($value){
                     return $this->formatAmount($value);
@@ -194,6 +190,19 @@ class UpdateCashRegisterRequest extends FormRequest
             } else {
                 $inputs['point_sale_bs_credit'] = [];
             }
+
+            if ($this->has('point_sale_bs_amex')){
+                $inputs['point_sale_bs_amex'] = array_map(function($value){
+                    return $this->formatAmount($value);
+                }, $this->point_sale_bs_amex);
+            }
+
+            if ($this->has('point_sale_bs_todoticket')){
+                $inputs['point_sale_bs_todoticket'] = array_map(function($value){
+                    return $this->formatAmount($value);
+                }, $this->point_sale_bs_todoticket);
+            }
+
         } else {
             $inputs['point_sale_bs_bank'] = [];
         }
@@ -220,22 +229,7 @@ class UpdateCashRegisterRequest extends FormRequest
         } else {
             $inputs['zelle_record'] = [];
         }
-        
-        if ($this->has('amex_record')){
-            $inputs['amex_record'] = array_map(function($record){
-                return $this->formatAmount($record);
-            }, $this->amex_record);
-        } else {
-            $inputs['amex_record'] = [];
-        } 
-
-        if ($this->has('todoticket_record')){
-            $inputs['todoticket_record'] = array_map(function($record){
-                return $this->formatAmount($record);
-            }, $this->todoticket_record);
-        } else {
-            $inputs['todoticket_record'] = [];
-        } 
+         
         // }
 
         // if (isset($this->new_cash_register_worker)){
@@ -259,10 +253,10 @@ class UpdateCashRegisterRequest extends FormRequest
             'point_sale_bs.bank' => 'banco',
             'point_sale_bs.debit' => 'entrada de tarjeta de debito',
             'point_sale_bs.credit' => 'entrada de tarjeta de credito',
+            'point_sale_bs.amex' => 'entrada de AMEX',
+            'point_sale_bs.todoticket' => 'entrada de todoticket',
             'zelle_record' => 'entrada de zelle',
             'total_point_sale_dollar' => 'entrada del punto de venta internacional',
-            'amex_record' => 'entrada en AMEX',
-            'todoticket_record' => 'entrada de todoticket'
         ];
     }
 }

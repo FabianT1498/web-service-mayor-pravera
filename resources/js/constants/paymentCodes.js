@@ -3,8 +3,8 @@ import { CURRENCIES } from "./currencies";
 const PAYMENT_CODES  = Object.freeze({
     '01': 'pointSaleBs',
     '02': 'pointSaleBs',
-    '03': 'todoticketBs',
-    '04': 'amexBs',
+    '03': 'pointSaleBs',
+    '04': 'pointSaleBs',
     '05': 'pagoMovilBs',
     '07': 'zelleDollar',
     '08': 'pointSaleDollar'

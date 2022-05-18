@@ -24,11 +24,19 @@ $cod_pago = [
     '08' => 'point_sale_dollar'
 ];
 
+$point_sale_methods = [
+    'DEBIT' => 'DEBIT',
+    'CREDIT' => 'CREDIT',
+    'AMEX' => 'AMEX',
+    'TODOTICKET' => 'TODOTICKET',
+];
+
 return [
     'CASH_TIPO_FAC' => $cash_tipo_fac,
     'COD_PAGO' => $cod_pago,
 	'CURRENCIES' => $currencies,
 	'CURRENCY_SIGNS' => $currency_signs,
     'BAD_FORMATTED_AMOUNT' => -1,
-    'CASH_REGISTER_STATUS' => $cash_register_status
+    'CASH_REGISTER_STATUS' => $cash_register_status,
+    'POINT_SALE_METHODS' => $point_sale_methods
 ];

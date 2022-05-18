@@ -23,13 +23,15 @@ const SalePointTable = function(){
 
         const input_debit = tBody.querySelector(`#${this.name}_debit_${newID}`);
         const input_credit = tBody.querySelector(`#${this.name}_credit_${newID}`);
+        const input_amex = tBody.querySelector(`#${this.name}_amex_${newID}`);
+        const input_todoticket = tBody.querySelector(`#${this.name}_todoticket_${newID}`);
 
         input_debit.focus()
         
         decimalInputs[this.currency].mask(input_debit);
         decimalInputs[this.currency].mask(input_credit);
-
-
+        decimalInputs[this.currency].mask(input_amex);
+        decimalInputs[this.currency].mask(input_todoticket);
 
         if (prevIDArr.length > 0){
             let selectors = getBankSelectSelectors(prevIDArr);
@@ -95,6 +97,12 @@ const SalePointTable = function(){
             </td>
             <td data-table="convertion-col" class="pl-3 py-4 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">
                 ${ this.getInputTemplate(id, POINT_SALE_TYPE.CREDIT) }
+            </td>
+            <td class="pl-3 py-4 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white">
+                ${ this.getInputTemplate(id, POINT_SALE_TYPE.AMEX) }
+            </td>
+            <td data-table="convertion-col" class="pl-3 py-4 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                ${ this.getInputTemplate(id, POINT_SALE_TYPE.TODOTICKET) }
             </td>
             <td class="py-4 pl-3 text-sm text-center font-medium whitespace-nowrap">
                 <button data-modal="delete" type="button" class="bg-red-600 flex justify-center w-6 h-6 items-center transition-colors duration-150 rounded-full shadow-lg hover:bg-red-500">

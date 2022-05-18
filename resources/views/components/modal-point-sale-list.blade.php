@@ -7,10 +7,10 @@
 
 <!-- Main modal -->
 <div id={{ $modalID }} data-currency={{ $currency }} aria-hidden="true" class="hidden overflow-y-hidden overflow-x-hidden fixed h-108 right-0 left-0 top-4 z-50 justify-center items-center md:h-full md:inset-0">
-    <div class="flex flex-col relative w-full max-w-xl h-full">
+    <div class="flex flex-col relative w-full max-w-3xl h-full">
          <!-- Modal header -->
          <div class="flex justify-between items-start p-5 rounded-t border-b dark:border-gray-600 bg-gray-200">
-            <h3 class="text-xl font-semibold text-gray-900 lg:text-2xl dark:text-white">
+            <h3 class="text-xl font-semibold text-gray-900 lg:text-3xl dark:text-white">
                 {{ "Entradas en los puntos de venta (" . $currency . ")" }}
             </h3>
             <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle={{ $modalID }}>
@@ -28,14 +28,20 @@
                                     <th scope="col" class="w-1/12 py-3 pl-6 text-xs text-center tracking-wider  text-gray-700 uppercase dark:text-gray-400">
                                         Nro
                                     </th>
-                                    <th scope="col" class="w-1/5 py-3 pl-3 text-xs tracking-wider text-center text-gray-700 uppercase dark:text-gray-400">
+                                    <th scope="col" class="w-1/6 py-3 pl-3 text-xs tracking-wider text-center text-gray-700 uppercase dark:text-gray-400">
                                         Banco
                                     </th>
-                                    <th scope="col" class="w-1/5 py-3 pl-3 text-xs tracking-wider text-center text-gray-700 uppercase dark:text-gray-400">
+                                    <th scope="col" class="w-1/6 py-3 pl-3 text-xs tracking-wider text-center text-gray-700 uppercase dark:text-gray-400">
                                         Tarjeta de debito
                                     </th>
-                                    <th scope="col" class="w-1/5 py-3 pl-3 text-xs tracking-wider text-center text-gray-700 uppercase dark:text-gray-400">
+                                    <th scope="col" class="w-1/6 py-3 pl-3 text-xs tracking-wider text-center text-gray-700 uppercase dark:text-gray-400">
                                         TDC
+                                    </th>
+                                    <th scope="col" class="w-1/6 py-3 pl-3 text-xs tracking-wider text-center text-gray-700 uppercase dark:text-gray-400">
+                                        AMEX
+                                    </th>
+                                    <th scope="col" class="w-1/6 py-3 pl-3 text-xs tracking-wider text-center text-gray-700 uppercase dark:text-gray-400">
+                                        Todoticket
                                     </th>
                                     <th scope="col" class="w-1/12 pl-3 pr-6 text-center">
                                         <button data-modal="add" type="button" class="bg-gray-800 flex justify-center w-6 h-6 items-center transition-colors duration-150 rounded-full shadow-lg">
@@ -46,7 +52,9 @@
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
                                 @if (count($records) > 0 && count($records['bank']) > 0 && (count($records['bank']) === count($records['credit']))
-                                        && (count($records['bank']) === count($records['debit'])))
+                                        && (count($records['bank']) === count($records['debit'])) 
+                                                && (count($records['bank']) === count($records['amex']))
+                                                        && (count($records['bank']) === count($records['todoticket'])))
                                     @foreach($records['bank'] as $key => $bank)
                                         <tr class="hover:bg-gray-100 dark:hover:bg-gray-700" data-id={{$key}}>
                                             <td data-table="num-col" class="py-4 pl-6 text-sm font-medium text-center text-gray-900 whitespace-nowrap dark:text-white">{{ $key + 1}}</td>
@@ -80,6 +88,30 @@
                                                     placeholder="{{ '0.00 ' . $currency }}"
                                                     id="{{$modalID . '_credit_' . $key}}"
                                                     name="{{  $modalID . '_credit[' . $records['credit'][$key]->id . ']' }}" 
+                                                    class="w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                                >
+                                            </td>
+
+                                            <td data-table="convertion-col" class="pl-3 py-4 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                                <input 
+                                                    type="text" 
+                                                    data-point-sale-type="amex" 
+                                                    value="{{ $records['amex'][$key]->amount }}"
+                                                    placeholder="{{ '0.00 ' . $currency }}"
+                                                    id="{{$modalID . '_amex_' . $key}}"
+                                                    name="{{  $modalID . '_amex[' . $records['amex'][$key]->id . ']' }}" 
+                                                    class="w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                                >
+                                            </td>
+
+                                            <td data-table="convertion-col" class="pl-3 py-4 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                                <input 
+                                                    type="text" 
+                                                    data-point-sale-type="todoticket" 
+                                                    value="{{ $records['todoticket'][$key]->amount }}"
+                                                    placeholder="{{ '0.00 ' . $currency }}"
+                                                    id="{{$modalID . '_todoticket_' . $key}}"
+                                                    name="{{  $modalID . '_todoticket[' . $records['todoticket'][$key]->id . ']' }}" 
                                                     class="w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                                 >
                                             </td>

@@ -20,8 +20,10 @@ const SalePointModalPresenterPrototype = {
 
 			if (action){
 				if (action === 'add'){
-					if (this.pointSaleDebit.getLast() && this.pointSaleCredit.getLast() 
-							&& this.pointSaleDebit.getLast().total === 0 && this.pointSaleCredit.getLast().total === 0){ // Check If there's a zero value
+					if (this.pointSaleDebit.getLast() && this.pointSaleCredit.getLast()
+							&& this.pointSaleAmex.getLast() && this.pointSaleTodoticket.getLast()
+							&& this.pointSaleDebit.getLast().total === 0 && this.pointSaleCredit.getLast().total === 0
+							&& this.pointSaleAmex.getLast().total === 0 && this.pointSaleTodoticket.getLast().total === 0){
 						return;
 					}
 
@@ -39,6 +41,8 @@ const SalePointModalPresenterPrototype = {
 
 					this.pointSaleDebit.removeElementByBankID(bank)
 					this.pointSaleCredit.removeElementByBankID(bank)
+					this.pointSaleAmex.removeElementByBankID(bank)
+					this.pointSaleTodoticket.removeElementByBankID(bank)
 
 					this.selectedBanks.removeElementByID(id)
 
@@ -57,7 +61,9 @@ const SalePointModalPresenterPrototype = {
 			
 				const totalCredit = this.pointSaleCredit.getAll().reduce((acc, curr) => acc + curr.total, 0)
 				const totalDebit = this.pointSaleDebit.getAll().reduce((acc, curr) => acc + curr.total, 0)
-				this.setTotalAmount(roundNumber(totalCredit + totalDebit))
+				const totalAmex = this.pointSaleAmex.getAll().reduce((acc, curr) => acc + curr.total, 0)
+				const totalTodoticket = this.pointSaleTodoticket.getAll().reduce((acc, curr) => acc + curr.total, 0)
+				this.setTotalAmount(roundNumber(totalCredit + totalDebit + totalAmex + totalTodoticket))
 			}
 		}
    	},
@@ -96,6 +102,8 @@ const SalePointModalPresenterPrototype = {
 			// indexOld it's the same to pointSaleDebit and pointSaleCredit
 			this.pointSaleCredit.setElementAtIndex(indexOld, { bank: { ...bank, name: newSelectedValue }})
 			this.pointSaleDebit.setElementAtIndex(indexOld, { bank: { ...bank, name: newSelectedValue }})
+			this.pointSaleAmex.setElementAtIndex(indexOld, { bank: { ...bank, name: newSelectedValue }})
+			this.pointSaleTodoticket.setElementAtIndex(indexOld, { bank: { ...bank, name: newSelectedValue }})
 
 			this.view.changeSelect({
 				prevIDArr: this.selectedBanks.getAll().map((el) => el.id),
@@ -114,12 +122,16 @@ const SalePointModalPresenterPrototype = {
 			let id = parseInt(targetRow.getAttribute('data-id'));
 			let debit = this.pointSaleDebit.getElementByID(id)
 			let credit = this.pointSaleCredit.getElementByID(id)
+			let amex = this.pointSaleAmex.getElementByID(id)
+			let todoticket = this.pointSaleTodoticket.getElementByID(id)
+			
 
 			let simbling = targetRow.nextElementSibling;
 			
 			if (simbling){
 				this.view.setFocusOnInput(simbling);
-			} else if(!simbling && (debit.total > 0 || credit.total > 0)) {
+			} else if(!simbling && (debit.total > 0 || credit.total > 0 
+				|| amex.total > 0 || todoticket.total > 0)) {
 				this.addNewRow()
 			}
         }
@@ -139,6 +151,10 @@ const SalePointModalPresenterPrototype = {
 			this.pointSaleDebit.setElementAtIndex(index, { total: value })
 		} else if (type === POINT_SALE_TYPE.CREDIT){
 			this.pointSaleCredit.setElementAtIndex(index, { total: value })
+		} else if (type === POINT_SALE_TYPE.AMEX){
+			this.pointSaleAmex.setElementAtIndex(index, { total: value })
+		} else {
+			this.pointSaleTodoticket.setElementAtIndex(index, { total: value })
 		}
 	},
 	setView(view){
@@ -170,6 +186,8 @@ const SalePointModalPresenterPrototype = {
 		// Add point sale records to collection
 		this.pointSaleDebit.pushElement(new PointSaleRecord(this.currency, 0, bank))
 		this.pointSaleCredit.pushElement(new PointSaleRecord(this.currency, 0, bank))
+		this.pointSaleAmex.pushElement(new PointSaleRecord(this.currency, 0, bank))
+		this.pointSaleTodoticket.pushElement(new PointSaleRecord(this.currency, 0, bank))
 
 		this.view.addRow({
 			prevIDArr: idArr,
@@ -189,14 +207,19 @@ const SalePointModalPresenter = function (currency, setTotalAmount, pointSaleRec
 	this.selectedBanks = new BankCollection();
 	this.pointSaleDebit = new PointSaleCollection();
 	this.pointSaleCredit = new PointSaleCollection();
+	this.pointSaleAmex = new PointSaleCollection();
+	this.pointSaleTodoticket = new PointSaleCollection();
 
 	if (Object.keys(pointSaleRecords).length > 0
 			&& ("bank" in pointSaleRecords && pointSaleRecords['bank'].length > 0)
 					&& ("credit" in pointSaleRecords) && ("debit" in pointSaleRecords)
+						&& ("amex" in pointSaleRecords) && ("todoticket" in pointSaleRecords)
 							&& "availableBanks" in pointSaleRecords){
 		this.selectedBanks.setElements(pointSaleRecords['bank']);
 		this.pointSaleDebit.setElements(pointSaleRecords['debit']);
 		this.pointSaleCredit.setElements(pointSaleRecords['credit']);
+		this.pointSaleAmex.setElements(pointSaleRecords['amex']);
+		this.pointSaleTodoticket.setElements(pointSaleRecords['todoticket']);
 		this.banks = pointSaleRecords['availableBanks']
 	} else {
 		this.fetchInitialData()

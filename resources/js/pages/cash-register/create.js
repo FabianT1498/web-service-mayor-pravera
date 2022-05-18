@@ -31,8 +31,6 @@ import {default as modalBehavior} from '_app/base/modalBehavior'
 
 export default {
     totalInputDOMS: {
-        amexBs: document.querySelector('#total_amex_input'),
-        todoticketBs: document.querySelector('#total_todoticket_input'),
         liquidMoneyDollar: document.querySelector('#total_dollar_cash_input'),
         pagoMovilBs: document.querySelector('#total_pago_movil_bs_input'),
         denominationsBs: document.querySelector('#total_bs_denominations_input'),
@@ -42,8 +40,6 @@ export default {
         pointSaleBs: document.querySelector('#total_point_sale_bs_input'),
     },
     totalDOMS: {
-        amexBs: document.querySelector('#total_amex'),
-        todoticketBs: document.querySelector('#total_todoticket'),
         liquidMoneyDollar: document.querySelector('#total_dollar_cash'),
         pagoMovilBs: document.querySelector('#total_pago_movil_bs'),
         denominationsBs: document.querySelector('#total_bs_denominations'),
@@ -53,8 +49,6 @@ export default {
         pointSaleBs: document.querySelector('#total_point_sale_bs'),
     },
     totalSaintDOMS: {
-        amexBs: document.querySelector('#total_amex_saint'),
-        todoticketBs: document.querySelector('#total_todoticket_saint'),
         liquidMoneyBs: document.querySelector('#total_bs_cash_saint'),
         liquidMoneyDollar: document.querySelectorAll('.total_dollar_cash_saint'),
         pagoMovilBs: document.querySelector('#total_pago_movil_bs_saint'),
@@ -63,8 +57,6 @@ export default {
         zelleDollar: document.querySelector('#total_zelle_saint'),
     },
     totalDiffDOMS: {
-        amexBs: document.querySelector('#total_amex_diff'),
-        todoticketBs: document.querySelector('#total_todoticket_diff'),
         liquidMoneyBs: document.querySelector('#total_bs_cash_diff'),
         liquidMoneyDollar: document.querySelector('#total_dollar_cash_diff'),
         liquidMoneyDollarDenomination: document.querySelector('#total_dollar_cash_denomination_diff'),
@@ -74,8 +66,6 @@ export default {
         zelleDollar: document.querySelector('#total_zelle_diff'),
     },
     propNameToDiffTotalMethod: {
-        amexBs: 'setTotalAmexDiff',
-        todoticketBs: 'setTotalTodoticketDiff',
         liquidMoneyBs: 'setTotalBsCashDiff',
         pagoMovilBs: 'setTotalPagoMovilBsDiff',
         liquidMoneyDollar: 'setTotalDollarCashDiff',
@@ -85,14 +75,6 @@ export default {
     },
     proxyTotalSaint: null,
     proxy: null,
-    setTotalAmexBs(total){
-        this.proxy.amexBs = total
-        this.setTotalAmexDiff();
-    },
-    setTotalTodoticketBs(total){
-        this.proxy.todoticketBs = total
-        this.setTotalTodoticketDiff();
-    },
     setTotalLiquidMoneyBs(total){
         this.proxy.liquidMoneyBs = total
         this.setTotalBsCashDiff();
@@ -155,7 +137,8 @@ export default {
            // E-Payment Amounts
             totalsEPayments.forEach(el => {     
                 if (PAYMENT_CURRENCIES[el.CodPago] === 'bs'){
-                    if (el.CodPago === '01' || el.CodPago === '02'){
+                    if (el.CodPago === '01' || el.CodPago === '02'
+                        || el.CodPago === '03' || el.CodPago === '04'){
                         this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] += parseFloat(el.totalBs)
                     } else {
                         this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] = parseFloat(el.totalBs)
@@ -167,26 +150,6 @@ export default {
                 this[this.propNameToDiffTotalMethod[PAYMENT_CODES[el.CodPago]]].call(this)
             });
         }
-    },
-    setTotalAmexDiff(){
-        let diff = this.proxy.amexBs - this.proxyTotalSaint.amexBs;
-        let color = this.getAmountColor(diff);
-        this.totalDiffDOMS.amexBs.className = '';
-        if (color !== ''){
-            this.totalDiffDOMS.amexBs.classList.add(color);
-        } 
-          
-        this.totalDiffDOMS.amexBs.innerHTML = roundNumber(diff).format();
-    },
-    setTotalTodoticketDiff(){
-        let diff = this.proxy.todoticketBs - this.proxyTotalSaint.todoticketBs;
-        let color = this.getAmountColor(diff);
-        this.totalDiffDOMS.todoticketBs.className = '';
-        if (color !== ''){
-            this.totalDiffDOMS.todoticketBs.classList.add(color);
-        } 
-          
-        this.totalDiffDOMS.todoticketBs.innerHTML = roundNumber(diff).format();
     },
     setTotalDollarCashDiff(){
         let diff = this.proxy.liquidMoneyDollar - this.proxyTotalSaint.liquidMoneyDollar;
@@ -324,9 +287,6 @@ export default {
         decimalInputs[CURRENCIES.DOLLAR].mask(this.totalInputDOMS.pointSaleDollar);
         decimalInputs[CURRENCIES.BOLIVAR].mask(this.totalInputDOMS.pointSaleBs);
 
-        decimalInputs[CURRENCIES.BOLIVAR].mask(this.totalInputDOMS.amexBs);
-        decimalInputs[CURRENCIES.BOLIVAR].mask(this.totalInputDOMS.todoticketBs);
-
         // Point Sale Dollar Event Handler
         this.totalInputDOMS.pointSaleDollar.addEventListener('change', this.setPropWrapper(this.handlePointSaleDollar)) 
     
@@ -374,18 +334,6 @@ export default {
         let salePointModalPresenter = new SalePointModalPresenter(CURRENCIES.BOLIVAR, this.setPropWrapper(this.setTotalPointSaleBs))
         let salePointModalView = new SalePointModalView(salePointModalPresenter);
         salePointModalView.init(salePointModal, 'point_sale_bs');
-
-        let amexBsModal = document.querySelector('#amex_record');
-        let amexBsPresenter = new MoneyRecordModalPresenter(CURRENCIES.BOLIVAR, PAYMENT_METHODS.CASH, this.setPropWrapper(this.setTotalAmexBs));
-        let amexBsView = new MoneyRecordModalView(amexBsPresenter);
-        let amexBsRecordTable = new MoneyRecordTable()
-        amexBsView.init(amexBsModal, 'amex_record', amexBsRecordTable)
-
-        let todoticketBsModal = document.querySelector('#todoticket_record');
-        let todoticketBsPresenter = new MoneyRecordModalPresenter(CURRENCIES.BOLIVAR, PAYMENT_METHODS.CASH, this.setPropWrapper(this.setTotalTodoticketBs));
-        let todoticketBsView = new MoneyRecordModalView(todoticketBsPresenter);
-        let todoticketBsRecordTable = new MoneyRecordTable()
-        todoticketBsView.init(todoticketBsModal, 'todoticket_record', todoticketBsRecordTable)
 
         let zelleRecordModal = document.querySelector('#zelle_record');
         let zelleRecordMoneyPresenter = new ForeignMoneyRecordModalPresenter(CURRENCIES.DOLLAR, PAYMENT_METHODS.ZELLE, this.setPropWrapper(this.setTotalZelleDollar));
