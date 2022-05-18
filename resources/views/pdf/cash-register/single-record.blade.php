@@ -294,9 +294,9 @@
                                 <td class="text-center">{{ number_format($cash_register_totals->total_dollar_denominations, 2) }}</td>
                                 <td class="text-center">{{ number_format($totals_from_safact->dolares, 2)  }}</td>
                                 <td 
-                                    class="text-center {{  $differences['dollar_cash'] > 0 
+                                    class="text-center {{  $differences['dollar_denominations'] > 0 
                                         ? 'text-blue-400' 
-                                        : ( $differences['dollar_cash'] < 0 
+                                        : ( $differences['dollar_denominations'] < 0 
                                             ? 'text-red-400' 
                                             : '' ) }}"
                                 >
