@@ -19,7 +19,10 @@ class CreateDollarDenominationRecords extends Migration
             $table->unsignedBigInteger('cash_register_data_id');
             $table->float('denomination');
         
-            $table->foreign('cash_register_data_id')->references('id')->on('cash_register_data');
+            $table->foreign('cash_register_data_id')->references('id')
+                ->on('cash_register_data')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
         });
     }
 

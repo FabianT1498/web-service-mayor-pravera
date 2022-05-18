@@ -347,6 +347,34 @@
                                 </td>
                             </tr>
                             <tr>
+                                <th>AMEX</th>
+                                <td class="text-center">{{ number_format($cash_register_totals->total_amex, 2) }}</td>
+                                <td class="text-center">{{ number_format($totals_e_payment[$user][$date]['04']['bs'], 2) }}</td>
+                                <td 
+                                    class="text-center {{$differences['amex_bs'] > 0 
+                                        ? 'text-blue-400' 
+                                        : ( $differences['amex_bs'] < 0 
+                                            ? 'text-red-400' 
+                                            : '' )}}"
+                                >
+                                        {{  number_format($differences['amex_bs'], 2) }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Todoticket</th>
+                                <td class="text-center">{{ number_format($cash_register_totals->total_todoticket, 2) }}</td>
+                                <td class="text-center">{{ number_format($totals_e_payment[$user][$date]['03']['bs'], 2) }}</td>
+                                <td 
+                                    class="text-center {{$differences['todoticket_bs'] > 0 
+                                        ? 'text-blue-400' 
+                                        : ( $differences['todoticket_bs'] < 0 
+                                            ? 'text-red-400' 
+                                            : '' )}}"
+                                >
+                                        {{  number_format($differences['todoticket_bs'], 2) }}
+                                </td>
+                            </tr>
+                            <tr>
                                 <th>Punto de venta int. ($)</th>
                                 <td class="text-center">{{ number_format($cash_register_totals->total_point_sale_dollar, 2) }}</td>
                                 <td class="text-center">{{ number_format($totals_e_payment[$user][$date]['08']['dollar'], 2) }}</td>

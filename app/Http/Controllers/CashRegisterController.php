@@ -16,7 +16,6 @@ use App\Models\Worker;
 use App\Models\CashRegisterData;
 use App\Models\CashRegister;
 use App\Models\DollarCashRecord;
-use App\Models\BsCashRecord;
 use App\Models\PagoMovilRecord;
 use App\Models\BsDenominationRecord;
 use App\Models\DollarDenominationRecord;
@@ -185,17 +184,6 @@ class CashRegisterController extends Controller
                 DollarCashRecord::insert($data);
             }
 
-            if (array_key_exists('bs_cash_record', $validated)){
-                $data = array_reduce($validated['bs_cash_record'], function($acc, $value) use ($cash_register_data){
-                    if ($value > 0){
-                        return array('amount' => $value, 'cash_register_data_id' => $cash_register_data->id);
-                    }
-
-                    return $acc;
-                }, []);
-                BsCashRecord::insert($data);
-            }
-
             if (array_key_exists('pago_movil_record', $validated)){
                 $data = array_reduce($validated['pago_movil_record'], function($acc, $value) use ($cash_register_data){
                     if ($value > 0){
@@ -321,7 +309,6 @@ class CashRegisterController extends Controller
         }
 
         $dollar_cash_records = $cash_register_data->dollar_cash_records;
-        $bs_cash_records = $cash_register_data->bs_cash_records;
         $pago_movil_bs_records = $cash_register_data->pago_movil_bs_records;
         $bs_denomination_records = $cash_register_data->bs_denomination_records;
         $dollar_denomination_records = $cash_register_data->dollar_denomination_records;
@@ -387,10 +374,6 @@ class CashRegisterController extends Controller
             return $carry + $el->amount;
         }, 0);
 
-        $total_bs_cash = $bs_cash_records->reduce(function($carry, $el){
-            return $carry + $el->amount;
-        }, 0);
-
         $total_pago_movil_bs = $pago_movil_bs_records->reduce(function($carry, $el){
             return $carry + $el->amount;
         }, 0);
@@ -422,7 +405,6 @@ class CashRegisterController extends Controller
         return view('pages.cash-register.edit', compact(
             'cash_register_data',
             'total_dollar_cash',
-            'total_bs_cash',
             'total_pago_movil_bs',
             'total_point_sale_bs',
             'total_dollar_denominations',
@@ -433,7 +415,6 @@ class CashRegisterController extends Controller
             'amex_records',
             'todoticket_records',
             'dollar_cash_records',
-            'bs_cash_records',
             'pago_movil_bs_records',
             'point_sale_dollar_record',
             'point_sale_bs_records_arr',
@@ -497,34 +478,6 @@ class CashRegisterController extends Controller
             );
 
             $cash_register_data->dollar_cash_records()->upsert($data, ['id'], ['amount']);
-        }
-
-        // Update Bs Cash Records
-        $bs_cash_records_coll = $cash_register_data->bs_cash_records;
-
-        if (!key_exists('bs_cash_record', $validated) && $bs_cash_records_coll->count() > 0){
-            $bs_cash_records_coll
-                ->each(function($item, $key){
-                    $item->delete();
-                });
-        } else if(key_exists('bs_cash_record', $validated)){
-            $diff = $bs_cash_records_coll->count() - count($validated['bs_cash_record']);
-
-            if ($diff > 0){
-                $to_delete = $bs_cash_records_coll->splice(0, $diff);
-                $to_delete->each(function($item, $key){
-                    $item->delete();
-                });
-            }
-
-            $data = $this->mergeOldAndNewValues(
-                $cash_register_data_id,
-                'totalRecordsColsToUpdate',
-                $bs_cash_records_coll->toArray(),
-                $validated['bs_cash_record'],
-            );
-
-            $cash_register_data->bs_cash_records()->upsert($data, ['id'], ['amount']);
         }
 
         // Update Pago movilr ecords
@@ -1033,13 +986,11 @@ class CashRegisterController extends Controller
                     if ($cash_registers[$key_user]->has($key_date)){
                         $differences[$key_user][$key_date] = [];
                         $differences[$key_user][$key_date]['dollar_cash'] = $cash_registers[$key_user][$key_date]->first()->total_dollar_cash - $date[0]->dolares;
-                        $differences[$key_user][$key_date]['bs_cash'] = $cash_registers[$key_user][$key_date]->first()->total_bs_cash - $date[0]->bolivares;
                         $differences[$key_user][$key_date]['bs_denominations'] = $cash_registers[$key_user][$key_date]->first()->total_bs_denominations - $date[0]->bolivares;
                         $differences[$key_user][$key_date]['dollar_denominations'] = $cash_registers[$key_user][$key_date]->first()->total_dollar_denominations - $date[0]->dolares;
                     } else {
                         $differences[$key_user][$key_date] = [];
                         $differences[$key_user][$key_date]['dollar_cash'] = $date[0]->dolares * -1;
-                        $differences[$key_user][$key_date]['bs_cash'] = $date[0]->bolivares * -1;
                         $differences[$key_user][$key_date]['bs_denominations'] = $date[0]->bolivares * -1;
                         $differences[$key_user][$key_date]['dollar_denominations'] = $date[0]->dolares * -1;
 
@@ -1049,7 +1000,6 @@ class CashRegisterController extends Controller
                 $dates->each(function($date, $key_date) use (&$differences, $key_user){
                     $differences[$key_user][$key_date] = [];
                     $differences[$key_user][$key_date]['dollar_cash'] = $date[0]->dolares * -1;
-                    $differences[$key_user][$key_date]['bs_cash'] = $date[0]->bolivares * -1;
                     $differences[$key_user][$key_date]['bs_denominations'] = $date[0]->bolivares * -1;
                     $differences[$key_user][$key_date]['dollar_denominations'] = $date[0]->dolares * -1;
                 });

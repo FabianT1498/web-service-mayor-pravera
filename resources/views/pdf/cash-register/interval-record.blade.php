@@ -366,6 +366,34 @@
                                             </td>
                                         </tr>
                                         <tr>
+                                            <th>AMEX</th>
+                                            <td class="text-center">{{ number_format($cash_registers_totals[$key_user][$key_date][0]->total_amex, 2)  }}</td>
+                                            <td class="text-center">{{ number_format($saint_totals[$key_user][$key_date]['04']['bs'], 2) }}</td>
+                                            <td 
+                                                class="text-center {{$differences[$key_user][$key_date]['amex_bs'] > 0 
+                                                    ? 'text-blue-400' 
+                                                    : ( $differences[$key_user][$key_date]['amex_bs'] < 0 
+                                                        ? 'text-red-400' 
+                                                        : '' )}}"
+                                            >
+                                                    {{ number_format($differences[$key_user][$key_date]['amex_bs'], 2)  }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Todoticket</th>
+                                            <td class="text-center">{{ number_format($cash_registers_totals[$key_user][$key_date][0]->total_todoticket, 2)  }}</td>
+                                            <td class="text-center">{{ number_format($saint_totals[$key_user][$key_date]['03']['bs'], 2) }}</td>
+                                            <td 
+                                                class="text-center {{$differences[$key_user][$key_date]['todoticket_bs'] > 0 
+                                                    ? 'text-blue-400' 
+                                                    : ( $differences[$key_user][$key_date]['todoticket_bs'] < 0 
+                                                        ? 'text-red-400' 
+                                                        : '' )}}"
+                                            >
+                                                    {{ number_format($differences[$key_user][$key_date]['todoticket_bs'], 2)  }}
+                                            </td>
+                                        </tr>
+                                        <tr>
                                             <th>Punto de venta int. ($)</th>
                                             <td class="text-center">{{ number_format($cash_registers_totals[$key_user][$key_date][0]->total_point_sale_dollar, 2)}}</td>
                                             <td class="text-center">{{ number_format($saint_totals[$key_user][$key_date]['08']['dollar'], 2)  }}</td>

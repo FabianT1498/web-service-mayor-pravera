@@ -620,13 +620,6 @@
             :records="old('dollar_cash_record') ? old('dollar_cash_record') : []"
         />
 
-        <!-- <x-modal-input-list
-            :modalID="__('bs_cash_record')"
-            :title="__('Entradas de dinero')"
-            :currency="config('constants.CURRENCIES.BOLIVAR')"
-            :isBolivar="true"
-        /> -->
-
         <x-modal-input-list
             :modalID="__('pago_movil_record')"
             :title="__('Entradas de pago móvil y transferencias')"

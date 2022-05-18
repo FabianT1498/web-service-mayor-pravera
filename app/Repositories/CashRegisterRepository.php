@@ -98,7 +98,6 @@ class CashRegisterRepository implements CashRegisterRepositoryInterface
             workers.name as worker_name,
             cash_register_data.user_id as user_name,
             CAST(ROUND(COALESCE(dol_c_join.total, 0), 2) AS decimal(18, 2)) as total_dollar_cash,
-            CAST(ROUND(COALESCE(bs_c_join.total, 0), 2) AS decimal(18, 2)) as total_bs_cash,
             CAST(ROUND(COALESCE(pago_movil_bs_join.total, 0), 2) AS decimal(18, 2)) as total_pago_movil_bs,
             CAST(ROUND(COALESCE(ps_bs_join.total, 0), 2) AS decimal(18, 2)) as total_point_sale_bs,
             CAST(ROUND(COALESCE(ps_dol_join.total, 0), 2) AS decimal(18, 2)) as total_point_sale_dollar,
@@ -114,12 +113,6 @@ class CashRegisterRepository implements CashRegisterRepositoryInterface
             DB::raw("(SELECT SUM(`dollar_cash_records`.`amount`) as `total`, `dollar_cash_records`.`cash_register_data_id` FROM `dollar_cash_records` GROUP BY `dollar_cash_records`.`cash_register_data_id`) `dol_c_join`"),
             function($join) use ($id) {
                 $join->on('dol_c_join.cash_register_data_id', '=', 'cash_register_data.id');
-            }
-        )
-        ->leftJoin(
-            DB::raw("(SELECT SUM(`bs_cash_records`.`amount`) as `total`, `bs_cash_records`.`cash_register_data_id` FROM `bs_cash_records` GROUP BY `bs_cash_records`.`cash_register_data_id`) `bs_c_join`"),
-            function($join) use ($id) {
-                $join->on('bs_c_join.cash_register_data_id', '=', 'cash_register_data.id');
             }
         )
         ->leftJoin(
@@ -193,7 +186,6 @@ class CashRegisterRepository implements CashRegisterRepositoryInterface
                 'cash_register_data.cash_register_user as cash_register_user,
                 cash_register_data.date as date,
                 CAST(ROUND(COALESCE(MAX(dol_c_join.total), 0), 2) AS decimal(18, 2)) as total_dollar_cash,
-                CAST(ROUND(COALESCE(MAX(bs_c_join.total), 0), 2) AS decimal(18, 2)) as total_bs_cash,
                 CAST(ROUND(COALESCE(MAX(pago_movil_bs_join.total), 0), 2) AS decimal(18, 2)) as total_pago_movil_bs,
                 CAST(ROUND(COALESCE(MAX(ps_bs_join.total), 0), 2) AS decimal(18, 2)) as total_point_sale_bs,
                 CAST(ROUND(COALESCE(MAX(ps_dol_join.total), 0), 2) AS decimal(18, 2)) as total_point_sale_dollar,
@@ -207,12 +199,6 @@ class CashRegisterRepository implements CashRegisterRepositoryInterface
                 DB::raw("(SELECT SUM(`dollar_cash_records`.`amount`) as `total`, `dollar_cash_records`.`cash_register_data_id` FROM `dollar_cash_records` GROUP BY `dollar_cash_records`.`cash_register_data_id`) `dol_c_join`"),
                 function($join)  {
                     $join->on('dol_c_join.cash_register_data_id', '=', 'cash_register_data.id');
-                }
-            )
-            ->leftJoin(
-                DB::raw("(SELECT SUM(`bs_cash_records`.`amount`) as `total`, `bs_cash_records`.`cash_register_data_id` FROM `bs_cash_records` GROUP BY `bs_cash_records`.`cash_register_data_id`) `bs_c_join`"),
-                function($join)  {
-                    $join->on('bs_c_join.cash_register_data_id', '=', 'cash_register_data.id');
                 }
             )
             ->leftJoin(

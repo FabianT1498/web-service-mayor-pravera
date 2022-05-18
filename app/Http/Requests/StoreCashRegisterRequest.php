@@ -49,10 +49,6 @@ class StoreCashRegisterRequest extends FormRequest
             $rules['dollar_cash_record.*'] = $total_rules;
         }
         
-        if (count($this->bs_cash_record) > 0){
-            $rules['bs_cash_record.*'] = $total_rules;
-        }
-
         if (count($this->pago_movil_record) > 0){
             $rules['pago_movil_record.*'] = $total_rules;
         }
@@ -122,16 +118,6 @@ class StoreCashRegisterRequest extends FormRequest
             $inputs['pago_movil_record'] = [];
         }
             
-        // if (!is_null($inputs['total_bs_cash']) && $inputs['total_bs_cash'] > 0){
-        if ($this->has('bs_cash_record')){
-            $inputs['bs_cash_record'] = array_map(function($record){
-                return $this->formatAmount($record);
-            }, $this->bs_cash_record);
-        } else {
-            $inputs['bs_cash_record'] = [];
-        }
-        // }
-
         // if (!is_null($inputs['total_dollar_denominations']) && $inputs['total_dollar_denominations'] > 0){
         if ($this->has('dollar_denominations_record')){
             foreach($this->dollar_denominations_record as $key => $value){

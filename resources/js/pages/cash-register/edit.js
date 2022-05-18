@@ -352,11 +352,11 @@ export default {
                     this.setTotalPointSaleBs(roundNumber(parseFloat(data.total_point_sale_bs)));
                     this.setTotalPointSaleDollar(roundNumber(parseFloat(data.total_point_sale_dollar)));
                     this.setTotalZelleDollar(roundNumber(parseFloat(data.total_zelle)));
-                    this.setTotalAmexBs(roundNumber(parseFloat(data.total_amex_bs)));
-                    this.setTotalTodoticketBs(roundNumber(parseFloat(data.total_todoticket_bs)));
+                    this.setTotalAmexBs(roundNumber(parseFloat(data.total_amex)));
+                    this.setTotalTodoticketBs(roundNumber(parseFloat(data.total_todoticket)));
 
                     date = data.date;
-
+            
                     const params = {
                         date,
                         cashRegisterUser: data.cash_register_user

@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Models\DollarCashRecord;
-use App\Models\BsCashRecord;
 use App\Models\PointSaleBsRecord;
 use App\Models\PointSaleDollarRecord;
 use App\Models\BsDenominationRecord;
@@ -54,11 +53,6 @@ class CashRegisterData extends Model
     public function dollar_cash_records()
     {
         return $this->hasMany(DollarCashRecord::class);
-    }
-
-    public function bs_cash_records()
-    {
-        return $this->hasMany(BsCashRecord::class);
     }
 
     public function pago_movil_bs_records()

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePagoMovilBsRecords extends Migration
+class CreateTodoticketBsRecords extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreatePagoMovilBsRecords extends Migration
      */
     public function up()
     {
-        Schema::connection('caja_mayorista')->create('pago_movil_bs_records', function (Blueprint $table) {
+        Schema::create('todoticket_bs_records', function (Blueprint $table) {
             $table->id();
             $table->float('amount');
             $table->unsignedBigInteger('cash_register_data_id');
@@ -33,7 +33,6 @@ class CreatePagoMovilBsRecords extends Migration
      */
     public function down()
     {
-        Schema::connection('caja_mayorista')->dropIfExists('pago_movil_bs_records');
-
+        Schema::dropIfExists('todoticket_bs_records');
     }
 }

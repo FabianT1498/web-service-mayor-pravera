@@ -25,7 +25,6 @@ class CashRegister extends Model
         'cash_register_user',
         'user_name',
         'total_dollar_cash',
-        'total_bs_cash',
         'total_dollar_denominations',
         'total_bs_denominations',
         'total_point_sale_bs',
@@ -46,7 +45,6 @@ class CashRegister extends Model
         $this->user_name =  key_exists('user_name', $attributes) ? $attributes['user_name'] : '';
         $this->cash_register_user =  key_exists('cash_register_user', $attributes) ? $attributes['cash_register_user'] : '';
         $this->total_dollar_cash = key_exists('total_dollar_cash', $attributes) ? $attributes['total_dollar_cash'] : 0;
-        $this->total_bs_cash = key_exists('total_bs_cash', $attributes) ? $attributes['total_bs_cash'] : 0;
         $this->total_pago_movil_bs = key_exists('total_pago_movil_bs', $attributes) ? $attributes['total_pago_movil_bs'] : 0;
         $this->total_dollar_denominations = key_exists('total_dollar_denominations', $attributes) ? $attributes['total_dollar_denominations'] : 0;
         $this->total_bs_denominations = key_exists('total_bs_denominations', $attributes) ? $attributes['total_bs_denominations'] : 0;

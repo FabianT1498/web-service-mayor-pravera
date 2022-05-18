@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateBsCashRecords extends Migration
+class CreateAmexBsRecords extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,16 @@ class CreateBsCashRecords extends Migration
      */
     public function up()
     {
-        Schema::connection('caja_mayorista')->create('bs_cash_records', function (Blueprint $table) {
+        Schema::create('amex_bs_records', function (Blueprint $table) {
             $table->id();
             $table->float('amount');
             $table->unsignedBigInteger('cash_register_data_id');
       
         
-            $table->foreign('cash_register_data_id')->references('id')->on('cash_register_data');
+            $table->foreign('cash_register_data_id')->references('id')
+                ->on('cash_register_data')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
         });
     }
 
@@ -30,6 +33,6 @@ class CreateBsCashRecords extends Migration
      */
     public function down()
     {
-        Schema::connection('caja_mayorista')->dropIfExists('bs_cash_records');;
+        Schema::dropIfExists('amex_bs_records');
     }
 }
