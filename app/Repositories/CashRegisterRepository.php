@@ -191,7 +191,9 @@ class CashRegisterRepository implements CashRegisterRepositoryInterface
                 CAST(ROUND(COALESCE(MAX(ps_dol_join.total), 0), 2) AS decimal(18, 2)) as total_point_sale_dollar,
                 CAST(ROUND(COALESCE(MAX(bs_denomination_join.total), 0), 2) AS decimal(18, 2)) as total_bs_denominations,
                 CAST(ROUND(COALESCE(MAX(dollar_denomination_join.total), 0), 2) AS decimal(18, 2)) as total_dollar_denominations,
-                CAST(ROUND(COALESCE(MAX(zelle_join.total), 0), 2) AS decimal(18, 2)) as total_zelle
+                CAST(ROUND(COALESCE(MAX(zelle_join.total), 0), 2) AS decimal(18, 2)) as total_zelle,
+                CAST(ROUND(COALESCE(MAX(amex_join.total), 0), 2) AS decimal(18, 2)) as total_amex,
+                CAST(ROUND(COALESCE(MAX(todoticket_join.total), 0), 2) AS decimal(18, 2)) as total_todoticket
                 '
             )
             ->join('workers', 'cash_register_data.worker_id', '=', 'workers.id')
@@ -241,6 +243,18 @@ class CashRegisterRepository implements CashRegisterRepositoryInterface
                 DB::raw("(SELECT SUM(`zelle_records`.`amount`) as `total`, `zelle_records`.`cash_register_data_id` FROM `zelle_records` GROUP BY `zelle_records`.`cash_register_data_id`) `zelle_join`"),
                 function($join)  {
                     $join->on('zelle_join.cash_register_data_id', '=', 'cash_register_data.id');
+                }
+            )
+            ->leftJoin(
+                DB::raw("(SELECT SUM(`amex_bs_records`.`amount`) as `total`, `amex_bs_records`.`cash_register_data_id` FROM `amex_bs_records` GROUP BY `amex_bs_records`.`cash_register_data_id`) `amex_join`"),
+                function($join) {
+                    $join->on('amex_join.cash_register_data_id', '=', 'cash_register_data.id');
+                }
+            )
+            ->leftJoin(
+                DB::raw("(SELECT SUM(`todoticket_bs_records`.`amount`) as `total`, `todoticket_bs_records`.`cash_register_data_id` FROM `todoticket_bs_records` GROUP BY `todoticket_bs_records`.`cash_register_data_id`) `todoticket_join`"),
+                function($join) {
+                    $join->on('todoticket_join.cash_register_data_id', '=', 'cash_register_data.id');
                 }
             )
             ->whereRaw($interval_query, $date_params)

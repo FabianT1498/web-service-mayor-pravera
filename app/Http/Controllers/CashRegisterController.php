@@ -176,7 +176,7 @@ class CashRegisterController extends Controller
             if (array_key_exists('dollar_cash_record', $validated)){
                 $data = array_reduce($validated['dollar_cash_record'], function($acc, $value) use ($cash_register_data){
                     if ($value > 0){
-                        return array('amount' => $value, 'cash_register_data_id' => $cash_register_data->id);
+                        $acc[] = array('amount' => $value, 'cash_register_data_id' => $cash_register_data->id);
                     }
 
                     return $acc;
@@ -187,7 +187,7 @@ class CashRegisterController extends Controller
             if (array_key_exists('pago_movil_record', $validated)){
                 $data = array_reduce($validated['pago_movil_record'], function($acc, $value) use ($cash_register_data){
                     if ($value > 0){
-                        return array('amount' => $value, 'cash_register_data_id' => $cash_register_data->id);
+                        $acc[] = array('amount' => $value, 'cash_register_data_id' => $cash_register_data->id);
                     }
 
                     return $acc;
@@ -198,18 +198,19 @@ class CashRegisterController extends Controller
             if (array_key_exists('amex_record', $validated)){
                 $data = array_reduce($validated['amex_record'], function($acc, $value) use ($cash_register_data){
                     if ($value > 0){
-                        return array('amount' => $value, 'cash_register_data_id' => $cash_register_data->id);
+                        $acc[] = array('amount' => $value, 'cash_register_data_id' => $cash_register_data->id);
                     }
 
                     return $acc;
                 }, []);
+
                 AmexRecord::insert($data);
             }
 
             if (array_key_exists('todoticket_record', $validated)){
                 $data = array_reduce($validated['todoticket_record'], function($acc, $value) use ($cash_register_data){
                     if ($value > 0){
-                        return array('amount' => $value, 'cash_register_data_id' => $cash_register_data->id);
+                        $acc[] = array('amount' => $value, 'cash_register_data_id' => $cash_register_data->id);
                     }
 
                     return $acc;
@@ -277,7 +278,7 @@ class CashRegisterController extends Controller
             if (array_key_exists('zelle_record', $validated)){
                 $data = array_reduce($validated['zelle_record'], function($acc, $value) use ($cash_register_data){
                     if ($value > 0){
-                        return array('amount' => $value, 'cash_register_data_id' => $cash_register_data->id);
+                        $acc[] = array('amount' => $value, 'cash_register_data_id' => $cash_register_data->id);
                     }
 
                     return $acc;

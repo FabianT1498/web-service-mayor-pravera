@@ -603,6 +603,7 @@
             :title="__('Entradas de todoticket')"
             :currency="config('constants.CURRENCIES.BOLIVAR')"
             :records="$todoticket_records"
+            :isBolivar="true"
         />
 
         <x-modal-input-list
@@ -610,6 +611,7 @@
             :title="__('Entradas de AMEX')"
             :currency="config('constants.CURRENCIES.BOLIVAR')"
             :records="$amex_records"
+            :isBolivar="true"
         />
 
         <x-modal-input-list
