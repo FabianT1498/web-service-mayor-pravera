@@ -217,47 +217,50 @@ class CashRegisterController extends Controller
             }
 
             if (array_key_exists('point_sale_bs', $validated)){
+                
+                foreach($validated['point_sale_bs'] as &$record){
+                    $record['cash_register_data_id'] = $cash_register_data->id;
+                }
+                // $credit_data = array_map(function($amount, $bank) use ($cash_register_data){
+                //     return array(
+                //         'amount' => $amount,
+                //         'type' => "CREDIT",
+                //         'cash_register_data_id' => $cash_register_data->id,
+                //         'bank_name' => $bank
+                //     );
+                // }, $validated['point_sale_bs']['credit'], $validated['point_sale_bs']['bank']);
 
-                $credit_data = array_map(function($amount, $bank) use ($cash_register_data){
-                    return array(
-                        'amount' => $amount,
-                        'type' => "CREDIT",
-                        'cash_register_data_id' => $cash_register_data->id,
-                        'bank_name' => $bank
-                    );
-                }, $validated['point_sale_bs']['credit'], $validated['point_sale_bs']['bank']);
 
+                // $debit_data = array_map(function($amount, $bank) use ($cash_register_data){
+                //     return array(
+                //         'amount' => $amount,
+                //         'type' => "DEBIT",
+                //         'cash_register_data_id' => $cash_register_data->id,
+                //         'bank_name' => $bank
+                //     );
+                // }, $validated['point_sale_bs']['debit'], $validated['point_sale_bs']['bank']);
 
-                $debit_data = array_map(function($amount, $bank) use ($cash_register_data){
-                    return array(
-                        'amount' => $amount,
-                        'type' => "DEBIT",
-                        'cash_register_data_id' => $cash_register_data->id,
-                        'bank_name' => $bank
-                    );
-                }, $validated['point_sale_bs']['debit'], $validated['point_sale_bs']['bank']);
+                // $amex_data = array_map(function($amount, $bank) use ($cash_register_data){
+                //     return array(
+                //         'amount' => $amount,
+                //         'type' => "AMEX",
+                //         'cash_register_data_id' => $cash_register_data->id,
+                //         'bank_name' => $bank
+                //     );
+                // }, $validated['point_sale_bs']['amex'], $validated['point_sale_bs']['bank']);
 
-                $amex_data = array_map(function($amount, $bank) use ($cash_register_data){
-                    return array(
-                        'amount' => $amount,
-                        'type' => "AMEX",
-                        'cash_register_data_id' => $cash_register_data->id,
-                        'bank_name' => $bank
-                    );
-                }, $validated['point_sale_bs']['amex'], $validated['point_sale_bs']['bank']);
+                // $todoticket_data = array_map(function($amount, $bank) use ($cash_register_data){
+                //     return array(
+                //         'amount' => $amount,
+                //         'type' => "TODOTICKET",
+                //         'cash_register_data_id' => $cash_register_data->id,
+                //         'bank_name' => $bank
+                //     );
+                // }, $validated['point_sale_bs']['todoticket'], $validated['point_sale_bs']['bank']);
 
-                $todoticket_data = array_map(function($amount, $bank) use ($cash_register_data){
-                    return array(
-                        'amount' => $amount,
-                        'type' => "TODOTICKET",
-                        'cash_register_data_id' => $cash_register_data->id,
-                        'bank_name' => $bank
-                    );
-                }, $validated['point_sale_bs']['todoticket'], $validated['point_sale_bs']['bank']);
-
-                $data = array_merge($credit_data, $debit_data, $amex_data, $todoticket_data);
-
-                PointSaleBsRecord::insert($data);
+                // $data = array_merge($credit_data, $debit_data, $amex_data, $todoticket_data);
+                
+                PointSaleBsRecord::insert($validated['point_sale_bs']);
             }
 
             if (array_key_exists('total_point_sale_dollar', $validated) 
