@@ -514,61 +514,38 @@ class CashRegisterController extends Controller
         // Update Point Sale Bs Records
         $point_sale_bs_records_coll = $cash_register_data->point_sale_bs_records;
 
-        if (!key_exists('point_sale_bs_bank', $validated) && $point_sale_bs_records_coll->count() > 0){
+        if (!key_exists('point_sale_bs', $validated) && $point_sale_bs_records_coll->count() > 0){
             $point_sale_bs_records_coll
                 ->each(function($item, $key){
                     $item->delete();
                 });
 
-        } else if(key_exists('point_sale_bs_bank', $validated)){
-            $point_sale_methods_count = count(config('constants.POINT_SALE_METHODS'));
-
-            $diff = ($point_sale_bs_records_coll->count() / $point_sale_methods_count) - count($validated['point_sale_bs_bank']);
+        } else if(key_exists('point_sale_bs', $validated)){
+            
+            $diff = $point_sale_bs_records_coll->count() - count($validated['point_sale_bs']);
 
             if ($diff > 0){
-                $to_delete = $point_sale_bs_records_coll->splice(0, $diff * $point_sale_methods_count);
+                $to_delete = $point_sale_bs_records_coll->splice(0, $diff);
                 $to_delete->each(function($item, $key){
                     $item->delete();
                 });
             }
 
-            $chunk_size = $point_sale_bs_records_coll->count() / $point_sale_methods_count;
-
-            $credit_data = $this->mergeOldAndNewValues(
+            // return print_r( $validated['point_sale_bs']);
+            $data = $this->mergeOldAndNewValues(
                 $cash_register_data_id,
-                'pointSaleBsCreditColsToUpdate',
-                $point_sale_bs_records_coll->slice(0, $chunk_size)->toArray(),
-                $validated['point_sale_bs_credit'],
-                $validated['point_sale_bs_bank'],
+                'pointSaleBsRecordsColsToUpdate',
+                $point_sale_bs_records_coll->toArray(),
+                $validated['point_sale_bs']
             );
-
-            $debit_data = $this->mergeOldAndNewValues(
-                $cash_register_data_id,
-                'pointSaleBsDebitColsToUpdate',
-                $point_sale_bs_records_coll->slice($chunk_size, $chunk_size)->toArray(),
-                $validated['point_sale_bs_debit'],
-                $validated['point_sale_bs_bank'],
-            );
-
-            $amex_data = $this->mergeOldAndNewValues(
-                $cash_register_data_id,
-                'pointSaleBsAmexColsToUpdate',
-                $point_sale_bs_records_coll->slice(($chunk_size * 2) , $chunk_size)->toArray(),
-                $validated['point_sale_bs_amex'],
-                $validated['point_sale_bs_bank'],
-            );
-
-            $todoticket_data = $this->mergeOldAndNewValues(
-                $cash_register_data_id,
-                'pointSaleBsTodoticketColsToUpdate',
-                $point_sale_bs_records_coll->slice($chunk_size * 3, $chunk_size)->toArray(),
-                $validated['point_sale_bs_todoticket'],
-                $validated['point_sale_bs_bank'],
-            );
-
-            $data = array_merge($credit_data, $debit_data, $amex_data, $todoticket_data);
             
-            $cash_register_data->point_sale_bs_records()->upsert($data, ['id'], ['amount', 'type']);
+            $cash_register_data->point_sale_bs_records()->upsert($data, ['id'], [
+                'cancel_debit',
+                'cancel_credit',
+                'cancel_amex',
+                'cancel_todoticket',
+                'bank_name'
+            ]);
         }
 
         // Update Zelle Records
@@ -1010,39 +987,14 @@ class CashRegisterController extends Controller
         ];
     }
 
-    private function pointSaleBsDebitColsToUpdate($old_record, $new_record, $parent_id){
-        return array_merge(
-            $this->pointSaleBsRecordsColsToUpdate($old_record, $new_record, $parent_id),
-            ['type' => 'DEBIT']
-        );
-    }
-
-    private function pointSaleBsCreditColsToUpdate($old_record, $new_record, $parent_id){
-        return array_merge(
-            $this->pointSaleBsRecordsColsToUpdate($old_record, $new_record, $parent_id),
-            ['type' => 'CREDIT']
-        );
-    }
-
-    private function pointSaleBsAmexColsToUpdate($old_record, $new_record, $parent_id){
-        return array_merge(
-            $this->pointSaleBsRecordsColsToUpdate($old_record, $new_record, $parent_id),
-            ['type' => 'AMEX']
-        );
-    }
-
-    private function pointSaleBsTodoticketColsToUpdate($old_record, $new_record, $parent_id){
-        return array_merge(
-            $this->pointSaleBsRecordsColsToUpdate($old_record, $new_record, $parent_id),
-            ['type' => 'TODOTICKET']
-        );
-    }
-
     private function pointSaleBsRecordsColsToUpdate($old_record, $new_record, $parent_id){
         return [
             'id' => $old_record ? $old_record['id'] : null,
-            'amount' => $new_record[0],
-            'bank_name' => $new_record[1],
+            'cancel_debit' => $new_record[0]['cancel_debit'],
+            'cancel_credit' => $new_record[0]['cancel_credit'],
+            'cancel_amex' => $new_record[0]['cancel_amex'],
+            'cancel_todoticket' => $new_record[0]['cancel_todoticket'],
+            'bank_name' => $new_record[0]['bank_name'],
             'cash_register_data_id' => $parent_id
         ];
     }
