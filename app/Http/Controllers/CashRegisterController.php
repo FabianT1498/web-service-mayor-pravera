@@ -307,31 +307,6 @@ class CashRegisterController extends Controller
             ->orderBy('bank_name')
             ->get();
 
-        // // Banks array is just an array of literal strings
-        // $point_sale_bs_banks = $point_sale_bs_records
-        //     ->unique('bank_name')
-        //     ->values()
-        //     ->map(function($record){
-        //         return $record->bank_name;
-        //     });
-
-        // // point_sale_bs_records is an array whose credit and debit entries contains Eloquent Models
-        // $point_sale_bs_records_arr = $point_sale_bs_records->reduce(function ($arr, $item) {
-        //     if ($item->type === "CREDIT"){
-        //         array_push($arr['credit'], $item);
-        //     } else if ($item->type === "DEBIT"){
-        //         array_push($arr['debit'], $item);
-        //     } else if ($item->type === "AMEX"){
-        //         array_push($arr['amex'], $item);
-        //     } else if ($item->type === "TODOTICKET"){
-        //         array_push($arr['todoticket'], $item);
-        //     }
-
-        //     return $arr;
-        // }, ['credit' => [], 'debit' => [], 'amex' => [], 'todoticket' => []]);
-
-        // $point_sale_bs_records_arr = array_merge($point_sale_bs_records_arr, ['bank' => $point_sale_bs_banks]);
-
         // Total amounts
         $total_dollar_cash = $dollar_cash_records->reduce(function($carry, $el){
             return $carry + $el->amount;
@@ -673,10 +648,9 @@ class CashRegisterController extends Controller
             'dollar_cash' => $cash_register_totals->total_dollar_cash - $totals_from_safact->dolares,
             'bs_cash' => $cash_register_totals->total_bs_denominations - $totals_from_safact->bolivares,
             'pago_movil_bs' => $cash_register_totals->total_pago_movil_bs - $totals_e_payment[$user][$date]['05']['bs'],
-            'todoticket_bs' => $cash_register_totals->total_todoticket - $totals_e_payment[$user][$date]['03']['bs'],
-            'amex_bs' => $cash_register_totals->total_amex - $totals_e_payment[$user][$date]['04']['bs'],
             'point_sale_bs' => ($cash_register_totals->total_point_sale_bs - ($totals_e_payment[$user][$date]['01']['bs'] 
-                + $totals_e_payment[$user][$date]['02']['bs'])),
+                    + $totals_e_payment[$user][$date]['02']['bs'] + $totals_e_payment[$user][$date]['03']['bs']
+                    + $totals_e_payment[$user][$date]['04']['bs'])),
             'point_sale_dollar' => $cash_register_totals->total_point_sale_dollar - $totals_e_payment[$user][$date]['08']['dollar'],
             'zelle' => $cash_register_totals->total_zelle - $totals_e_payment[$user][$date]['07']['dollar'],
             'bs_denominations' => $cash_register_totals->total_bs_denominations - $totals_from_safact->bolivares,
@@ -907,23 +881,20 @@ class CashRegisterController extends Controller
                 
                 foreach($dates as $key_date => $date){
                     if ($cash_registers[$key_user]->has($key_date)){
-                            $differences[$key_user][$key_date]['point_sale_bs'] = $cash_registers[$key_user][$key_date]->first()->total_point_sale_bs - ($date['01']['bs'] + $date['02']['bs']);
-                            $differences[$key_user][$key_date]['point_sale_dollar'] = $cash_registers[$key_user][$key_date]->first()->total_point_sale_dollar - $date['08']['dollar'];
-                            $differences[$key_user][$key_date]['todoticket_bs'] = $cash_registers[$key_user][$key_date]->first()->total_todoticket - $date['03']['bs'];
-                            $differences[$key_user][$key_date]['amex_bs'] = $cash_registers[$key_user][$key_date]->first()->total_amex - $date['04']['bs'];
-                            $differences[$key_user][$key_date]['pago_movil_bs'] = $cash_registers[$key_user][$key_date]->first()->total_pago_movil_bs - $date['05']['bs'];
-                            $differences[$key_user][$key_date]['zelle'] = $cash_registers[$key_user][$key_date]->first()->total_zelle -  $date['07']['dollar'];
-                        } else {
+                        $differences[$key_user][$key_date]['point_sale_bs'] = $cash_registers[$key_user][$key_date]->first()->total_point_sale_bs - ($date['01']['bs'] + $date['02']['bs']
+                                + $date['03']['bs'] + $date['04']['bs']);
+                        $differences[$key_user][$key_date]['point_sale_dollar'] = $cash_registers[$key_user][$key_date]->first()->total_point_sale_dollar - $date['08']['dollar'];
+                        $differences[$key_user][$key_date]['pago_movil_bs'] = $cash_registers[$key_user][$key_date]->first()->total_pago_movil_bs - $date['05']['bs'];
+                        $differences[$key_user][$key_date]['zelle'] = $cash_registers[$key_user][$key_date]->first()->total_zelle -  $date['07']['dollar'];
+                    } else {
                         if (!array_key_exists($key_date, $differences[$key_user])){
                             $differences[$key_user][$key_date] = [];
                         }
-                        $differences[$key_user][$key_date]['point_sale_bs'] = ($date['01']['bs'] + $date['02']['bs']) * -1;
+                        $differences[$key_user][$key_date]['point_sale_bs'] = ($date['01']['bs'] + $date['02']['bs'] 
+                                + $date['03']['bs'] + $date['04']['bs']) * -1;
                         $differences[$key_user][$key_date]['point_sale_dollar'] = $date['08']['dollar'] * -1;
                         $differences[$key_user][$key_date]['pago_movil_bs'] = $date['05']['bs'] * -1;
                         $differences[$key_user][$key_date]['zelle'] = $date['07']['dollar'] * -1;
-                        $differences[$key_user][$key_date]['todoticket_bs'] = $date['03']['bs'] * -1;
-                        $differences[$key_user][$key_date]['amex_bs'] = $date['04']['bs'] * -1;
-
                     }
                 };
             } else {
@@ -932,12 +903,11 @@ class CashRegisterController extends Controller
                         $differences[$key_user][$key_date] = [];
                     }
 
-                    $differences[$key_user][$key_date]['point_sale_bs'] = ($date['01']['bs'] + $date['02']['bs']) * -1;
+                    $differences[$key_user][$key_date]['point_sale_bs'] = ($date['01']['bs'] + $date['02']['bs']
+                            + $date['03']['bs'] + $date['04']['bs']) * -1;
                     $differences[$key_user][$key_date]['point_sale_dollar'] = $date['08']['dollar'] * -1;
                     $differences[$key_user][$key_date]['pago_movil_bs'] = $date['05']['bs'] * -1;
                     $differences[$key_user][$key_date]['zelle'] = $date['07']['dollar'] * -1;
-                    $differences[$key_user][$key_date]['todoticket_bs'] = $date['03']['bs'] * -1;
-                    $differences[$key_user][$key_date]['amex_bs'] = $date['04']['bs'] * -1;
                 }
             }
         }
