@@ -62,11 +62,17 @@ class StoreCashRegisterRequest extends FormRequest
         // }
 
         if (count($this->point_sale_bs) > 0){
-            $rules['point_sale_bs.bank.*'] = ['exists:caja_mayorista.banks,name'];
-            $rules['point_sale_bs.debit.*'] = ['required', new BadFormattedAmount];
-            $rules['point_sale_bs.credit.*'] = ['required', new BadFormattedAmount];
-            $rules['point_sale_bs.amex.*'] = ['required', new BadFormattedAmount];
-            $rules['point_sale_bs.todoticket.*'] = ['required', new BadFormattedAmount];
+            // $rules['point_sale_bs.bank.*'] = ['exists:caja_mayorista.banks,name'];
+            // $rules['point_sale_bs.debit.*'] = ['required', new BadFormattedAmount];
+            // $rules['point_sale_bs.credit.*'] = ['required', new BadFormattedAmount];
+            // $rules['point_sale_bs.amex.*'] = ['required', new BadFormattedAmount];
+            // $rules['point_sale_bs.todoticket.*'] = ['required', new BadFormattedAmount];
+
+            $rules['point_sale_bs.*.bank_name'] = ['exists:caja_mayorista.banks,name'];
+            $rules['point_sale_bs.*.cancel_debit'] = ['required', new BadFormattedAmount];
+            $rules['point_sale_bs.*.cancel_credit'] = ['required', new BadFormattedAmount];
+            $rules['point_sale_bs.*.cancel_amex'] = ['required', new BadFormattedAmount];
+            $rules['point_sale_bs.*.cancel_todoticket'] = ['required', new BadFormattedAmount];
         }
 
         if (count($this->zelle_record) > 0){
@@ -135,31 +141,42 @@ class StoreCashRegisterRequest extends FormRequest
         if ($this->has('point_sale_bs_bank')){
             $inputs['point_sale_bs'] = [];
 
-            $inputs['point_sale_bs']['bank'] = $this->point_sale_bs_bank;
+            $inputs['point_sale_bs'] = array_map(function($bank, $debit, $credit, $amex, $todoticket){
+                return [
+                    'bank_name' => $bank,
+                    'cancel_debit' => $this->formatAmount($debit),
+                    'cancel_credit' => $this->formatAmount($credit),
+                    'cancel_amex' => $this->formatAmount($amex),
+                    'cancel_todoticket' => $this->formatAmount($todoticket),
+                ];
+            }, $this->point_sale_bs_bank, $this->point_sale_bs_debit, $this->point_sale_bs_credit,
+                    $this->point_sale_bs_amex, $this->point_sale_bs_todoticket);
 
-            if ($this->has('point_sale_bs_debit')){
-                $inputs['point_sale_bs']['debit'] = array_map(function($value){
-                    return $this->formatAmount($value);
-                }, $this->point_sale_bs_debit);
-            }
+            // $inputs['point_sale_bs']['bank'] = $this->point_sale_bs_bank;
+
+            // if ($this->has('point_sale_bs_debit')){
+            //     $inputs['point_sale_bs']['debit'] = array_map(function($value){
+            //         return $this->formatAmount($value);
+            //     }, $this->point_sale_bs_debit);
+            // }
     
-            if ($this->has('point_sale_bs_credit')){
-                $inputs['point_sale_bs']['credit'] = array_map(function($value){
-                    return $this->formatAmount($value);
-                }, $this->point_sale_bs_credit);
-            }
+            // if ($this->has('point_sale_bs_credit')){
+            //     $inputs['point_sale_bs']['credit'] = array_map(function($value){
+            //         return $this->formatAmount($value);
+            //     }, $this->point_sale_bs_credit);
+            // }
 
-            if ($this->has('point_sale_bs_amex')){
-                $inputs['point_sale_bs']['amex'] = array_map(function($value){
-                    return $this->formatAmount($value);
-                }, $this->point_sale_bs_amex);
-            }
+            // if ($this->has('point_sale_bs_amex')){
+            //     $inputs['point_sale_bs']['amex'] = array_map(function($value){
+            //         return $this->formatAmount($value);
+            //     }, $this->point_sale_bs_amex);
+            // }
 
-            if ($this->has('point_sale_bs_todoticket')){
-                $inputs['point_sale_bs']['todoticket'] = array_map(function($value){
-                    return $this->formatAmount($value);
-                }, $this->point_sale_bs_todoticket);
-            }
+            // if ($this->has('point_sale_bs_todoticket')){
+            //     $inputs['point_sale_bs']['todoticket'] = array_map(function($value){
+            //         return $this->formatAmount($value);
+            //     }, $this->point_sale_bs_todoticket);
+            // }
 
         } else {
             $inputs['point_sale_bs'] = [];
@@ -196,11 +213,11 @@ class StoreCashRegisterRequest extends FormRequest
             'pago_movil_record' => 'entrada de pago movil',
             'dollar_denominations_record' => 'denominación de dolar',
             'bs_denominations_record' => 'denominación de bolivar',
-            'point_sale_bs.bank' => 'banco',
-            'point_sale_bs.debit' => 'entrada de tarjeta de debito',
-            'point_sale_bs.credit' => 'entrada de tarjeta de credito',
-            'point_sale_bs.amex' => 'entrada de AMEX',
-            'point_sale_bs.todoticket' => 'entrada de todoticket',
+            'point_sale_bs.*.bank_name' => 'banco',
+            'point_sale_bs.*.cancel_debit' => 'entrada de tarjeta de debito',
+            'point_sale_bs.*.cancel_credit' => 'entrada de tarjeta de credito',
+            'point_sale_bs.*.cancel_amex' => 'entrada de AMEX',
+            'point_sale_bs.*.cancel_todoticket' => 'entrada de todoticket',
             'zelle_record' => 'entrada de zelle',
             'total_point_sale_dollar' => 'entrada del punto de venta internacional',
         ];

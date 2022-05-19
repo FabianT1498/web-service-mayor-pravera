@@ -120,7 +120,8 @@ class CashRegisterRepository implements CashRegisterRepositoryInterface
             }
         )
         ->leftJoin(
-            DB::raw("(SELECT SUM(`point_sale_bs_records`.`amount`) as `total`, `point_sale_bs_records`.`cash_register_data_id` FROM `point_sale_bs_records` GROUP BY `point_sale_bs_records`.`cash_register_data_id`) `ps_bs_join`"),
+            DB::raw("(SELECT SUM(`point_sale_bs_records_2`.`cancel_debit` + `point_sale_bs_records_2`.`cancel_credit` 
+                + `point_sale_bs_records_2`.`cancel_amex` + `point_sale_bs_records_2`.`cancel_todoticket`) as `total`, `point_sale_bs_records_2`.`cash_register_data_id` FROM `point_sale_bs_records_2` GROUP BY `point_sale_bs_records_2`.`cash_register_data_id`) `ps_bs_join`"),
             function($join) use ($id) {
                 $join->on('ps_bs_join.cash_register_data_id', '=', 'cash_register_data.id');
             }
@@ -194,7 +195,8 @@ class CashRegisterRepository implements CashRegisterRepositoryInterface
                 }
             )
             ->leftJoin(
-                DB::raw("(SELECT SUM(`point_sale_bs_records`.`amount`) as `total`, `point_sale_bs_records`.`cash_register_data_id` FROM `point_sale_bs_records` GROUP BY `point_sale_bs_records`.`cash_register_data_id`) `ps_bs_join`"),
+                DB::raw("(SELECT SUM(`point_sale_bs_records_2`.`cancel_debit` + `point_sale_bs_records_2`.`cancel_credit` 
+                    + `point_sale_bs_records_2`.`cancel_amex` + `point_sale_bs_records_2`.`cancel_todoticket`) as `total`, `point_sale_bs_records_2`.`cash_register_data_id` FROM `point_sale_bs_records_2` GROUP BY `point_sale_bs_records_2`.`cash_register_data_id`) `ps_bs_join`"),
                 function($join)  {
                     $join->on('ps_bs_join.cash_register_data_id', '=', 'cash_register_data.id');
                 }
