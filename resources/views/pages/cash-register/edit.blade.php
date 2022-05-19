@@ -505,7 +505,7 @@
 
         <x-modal-point-sale-list
             :modalID="__('point_sale_bs')"
-            :records="$point_sale_bs_records_arr"
+            :records="$point_sale_bs_records"
             :banks="$banks"
         />
 

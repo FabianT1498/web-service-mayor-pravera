@@ -51,79 +51,74 @@
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                                @if (count($records) > 0 && count($records['bank']) > 0 && (count($records['bank']) === count($records['credit']))
-                                        && (count($records['bank']) === count($records['debit'])) 
-                                                && (count($records['bank']) === count($records['amex']))
-                                                        && (count($records['bank']) === count($records['todoticket'])))
-                                    @foreach($records['bank'] as $key => $bank)
-                                        <tr class="hover:bg-gray-100 dark:hover:bg-gray-700" data-id={{$key}}>
-                                            <td data-table="num-col" class="py-4 pl-6 text-sm font-medium text-center text-gray-900 whitespace-nowrap dark:text-white">{{ $key + 1}}</td>
-                                            
-                                            <td class="pl-3 py-4 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                                                <select class="w-full form-select" name={{$modalID . "_bank[]"}}>
-                                                    <option value="{{ $bank }}" selected>{{ $bank }}</option>
-                                                    @foreach($banks as $bank)
-                                                        <option value="{{ $bank->name }}">{{ $bank->name}}</option>
-                                                    @endforeach
-                                                </select>
-                                            </td>
+                                @foreach($records as $key => $record)
+                                    <tr class="hover:bg-gray-100 dark:hover:bg-gray-700" data-id={{$key}}>
+                                        <td data-table="num-col" class="py-4 pl-6 text-sm font-medium text-center text-gray-900 whitespace-nowrap dark:text-white">{{ $key + 1}}</td>
+                                        
+                                        <td class="pl-3 py-4 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white">
+                                            <select class="w-full form-select" name={{$modalID . '_bank[]' }}>
+                                                <option value="{{ $record->bank_name }}" selected>{{ $record->bank_name }}</option>
+                                                @foreach($banks as $bank)
+                                                    <option value="{{ $bank->name }}">{{ $bank->name}}</option>
+                                                @endforeach
+                                            </select>
+                                        </td>
 
-                                            <td class="pl-3 py-4 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                                                <input 
-                                                    type="text" 
-                                                    data-point-sale-type="debit" 
-                                                    value="{{ $records['debit'][$key]->amount }}"
-                                                    placeholder="{{ '0.00 ' . $currency }}"
-                                                    id="{{$modalID . '_debit_' . $key}}"
-                                                    name="{{ $modalID . '_debit[' . $records['debit'][$key]->id . ']' }}" 
-                                                    class="w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                                >
-                                            </td>
+                                        <td class="pl-3 py-4 text-sm text-center font-medium text-gray-500 whitespace-nowrap dark:text-white">
+                                            <input 
+                                                type="text" 
+                                                data-point-sale-type="debit" 
+                                                value="{{ $record->cancel_debit }}"
+                                                placeholder="{{ '0.00 ' . $currency }}"
+                                                id="{{$modalID . '_debit_' . $key}}"
+                                                name="{{ $modalID . '_debit[]' }}" 
+                                                class="w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                            >
+                                        </td>
 
-                                            <td data-table="convertion-col" class="pl-3 py-4 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                                <input 
-                                                    type="text" 
-                                                    data-point-sale-type="credit" 
-                                                    value="{{ $records['credit'][$key]->amount }}"
-                                                    placeholder="{{ '0.00 ' . $currency }}"
-                                                    id="{{$modalID . '_credit_' . $key}}"
-                                                    name="{{  $modalID . '_credit[' . $records['credit'][$key]->id . ']' }}" 
-                                                    class="w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                                >
-                                            </td>
+                                        <td data-table="convertion-col" class="pl-3 py-4 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                            <input 
+                                                type="text" 
+                                                data-point-sale-type="credit" 
+                                                value="{{ $record->cancel_credit }}"
+                                                placeholder="{{ '0.00 ' . $currency }}"
+                                                id="{{$modalID . '_credit_' . $key}}"
+                                                name="{{  $modalID . '_credit[]' }}" 
+                                                class="w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                            >
+                                        </td>
 
-                                            <td data-table="convertion-col" class="pl-3 py-4 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                                <input 
-                                                    type="text" 
-                                                    data-point-sale-type="amex" 
-                                                    value="{{ $records['amex'][$key]->amount }}"
-                                                    placeholder="{{ '0.00 ' . $currency }}"
-                                                    id="{{$modalID . '_amex_' . $key}}"
-                                                    name="{{  $modalID . '_amex[' . $records['amex'][$key]->id . ']' }}" 
-                                                    class="w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                                >
-                                            </td>
+                                        <td data-table="convertion-col" class="pl-3 py-4 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                            <input 
+                                                type="text" 
+                                                data-point-sale-type="amex" 
+                                                value="{{ $record->cancel_amex }}"
+                                                placeholder="{{ '0.00 ' . $currency }}"
+                                                id="{{$modalID . '_amex_' . $key}}"
+                                                name="{{  $modalID . '_amex[]' }}" 
+                                                class="w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                            >
+                                        </td>
 
-                                            <td data-table="convertion-col" class="pl-3 py-4 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                                <input 
-                                                    type="text" 
-                                                    data-point-sale-type="todoticket" 
-                                                    value="{{ $records['todoticket'][$key]->amount }}"
-                                                    placeholder="{{ '0.00 ' . $currency }}"
-                                                    id="{{$modalID . '_todoticket_' . $key}}"
-                                                    name="{{  $modalID . '_todoticket[' . $records['todoticket'][$key]->id . ']' }}" 
-                                                    class="w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                                >
-                                            </td>
-                                            
-                                            <td class="py-4 pl-3 text-sm text-center font-medium whitespace-nowrap">
-                                                <button data-modal="delete" type="button" class="bg-red-600 flex justify-center w-6 h-6 items-center transition-colors duration-150 rounded-full shadow-lg hover:bg-red-500">
-                                                    <i class="fas fa-times  text-white"></i>                        
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                @endif
+                                        <td data-table="convertion-col" class="pl-3 py-4 text-sm text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                            <input 
+                                                type="text" 
+                                                data-point-sale-type="todoticket" 
+                                                value="{{ $record->cancel_todoticket }}"
+                                                placeholder="{{ '0.00 ' . $currency }}"
+                                                id="{{$modalID . '_todoticket_' . $key}}"
+                                                name="{{  $modalID . '_todoticket[]' }}" 
+                                                class="w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                            >
+                                        </td>
+                                        
+                                        <td class="py-4 pl-3 text-sm text-center font-medium whitespace-nowrap">
+                                            <button data-modal="delete" type="button" class="bg-red-600 flex justify-center w-6 h-6 items-center transition-colors duration-150 rounded-full shadow-lg hover:bg-red-500">
+                                                <i class="fas fa-times  text-white"></i>                        
+                                            </button>
+                                        </td>
+                                    </tr>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>

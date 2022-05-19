@@ -221,44 +221,6 @@ class CashRegisterController extends Controller
                 foreach($validated['point_sale_bs'] as &$record){
                     $record['cash_register_data_id'] = $cash_register_data->id;
                 }
-                // $credit_data = array_map(function($amount, $bank) use ($cash_register_data){
-                //     return array(
-                //         'amount' => $amount,
-                //         'type' => "CREDIT",
-                //         'cash_register_data_id' => $cash_register_data->id,
-                //         'bank_name' => $bank
-                //     );
-                // }, $validated['point_sale_bs']['credit'], $validated['point_sale_bs']['bank']);
-
-
-                // $debit_data = array_map(function($amount, $bank) use ($cash_register_data){
-                //     return array(
-                //         'amount' => $amount,
-                //         'type' => "DEBIT",
-                //         'cash_register_data_id' => $cash_register_data->id,
-                //         'bank_name' => $bank
-                //     );
-                // }, $validated['point_sale_bs']['debit'], $validated['point_sale_bs']['bank']);
-
-                // $amex_data = array_map(function($amount, $bank) use ($cash_register_data){
-                //     return array(
-                //         'amount' => $amount,
-                //         'type' => "AMEX",
-                //         'cash_register_data_id' => $cash_register_data->id,
-                //         'bank_name' => $bank
-                //     );
-                // }, $validated['point_sale_bs']['amex'], $validated['point_sale_bs']['bank']);
-
-                // $todoticket_data = array_map(function($amount, $bank) use ($cash_register_data){
-                //     return array(
-                //         'amount' => $amount,
-                //         'type' => "TODOTICKET",
-                //         'cash_register_data_id' => $cash_register_data->id,
-                //         'bank_name' => $bank
-                //     );
-                // }, $validated['point_sale_bs']['todoticket'], $validated['point_sale_bs']['bank']);
-
-                // $data = array_merge($credit_data, $debit_data, $amex_data, $todoticket_data);
                 
                 PointSaleBsRecord::insert($validated['point_sale_bs']);
             }
@@ -333,10 +295,10 @@ class CashRegisterController extends Controller
             ->select('name')
             ->whereNotIn('banks.name', function($query) use ($cash_register_data){
                 $query
-                    ->select('point_sale_bs_records.bank_name')
-                    ->from('point_sale_bs_records')
-                    ->where('point_sale_bs_records.cash_register_data_id', '=', $cash_register_data->id)
-                    ->groupBy('point_sale_bs_records.bank_name');
+                    ->select('point_sale_bs_records_2.bank_name')
+                    ->from('point_sale_bs_records_2')
+                    ->where('point_sale_bs_records_2.cash_register_data_id', '=', $cash_register_data->id)
+                    ->groupBy('point_sale_bs_records_2.bank_name');
             })
             ->get();
 
@@ -345,30 +307,30 @@ class CashRegisterController extends Controller
             ->orderBy('bank_name')
             ->get();
 
-        // Banks array is just an array of literal strings
-        $point_sale_bs_banks = $point_sale_bs_records
-            ->unique('bank_name')
-            ->values()
-            ->map(function($record){
-                return $record->bank_name;
-            });
+        // // Banks array is just an array of literal strings
+        // $point_sale_bs_banks = $point_sale_bs_records
+        //     ->unique('bank_name')
+        //     ->values()
+        //     ->map(function($record){
+        //         return $record->bank_name;
+        //     });
 
-        // point_sale_bs_records is an array whose credit and debit entries contains Eloquent Models
-        $point_sale_bs_records_arr = $point_sale_bs_records->reduce(function ($arr, $item) {
-            if ($item->type === "CREDIT"){
-                array_push($arr['credit'], $item);
-            } else if ($item->type === "DEBIT"){
-                array_push($arr['debit'], $item);
-            } else if ($item->type === "AMEX"){
-                array_push($arr['amex'], $item);
-            } else if ($item->type === "TODOTICKET"){
-                array_push($arr['todoticket'], $item);
-            }
+        // // point_sale_bs_records is an array whose credit and debit entries contains Eloquent Models
+        // $point_sale_bs_records_arr = $point_sale_bs_records->reduce(function ($arr, $item) {
+        //     if ($item->type === "CREDIT"){
+        //         array_push($arr['credit'], $item);
+        //     } else if ($item->type === "DEBIT"){
+        //         array_push($arr['debit'], $item);
+        //     } else if ($item->type === "AMEX"){
+        //         array_push($arr['amex'], $item);
+        //     } else if ($item->type === "TODOTICKET"){
+        //         array_push($arr['todoticket'], $item);
+        //     }
 
-            return $arr;
-        }, ['credit' => [], 'debit' => [], 'amex' => [], 'todoticket' => []]);
+        //     return $arr;
+        // }, ['credit' => [], 'debit' => [], 'amex' => [], 'todoticket' => []]);
 
-        $point_sale_bs_records_arr = array_merge($point_sale_bs_records_arr, ['bank' => $point_sale_bs_banks]);
+        // $point_sale_bs_records_arr = array_merge($point_sale_bs_records_arr, ['bank' => $point_sale_bs_banks]);
 
         // Total amounts
         $total_dollar_cash = $dollar_cash_records->reduce(function($carry, $el){
@@ -380,7 +342,7 @@ class CashRegisterController extends Controller
         }, 0);
 
         $total_point_sale_bs = $point_sale_bs_records->reduce(function($carry, $el){
-            return $carry + $el->amount;
+            return $carry + $el->cancel_debit + $el->cancel_credit + $el->cancel_amex + $el->cancel_todoticket;
         }, 0);
 
         $total_dollar_denominations = $dollar_denomination_records->reduce(function($carry, $el){
@@ -406,7 +368,7 @@ class CashRegisterController extends Controller
             'dollar_cash_records',
             'pago_movil_bs_records',
             'point_sale_dollar_record',
-            'point_sale_bs_records_arr',
+            'point_sale_bs_records',
             'banks',
             'bs_denomination_records',
             'dollar_denomination_records',
