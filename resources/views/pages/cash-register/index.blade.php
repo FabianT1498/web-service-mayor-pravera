@@ -87,7 +87,7 @@
                     @endforeach
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="cash-register-tbody">
                 @foreach ($paginator as $key => $value)
                     <tr>
                         <td class="text-center"> {{ $key + 1 }} </td>
@@ -110,7 +110,7 @@
                                             type="button"
                                             data-modal-toggle="close-cash-register-modal"
                                             data-tooltip-target="close-tooltip"
-                                            data_cash_register_close_id="{{ $value->id }}"
+                                            data_cash_register_id="{{ $value->id }}"
                                             class="font-medium hover:text-teal-600 transition ease-in-out duration-500"
                                         >
                                             <i class="fas fa-save"></i>

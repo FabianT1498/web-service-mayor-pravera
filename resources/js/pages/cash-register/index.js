@@ -9,9 +9,35 @@ export default {
         formFilter: document.querySelector('#form_filter'),
         pageInput: document.querySelector('#page'),
         acceptCashRegisterCloseBtn: document.querySelector('#accept-cash-register-close'),
-        closeCashRegisterCloseBtns: document.querySelectorAll('button[data_cash_register_close_id]')
+        cashRegisterTBody: document.querySelector('#cash-register-tbody')
     },
     lastClickedCloseBtnID: -1,
+    changeDateEventHandlerWrapper: (form) => {
+        return (event) => {
+            form.submit();
+        }
+    },
+    changeWrapper: (form) => {
+        return (event) => {
+            form.submit();
+        }
+    },
+    handleClickCashRegisterCloseBtn: function() {
+        let self = this;
+        return (event) => {
+            let button = event.target.closest('button');
+            if (button && button.getAttribute('data_cash_register_id')){
+                self.lastClickedCloseBtnID = button.getAttribute('data_cash_register_id');
+            }
+        }
+    },
+    handleClickAcceptCashRegisterBtn: function() {
+        let self = this;
+        return (event) => {
+            let form = document.querySelector('#close-cash-register-form-' + self.lastClickedCloseBtnID);
+            form.submit();
+        }
+    },
     init(){
         Object.assign(Datepicker.locales, es);
 
@@ -20,37 +46,10 @@ export default {
             language: 'es'
         });
 
-        let changeWrapper = (form) => {
-            return (event) => {
-                form.submit();
-            }
-        }
-
-        let changeDateEventHandlerWrapper = (form) => {
-            return (event) => {
-                form.submit();
-            }
-        }
-
-        let handleClickCashRegisterCloseBtn = function(lastID){
-            return (event) => {
-                lastID = event.target.closest('button').getAttribute('data_cash_register_id');
-                // form.submit();
-            }
-        }
-
-        let handleClickAcceptCashRegisterBtn = (lastID) => {
-            return function(event) {
-                let form = document.querySelector('#close-cash-register-form-' . lastID);
-                console.log(form)
-                // form.submit();
-            }
-        }
-        
         /** Filtrar registros  */
-        dateRangePicker.datepickers[0].element.addEventListener('hide', changeDateEventHandlerWrapper(this.DOMElements.formFilter));
-        dateRangePicker.datepickers[1].element.addEventListener('hide', changeDateEventHandlerWrapper(this.DOMElements.formFilter));
-        this.DOMElements.formFilter.addEventListener('change', changeWrapper(this.DOMElements.formFilter));
+        dateRangePicker.datepickers[0].element.addEventListener('hide', this.changeDateEventHandlerWrapper(this.DOMElements.formFilter));
+        dateRangePicker.datepickers[1].element.addEventListener('hide', this.changeDateEventHandlerWrapper(this.DOMElements.formFilter));
+        this.DOMElements.formFilter.addEventListener('change', this.changeWrapper(this.DOMElements.formFilter));
     
         if (this.DOMElements.pagesLinksContainer){
             this.DOMElements.pagesLinksContainer.addEventListener('click', function(pageInput, form){
@@ -68,14 +67,9 @@ export default {
             }(this.DOMElements.pageInput, this.DOMElements.formFilter));
         }
 
-
-        console.log(this.DOMElements.closeCashRegisterCloseBtns);
-
-        closeCashRegisterCloseBtns.foreach(function(){
-            item.addEventListener('click', handleClickCashRegisterCloseBtn)
-        })
+        this.DOMElements.cashRegisterTBody.addEventListener('click', this.handleClickCashRegisterCloseBtn());
 
         /** Cierre de caja */
-        this.DOMElements.acceptCashRegisterCloseBtn.addEventListener('click', handleClickAcceptCashRegisterBtn(this.lastClickedCloseBtnID))        
+        this.DOMElements.acceptCashRegisterCloseBtn.addEventListener('click', this.handleClickAcceptCashRegisterBtn())        
     }
 }
