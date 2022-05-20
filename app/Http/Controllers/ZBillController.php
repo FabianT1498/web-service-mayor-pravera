@@ -188,7 +188,7 @@ class ZBillController extends Controller
             $data['end_date'] = $end_date;
 
             $pdf = $pdf->loadView($view_name, $data)
-                ->setPaper('a4', 'landscape')
+                ->setPaper('letter', 'landscape')
                 ->setOptions([
                     'defaultFont' => 'sans-serif',
                     'isPhpEnabled' => true
