@@ -340,7 +340,8 @@
                                             <th>Punto de venta (Bs)</th>
                                             <td class="text-center">{{ number_format($cash_registers_totals[$key_user][$key_date][0]->total_point_sale_bs, 2)  }}</td>
                                             <td class="text-center">{{ number_format($saint_totals[$key_user][$key_date]['01']['bs'] 
-                                                + $saint_totals[$key_user][$key_date]['02']['bs'], 2) }}</td>
+                                                    + $saint_totals[$key_user][$key_date]['02']['bs'] + $saint_totals[$key_user][$key_date]['03']['bs']
+                                                            + $saint_totals[$key_user][$key_date]['04']['bs'], 2) }}</td>
                                             <td 
                                                 class="text-center {{ $differences[$key_user][$key_date]['point_sale_bs'] > 0 
                                                     ? 'text-blue-400' 

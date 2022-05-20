@@ -618,6 +618,53 @@ class CashRegisterController extends Controller
         return $totals_saint;
     }
 
+    // Metodo para agregar los metodos de pagos electronicos en cajas que no tuvieron ningun movimiento
+    // de este tipo, para un intervalo de tiempo.
+    private function completeEpaymentMethodsToCashUserForInteval($totals_from_safact, $totals_e_payment, $payment_methods){
+        $default_e_payment_values = $payment_methods->keys()->reduce(function($carry, $item){
+            $carry[$item] = [];
+            $carry[$item]['bs'] = 0.00;
+            $carry[$item]['dollar'] = 0.00;
+
+            return $carry;
+        }, []);
+
+        foreach($totals_from_safact as $key_user => $dates){
+            if (array_key_exists($key_user, $totals_e_payment)){
+                foreach ($dates as $key_date => $date){ 
+                    if (!array_key_exists($key_date, $totals_e_payment[$key_user])){
+                        $totals_e_payment[$key_user][$key_date] = $default_e_payment_values;
+                    }
+                }
+            } else {
+                $totals_e_payment[$key_user] = [];
+                foreach ($dates as $key_date => $date){
+                    $totals_e_payment[$key_user][$key_date] = $default_e_payment_values;
+                }
+            }
+        }
+
+        return $totals_e_payment;
+    }
+
+    // Metodo para agregar los metodos de pagos electronicos en cajas que no tuvieron ningun movimiento
+    // de este tipo, para un solo elemento.
+    private function completeEpaymentMethodsToCashUserForRecord($user, $date, $totals_e_payment, $payment_methods){
+        $default_e_payment_values = $payment_methods->keys()->reduce(function($carry, $item){
+            $carry[$item] = [];
+            $carry[$item]['bs'] = 0.00;
+            $carry[$item]['dollar'] = 0.00;
+
+            return $carry;
+        }, []);
+
+        if (!array_key_exists($user, $totals_e_payment)){
+            $totals_e_payment[$user][$date] = $default_e_payment_values;
+        }
+
+        return $totals_e_payment;
+    }
+
     private function getPaymentMethods(){
         return DB::table('payment_methods')->orderByRaw("CodPago asc")->get()->groupBy(['CodPago']);
     }
@@ -625,8 +672,10 @@ class CashRegisterController extends Controller
     public function singleRecordPdf(CashRegisterRepository $cash_register_repo, PrintSingleCashRegisterRequest $request){
         
         $id = $request->route('id');
-
+       
         $cash_register_totals = $cash_register_repo->getTotals($id);
+        $user =  $cash_register_totals->cash_register_user;
+        $date = date('Y-m-d', strtotime( $cash_register_totals->date));
         
         $totals_from_safact = $cash_register_repo->getTotalsFromSafact($cash_register_totals->date,
             $cash_register_totals->date, $cash_register_totals->cash_register_user)->first();
@@ -640,9 +689,9 @@ class CashRegisterController extends Controller
         
         $totals_e_payment  = $this
             ->mapEPaymentMethods($totals_e_payment, $payment_methods);
-        
-        $user =  $cash_register_totals->cash_register_user;
-        $date = date('Y-m-d', strtotime( $cash_register_totals->date));
+
+        // Completar las cajas con sus respectivos metodos de pago que no tuvieron operacion con pagos electronicos
+        $totals_e_payment = $this->completeEpaymentMethodsToCashUserForRecord($user, $date, $totals_e_payment, $payment_methods);
         
         $differences = [
             'dollar_cash' => $cash_register_totals->total_dollar_cash - $totals_from_safact->dolares,
@@ -706,8 +755,12 @@ class CashRegisterController extends Controller
             ->getTotalsEPaymentMethods($start_date, $end_date)
             ->groupBy(['CodUsua', 'FechaE']);
         
+        // Completar los metodos de pagos que no tuvieron registros en cada caja
         $totals_e_payment  = $this
             ->mapEPaymentMethods($totals_e_payment, $payment_methods);
+
+        // Completar las cajas con sus respectivos metodos de pago que no tuvieron operacion con pagos electronicos
+        $totals_e_payment = $this->completeEpaymentMethodsToCashUserForInteval($totals_from_safact, $totals_e_payment, $payment_methods);
 
         $differences = $this->calculateDiffToSaint($totals_from_safact, $totals_e_payment, $cash_registers_totals);
     
@@ -725,11 +778,6 @@ class CashRegisterController extends Controller
             ->get()
             ->groupBy(['cash_register_user', 'date']);
 
-        $currency_signs = [
-            'dollar' => config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')),
-            'bs' => config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR'))
-        ];
-            
         $totals_bs_denominations = $this->sumSubTotalDenomination($bs_denominations);
         $total_dollar_denominations = $this->sumSubTotalDenomination($dollar_denominations);
 
@@ -755,7 +803,6 @@ class CashRegisterController extends Controller
         $pdf = App::make('dompdf.wrapper');
         $pdf = $pdf->loadView('pdf.cash-register.interval-record', compact(
             'saint_totals',
-            'currency_signs',
             'cash_registers_totals',
             'differences',
             'dollar_denominations',
@@ -797,27 +844,15 @@ class CashRegisterController extends Controller
 
     private function joinSaintMoneyEntranceCollections($totals_from_safact, $totals_e_payment){
         $saint_totals = [];
+       
         foreach($totals_from_safact as $key_user => $dates){
             $saint_totals[$key_user] = [];
-            
-            if (array_key_exists($key_user, $totals_e_payment)){
-                foreach ($dates as $key_date => $date){
-                    $saint_totals[$key_user][$key_date] = [];
-                    
-                    if (array_key_exists($key_date, $totals_e_payment[$key_user])){
-                        $totals_e_payment[$key_user][$key_date]['dolares'] = $date[0]->dolares;
-                        $totals_e_payment[$key_user][$key_date]['bolivares'] = $date[0]->bolivares;
-                        $saint_totals[$key_user][$key_date] = $totals_e_payment[$key_user][$key_date];
-                    } else {
-                        $saint_totals[$key_user][$key_date]['dolares'] = $date[0]->dolares;
-                        $saint_totals[$key_user][$key_date]['bolivares'] = $date[0]->bolivares;     
-                    }
-                }
-            } else {
-                foreach ($dates as $key_date => $date){
-                    $saint_totals[$key_user][$key_date]['dolares'] = $date[0]->dolares;
-                    $saint_totals[$key_user][$key_date]['bolivares'] = $date[0]->bolivares; 
-                }
+     
+            foreach ($dates as $key_date => $date){
+                $saint_totals[$key_user][$key_date] = [];
+                $saint_totals[$key_user][$key_date]['bolivares'] = $date->first()->bolivares;
+                $saint_totals[$key_user][$key_date]['dolares'] = $date->first()->dolares;
+                $saint_totals[$key_user][$key_date] = array_merge($saint_totals[$key_user][$key_date], $totals_e_payment[$key_user][$key_date]);
             }
         }
 
@@ -846,6 +881,7 @@ class CashRegisterController extends Controller
 
         $totals_from_safact->each(function($dates, $key_user) use ($cash_registers, &$differences){
             $differences[$key_user] = [];
+            
             if ($cash_registers->has($key_user)){
                 $dates->each(function($date, $key_date) use (&$differences, $key_user, $cash_registers){
                     if ($cash_registers[$key_user]->has($key_date)){
@@ -873,9 +909,9 @@ class CashRegisterController extends Controller
 
         foreach($totals_e_payment as $key_user => $dates){
             
-            if (!array_key_exists($key_user, $differences)){
-                $differences[$key_user]  = [];
-            }
+            // if (!array_key_exists($key_user, $differences)){
+            //     $differences[$key_user]  = [];
+            // }
 
             if ($cash_registers->has($key_user)){
                 
@@ -887,21 +923,23 @@ class CashRegisterController extends Controller
                         $differences[$key_user][$key_date]['pago_movil_bs'] = $cash_registers[$key_user][$key_date]->first()->total_pago_movil_bs - $date['05']['bs'];
                         $differences[$key_user][$key_date]['zelle'] = $cash_registers[$key_user][$key_date]->first()->total_zelle -  $date['07']['dollar'];
                     } else {
-                        if (!array_key_exists($key_date, $differences[$key_user])){
-                            $differences[$key_user][$key_date] = [];
-                        }
+                        // if (!array_key_exists($key_date, $differences[$key_user])){
+                        //     $differences[$key_user][$key_date] = [];
+                        // }
+                        $differences[$key_user][$key_date] = [];
                         $differences[$key_user][$key_date]['point_sale_bs'] = ($date['01']['bs'] + $date['02']['bs'] 
                                 + $date['03']['bs'] + $date['04']['bs']) * -1;
                         $differences[$key_user][$key_date]['point_sale_dollar'] = $date['08']['dollar'] * -1;
                         $differences[$key_user][$key_date]['pago_movil_bs'] = $date['05']['bs'] * -1;
                         $differences[$key_user][$key_date]['zelle'] = $date['07']['dollar'] * -1;
                     }
-                };
+                }
             } else {
                 foreach($dates as $key_date => $date){
-                    if (!array_key_exists($key_date, $differences[$key_user])){
-                        $differences[$key_user][$key_date] = [];
-                    }
+                    // if (!array_key_exists($key_date, $differences[$key_user])){
+                    //     $differences[$key_user][$key_date] = [];
+                    // }
+                    $differences[$key_user][$key_date] = [];
 
                     $differences[$key_user][$key_date]['point_sale_bs'] = ($date['01']['bs'] + $date['02']['bs']
                             + $date['03']['bs'] + $date['04']['bs']) * -1;
