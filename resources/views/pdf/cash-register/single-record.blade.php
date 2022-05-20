@@ -321,7 +321,8 @@
                                 <th>Punto de venta (Bs)</th>
                                 <td class="text-center">{{ number_format($cash_register_totals->total_point_sale_bs, 2)  }}</td>
                                 <td class="text-center">{{  number_format($totals_e_payment[$user][$date]['01']['bs'] 
-                                    + $totals_e_payment[$user][$date]['02']['bs'], 2)  }}</td>
+                                        + $totals_e_payment[$user][$date]['02']['bs'] + $totals_e_payment[$user][$date]['03']['bs']
+                                                + $totals_e_payment[$user][$date]['04']['bs'], 2)  }}</td>
                                 <td 
                                     class="text-center {{ $differences['point_sale_bs'] > 0 
                                         ? 'text-blue-400' 

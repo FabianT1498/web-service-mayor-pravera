@@ -737,7 +737,7 @@ class CashRegisterController extends Controller
         $end_date = $request->end_date;
 
         $saint_totals = $this->joinSaintMoneyEntranceCollections($totals_from_safact,
-            $totals_e_payment);
+            $totals_e_payment, $payment_methods);
 
         $total_quantity_dollar_denominations = $this->sumQuantityCashRegisterDenominations($dollar_denominations);
         $total_quantity_bs_denominations = $this->sumQuantityCashRegisterDenominations($bs_denominations);
@@ -795,11 +795,19 @@ class CashRegisterController extends Controller
         return $total_quantity;
     }
 
-    private function joinSaintMoneyEntranceCollections($totals_from_safact, $totals_e_payment){
+    private function joinSaintMoneyEntranceCollections($totals_from_safact, $totals_e_payment, $payment_methods){
         $saint_totals = [];
+        $default_e_payment_values = $payment_methods->keys()->reduce(function($carry, $item){
+            $carry[$item] = [];
+            $carry[$item]['bs'] = 0.00;
+            $carry[$item]['dollar'] = 0.00;
+
+            return $carry;
+        }, []);
+
+
         foreach($totals_from_safact as $key_user => $dates){
             $saint_totals[$key_user] = [];
-            
             if (array_key_exists($key_user, $totals_e_payment)){
                 foreach ($dates as $key_date => $date){
                     $saint_totals[$key_user][$key_date] = [];
@@ -810,13 +818,15 @@ class CashRegisterController extends Controller
                         $saint_totals[$key_user][$key_date] = $totals_e_payment[$key_user][$key_date];
                     } else {
                         $saint_totals[$key_user][$key_date]['dolares'] = $date[0]->dolares;
-                        $saint_totals[$key_user][$key_date]['bolivares'] = $date[0]->bolivares;     
+                        $saint_totals[$key_user][$key_date]['bolivares'] = $date[0]->bolivares;
+                        $saint_totals[$key_user][$key_date] = array_merge($saint_totals[$key_user][$key_date], $default_e_payment_values);
                     }
                 }
             } else {
                 foreach ($dates as $key_date => $date){
                     $saint_totals[$key_user][$key_date]['dolares'] = $date[0]->dolares;
-                    $saint_totals[$key_user][$key_date]['bolivares'] = $date[0]->bolivares; 
+                    $saint_totals[$key_user][$key_date]['bolivares'] = $date[0]->bolivares;
+                    $saint_totals[$key_user][$key_date] = array_merge($saint_totals[$key_user][$key_date], $default_e_payment_values);
                 }
             }
         }
