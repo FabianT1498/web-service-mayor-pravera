@@ -14,9 +14,11 @@
                 font-size: 16px;
             }
 
+            @page { margin: 50px 0px; }
+        
             body * { 
                 box-sizing: border-box;
-                font-size: 1rem;
+                font-size: 0.9rem;
             }
 
             .page-break {
@@ -63,7 +65,7 @@
             th, td {
                 border: 1px solid #ccc;
                 overflow: hidden;
-                width: 120px;
+                width: 160px;
                 padding: 2px 2px;
             }
 
@@ -90,7 +92,7 @@
             }
 
             .container {
-                width: 1050px;
+                width: 1000px;
                 margin: 0 auto;
             }
 
