@@ -22,12 +22,17 @@ export default {
             form.submit();
         }
     },
-    handleClickCashRegisterCloseBtn: function() {
+    handleClickCashRegister: function() {
         let self = this;
         return (event) => {
             let button = event.target.closest('button');
+            let link = event.target.closest('a');
             if (button && button.getAttribute('data_cash_register_id')){
                 self.lastClickedCloseBtnID = button.getAttribute('data_cash_register_id');
+            } else if(link && link.getAttribute('data-generate-pdf')){
+                let modalEl = document.querySelector('#modal-loading');
+                const modal = new Modal(modalEl, {placement: 'center-bottom'});
+                modal.show();
             }
         }
     },
@@ -67,7 +72,7 @@ export default {
             }(this.DOMElements.pageInput, this.DOMElements.formFilter));
         }
 
-        this.DOMElements.cashRegisterTBody.addEventListener('click', this.handleClickCashRegisterCloseBtn());
+        this.DOMElements.cashRegisterTBody.addEventListener('click', this.handleClickCashRegister());
 
         /** Cierre de caja */
         this.DOMElements.acceptCashRegisterCloseBtn.addEventListener('click', this.handleClickAcceptCashRegisterBtn())        
