@@ -7,7 +7,36 @@ export default {
         dateRangePicker: document.querySelector('#date_range_picker'),
         pagesLinksContainer: document.querySelector('#pages_links_container'),
         formFilter: document.querySelector('#form_filter'),
-        pageInput: document.querySelector('#page')
+        pageInput: document.querySelector('#page'),
+        acceptCashRegisterCloseBtn: document.querySelector('#accept-cash-register-close'),
+        cashRegisterTBody: document.querySelector('#cash-register-tbody')
+    },
+    lastClickedCloseBtnID: -1,
+    changeDateEventHandlerWrapper: (form) => {
+        return (event) => {
+            form.submit();
+        }
+    },
+    changeWrapper: (form) => {
+        return (event) => {
+            form.submit();
+        }
+    },
+    handleClickCashRegisterCloseBtn: function() {
+        let self = this;
+        return (event) => {
+            let button = event.target.closest('button');
+            if (button && button.getAttribute('data_cash_register_id')){
+                self.lastClickedCloseBtnID = button.getAttribute('data_cash_register_id');
+            }
+        }
+    },
+    handleClickAcceptCashRegisterBtn: function() {
+        let self = this;
+        return (event) => {
+            let form = document.querySelector('#close-cash-register-form-' + self.lastClickedCloseBtnID);
+            form.submit();
+        }
     },
     init(){
         Object.assign(Datepicker.locales, es);
@@ -17,23 +46,11 @@ export default {
             language: 'es'
         });
 
-        let changeWrapper = (form) => {
-            return (event) => {
-                form.submit();
-            }
-        }
-
-        let changeDateEventHandlerWrapper = (form) => {
-            return (event) => {
-                form.submit();
-            }
-        }
-
-        dateRangePicker.datepickers[0].element.addEventListener('hide', changeDateEventHandlerWrapper(this.DOMElements.formFilter));
-        dateRangePicker.datepickers[1].element.addEventListener('hide', changeDateEventHandlerWrapper(this.DOMElements.formFilter));
-
-        this.DOMElements.formFilter.addEventListener('change', changeWrapper(this.DOMElements.formFilter));
-
+        /** Filtrar registros  */
+        dateRangePicker.datepickers[0].element.addEventListener('hide', this.changeDateEventHandlerWrapper(this.DOMElements.formFilter));
+        dateRangePicker.datepickers[1].element.addEventListener('hide', this.changeDateEventHandlerWrapper(this.DOMElements.formFilter));
+        this.DOMElements.formFilter.addEventListener('change', this.changeWrapper(this.DOMElements.formFilter));
+    
         if (this.DOMElements.pagesLinksContainer){
             this.DOMElements.pagesLinksContainer.addEventListener('click', function(pageInput, form){
                 return (e) => {
@@ -49,5 +66,10 @@ export default {
                 }
             }(this.DOMElements.pageInput, this.DOMElements.formFilter));
         }
+
+        this.DOMElements.cashRegisterTBody.addEventListener('click', this.handleClickCashRegisterCloseBtn());
+
+        /** Cierre de caja */
+        this.DOMElements.acceptCashRegisterCloseBtn.addEventListener('click', this.handleClickAcceptCashRegisterBtn())        
     }
 }

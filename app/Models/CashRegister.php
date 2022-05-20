@@ -30,7 +30,6 @@ class CashRegister extends Model
         'total_point_sale_bs',
         'total_pago_movil_bs',
         'total_point_sale_dollar',
-        'total_todoticket',
         'date',
         'cash_register_data_id'
     ];
