@@ -9,7 +9,9 @@ export default {
         formFilter: document.querySelector('#form_filter'),
         pageInput: document.querySelector('#page'),
         acceptCashRegisterCloseBtn: document.querySelector('#accept-cash-register-close'),
-        cashRegisterTBody: document.querySelector('#cash-register-tbody')
+        cashRegisterTBody: document.querySelector('#cash-register-tbody'),
+        loadingModalEl: document.querySelector('#modal-loading'),
+        intervalLink: document.querySelector('a[data-generate-pdf=interval-report]'),
     },
     lastClickedCloseBtnID: -1,
     changeDateEventHandlerWrapper: (form) => {
@@ -30,10 +32,18 @@ export default {
             if (button && button.getAttribute('data_cash_register_id')){
                 self.lastClickedCloseBtnID = button.getAttribute('data_cash_register_id');
             } else if(link && link.getAttribute('data-generate-pdf')){
-                let modalEl = document.querySelector('#modal-loading');
-                const modal = new Modal(modalEl, {placement: 'center-bottom'});
+                let modal = new Modal(self.DOMElements.loadingModalEl, {placement: 'center-bottom'});
                 modal.show();
             }
+        }
+    },
+    handleClickCancelLoading: function() {
+        let self = this;
+        return (event) => {
+            event.preventDefault()
+            let modal = new Modal(self.DOMElements.loadingModalEl, {placement: 'center-bottom'});
+            modal.hide();
+            return false;
         }
     },
     handleClickAcceptCashRegisterBtn: function() {
@@ -74,7 +84,9 @@ export default {
 
         this.DOMElements.cashRegisterTBody.addEventListener('click', this.handleClickCashRegister());
 
+        this.DOMElements.intervalLink.addEventListener('click', this.handleClickCashRegister());
+
         /** Cierre de caja */
-        this.DOMElements.acceptCashRegisterCloseBtn.addEventListener('click', this.handleClickAcceptCashRegisterBtn())        
+        this.DOMElements.acceptCashRegisterCloseBtn.addEventListener('click', this.handleClickAcceptCashRegisterBtn())
     }
 }
