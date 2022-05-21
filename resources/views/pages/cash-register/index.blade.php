@@ -73,6 +73,7 @@
                     <a 
                         class="underline text-sm text-gray-600 hover:text-gray-900 pt-4" 
                         href="{{ route('cash_register.interval_record_pdf', ['start_date' => $start_date, 'end_date' => $end_date]) }}"
+                        data-generate-pdf="interval-report"
                     >
                         {{ __('Generar reporte por intervalo de tiempo en formato PDF') }}
                     </a>
@@ -144,6 +145,7 @@
                                     href="{{ URL::to(route('cash_register.single_record_pdf', $value->id)) }}" 
                                     class="font-medium hover:text-teal-600 transition ease-in-out duration-500 {{ $value->status === config('constants.CASH_REGISTER_STATUS.COMPLETED') ? '' : 'ml-4' }}"
                                     data-tooltip-target="single-report-tooltip"
+                                    data-generate-pdf="single-report"
                                 >
                                     <i class="fas fa-file-pdf"></i>
                                 </a>
@@ -189,4 +191,6 @@
             </div>
         </div>
     </div>
+
+    <x-modal-loading :title="__('Espere mientras se genera el documento PDF')"/>
 @endsection
