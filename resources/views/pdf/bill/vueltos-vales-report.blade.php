@@ -284,6 +284,11 @@
                                 <td>{{ number_format($states_bills->first()->MontoDiv, 2) }}</td>
                             </tr>
                         @endforeach
+                        <tr class="bg-grey-600" >
+                            <td class="total-width-text">Total</td>
+                            <td class="total-width-text">{{ number_format($total_bill_vueltos['MontoBs'], 2) }}</td>
+                            <td class="total-width-text">{{ number_format($total_bill_vueltos['MontoDiv'], 2) }}</td>
+                        </tr>
                     </tbody>
                 </table>
                 <div class="page-break"></div>

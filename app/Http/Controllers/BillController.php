@@ -41,11 +41,11 @@ class BillController extends Controller
             ->groupBy(['CodUsua']);
 
         $total_bill_vueltos = $this->getTotalVueltos($total_bill_vales_vueltos_by_user);
-        
+ 
         return compact([
             'bill_vueltos',
             'total_bill_vales_vueltos_by_user',
-            'total_bill_vueltos'
+            'total_bill_vueltos',
         ]);
     }
 
