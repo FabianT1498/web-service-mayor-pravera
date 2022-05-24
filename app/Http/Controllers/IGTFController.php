@@ -33,7 +33,7 @@ class IGTFController extends Controller
             ::connection('saint_db')
             ->table('SAFACT')
             ->selectRaw("ROW_NUMBER() OVER(ORDER BY SAFACT.FechaE, SAFACT.CodClie asc) AS Row, FORMAT(CAST(SAFACT.FechaE as date), 'dd-MM-yyyy') as FechaE, SAFACT.NumeroD as NumeroD,
-                SAFACT.CodClie as CedulaClie,CAST((((SAFACT.MtoExtra * 100) / 3) * SAFACT.Signo) AS decimal(10, 2)) as baseImponible,
+                SAFACT.CodClie as CedulaClie,CAST(((SAFACT.CancelC - SAFACT.MtoExtra) * SAFACT.Signo) AS decimal(10, 2)) as baseImponible,
                 CAST((SAFACT.MtoExtra * SAFACT.Signo) AS decimal(10, 2)) as IGTF")  
             ->whereRaw("SAFACT.EsNF = 0 AND SAFACT.MtoExtra > 0 AND SAFACT.CodUsua IN ('CAJA1', 'CAJA2', 'CAJA3', 'CAJA4', 'CAJA5',
                 'CAJA6' , 'CAJA7', 'DELIVERY') AND " . $interval_query, $queryParams)
@@ -51,7 +51,7 @@ class IGTFController extends Controller
         return DB
             ::connection('saint_db')
             ->table('SAFACT')
-            ->selectRaw("CAST(SUM((((SAFACT.MtoExtra * 100) / 3) * SAFACT.Signo)) AS decimal(10, 2)) as baseImponible,
+            ->selectRaw("CAST(SUM(((SAFACT.CancelC - SAFACT.MtoExtra) * SAFACT.Signo)) AS decimal(10, 2)) as baseImponible,
             CAST(SUM(SAFACT.MtoExtra * SAFACT.Signo) AS decimal(10, 2)) as IGTF")  
             ->whereRaw("SAFACT.EsNF = 0 AND SAFACT.MtoExtra > 0 AND SAFACT.CodUsua IN ('CAJA1', 'CAJA2', 'CAJA3', 'CAJA4', 'CAJA5',
                 'CAJA6' , 'CAJA7', 'DELIVERY') AND " . $interval_query, $queryParams)
