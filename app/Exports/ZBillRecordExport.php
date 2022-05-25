@@ -33,7 +33,9 @@ class ZBillRecordExport implements FromView, WithEvents, WithTitle
             $row_count[$key_codusua] = 0;
             foreach ($dates as $key_date => $printers){
                 foreach ($printers as $key_printer => $z_numbers){
-                    $row_count[$key_codusua] += $z_numbers->count();   
+                    foreach ($z_numbers as $records){
+                        $row_count[$key_codusua] += $records->count();   
+                    }
                 }
             }
 
