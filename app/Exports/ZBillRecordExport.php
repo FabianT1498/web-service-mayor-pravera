@@ -39,7 +39,7 @@ class ZBillRecordExport implements FromView, WithEvents, WithTitle
                 }
             }
 
-            $row_count[$key_codusua] += 2;
+            $row_count[$key_codusua] += 4;
         }
 
         return $row_count;
@@ -64,27 +64,7 @@ class ZBillRecordExport implements FromView, WithEvents, WithTitle
         return [
             AfterSheet::class => function(AfterSheet $event) {
 
-                $event->sheet->styleCells(
-                    'A1:M1',
-                    [
-                        'fill' => [
-                            'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-                            'startColor' => [
-                                'argb' => 'FFA0A0A0',
-                            ],
-                            'endColor' => [
-                                'argb' => 'FFFFFFFF',
-                            ],
-                        ],
-                        'font' => [
-                            'bold' => true,
-                        ],
-                        'alignment' => [
-                            'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
-                        ],
-                        
-                    ]
-                );
+                
 
                 $event->sheet->styleCells(
                     'F:M', 
@@ -98,7 +78,7 @@ class ZBillRecordExport implements FromView, WithEvents, WithTitle
 
                 /** Usuarios de caja */
                 $prev = null;
-                $start = 2;
+                $start = 1;
                 foreach($this->row_count_by_user as $user_row_count){
                     if ($prev){
                         $start += $prev;
@@ -124,8 +104,32 @@ class ZBillRecordExport implements FromView, WithEvents, WithTitle
                             ],
                         ]
                     );
+
+                    $event->sheet->styleCells(
+                        'A'. $start + 1 . ':M' . $start + 1,
+                        [
+                            'fill' => [
+                                'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                                'startColor' => [
+                                    'argb' => 'FFA0A0A0',
+                                ],
+                                'endColor' => [
+                                    'argb' => 'FFFFFFFF',
+                                ],
+                            ],
+                            'font' => [
+                                'bold' => true,
+                            ],
+                            'alignment' => [
+                                'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                            ],
+                            
+                        ]
+                    );
+
                     
-                    $event->sheet->mergeCells('A'. $start . ':M' . $start);
+                    
+                    $event->sheet->mergeCells('A'. $start + 1 . ':M' . $start + 1);
                     
                     $prev = $user_row_count;
                 }

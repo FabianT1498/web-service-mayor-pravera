@@ -1,23 +1,23 @@
-<table>
-    <thead>
-        <tr>
-            <th>Fecha<br/>factura</th>
-            <th>Serial Fiscal</th>
-            <th>N.º reporte<br/>"Z"</th>
-            <th>Cant.<br/>facturas</th>
-            <th>Último<br/>n.º factura</th>
-            <th>Total ventas<br/>(Con I.V.A)</th>
-            <th>Base<br/>imponible</th>
-            <th>Alicuota<br/>16%</th>
-            <th>Base<br/>imponible</th>
-            <th>Alicuota<br/>8%</th>
-            <th>Venta<br/>del dia</th>
-            <th>Ventas<br/>Licores</th>
-            <th>Ventas gravadas<br/>Viveres</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach($totals_from_safact as $key_codusua => $dates)
+@foreach($totals_from_safact as $key_codusua => $dates)
+    <table>
+        <thead>
+            <tr>
+                <th>Fecha<br/>factura</th>
+                <th>Serial Fiscal</th>
+                <th>N.º reporte<br/>"Z"</th>
+                <th>Cant.<br/>facturas</th>
+                <th>Último<br/>n.º factura</th>
+                <th>Total ventas<br/>(Con I.V.A)</th>
+                <th>Base<br/>imponible</th>
+                <th>Alicuota<br/>16%</th>
+                <th>Base<br/>imponible</th>
+                <th>Alicuota<br/>8%</th>
+                <th>Venta<br/>del dia</th>
+                <th>Ventas<br/>Licores</th>
+                <th>Ventas gravadas<br/>Viveres</th>
+            </tr>
+        </thead>
+        <tbody>
             <tr>
                 <td>{{ $key_codusua }}</td>
                 <td>&nbsp;</td>
@@ -84,6 +84,7 @@
                     <td>{{ $total }}</td>
                 @endforeach
             </tr>
-        @endforeach
-    </tbody>
-</table>      
+        </tbody>
+    </table>      
+@endforeach
+        
