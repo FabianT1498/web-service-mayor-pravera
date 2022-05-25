@@ -45,23 +45,26 @@ class ZBillController extends Controller
                 $total_base_imponible[$cod_usua_key][$date_key] = [];
                 foreach ($printers as $key_printer => $z_numbers){
                     $total_base_imponible[$cod_usua_key][$date_key][$key_printer] = [];
-                    foreach ($z_numbers as $key_z => $record){
+                    foreach ($z_numbers as $key_z => $tipo_facts){
                         $total_base_imponible[$cod_usua_key][$date_key][$key_printer][$key_z] = [];
-                        // Mapping every total with its key
-                        foreach($iva_codes as $index => $cod_iva){
-                            $data = $record->slice($index, 1)->first();
-        
-                            if (!is_null($data)){
-                                if ($cod_iva === $data->CodTaxs){
-                                    $total_base_imponible[$cod_usua_key][$date_key][$key_printer][$key_z][$cod_iva] = $data->TGravable;
-                                } else if (in_array($data->CodTaxs, $iva_codes)) {
-                                    if (!key_exists($cod_iva, $total_base_imponible[$cod_usua_key][$date_key][$key_printer][$key_z])){
-                                        $total_base_imponible[$cod_usua_key][$date_key][$key_printer][$key_z][$cod_iva] = 0.00;
+                        foreach ($tipo_facts as $tipo_fact_key => $record){
+                            $total_base_imponible[$cod_usua_key][$date_key][$key_printer][$key_z][$tipo_fact_key] = [];
+
+                            foreach($iva_codes as $index => $cod_iva){
+                                $data = $record->slice($index, 1)->first();
+            
+                                if (!is_null($data)){
+                                    if ($cod_iva === $data->CodTaxs){
+                                        $total_base_imponible[$cod_usua_key][$date_key][$key_printer][$key_z][$tipo_fact_key][$cod_iva] = $data->TGravable;
+                                    } else if (in_array($data->CodTaxs, $iva_codes)) {
+                                        if (!key_exists($cod_iva, $total_base_imponible[$cod_usua_key][$date_key][$key_printer][$key_z][$tipo_fact_key])){
+                                            $total_base_imponible[$cod_usua_key][$date_key][$key_printer][$key_z][$tipo_fact_key][$cod_iva] = 0.00;
+                                        }
+                                        $total_base_imponible[$cod_usua_key][$date_key][$key_printer][$key_z][$tipo_fact_key][$data->CodTaxs] = $data->TGravable;
                                     }
-                                    $total_base_imponible[$cod_usua_key][$date_key][$key_printer][$key_z][$data->CodTaxs] = $data->TGravable;
+                                } else if (!key_exists($cod_iva,  $total_base_imponible[$cod_usua_key][$date_key][$key_printer][$key_z][$tipo_fact_key])) {
+                                    $total_base_imponible[$cod_usua_key][$date_key][$key_printer][$key_z][$tipo_fact_key][$cod_iva] = 0.00;
                                 }
-                            } else if (!key_exists($cod_iva,  $total_base_imponible[$cod_usua_key][$date_key][$key_printer][$key_z])) {
-                                $total_base_imponible[$cod_usua_key][$date_key][$key_printer][$key_z][$cod_iva] = 0.00;
                             }
                         }
                     }
@@ -90,27 +93,31 @@ class ZBillController extends Controller
             // Iterating over every date of cash register user
             foreach ($dates as $key_date => $printers){
                 foreach ($printers as $key_printer => $z_numbers){
-                    foreach ($z_numbers as $key_z_number => $record){
-                        
-                        $totals[$key_codusua]['total_IVA'] += $record->first()->ventaTotalIVA;
+                    foreach ($z_numbers as $key_z_number => $records){
+                        foreach($records as $record){
+                            $totals[$key_codusua]['total_IVA'] += $record->ventaTotalIVA;
+                            $totals[$key_codusua]['total_exento'] += $record->ventaTotalExenta;
 
-                        if(count($total_base_imponible_by_tax) > 0 && key_exists($key_codusua, $total_base_imponible_by_tax)
-                                && key_exists($key_date, $total_base_imponible_by_tax[$key_codusua])
-                                    && key_exists($key_printer, $total_base_imponible_by_tax[$key_codusua][$key_date])){
-                            $totals[$key_codusua]['base_imponible_16'] += $total_base_imponible_by_tax[$key_codusua][$key_date][$key_printer][$key_z_number]['IVA'];
-                            $totals[$key_codusua]['IVA_16'] += ($total_base_imponible_by_tax[$key_codusua][$key_date][$key_printer][$key_z_number]['IVA'] * 0.16); 
-                            $totals[$key_codusua]['base_imponible_8'] += $total_base_imponible_by_tax[$key_codusua][$key_date][$key_printer][$key_z_number]['IVA8'];
-                            $totals[$key_codusua]['IVA_8'] += ($total_base_imponible_by_tax[$key_codusua][$key_date][$key_printer][$key_z_number]['IVA8'] * 0.08);
-                        }
-                        
-                        $totals[$key_codusua]['total_exento'] += $record->first()->ventaTotalExenta;
-                        
-                        if($total_licores->count() > 0 && $total_licores->has($key_codusua)
-                                && $total_licores[$key_codusua]->has($key_date) && $total_licores[$key_codusua][$key_date]->has($key_printer)){
-                            $totals[$key_codusua]['total_licores'] += $total_licores[$key_codusua][$key_date][$key_printer][$key_z_number]->first()->ventaLicoresBS;
-                            $totals[$key_codusua]['total_viveres'] += ($record->first()->ventaTotalExenta - $total_licores[$key_codusua][$key_date][$key_printer][$key_z_number]->first()->ventaLicoresBS);
-                        } else {
-                            $totals[$key_codusua]['total_viveres'] += $record->first()->ventaTotalExenta;
+                            if(count($total_base_imponible_by_tax) > 0 && key_exists($key_codusua, $total_base_imponible_by_tax)
+                                    && key_exists($key_date, $total_base_imponible_by_tax[$key_codusua])
+                                        && key_exists($key_printer, $total_base_imponible_by_tax[$key_codusua][$key_date])
+                                            && key_exists($record->TipoFac, $total_base_imponible_by_tax[$key_codusua][$key_date][$key_printer][$key_z_number])            
+                            ){
+                                $totals[$key_codusua]['base_imponible_16'] += $total_base_imponible_by_tax[$key_codusua][$key_date][$key_printer][$key_z_number][$record->TipoFac]['IVA'];
+                                $totals[$key_codusua]['IVA_16'] += ($total_base_imponible_by_tax[$key_codusua][$key_date][$key_printer][$key_z_number][$record->TipoFac]['IVA'] * 0.16); 
+                                $totals[$key_codusua]['base_imponible_8'] += $total_base_imponible_by_tax[$key_codusua][$key_date][$key_printer][$key_z_number][$record->TipoFac]['IVA8'];
+                                $totals[$key_codusua]['IVA_8'] += ($total_base_imponible_by_tax[$key_codusua][$key_date][$key_printer][$key_z_number][$record->TipoFac]['IVA8'] * 0.08);
+                            }
+
+                            if($total_licores->count() > 0 && $total_licores->has($key_codusua)
+                                    && $total_licores[$key_codusua]->has($key_date) && $total_licores[$key_codusua][$key_date]->has($key_printer)
+                                            && $total_licores[$key_codusua][$key_date][$key_printer]->has($key_z_number)
+                                                    && $total_licores[$key_codusua][$key_date][$key_printer][$key_z_number]->has($record->TipoFac)){
+                                $totals[$key_codusua]['total_licores'] += $total_licores[$key_codusua][$key_date][$key_printer][$key_z_number][$record->TipoFac]->first()->ventaLicoresBS;
+                                $totals[$key_codusua]['total_viveres'] += ( $record->ventaTotalExenta -  $total_licores[$key_codusua][$key_date][$key_printer][$key_z_number][$record->TipoFac]->first()->ventaLicoresBS);
+                            } else {
+                                $totals[$key_codusua]['total_viveres'] +=  $record->ventaTotalExenta;
+                            }
                         }
                     }
                 }
@@ -146,13 +153,12 @@ class ZBillController extends Controller
 
         $totals_from_safact = $repo->getTotalsFromSafact($start_date, $end_date);
 
-        $amount_bills_from_safact = $repo->getAmountBills($start_date, $end_date);
-
         $total_licores = $repo->getTotalLicores($start_date, $end_date);
+        
         $total_base_imponible_by_tax = $repo->getBaseImponibleByTax($start_date, $end_date);
 
         $total_base_imponible_by_tax = $this->mapTaxes($total_base_imponible_by_tax, $iva_codes);
-
+        
         $totals_by_user = $this->getTotalsByUser($totals_from_safact, $total_licores,  $total_base_imponible_by_tax);
 
         $z_numbers_by_printer = $repo->getZNumbersByPrinter($start_date, $end_date);
@@ -161,7 +167,6 @@ class ZBillController extends Controller
 
         return compact(
             'totals_from_safact',
-            'amount_bills_from_safact',
             'total_licores',
             'total_base_imponible_by_tax',
             'totals_by_user',
