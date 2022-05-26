@@ -101,7 +101,8 @@ class ZBillController extends Controller
                             if(count($total_base_imponible_by_tax) > 0 && key_exists($key_codusua, $total_base_imponible_by_tax)
                                     && key_exists($key_date, $total_base_imponible_by_tax[$key_codusua])
                                         && key_exists($key_printer, $total_base_imponible_by_tax[$key_codusua][$key_date])
-                                            && key_exists($record->TipoFac, $total_base_imponible_by_tax[$key_codusua][$key_date][$key_printer][$key_z_number])            
+                                            && key_exists($key_z_number, $total_base_imponible_by_tax[$key_codusua][$key_date][$key_printer])
+                                                && key_exists($record->TipoFac, $total_base_imponible_by_tax[$key_codusua][$key_date][$key_printer][$key_z_number])            
                             ){
                                 $totals[$key_codusua]['base_imponible_16'] += $total_base_imponible_by_tax[$key_codusua][$key_date][$key_printer][$key_z_number][$record->TipoFac]['IVA'];
                                 $totals[$key_codusua]['IVA_16'] += ($total_base_imponible_by_tax[$key_codusua][$key_date][$key_printer][$key_z_number][$record->TipoFac]['IVA'] * 0.16); 
