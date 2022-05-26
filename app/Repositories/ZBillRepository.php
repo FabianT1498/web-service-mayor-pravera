@@ -25,7 +25,7 @@ class ZBillRepository implements ZBillRepositoryInterface
             ->whereRaw("SAFACT.EsNF = 0 AND SAFACT.TipoFac IN ('A', 'B') AND SAFACT.CodUsua IN ('CAJA1', 'CAJA2', 'CAJA3', 'CAJA4', 'CAJA5',
                 'CAJA6' , 'CAJA7', 'DELIVERY') AND " . $interval_query, $queryParams)
             ->groupByRaw("SAFACT.CodUsua, CAST(SAFACT.FechaE as date), SAFACT.NumeroP, SAFACT.NumeroZ, SAFACT.TipoFac")
-            ->orderByRaw("CAST(SAFACT.FechaE as date) asc, SAFACT.CodUsua asc, SAFACT.TipoFac")
+            ->orderByRaw("SAFACT.CodUsua asc, CAST(SAFACT.FechaE as date) asc, SAFACT.TipoFac")
             ->get()
             ->groupBy(['CodUsua', 'FechaE', 'NumeroP', 'NumeroZ']);
     }
@@ -61,7 +61,7 @@ class ZBillRepository implements ZBillRepositoryInterface
             })
             ->whereRaw("SAITEMFAC.EsExento = 1 AND " . $interval_query, $queryParams)
             ->groupByRaw("SAFACT.CodUsua, CAST(SAFACT.FechaE as date), SAFACT.NumeroP, SAFACT.NumeroZ, SAFACT.TipoFac")
-            ->orderByRaw("CAST(SAFACT.FechaE as date) asc, SAFACT.CodUsua asc, SAFACT.TipoFac")
+            ->orderByRaw("SAFACT.CodUsua asc, CAST(SAFACT.FechaE as date) asc, SAFACT.TipoFac")
             ->get()
             ->groupBy(['CodUsua', 'FechaE', 'NumeroP', 'NumeroZ', 'TipoFac']);
 
@@ -87,7 +87,7 @@ class ZBillRepository implements ZBillRepositoryInterface
         ->whereRaw("SAFACT.EsNF = 0 AND SAFACT.TipoFac IN ('A', 'B') AND SATAXVTA.CodTaxs IN ('IVA', 'IVA8') AND SAFACT.CodUsua IN ('CAJA1', 'CAJA2', 'CAJA3', 'CAJA4', 'CAJA5',
             'CAJA6' , 'CAJA7', 'DELIVERY') AND " . $interval_query, $queryParams)
         ->groupByRaw("SAFACT.CodUsua, CAST(SAFACT.FechaE as date), SAFACT.NumeroP, SAFACT.NumeroZ, safact.TipoFac, SATAXVTA.CodTaxs")
-        ->orderByRaw("CAST(SAFACT.FechaE as date) asc, SAFACT.CodUsua asc, SAFACT.TipoFac")
+        ->orderByRaw("SAFACT.CodUsua asc, CAST(SAFACT.FechaE as date) asc, SAFACT.TipoFac")
         ->get()
         ->groupBy(['CodUsua', 'FechaE', 'NumeroP', 'NumeroZ', 'TipoFac']);
     }
