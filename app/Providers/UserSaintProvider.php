@@ -55,16 +55,26 @@ class UserSaintProvider implements UserProvider
 
     public function retrieveByCredentials(array $credentials)
     {
-        if (! array_key_exists('CodUsua', $credentials)) {
-            return null;
+        if (array_key_exists('CodUsua', $credentials) && array_key_exists('CodEsta', $credentials)
+                    && array_key_exists('Pass', $credentials)) {
+            
+            $authenticated_user = DB::connection('saint_db')->select('EXEC app_login ?, ?, ?',
+                array($credentials['CodUsua'], $credentials['CodEsta'], $credentials['Pass']));
+
+            if (count($authenticated_user) > 0 && property_exists($authenticated_user[0], 'RETORNO')){
+                return null;
+            }
+
+             // GenericUser is a class from Laravel Auth System
+            return new GenericUser([
+                'id' => $credentials['CodUsua'],
+                'CodUsua' => $credentials['CodUsua'],
+                'Nivel' => $authenticated_user[0]->NIVEL,
+                'remember_token' => ''
+            ]);
         }
 
-        // GenericUser is a class from Laravel Auth System
-        return new GenericUser([
-            'id' => $credentials['CodUsua'],
-            'CodUsua' => $credentials['CodUsua'],
-            'remember_token' => ''
-        ]);
+        return null;
     }
 
     public function validateCredentials(Authenticatable $user, array $credentials)
@@ -86,6 +96,7 @@ class UserSaintProvider implements UserProvider
         $authenticated_user = DB::connection('saint_db')->select('EXEC app_login ?, ?, ?',
             array($user->CodUsua, $credentials['CodEsta'], $credentials['Pass']));
 
-        return count($authenticated_user) > 0 && !property_exists($authenticated_user[0], 'RETORNO');
+        return count($authenticated_user) > 0 && !property_exists($authenticated_user[0], 'RETORNO') &&
+            ($authenticated_user[0]->NIVEL === '01' || $authenticated_user[0]->NIVEL === '02');
     }
 }
