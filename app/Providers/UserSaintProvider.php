@@ -37,9 +37,12 @@ class UserSaintProvider implements UserProvider
         // If you want I can make an modified version exemplifying 
         // how you could do this.
         
+        $nivel = session('nivel');
+
         return new GenericUser([
             'id' => $identifier,
             'CodUsua' => $identifier,
+            'Nivel' => $nivel,
             'remember_token' => ''
         ]);
     }
@@ -79,7 +82,7 @@ class UserSaintProvider implements UserProvider
 
     public function validateCredentials(Authenticatable $user, array $credentials)
     {
-        if (! array_key_exists('Pass', $credentials)) {
+        if (is_null($user)) {
             return false;
         }
 
@@ -93,10 +96,14 @@ class UserSaintProvider implements UserProvider
         //     'Pass' => $credentials['Pass'],
         // ]);
 
-        $authenticated_user = DB::connection('saint_db')->select('EXEC app_login ?, ?, ?',
-            array($user->CodUsua, $credentials['CodEsta'], $credentials['Pass']));
+        // $authenticated_user = DB::connection('saint_db')->select('EXEC app_login ?, ?, ?',
+        //     array($user->CodUsua, $credentials['CodEsta'], $credentials['Pass']));
+        
+        if($user->Nivel === '01' || $user->Nivel === '02'){
+            session(['nivel' => $user->Nivel]);
+            return true;
+        };
 
-        return count($authenticated_user) > 0 && !property_exists($authenticated_user[0], 'RETORNO') &&
-            ($authenticated_user[0]->NIVEL === '01' || $authenticated_user[0]->NIVEL === '02');
+        return false;
     }
 }
