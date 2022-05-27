@@ -23,22 +23,32 @@ class BillController extends Controller
     }
 
     private function getTotalVueltos($total_bill_vuelto_by_user){
-        return $total_bill_vuelto_by_user->reduce(function($acc, $item){
-            $acc['MontoBs'] += $item->first()->MontoBs;
-            $acc['MontoDiv'] += $item->first()->MontoDiv;
+        $total = [];
 
-            return $acc;
-        }, ['MontoBs' => 0, 'MontoDiv' => 0]);
+        foreach($total_bill_vuelto_by_user as $vueltos){
+            foreach($vueltos as $key_method_vuelto => $vuelto){
+                if (!array_key_exists($key_method_vuelto, $total)){
+                    $total[$key_method_vuelto] = [];
+                    $total[$key_method_vuelto]['MontoBs'] = 0;
+                    $total[$key_method_vuelto]['MontoDiv'] = 0;
+                }
+
+                $total[$key_method_vuelto]['MontoBs'] += $vuelto->first()->MontoBs;
+                $total[$key_method_vuelto]['MontoDiv'] += $vuelto->first()->MontoDiv;
+            }
+        }
+
+        return $total;
     }
 
     private function getBillData($new_start_date, $new_finish_date, BillRepository $bill_repo){
         $bill_vueltos = $bill_repo
             ->getValesAndVueltos($new_start_date, $new_finish_date)
-            ->groupBy(['CodUsua', 'FechaE']);
-
+            ->groupBy(['CodUsua', 'FechaE', 'NumeroD', 'FactUso']);
+    
         $total_bill_vales_vueltos_by_user = $bill_repo
             ->getTotalValesAndVueltosByUser($new_start_date, $new_finish_date)
-            ->groupBy(['CodUsua']);
+            ->groupBy(['CodUsua', 'FactUso']);
 
         $total_bill_vueltos = $this->getTotalVueltos($total_bill_vales_vueltos_by_user);
  
@@ -99,7 +109,7 @@ class BillController extends Controller
             $new_finish_date = date('Y-m-d', strtotime($end_date));
 
             $data = $this->getBillData($new_start_date, $new_finish_date, $bill_repo);
-            
+
             $data['start_date'] = $start_date;
             $data['end_date'] = $end_date;
                 

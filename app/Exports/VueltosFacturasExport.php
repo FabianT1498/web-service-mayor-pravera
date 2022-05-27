@@ -30,8 +30,12 @@ class VueltosFacturasExport implements FromView, WithEvents, WithTitle
 
         foreach($bill_vueltos as $key_codusua => $dates){
             $row_count[$key_codusua] = 0; 
-            foreach ($dates as $key_date => $records){
-                $row_count[$key_codusua] += $records->count();   
+            foreach ($dates as $key_date => $numeros_d){
+                foreach ($numeros_d as $numero_d => $metodos_vuelto){
+                    foreach($metodos_vuelto as $metodo_vuelto){
+                        $row_count[$key_codusua] += $metodo_vuelto->count();
+                    }
+                }
             }
             $row_count[$key_codusua] += ($dates->count() + 4);
         }
@@ -62,13 +66,16 @@ class VueltosFacturasExport implements FromView, WithEvents, WithTitle
                 $event->sheet->getColumnDimension('B')->setWidth(100, 'px');
                 $event->sheet->getColumnDimension('C')->setWidth(100, 'px');
                 $event->sheet->getColumnDimension('D')->setWidth(120, 'px');
-
-                $event->sheet->setCellValue('G2', 'Fecha: ' . $this->data['start_date'] . ($this->data['start_date'] !== $this->data['end_date'] 
+                $event->sheet->getColumnDimension('E')->setWidth(100, 'px');
+                $event->sheet->getColumnDimension('F')->setWidth(100, 'px');
+                
+                /** Fecha */
+                $event->sheet->setCellValue('H2', 'Fecha: ' . $this->data['start_date'] . ($this->data['start_date'] !== $this->data['end_date'] 
                     ? (' hasta ' . $this->data['end_date']) 
                     : ''));
-                $event->sheet->mergeCells('G2:J2');
+                $event->sheet->mergeCells('H2:J2');
                 $event->sheet->styleCells(
-                    'G2:J2',
+                    'H2:J2',
                     [
                         
                         'font' => [
@@ -91,29 +98,37 @@ class VueltosFacturasExport implements FromView, WithEvents, WithTitle
                 if ($this->data['bill_vueltos']->count() > 0){
 
                     /** Resumen total */
-                    $event->sheet->setCellValue('G4', 'Resumen');
-                    $event->sheet->mergeCells('G4:L4');
+                    $event->sheet->setCellValue('H4', 'Resumen');
+                    $event->sheet->mergeCells('H4:P4');
 
-                    $event->sheet->setCellValue('G5', 'Caja');
-                    $event->sheet->mergeCells('G5:H5');
-                    $event->sheet->setCellValue('I5', 'Vuelto (Bs)');
+                    $event->sheet->setCellValue('H5', 'Caja');
+                    $event->sheet->setCellValue('I5', 'Vuelto Efec.(Bs)');
                     $event->sheet->mergeCells('I5:J5');
-                    $event->sheet->setCellValue('K5', 'Vuelto ($)');
+                    $event->sheet->setCellValue('K5', 'Vuelto Efec.($)');
                     $event->sheet->mergeCells('K5:L5');
+                    $event->sheet->setCellValue('M5', 'Vuelto PM.(Bs)');
+                    $event->sheet->mergeCells('M5:N5');
+                    $event->sheet->setCellValue('O5', 'Vuelto PM.($)');
+                    $event->sheet->mergeCells('O5:P5');
 
                     $i = 6;
-                    foreach($this->data['total_bill_vales_vueltos_by_user'] as $key_codusua => $states_bills){
-                        $event->sheet->setCellValue('G' . $i, $key_codusua);
-                        $event->sheet->mergeCells('G' . $i . ':H' . $i);
-                        $event->sheet->setCellValue('I' . $i, $states_bills->first()->MontoBs);
+                    foreach($this->data['total_bill_vales_vueltos_by_user'] as $key_codusua => $metodos_vuelto){
+                        $event->sheet->setCellValue('H' . $i, $key_codusua);
+                        $event->sheet->mergeCells('H' . $i . ':H' . $i);
+                        $event->sheet->setCellValue('I' . $i, $metodos_vuelto->has('Efectivo') ? $metodos_vuelto['Efectivo']->first()->MontoBs : 0);
                         $event->sheet->mergeCells('I' . $i . ':J' . $i);
-                        $event->sheet->setCellValue('K' . $i, $states_bills->first()->MontoDiv);
+                        $event->sheet->setCellValue('K' . $i, $metodos_vuelto->has('Efectivo') ? $metodos_vuelto['Efectivo']->first()->MontoDiv : 0);
                         $event->sheet->mergeCells('K' . $i . ':L' . $i);
+                        $event->sheet->setCellValue('M' . $i, $metodos_vuelto->has('PM') ? $metodos_vuelto['PM']->first()->MontoBs : 0);
+                        $event->sheet->mergeCells('M' . $i . ':N' . $i);
+                        $event->sheet->setCellValue('O' . $i, $metodos_vuelto->has('PM') ? $metodos_vuelto['PM']->first()->MontoDiv : 0);
+                        $event->sheet->mergeCells('O' . $i . ':P' . $i);
+
                         $i++;
                     }
 
                     $event->sheet->styleCells(
-                        'G4:L4',
+                        'H4:P4',
                         [
                             'fill' => [
                                 'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
@@ -134,7 +149,7 @@ class VueltosFacturasExport implements FromView, WithEvents, WithTitle
                     );
 
                     $event->sheet->styleCells(
-                        'G5:L5',
+                        'H5:P5',
                         [
                             'font' => [
                                 'bold' => true,
@@ -147,7 +162,7 @@ class VueltosFacturasExport implements FromView, WithEvents, WithTitle
                     
                     $start_summary_row = 4;
                     $event->sheet->styleCells(
-                        'G4:L' . ($start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count()),
+                        'H4:P' . ($start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count()),
                         [
                             'borders' => [
                                 'allBorders' => [
@@ -162,21 +177,29 @@ class VueltosFacturasExport implements FromView, WithEvents, WithTitle
                         ]
                     );
 
-                    $event->sheet->setCellValue('G' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count(),
-                     'Total:');
-                    $event->sheet->mergeCells('G' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count() .
-                        ':H' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count());
+                    $event->sheet->setCellValue('H' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count(),
+                            'Total:');
+                    $event->sheet->mergeCells('H' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count() .
+                            ':H' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count());
                     $event->sheet->setCellValue('I' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count(),
-                        $this->data['total_bill_vueltos']['MontoBs']);
+                            array_key_exists('Efectivo', $this->data['total_bill_vueltos']) ? $this->data['total_bill_vueltos']['Efectivo']['MontoBs'] : 0);
                     $event->sheet->mergeCells('I' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count() .
-                        ':J' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count());
+                            ':J' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count());
                     $event->sheet->setCellValue('K' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count(),
-                        $this->data['total_bill_vueltos']['MontoDiv']);
+                            array_key_exists('Efectivo', $this->data['total_bill_vueltos']) ? $this->data['total_bill_vueltos']['Efectivo']['MontoDiv'] : 0);
                     $event->sheet->mergeCells('K' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count() .
-                        ':L' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count());
+                            ':L' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count());
+                    $event->sheet->setCellValue('M' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count(),
+                            array_key_exists('PM', $this->data['total_bill_vueltos']) ? $this->data['total_bill_vueltos']['PM']['MontoBs'] : 0);
+                    $event->sheet->mergeCells('M' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count() .
+                            ':N' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count());
+                    $event->sheet->setCellValue('O' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count(),
+                            array_key_exists('PM', $this->data['total_bill_vueltos']) ? $this->data['total_bill_vueltos']['PM']['MontoDiv'] : 0);
+                    $event->sheet->mergeCells('O' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count() .
+                        ':P' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count());
 
-                    $event->sheet->styleCells('G' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count() .
-                        ':L' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count(),
+                    $event->sheet->styleCells('H' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count() .
+                        ':P' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count(),
                         [
                             'fill' => [
                                 'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
@@ -197,7 +220,7 @@ class VueltosFacturasExport implements FromView, WithEvents, WithTitle
                     );
                         
                     $event->sheet->styleCells(
-                        'C:E', 
+                        'B:F', 
                         [
                             'numberFormat' => [
                                 'formatCode' => \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
@@ -215,7 +238,7 @@ class VueltosFacturasExport implements FromView, WithEvents, WithTitle
                         }
 
                         $event->sheet->styleCells(
-                            'A' . $start . ':D' . (is_null($prev) ? ($user_row_count - 1) : ($start + $user_row_count - 2)),
+                            'A' . $start . ':F' . (is_null($prev) ? ($user_row_count - 1) : ($start + $user_row_count - 2)),
                             [
                                 'borders' => [
                                     'allBorders' => [
@@ -227,7 +250,7 @@ class VueltosFacturasExport implements FromView, WithEvents, WithTitle
                         );
 
                         $event->sheet->styleCells(
-                            'A' . (is_null($prev) ? ($user_row_count - 1) : ($start + $user_row_count - 2)) . ':D' . (is_null($prev) ? ($user_row_count - 1) : ($start + $user_row_count - 2)),
+                            'A' . (is_null($prev) ? ($user_row_count - 1) : ($start + $user_row_count - 2)) . ':F' . (is_null($prev) ? ($user_row_count - 1) : ($start + $user_row_count - 2)),
                             [
                                 'fill' => [
                                     'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
@@ -250,7 +273,7 @@ class VueltosFacturasExport implements FromView, WithEvents, WithTitle
                         );
 
                         $event->sheet->styleCells(
-                            'A'. $start . ':D'. $start,
+                            'A'. $start . ':F'. $start,
                             [
                                 'fill' => [
                                     'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
@@ -273,7 +296,7 @@ class VueltosFacturasExport implements FromView, WithEvents, WithTitle
                         );
 
                         $event->sheet->styleCells(
-                            'A'. ($start + 1) . ':D'. ($start + 1),
+                            'A'. ($start + 1) . ':F'. ($start + 1),
                             [
                                 'fill' => [
                                     'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
@@ -295,7 +318,7 @@ class VueltosFacturasExport implements FromView, WithEvents, WithTitle
                             ]
                         );
                         
-                        $event->sheet->mergeCells('A'. ($start + 1) . ':D'. ($start + 1));
+                        $event->sheet->mergeCells('A'. ($start + 1) . ':F'. ($start + 1));
 
                         $start_dates = $start + 2;
                         $prev_dates = null;
@@ -308,7 +331,7 @@ class VueltosFacturasExport implements FromView, WithEvents, WithTitle
                             }
 
                             $event->sheet->styleCells(
-                                'A'. ($start_dates) . ':D'. ($start_dates),
+                                'A'. ($start_dates) . ':F'. ($start_dates),
                                 [
                                     'fill' => [
                                         'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
@@ -330,7 +353,7 @@ class VueltosFacturasExport implements FromView, WithEvents, WithTitle
                                 ]
                             );
 
-                            $event->sheet->mergeCells('A'. ($start_dates) . ':D'. ($start_dates));
+                            $event->sheet->mergeCells('A'. ($start_dates) . ':F'. ($start_dates));
 
                             $prev_dates = $dates->count();
                     
@@ -340,7 +363,7 @@ class VueltosFacturasExport implements FromView, WithEvents, WithTitle
                     }
                         
                     $event->sheet->styleCells(
-                        'A:M',
+                        'A:P',
                         [
                             'alignment' => [
                                 'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,

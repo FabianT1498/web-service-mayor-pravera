@@ -24,7 +24,7 @@ class BillRepository implements BillRepositoryInterface
         return DB
             ::connection('saint_db')
             ->table('SAFACT')
-            ->selectRaw("SAFACT.CodUsua as CodUsua, CAST(SAFACT.FechaE as date) as FechaE, SAFACT.NumeroD, CAST(ROUND(EGIVALES.MontoDiv, 2) AS decimal(10, 2)) as MontoDiv,
+            ->selectRaw("SAFACT.CodUsua as CodUsua, CAST(SAFACT.FechaE as date) as FechaE, SAFACT.NumeroD as NumeroD, CASE WHEN EGIVALES.FactUso = '' THEN 'Efectivo' ELSE EGIVALES.FactUso END as FactUso, CAST(ROUND(EGIVALES.MontoDiv, 2) AS decimal(10, 2)) as MontoDiv,
                 FactorHist.MaxFactor as Factor, CAST(ROUND(EGIVALES.MontoDiv * Factor, 2) AS decimal(10, 2)) as MontoBs")  
             ->join('EGIVALES', 'EGIVALES.FactEmi', '=', 'SAFACT.NumeroD')
             ->joinSub($factors, 'FactorHist', function($query){
@@ -32,8 +32,9 @@ class BillRepository implements BillRepositoryInterface
             })
             ->whereRaw("EGIVALES.Estado = 'V' AND SAFACT.TipoFac IN ('A', 'B') AND SAFACT.CodUsua IN ('CAJA1', 'CAJA2', 'CAJA3', 'CAJA4', 'CAJA5',
                 'CAJA6' , 'CAJA7', 'DELIVERY') AND " . $interval_query, $queryParams)
-            ->orderByRaw("SAFACT.CodUsua asc, CAST(SAFACT.FechaE as date) asc, SAFACT.NumeroD asc")
+            ->orderByRaw("SAFACT.CodUsua asc, CAST(SAFACT.FechaE as date) asc, SAFACT.NumeroD asc, EGIVALES.FactUso asc")
             ->get();
+            
     }
 
     public function getTotalValesAndVueltosByUser($start_date, $end_date){
@@ -53,7 +54,7 @@ class BillRepository implements BillRepositoryInterface
         return DB
             ::connection('saint_db')
             ->table('SAFACT')
-            ->selectRaw("MAX(SAFACT.CodUsua) as CodUsua, MAX(EGIVALES.Estado) as Estado, CAST(ROUND(SUM(EGIVALES.MontoDiv * SAFACT.Signo), 2) AS decimal(10, 2)) AS MontoDiv, 
+            ->selectRaw("MAX(SAFACT.CodUsua) as CodUsua, CASE WHEN EGIVALES.FactUso = '' THEN 'Efectivo' ELSE EGIVALES.FactUso END as FactUso, MAX(EGIVALES.Estado) as Estado,  CAST(ROUND(SUM(EGIVALES.MontoDiv * SAFACT.Signo), 2) AS decimal(10, 2)) AS MontoDiv, 
                 CAST(ROUND(SUM(EGIVALES.MontoDiv * FactorHist.MaxFactor * SAFACT.Signo), 2) AS decimal(10, 2)) as MontoBs")  
             ->join('EGIVALES', 'EGIVALES.FactEmi', '=', 'SAFACT.NumeroD')
             ->joinSub($factors, 'FactorHist', function($query){
@@ -61,7 +62,7 @@ class BillRepository implements BillRepositoryInterface
             })
             ->whereRaw("EGIVALES.Estado = 'V' AND SAFACT.TipoFac IN ('A', 'B') AND SAFACT.CodUsua IN ('CAJA1', 'CAJA2', 'CAJA3', 'CAJA4', 'CAJA5',
                 'CAJA6' , 'CAJA7', 'DELIVERY') AND " . $interval_query, $queryParams)
-            ->groupByRaw("SAFACT.CodUsua")
+            ->groupByRaw("SAFACT.CodUsua, EGIVALES.FactUso")
             ->orderByRaw("SAFACT.CodUsua asc")
             ->get();
     }
