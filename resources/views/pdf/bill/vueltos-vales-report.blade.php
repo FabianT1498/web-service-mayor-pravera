@@ -266,54 +266,85 @@
                     </p>
                 </div>
             </div>
-            <div class="w-80p mb-8 mx-auto"> 
-                <table class="w-80p">
-                    <caption class="text-center w-80p bg-grey-400 text-lg font-semibold">Resumen general</caption>
+            <div class="w-90p mb-8 mx-auto"> 
+                <table class="w-90p">
+                    <caption class="text-center w-90p bg-grey-400 text-lg font-semibold">Resumen general</caption>
                     <thead>
                         <tr>
-                            <th>&nbsp;</th>
-                            <th>Vuelto (Bs)</th>
-                            <th>Vuelto ($)</th>
+                            <th>Caja</th>
+                            <th>Vuelto Efec.(Bs)</th>
+                            <th>Vuelto Efec.($)</th>
+                            <th>Vuelto PM.(Bs)</th>
+                            <th>Vuelto PM.($)</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($total_bill_vales_vueltos_by_user as $key_codusua => $states_bills)
+                        @foreach($total_bill_vales_vueltos_by_user as $key_codusua => $metodos_vuelto)
                             <tr>
                                 <td>{{ $key_codusua }}</td>
-                                <td>{{ number_format($states_bills->first()->MontoBs, 2) }}</td>
-                                <td>{{ number_format($states_bills->first()->MontoDiv, 2) }}</td>
+                                @if($metodos_vuelto->has('Efectivo'))
+                                    <td>{{ number_format($metodos_vuelto['Efectivo']->first()->MontoBs, 2) }}</td>
+                                    <td>{{ number_format($metodos_vuelto['Efectivo']->first()->MontoDiv, 2) }}</td>
+                                @else
+                                    <td>0.00</td>
+                                    <td>0.00</td>
+                                @endif
+                                @if($metodos_vuelto->has('PM'))
+                                    <td>{{ number_format($metodos_vuelto['PM']->first()->MontoBs, 2) }}</td>
+                                    <td>{{ number_format($metodos_vuelto['PM']->first()->MontoDiv, 2) }}</td>
+                                @else
+                                    <td>0.00</td>
+                                    <td>0.00</td>
+                                @endif
                             </tr>
                         @endforeach
                         <tr class="bg-grey-600" >
                             <td class="total-width-text">Total</td>
-                            <td class="total-width-text">{{ number_format($total_bill_vueltos['MontoBs'], 2) }}</td>
-                            <td class="total-width-text">{{ number_format($total_bill_vueltos['MontoDiv'], 2) }}</td>
+                            <td class="total-width-text">{{ number_format(array_key_exists('Efectivo', $total_bill_vueltos) ? $total_bill_vueltos['Efectivo']['MontoBs'] : 0, 2) }}</td>
+                            <td class="total-width-text">{{ number_format( array_key_exists('Efectivo', $total_bill_vueltos) ? $total_bill_vueltos['Efectivo']['MontoDiv'] : 0, 2) }}</td>
+                            <td class="total-width-text">{{ number_format(array_key_exists('PM', $total_bill_vueltos) ? $total_bill_vueltos['PM']['MontoBs'] : 0, 2) }}</td>
+                            <td class="total-width-text">{{ number_format( array_key_exists('PM', $total_bill_vueltos) ? $total_bill_vueltos['PM']['MontoDiv'] : 0, 2) }}</td>
                         </tr>
                     </tbody>
                 </table>
                 <div class="page-break"></div>
 
                 @foreach($bill_vueltos as $key_codusua => $dates)
-                    <table class="w-80p">
-                        <caption class="text-center w-80p bg-grey-400 text-lg font-semibold">{{ $key_codusua }}</caption>
-                        @foreach($dates as $key_date => $records)
+                    <table class="w-90p">
+                        <caption class="text-center w-90p bg-grey-400 text-lg font-semibold">{{ $key_codusua }}</caption>
+                        @foreach($dates as $key_date => $numerosD)
                             <thead>
                                 <tr>
                                     <th>Fecha</th>
                                     <th>Numero Factura</th>
-                                    <th>Vuelto ($)</th>
-                                    <th>Tasa</th>
-                                    <th>Vuelto (Bs)</th>
+                                    <th>Tasa(Bs)</th>
+                                    <th>Vuelto Efec.($)</th>
+                                    <th>Vuelto Efec.(Bs)</th>
+                                    <th>Vuelto PM.($)</th>
+                                    <th>Vuelto PM.(Bs)</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($records as $record)
+                                @foreach($numerosD as $key_numero_d => $metodos_vueltos)
                                     <tr>
                                         <td>{{ date('d-m-Y', strtotime($key_date)) }}</td>
-                                        <td>{{ $record->NumeroD }}</td>
-                                        <td>{{ number_format($record->MontoDiv, 2) }}</td>
-                                        <td>{{ number_format($record->Factor, 2) }}</td>
-                                        <td>{{ number_format($record->MontoBs, 2) }}</td>
+                                        <td>{{ $key_numero_d }}</td>
+                                        <td>{{ number_format($metodos_vueltos->first()->first()->Factor, 2) }}</td>
+                                        @if ($metodos_vueltos->has('Efectivo'))
+                                            <td>{{ number_format($metodos_vueltos['Efectivo']->first()->MontoDiv, 2) }}</td>
+                                            <td>{{ number_format($metodos_vueltos['Efectivo']->first()->MontoBs, 2) }}</td>
+                                        @else
+                                            <td>0.00</td>
+                                            <td>0.00</td>
+                                        @endif
+
+                                        @if ($metodos_vueltos->has('PM'))
+                                            <td>{{ number_format($metodos_vueltos['PM']->first()->MontoDiv, 2) }}</td>
+                                            <td>{{ number_format($metodos_vueltos['PM']->first()->MontoBs, 2) }}</td>
+                                        @else
+                                            <td>0.00</td>
+                                            <td>0.00</td>
+                                        @endif    
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -321,10 +352,22 @@
                         <tfoot>
                             <tr class="bg-grey-400 ">
                                 <td>&nbsp;</td>
-                                <td class="total-width-text">Total: </td>
-                                <td class="total-width-text">{{ number_format($total_bill_vales_vueltos_by_user[$key_codusua]->first()->MontoDiv, 2) }}</td>
                                 <td>&nbsp;</td>
-                                <td class="total-width-text">{{ number_format($total_bill_vales_vueltos_by_user[$key_codusua]->first()->MontoBs, 2) }}</td>
+                                <td class="total-width-text">Total: </td>
+                                @if ($total_bill_vales_vueltos_by_user[$key_codusua]->has('Efectivo'))
+                                    <td class="total-width-text">{{ number_format($total_bill_vales_vueltos_by_user[$key_codusua]['Efectivo']->first()->MontoDiv, 2) }}</td>
+                                    <td class="total-width-text">{{ number_format($total_bill_vales_vueltos_by_user[$key_codusua]['Efectivo']->first()->MontoBs, 2) }}</td>
+                                @else
+                                    <td>0.00</td>
+                                    <td>0.00</td>
+                                @endif
+                                @if ($total_bill_vales_vueltos_by_user[$key_codusua]->has('PM'))
+                                    <td class="total-width-text">{{ number_format($total_bill_vales_vueltos_by_user[$key_codusua]['PM']->first()->MontoDiv, 2) }}</td>
+                                    <td class="total-width-text">{{ number_format($total_bill_vales_vueltos_by_user[$key_codusua]['PM']->first()->MontoBs, 2) }}</td>
+                                @else
+                                    <td>0.00</td>
+                                    <td>0.00</td>
+                                @endif                            
                             </tr>
                         </tfoot>
                     </table>
