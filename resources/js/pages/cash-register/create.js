@@ -188,8 +188,8 @@ export default {
         }
     },
     setTotalDollarCashDiff(){
-        let diff = this.proxy.liquidMoneyDollar - (this.proxyTotalSaint.liquidMoneyDollar - this.proxyVueltosSaint.liquidMoneyDollar);
-        let color = this.getAmountColor(diff);
+        let diff = this.proxy.liquidMoneyDollar - this.proxyTotalSaint.liquidMoneyDollar;
+        let color = this.getAmountColor(roundNumber(diff));
         this.totalDiffDOMS.liquidMoneyDollar.className = '';
         if (color !== ''){
             this.totalDiffDOMS.liquidMoneyDollar.classList.add(color);
@@ -198,8 +198,8 @@ export default {
         this.totalDiffDOMS.liquidMoneyDollar.innerHTML = roundNumber(diff).format();
     },
     setTotalDollarCashDenominationDiff(){
-        let diff = this.proxy.denominationsDollar - (this.proxyTotalSaint.liquidMoneyDollar - this.proxyVueltosSaint.liquidMoneyDollar);
-        let color = this.getAmountColor(diff);
+        let diff = (this.proxy.denominationsDollar - this.proxyTotalSaint.liquidMoneyDollar) - this.proxyVueltosSaint.liquidMoneyDollar;
+        let color = this.getAmountColor(roundNumber(diff));
         this.totalDiffDOMS.liquidMoneyDollarDenomination.className = '';
         if (color !== ''){
             this.totalDiffDOMS.liquidMoneyDollarDenomination.classList.add(color);
@@ -244,7 +244,7 @@ export default {
         this.totalDiffDOMS.zelleDollar.innerHTML = roundNumber(diff).format();
     },
     setTotalPagoMovilBsDiff(){
-        let diff = this.proxy.pagoMovilBs - (this.proxyTotalSaint.pagoMovilBs - this.proxyVueltosSaint['pagoMovilBs']);
+        let diff = (this.proxy.pagoMovilBs - this.proxyTotalSaint.pagoMovilBs) - this.proxyVueltosSaint['pagoMovilBs'];
         let color = this.getAmountColor(diff);
         this.totalDiffDOMS.pagoMovilBs.className = '';
         if (color !== ''){
