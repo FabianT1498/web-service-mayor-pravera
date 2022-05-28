@@ -1,6 +1,7 @@
 import Datepicker from '@themesberg/tailwind-datepicker/Datepicker';
 
-import { getCashRegisterUsersWithoutRecords, getTotalsToCashRegisterUserSaint } from '_services/cash-register';
+import { getCashRegisterUsersWithoutRecords, getTotalsToCashRegisterUserSaint,
+	getMoneyBackToCashRegisterUserSaint } from '_services/cash-register';
 
 const CashRegisterDataPresenterPrototype = {
 	changeOnView({ target }) {
@@ -24,11 +25,22 @@ const CashRegisterDataPresenterPrototype = {
 	},
 	getTotalsToCashRegisterUserOption(date, cashRegisterUser){
 		this.setTotalAmounts(null)
+		this.setTotalVueltos(null)
 		getTotalsToCashRegisterUserSaint({date, cashRegisterUser})
 			.then(res => {
 				if ([201, 200].includes(res.status)){
 					let data = res.data.data;
+					console.log(data)
 					this.setTotalAmounts(data)
+				}
+
+				return getMoneyBackToCashRegisterUserSaint({date, cashRegisterUser})
+			})
+			.then(res => {
+				if ([201, 200].includes(res.status)){
+					let data = res.data.data;
+					console.log(data)
+					this.setTotalVueltos(data);
 				}
 			})
 			.catch(err => {
@@ -69,7 +81,7 @@ const CashRegisterDataPresenterPrototype = {
 	},
 }
 
-const CashRegisterDataPresenter = function (setTotalAmounts, date = null, cashRegisterUser = null){
+const CashRegisterDataPresenter = function (setTotalAmounts, setTotalVueltos, date = null, cashRegisterUser = null){
     this.view = null;
 	let today = new Date();
 
@@ -82,6 +94,7 @@ const CashRegisterDataPresenter = function (setTotalAmounts, date = null, cashRe
 	this.selectedDate = this.defaultDate;
 	this.selectedCashRegisterUser = this.defaultCashRegisterUser;
 	this.setTotalAmounts = setTotalAmounts;
+	this.setTotalVueltos = setTotalVueltos;
 }
 
 CashRegisterDataPresenter.prototype = CashRegisterDataPresenterPrototype;

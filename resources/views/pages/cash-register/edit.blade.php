@@ -158,6 +158,9 @@
                                 Total ingresado
                             </th>
                             <th scope="col" class="px-4 py-2">
+                                Vuelto
+                            </th>
+                            <th scope="col" class="px-4 py-2">
                                 Total SAINT
                             </th>
                             <th scope="col" class="px-4 py-2">
@@ -174,6 +177,9 @@
                                 <span id="total_dollar_cash">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}
                             </td>
                             <td>
+                                <span class="vuelto_dollar_cash_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}
+                            </td>
+                            <td>
                                 <span class="total_dollar_cash_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}
                             </td>
                             <td class="px-4 py-2">
@@ -186,6 +192,9 @@
                             </th>
                             <td>
                                 <span id="total_dollar_denominations">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}
+                            </td>
+                            <td>
+                                <span class="vuelto_dollar_cash_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}
                             </td>
                             <td>
                                 <span class="total_dollar_cash_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))}}
@@ -389,6 +398,9 @@
                                 Total ingresado
                             </th>
                             <th scope="col" class="px-4 py-2">
+                                Vuelto
+                            </th>
+                            <th scope="col" class="px-4 py-2">
                                 Total SAINT
                             </th>
                             <th scope="col" class="px-4 py-2">
@@ -403,6 +415,9 @@
                             </th>
                             <td>
                                 <span id="total_pago_movil_bs">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}
+                            </td>
+                            <td>
+                                <span id="vuelto_pago_movil_bs_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}
                             </td>
                             <td>
                                 <span id="total_pago_movil_bs_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}

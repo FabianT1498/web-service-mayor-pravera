@@ -85,6 +85,8 @@ Route::group(['middleware' => ['auth', 'jsonify']], function() {
 
     Route::get('cash_register/saint/totals/{user}/{start_date}/{end_date}', [CashRegisterController::class, 'getTotalsFromSaint']);
 
+    Route::get('vales_vueltos_facturas/saint/totals/{user}/{start_date}/{end_date}', [BillController::class, 'getMoneyBackByCashRegisterUserSaint']);
+
     Route::get('cash_register/totals/{id}', [CashRegisterController::class, 'getTotals']);
 
 });

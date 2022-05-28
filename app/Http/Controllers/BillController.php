@@ -122,4 +122,14 @@ class BillController extends Controller
             return Excel::download(new VueltosFacturasExport($data), $file_name);
         }
     }
+
+    public function getMoneyBackByCashRegisterUserSaint(BillRepository $bill_repo, $user, $start_date, $end_date){
+        $money_back_by_user = $bill_repo
+            ->getTotalValesAndVueltosByUser($start_date, $end_date, $user)
+            ->groupBy(['FactUso']);
+
+        return $this->jsonResponse(['data' =>  $money_back_by_user ], 200);
+    }
+
+
 }

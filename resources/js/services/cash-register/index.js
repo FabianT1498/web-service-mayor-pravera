@@ -12,7 +12,11 @@ const getTotalsToCashRegisterUser = function(id){
   return asyncFunction(axiosClient.get(`/cash_register/totals/${id}`))
 };
 
+const getMoneyBackToCashRegisterUserSaint = function(obj){
+  return asyncFunction(axiosClient.get(`/vales_vueltos_facturas/saint/totals/${obj.user}/${obj.date}/${obj.date}`))
+};
+
 const asyncFunction = (promise) => promise.then(res => res).catch(err => err)
 
 
-export { getCashRegisterUsersWithoutRecords, getTotalsToCashRegisterUserSaint, getTotalsToCashRegisterUser };
+export { getCashRegisterUsersWithoutRecords, getTotalsToCashRegisterUserSaint, getTotalsToCashRegisterUser, getMoneyBackToCashRegisterUserSaint };

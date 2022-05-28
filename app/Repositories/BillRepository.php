@@ -37,9 +37,14 @@ class BillRepository implements BillRepositoryInterface
             
     }
 
-    public function getTotalValesAndVueltosByUser($start_date, $end_date){
+    public function getTotalValesAndVueltosByUser($start_date, $end_date, $user = null){
         /* Consulta para obtener los totales de las facturas*/      
         $queryParams = ($start_date === $end_date) ? [$start_date] : [$start_date, $end_date];
+
+        $user_params = $user
+          ? " = '" . $user . "'"
+          : "IN ('CAJA1', 'CAJA2', 'CAJA3', 'CAJA4', 'CAJA5',
+                'CAJA6' , 'CAJA7', 'DELIVERY')";
 
         $interval_query = ($start_date === $end_date) 
             ? "CAST(SAFACT.FechaE as date) = ?"
@@ -60,8 +65,7 @@ class BillRepository implements BillRepositoryInterface
             ->joinSub($factors, 'FactorHist', function($query){
                 $query->on(DB::raw("CAST(SAFACT.FechaE AS date)"), '=', "FactorHist.FechaE");
             })
-            ->whereRaw("EGIVALES.Estado = 'V' AND SAFACT.TipoFac IN ('A', 'B') AND SAFACT.CodUsua IN ('CAJA1', 'CAJA2', 'CAJA3', 'CAJA4', 'CAJA5',
-                'CAJA6' , 'CAJA7', 'DELIVERY') AND " . $interval_query, $queryParams)
+            ->whereRaw("EGIVALES.Estado = 'V' AND SAFACT.TipoFac IN ('A', 'B') AND SAFACT.CodUsua " . $user_params . " AND " . $interval_query, $queryParams)
             ->groupByRaw("SAFACT.CodUsua, EGIVALES.FactUso")
             ->orderByRaw("SAFACT.CodUsua asc")
             ->get();

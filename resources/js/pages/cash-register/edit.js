@@ -31,7 +31,8 @@ import Bank from '_models/Bank';
 
 import {default as modalBehavior} from '_app/base/modalBehavior'
 
-import { getTotalsToCashRegisterUserSaint, getTotalsToCashRegisterUser } from '_services/cash-register';
+import { getTotalsToCashRegisterUserSaint, getTotalsToCashRegisterUser,
+    getMoneyBackToCashRegisterUserSaint } from '_services/cash-register';
 import { getDollarExchangeToDate } from '_services/dollar-exchange';
 
 import { boundStoreDollarExchange } from '_store/action'
@@ -63,6 +64,10 @@ export default {
         pagoMovilBs: document.querySelector('#total_pago_movil_bs_saint'),
         zelleDollar: document.querySelector('#total_zelle_saint'),
     },
+    vueltosSaintDOMS: {
+        liquidMoneyDollar: document.querySelectorAll('.vuelto_dollar_cash_saint'),
+        pagoMovilBs: document.querySelector('#vuelto_pago_movil_bs_saint'),
+    },
     totalDiffDOMS: {
         liquidMoneyBs: document.querySelector('#total_bs_cash_diff'),
         liquidMoneyDollar: document.querySelector('#total_dollar_cash_diff'),
@@ -82,6 +87,7 @@ export default {
     },
     proxyTotalSaint: null,
     proxy: null,
+    proxyVueltosSaint: null,
     setTotalLiquidMoneyBs(total){
         this.proxy.liquidMoneyBs = total
         this.setTotalBsCashDiff();
@@ -127,39 +133,70 @@ export default {
 
             this.setTotalDollarCashDenominationDiff();
         } else {
-          // Liquid Money Payment Amounts
-          let totalsFromSafact = totals.totals_from_safact[0];
+            // Liquid Money Payment Amounts
+            if (totals.totals_from_safact.length > 0){
+                let totalsFromSafact = totals.totals_from_safact[0];
 
-          this.proxyTotalSaint['liquidMoneyBs'] = parseFloat(totalsFromSafact.bolivares);
-          this.setTotalBsCashDiff(this);
+                this.proxyTotalSaint['liquidMoneyBs'] = parseFloat(totalsFromSafact.bolivares);
+                this.setTotalBsCashDiff(this);
 
-          this.proxyTotalSaint['liquidMoneyDollar'] = parseFloat(totalsFromSafact.dolares);
-          this.setTotalDollarCashDiff(this);
-          this.setTotalDollarCashDenominationDiff(this);
+                this.proxyTotalSaint['liquidMoneyDollar'] = parseFloat(totalsFromSafact.dolares);
+                this.setTotalDollarCashDiff(this);
+                this.setTotalDollarCashDenominationDiff(this);
+            }
 
-          let totalsEPayments = totals.totals_e_payments;
+            if (totals.totals_e_payments.length > 0){
+
+                let totalsEPayments = totals.totals_e_payments;
         
-           // E-Payment Amounts
-           totalsEPayments.forEach(el => {
-                
-                if (PAYMENT_CURRENCIES[el.CodPago] === 'bs'){
-                    if (el.CodPago === '01' || el.CodPago === '02'
-                            || el.CodPago === '03' || el.CodPago === '04'){
-                        this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] += parseFloat(el.totalBs)
-                    } else {
-                        this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] = parseFloat(el.totalBs)
-                    }
-                } else if (PAYMENT_CURRENCIES[el.CodPago] === 'dollar'){
-                    this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] = parseFloat(el.totalDollar)
-                }
-                
-                this[this.propNameToDiffTotalMethod[PAYMENT_CODES[el.CodPago]]].call(this)
+                // E-Payment Amounts
+                totalsEPayments.forEach(el => {
+                        
+                        if (PAYMENT_CURRENCIES[el.CodPago] === 'bs'){
+                            if (el.CodPago === '01' || el.CodPago === '02'
+                                    || el.CodPago === '03' || el.CodPago === '04'){
+                                this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] += parseFloat(el.totalBs)
+                            } else {
+                                this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] = parseFloat(el.totalBs)
+                            }
+                        } else if (PAYMENT_CURRENCIES[el.CodPago] === 'dollar'){
+                            this.proxyTotalSaint[PAYMENT_CODES[el.CodPago]] = parseFloat(el.totalDollar)
+                        }
+                        
+                        this[this.propNameToDiffTotalMethod[PAYMENT_CODES[el.CodPago]]].call(this)
+                    
+                    });
+            }
+        }
+    },
+    setSaintVueltosDOMS(data = null){
+        if (!data){
+            Object.keys(this.proxyVueltosSaint).forEach(el => {
+                this.proxyVueltosSaint[el] = 0;
+                this[this.propNameToDiffTotalMethod[el]].call(this)
+            })
+
+            this.setTotalDollarCashDenominationDiff();
+        } else {
+
+            // Liquid Money 
+            if (data.Efectivo !== undefined){
+                let vueltoDolares = data.Efectivo[0];
+                this.proxyVueltosSaint['liquidMoneyDollar'] = parseFloat(vueltoDolares.MontoDiv);
+                this.setTotalDollarCashDiff(this);
+                this.setTotalDollarCashDenominationDiff(this);
+            }
             
-            });
+            // Pago movil
+            if (data.PM !== undefined){
+                let vueltoPagoMovil = data.PM[0];
+                this.proxyVueltosSaint['pagoMovilBs'] = parseFloat(vueltoPagoMovil.MontoDiv);
+                this.setTotalPagoMovilBsDiff(this);
+            }
         }
     },
     setTotalDollarCashDiff(){
-        let diff = this.proxy.liquidMoneyDollar - this.proxyTotalSaint.liquidMoneyDollar;
+        let diff = this.proxy.liquidMoneyDollar - (this.proxyVueltosSaint.liquidMoneyDollar + this.proxyTotalSaint.liquidMoneyDollar);
         let color = this.getAmountColor(diff);
         this.totalDiffDOMS.liquidMoneyDollar.className = '';
         if (color !== ''){
@@ -168,7 +205,7 @@ export default {
         this.totalDiffDOMS.liquidMoneyDollar.innerHTML = roundNumber(diff).format();
     },
     setTotalDollarCashDenominationDiff(){
-        let diff = this.proxy.denominationsDollar - this.proxyTotalSaint.liquidMoneyDollar;
+        let diff = this.proxy.denominationsDollar - (this.proxyVueltosSaint.liquidMoneyDollar + this.proxyTotalSaint.liquidMoneyDollar);
         let color = this.getAmountColor(diff);
         this.totalDiffDOMS.liquidMoneyDollarDenomination.className = '';
         if (color !== ''){
@@ -214,7 +251,7 @@ export default {
         this.totalDiffDOMS.zelleDollar.innerHTML = roundNumber(diff).format();
     },
     setTotalPagoMovilBsDiff(){
-        let diff = this.proxy.pagoMovilBs - this.proxyTotalSaint.pagoMovilBs;
+        let diff = this.proxy.pagoMovilBs - (this.vueltosSaintDOMS.pagoMovilBs - this.proxyTotalSaint.pagoMovilBs);
         let color = this.getAmountColor(diff);
         this.totalDiffDOMS.pagoMovilBs.className = '';
         if (color !== ''){
@@ -250,6 +287,16 @@ export default {
             }
         }
 
+        let handlerVueltosSaintDOMS = (self, key, value) => {
+            if (NodeList.prototype.isPrototypeOf(self.vueltosSaintDOMS[key])){
+                self.vueltosSaintDOMS[key].forEach(el => {
+                    el.innerHTML = roundNumber(value).format()
+                })
+            } else {
+                self.vueltosSaintDOMS[key].innerHTML = roundNumber(value).format()
+            }
+        }
+
         let handlerWrapper = (fn) => {
             let self = this;
             return {
@@ -271,8 +318,16 @@ export default {
             return obj;
         }, {})
 
+        let vueltosSaintKeys =  Object.keys(this.vueltosSaintDOMS).reduce((obj, key) => {
+            obj[key] = 0;
+            return obj;
+        }, {}) 
+
         this.proxy = new Proxy(totalInputkeys, handlerWrapper(handlerInputDOMS))
         this.proxyTotalSaint = new Proxy(totalSaintkeys, handlerWrapper(handlerTotalSaintDOMS))        
+        this.proxyVueltosSaint = new Proxy(vueltosSaintKeys, handlerWrapper(handlerVueltosSaintDOMS))     
+
+    
     },
     initEventListeners(){
         // // Cash register modal total input DOMs
@@ -300,6 +355,7 @@ export default {
         let id = document.querySelector('#id').value;
 
         let date = '';
+        let user = ''
        
         getTotalsToCashRegisterUser(id)
             .then(res => {
@@ -313,11 +369,13 @@ export default {
                     this.setTotalZelleDollar(roundNumber(parseFloat(data.total_zelle)));
                  
                     date = data.date;
-            
+                    user = data.cash_register_user
+               
                     const params = {
                         date,
-                        cashRegisterUser: data.cash_register_user
+                        cashRegisterUser: user
                     };
+                    
 
                     return getTotalsToCashRegisterUserSaint(params);
                 }
@@ -326,17 +384,26 @@ export default {
               
                 if ([201, 200].includes(res.status)){
                     let data = res.data.data;
-
+                    
                     this.setTotalSaintDOMS(data)
 
-                    return getDollarExchangeToDate(date)
+                    return getMoneyBackToCashRegisterUserSaint({date, user})
                 }
             })
+            .then(res => {
+				if ([201, 200].includes(res.status)){
+					let data = res.data.data;
+
+					this.setSaintVueltosDOMS(data);
+
+                    return getDollarExchangeToDate(date)
+				}
+			})
             .then(res => {
        
                 if ([201, 200].includes(res.status)){
                     let data = res.data.data;
-
+                 
                     let dollarExchange = {
                         value: data.bs_exchange,
                         createdAt: data.created_at
@@ -358,7 +425,7 @@ export default {
         let cashRegisterUser = cashRegisterContainer.querySelector('#cash_register_id').value;
         let casgRegisterDate = cashRegisterContainer.querySelector('#date').value;
         let cashRegisterDataPresenter = new CashRegisterDataPresenter(this.setPropWrapper(this.setTotalSaintDOMS),
-            casgRegisterDate, cashRegisterUser);
+            this.setPropWrapper(this.setSaintVueltosDOMS), casgRegisterDate, cashRegisterUser);
         let cashRegisterDataView = new CashRegisterDataView(cashRegisterDataPresenter);
         cashRegisterDataView.init(cashRegisterContainer)
 
