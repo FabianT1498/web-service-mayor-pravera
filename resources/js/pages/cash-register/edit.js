@@ -190,7 +190,7 @@ export default {
             // Pago movil
             if (data.PM !== undefined){
                 let vueltoPagoMovil = data.PM[0];
-                this.proxyVueltosSaint['pagoMovilBs'] = parseFloat(vueltoPagoMovil.MontoDiv);
+                this.proxyVueltosSaint['pagoMovilBs'] = parseFloat(vueltoPagoMovil.MontoBs);
                 this.setTotalPagoMovilBsDiff(this);
             }
         }
@@ -251,7 +251,7 @@ export default {
         this.totalDiffDOMS.zelleDollar.innerHTML = roundNumber(diff).format();
     },
     setTotalPagoMovilBsDiff(){
-        let diff = this.proxy.pagoMovilBs - (this.vueltosSaintDOMS.pagoMovilBs - this.proxyTotalSaint.pagoMovilBs);
+        let diff = this.proxy.pagoMovilBs - (this.proxyVueltosSaint['pagoMovilBs'] + this.proxyTotalSaint.pagoMovilBs);
         let color = this.getAmountColor(diff);
         this.totalDiffDOMS.pagoMovilBs.className = '';
         if (color !== ''){
@@ -365,6 +365,7 @@ export default {
                     this.setTotalDenominationDollar(roundNumber(parseFloat(data.total_dollar_denominations)))
                     this.setTotalLiquidMoneyDollar(roundNumber(parseFloat(data.total_dollar_cash)));
                     this.setTotalPointSaleBs(roundNumber(parseFloat(data.total_point_sale_bs)));
+                    this.setTotalPagoMovilBs(roundNumber(parseFloat(data.total_pago_movil_bs)));
                     this.setTotalPointSaleDollar(roundNumber(parseFloat(data.total_point_sale_dollar)));
                     this.setTotalZelleDollar(roundNumber(parseFloat(data.total_zelle)));
                  

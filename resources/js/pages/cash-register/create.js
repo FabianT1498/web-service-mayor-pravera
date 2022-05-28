@@ -182,7 +182,7 @@ export default {
             // Pago movil
             if (data.PM !== undefined){
                 let vueltoPagoMovil = data.PM[0];
-                this.proxyVueltosSaint['pagoMovilBs'] = parseFloat(vueltoPagoMovil.MontoDiv);
+                this.proxyVueltosSaint['pagoMovilBs'] = parseFloat(vueltoPagoMovil.MontoBs);
                 this.setTotalPagoMovilBsDiff(this);
             }
         }
@@ -244,7 +244,7 @@ export default {
         this.totalDiffDOMS.zelleDollar.innerHTML = roundNumber(diff).format();
     },
     setTotalPagoMovilBsDiff(){
-        let diff = this.proxy.pagoMovilBs - (this.vueltosSaintDOMS.pagoMovilBs - this.proxyTotalSaint.pagoMovilBs);
+        let diff = this.proxy.pagoMovilBs - (this.proxyVueltosSaint['pagoMovilBs'] + this.proxyTotalSaint.pagoMovilBs);
         let color = this.getAmountColor(diff);
         this.totalDiffDOMS.pagoMovilBs.className = '';
         if (color !== ''){
