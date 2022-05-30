@@ -37,7 +37,7 @@ class VueltosFacturasExport implements FromView, WithEvents, WithTitle
                     }
                 }
             }
-            $row_count[$key_codusua] += ($dates->count() + 4);
+            $row_count[$key_codusua] += (($dates->count() * 2) + 4);
         }
 
         return $row_count;
@@ -112,16 +112,16 @@ class VueltosFacturasExport implements FromView, WithEvents, WithTitle
                     $event->sheet->mergeCells('O5:P5');
 
                     $i = 6;
-                    foreach($this->data['total_bill_vales_vueltos_by_user'] as $key_codusua => $metodos_vuelto){
+                    foreach($this->data['total_money_back_by_users'] as $key_codusua => $metodos_vuelto){
                         $event->sheet->setCellValue('H' . $i, $key_codusua);
                         $event->sheet->mergeCells('H' . $i . ':H' . $i);
-                        $event->sheet->setCellValue('I' . $i, $metodos_vuelto->has('Efectivo') ? $metodos_vuelto['Efectivo']->first()->MontoBs : 0);
+                        $event->sheet->setCellValue('I' . $i, array_key_exists('Efectivo', $metodos_vuelto) ? $metodos_vuelto['Efectivo']['MontoBs'] : 0);
                         $event->sheet->mergeCells('I' . $i . ':J' . $i);
-                        $event->sheet->setCellValue('K' . $i, $metodos_vuelto->has('Efectivo') ? $metodos_vuelto['Efectivo']->first()->MontoDiv : 0);
+                        $event->sheet->setCellValue('K' . $i, array_key_exists('Efectivo', $metodos_vuelto) ? $metodos_vuelto['Efectivo']['MontoDiv']: 0);
                         $event->sheet->mergeCells('K' . $i . ':L' . $i);
-                        $event->sheet->setCellValue('M' . $i, $metodos_vuelto->has('PM') ? $metodos_vuelto['PM']->first()->MontoBs : 0);
+                        $event->sheet->setCellValue('M' . $i, array_key_exists('PM', $metodos_vuelto) ? $metodos_vuelto['PM']['MontoBs'] : 0);
                         $event->sheet->mergeCells('M' . $i . ':N' . $i);
-                        $event->sheet->setCellValue('O' . $i, $metodos_vuelto->has('PM') ? $metodos_vuelto['PM']->first()->MontoDiv : 0);
+                        $event->sheet->setCellValue('O' . $i, array_key_exists('PM', $metodos_vuelto) ? $metodos_vuelto['PM']['MontoDiv'] : 0);
                         $event->sheet->mergeCells('O' . $i . ':P' . $i);
 
                         $i++;
@@ -162,7 +162,7 @@ class VueltosFacturasExport implements FromView, WithEvents, WithTitle
                     
                     $start_summary_row = 4;
                     $event->sheet->styleCells(
-                        'H4:P' . ($start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count()),
+                        'H4:P' . ($start_summary_row + 2 + count($this->data['total_money_back_by_users'])),
                         [
                             'borders' => [
                                 'allBorders' => [
@@ -177,29 +177,33 @@ class VueltosFacturasExport implements FromView, WithEvents, WithTitle
                         ]
                     );
 
-                    $event->sheet->setCellValue('H' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count(),
+                    $event->sheet->setCellValue('H' . $start_summary_row + 2 + count($this->data['total_money_back_by_users']),
                             'Total:');
-                    $event->sheet->mergeCells('H' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count() .
-                            ':H' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count());
-                    $event->sheet->setCellValue('I' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count(),
-                            array_key_exists('Efectivo', $this->data['total_bill_vueltos']) ? $this->data['total_bill_vueltos']['Efectivo']['MontoBs'] : 0);
-                    $event->sheet->mergeCells('I' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count() .
-                            ':J' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count());
-                    $event->sheet->setCellValue('K' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count(),
-                            array_key_exists('Efectivo', $this->data['total_bill_vueltos']) ? $this->data['total_bill_vueltos']['Efectivo']['MontoDiv'] : 0);
-                    $event->sheet->mergeCells('K' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count() .
-                            ':L' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count());
-                    $event->sheet->setCellValue('M' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count(),
-                            array_key_exists('PM', $this->data['total_bill_vueltos']) ? $this->data['total_bill_vueltos']['PM']['MontoBs'] : 0);
-                    $event->sheet->mergeCells('M' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count() .
-                            ':N' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count());
-                    $event->sheet->setCellValue('O' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count(),
-                            array_key_exists('PM', $this->data['total_bill_vueltos']) ? $this->data['total_bill_vueltos']['PM']['MontoDiv'] : 0);
-                    $event->sheet->mergeCells('O' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count() .
-                        ':P' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count());
+                    $event->sheet->mergeCells('H' . $start_summary_row + 2 + count($this->data['total_money_back_by_users']) .
+                            ':H' . $start_summary_row + 2 + count($this->data['total_money_back_by_users']));
+                    
+                    $event->sheet->setCellValue('I' . $start_summary_row + 2 + count($this->data['total_money_back_by_users']),
+                            array_key_exists('Efectivo', $this->data['total_money_back']) ? $this->data['total_money_back']['Efectivo']['MontoBs'] : 0);
+                    $event->sheet->mergeCells('I' . $start_summary_row + 2 + count($this->data['total_money_back_by_users']) .
+                            ':J' . $start_summary_row + 2 + count($this->data['total_money_back_by_users']));
+                    
+                    $event->sheet->setCellValue('K' . $start_summary_row + 2 + count($this->data['total_money_back_by_users']),
+                            array_key_exists('Efectivo', $this->data['total_money_back']) ? $this->data['total_money_back']['Efectivo']['MontoDiv'] : 0);
+                    $event->sheet->mergeCells('K' . $start_summary_row + 2 + count($this->data['total_money_back_by_users']) .
+                            ':L' . $start_summary_row + 2 + count($this->data['total_money_back_by_users']));
+                    
+                    $event->sheet->setCellValue('M' . $start_summary_row + 2 + count($this->data['total_money_back_by_users']),
+                            array_key_exists('PM', $this->data['total_money_back']) ? $this->data['total_money_back']['PM']['MontoBs'] : 0);
+                    $event->sheet->mergeCells('M' . $start_summary_row + 2 + count($this->data['total_money_back_by_users']) .
+                            ':N' . $start_summary_row + 2 + count($this->data['total_money_back_by_users']));
+                    
+                    $event->sheet->setCellValue('O' . $start_summary_row + 2 + count($this->data['total_money_back_by_users']),
+                            array_key_exists('PM', $this->data['total_money_back']) ? $this->data['total_money_back']['PM']['MontoDiv'] : 0);
+                    $event->sheet->mergeCells('O' . $start_summary_row + 2 + count($this->data['total_money_back_by_users']) .
+                        ':P' . $start_summary_row + 2 + count($this->data['total_money_back_by_users']));
 
-                    $event->sheet->styleCells('H' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count() .
-                        ':P' . $start_summary_row + 2 + $this->data['total_bill_vales_vueltos_by_user']->count(),
+                    $event->sheet->styleCells('H' . $start_summary_row + 2 + count($this->data['total_money_back_by_users']) .
+                        ':P' . $start_summary_row + 2 + count($this->data['total_money_back_by_users']),
                         [
                             'fill' => [
                                 'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
@@ -327,7 +331,7 @@ class VueltosFacturasExport implements FromView, WithEvents, WithTitle
                             
 
                             if (!is_null($prev_dates)){
-                                $start_dates += ($prev_dates + 1);
+                                $start_dates += ($prev_dates + 2);
                             }
 
                             $event->sheet->styleCells(

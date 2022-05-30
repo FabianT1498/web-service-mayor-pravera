@@ -50,26 +50,44 @@
                             @endif                            
                         </tr>
                     @endforeach
+                    <tr>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        @if($money_back_by_users[$key_codusua][$key_date]->has('Efectivo'))
+                            <td>{{ number_format($money_back_by_users[$key_codusua][$key_date]['Efectivo']->first()->MontoDiv, 2) }}</td>
+                            <td>{{ number_format($money_back_by_users[$key_codusua][$key_date]['Efectivo']->first()->MontoBs, 2) }}</td>
+                        @else
+                            <td>0.00</td>
+                            <td>0.00</td>
+                        @endif
+                        @if($money_back_by_users[$key_codusua][$key_date]->has('PM'))
+                            <td>{{ number_format($money_back_by_users[$key_codusua][$key_date]['PM']->first()->MontoDiv, 2) }}</td>
+                            <td>{{ number_format($money_back_by_users[$key_codusua][$key_date]['PM']->first()->MontoBs, 2) }}</td>
+                        @else
+                            <td>0.00</td>
+                            <td>0.00</td>
+                        @endif
+                    </tr>
                 @endforeach
             </tbody>
             <tfoot>
-                <tr class="bg-grey-400 ">
+                <tr>
                     <td>&nbsp;</td>
-                    <td class="total-width-text">Total: </td>
-                    @if ($total_bill_vales_vueltos_by_user[$key_codusua]->has('Efectivo'))
-                        <td class="total-width-text">{{ number_format($total_bill_vales_vueltos_by_user[$key_codusua]['Efectivo']->first()->MontoDiv, 2) }}</td>
-                        <td class="total-width-text">{{ number_format($total_bill_vales_vueltos_by_user[$key_codusua]['Efectivo']->first()->MontoBs, 2) }}</td>
+                    <td>Total: </td>
+                    @if(array_key_exists('Efectivo', $total_money_back_by_users[$key_codusua]))
+                        <td>{{ number_format($total_money_back_by_users[$key_codusua]['Efectivo']['MontoDiv'], 2) }}</td>
+                        <td>{{ number_format($total_money_back_by_users[$key_codusua]['Efectivo']['MontoBs'], 2) }}</td>
                     @else
                         <td>0.00</td>
                         <td>0.00</td>
                     @endif
-                    @if ($total_bill_vales_vueltos_by_user[$key_codusua]->has('PM'))
-                        <td class="total-width-text">{{ number_format($total_bill_vales_vueltos_by_user[$key_codusua]['PM']->first()->MontoDiv, 2) }}</td>
-                        <td class="total-width-text">{{ number_format($total_bill_vales_vueltos_by_user[$key_codusua]['PM']->first()->MontoBs, 2) }}</td>
+                    @if(array_key_exists('PM', $total_money_back_by_users[$key_codusua]))
+                        <td>{{ number_format($total_money_back_by_users[$key_codusua]['PM']['MontoDiv'], 2) }}</td>
+                        <td>{{ number_format($total_money_back_by_users[$key_codusua]['PM']['MontoBs'], 2) }}</td>
                     @else
                         <td>0.00</td>
                         <td>0.00</td>
-                    @endif
+                    @endif             
                 </tr>
             </tfoot>
         </table>
