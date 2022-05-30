@@ -57,7 +57,7 @@ export default {
         zelleDollar: document.querySelector('#total_zelle_saint'),
     },
     vueltosSaintDOMS: {
-        liquidMoneyDollar: document.querySelectorAll('.vuelto_dollar_cash_saint'),
+        liquidMoneyDollar: document.querySelector('#vuelto_dollar_cash_saint'),
         pagoMovilBs: document.querySelector('#vuelto_pago_movil_bs_saint'),
     },
     totalDiffDOMS: {
@@ -165,27 +165,23 @@ export default {
         if (!data){
             Object.keys(this.proxyVueltosSaint).forEach(el => {
                 this.proxyVueltosSaint[el] = 0;
-                this[this.propNameToDiffTotalMethod[el]].call(this)
             })
-
-            this.setTotalDollarCashDenominationDiff();
         } else {
 
             // Liquid Money 
             if (data.Efectivo !== undefined){
                 let vueltoDolares = data.Efectivo[0];
                 this.proxyVueltosSaint['liquidMoneyDollar'] = parseFloat(vueltoDolares.MontoDiv);
-                this.setTotalDollarCashDiff(this);
-                this.setTotalDollarCashDenominationDiff(this);
             }
             
             // Pago movil
             if (data.PM !== undefined){
                 let vueltoPagoMovil = data.PM[0];
-                this.proxyVueltosSaint['pagoMovilBs'] = parseFloat(vueltoPagoMovil.MontoBs);
-                this.setTotalPagoMovilBsDiff(this);
+                this.proxyVueltosSaint['pagoMovilBs'] = parseFloat(vueltoPagoMovil.MontoDiv);
             }
         }
+
+        this.setTotalDollarCashDenominationDiff(this);
     },
     setTotalDollarCashDiff(){
         let diff = this.proxy.liquidMoneyDollar - this.proxyTotalSaint.liquidMoneyDollar;
@@ -198,7 +194,7 @@ export default {
         this.totalDiffDOMS.liquidMoneyDollar.innerHTML = roundNumber(diff).format();
     },
     setTotalDollarCashDenominationDiff(){
-        let diff = (this.proxy.denominationsDollar - this.proxyTotalSaint.liquidMoneyDollar) - this.proxyVueltosSaint.liquidMoneyDollar;
+        let diff = (this.proxy.denominationsDollar - this.proxyTotalSaint.liquidMoneyDollar) - (this.proxyVueltosSaint.liquidMoneyDollar + this.proxyVueltosSaint.pagoMovilBs);
         let color = this.getAmountColor(roundNumber(diff));
         this.totalDiffDOMS.liquidMoneyDollarDenomination.className = '';
         if (color !== ''){
@@ -244,7 +240,7 @@ export default {
         this.totalDiffDOMS.zelleDollar.innerHTML = roundNumber(diff).format();
     },
     setTotalPagoMovilBsDiff(){
-        let diff = (this.proxy.pagoMovilBs - this.proxyTotalSaint.pagoMovilBs) - this.proxyVueltosSaint['pagoMovilBs'];
+        let diff = this.proxy.pagoMovilBs - this.proxyTotalSaint.pagoMovilBs;
         let color = this.getAmountColor(diff);
         this.totalDiffDOMS.pagoMovilBs.className = '';
         if (color !== ''){
@@ -281,13 +277,7 @@ export default {
         }
 
         let handlerVueltosSaintDOMS = (self, key, value) => {
-            if (NodeList.prototype.isPrototypeOf(self.vueltosSaintDOMS[key])){
-                self.vueltosSaintDOMS[key].forEach(el => {
-                    el.innerHTML = roundNumber(value).format()
-                })
-            } else {
-                self.vueltosSaintDOMS[key].innerHTML = roundNumber(value).format()
-            }
+            self.vueltosSaintDOMS[key].innerHTML = roundNumber(value).format()
         }
 
         let handlerWrapper = (fn) => {
