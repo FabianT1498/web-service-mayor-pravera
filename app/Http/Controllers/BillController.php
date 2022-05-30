@@ -22,19 +22,41 @@ class BillController extends Controller
         return view('pages.vales-vueltos-facturas.index', compact('start_date', 'end_date'));
     }
 
-    private function getTotalVueltos($total_bill_vuelto_by_user){
+    private function getTotalVueltosByUser($total_bill_vuelto_by_user){
         $total = [];
 
-        foreach($total_bill_vuelto_by_user as $vueltos){
-            foreach($vueltos as $key_method_vuelto => $vuelto){
+        foreach($total_bill_vuelto_by_user as $key_user => $dates){
+            $total[$key_user] = [];
+            foreach($dates as $vueltos){
+                foreach($vueltos as $key_method_vuelto => $vuelto){
+                    if (!array_key_exists($key_method_vuelto, $total[$key_user])){
+                        $total[$key_user][$key_method_vuelto] = [];
+                        $total[$key_user][$key_method_vuelto]['MontoBs'] = 0;
+                        $total[$key_user][$key_method_vuelto]['MontoDiv'] = 0;
+                    }
+
+                    $total[$key_user][$key_method_vuelto]['MontoBs'] += $vuelto->first()->MontoBs;
+                    $total[$key_user][$key_method_vuelto]['MontoDiv'] += $vuelto->first()->MontoDiv;
+                }
+            }
+        }
+
+        return $total;
+    }
+
+    private function getTotalVueltos($total_money_back_by_users){
+        $total = [];
+
+        foreach($total_money_back_by_users as $vueltos){
+            foreach($vueltos as $key_method_vuelto => $record){
                 if (!array_key_exists($key_method_vuelto, $total)){
                     $total[$key_method_vuelto] = [];
                     $total[$key_method_vuelto]['MontoBs'] = 0;
                     $total[$key_method_vuelto]['MontoDiv'] = 0;
                 }
 
-                $total[$key_method_vuelto]['MontoBs'] += $vuelto->first()->MontoBs;
-                $total[$key_method_vuelto]['MontoDiv'] += $vuelto->first()->MontoDiv;
+                $total[$key_method_vuelto]['MontoBs'] += $record['MontoBs'];
+                $total[$key_method_vuelto]['MontoDiv'] += $record['MontoDiv'];
             }
         }
 
@@ -46,16 +68,19 @@ class BillController extends Controller
             ->getValesAndVueltos($new_start_date, $new_finish_date)
             ->groupBy(['CodUsua', 'FechaE', 'NumeroD', 'FactUso']);
     
-        $total_bill_vales_vueltos_by_user = $bill_repo
+        $money_back_by_users = $bill_repo
             ->getTotalValesAndVueltosByUser($new_start_date, $new_finish_date)
-            ->groupBy(['CodUsua', 'FactUso']);
+            ->groupBy(['CodUsua', 'FechaE', 'FactUso']);
 
-        $total_bill_vueltos = $this->getTotalVueltos($total_bill_vales_vueltos_by_user);
+        $total_money_back_by_users = $this->getTotalVueltosByUser($money_back_by_users);
+
+        $total_money_back = $this->getTotalVueltos($total_money_back_by_users);
  
         return compact([
             'bill_vueltos',
-            'total_bill_vales_vueltos_by_user',
-            'total_bill_vueltos',
+            'money_back_by_users',
+            'total_money_back_by_users',
+            'total_money_back',
         ]);
     }
 
