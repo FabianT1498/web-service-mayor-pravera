@@ -10,6 +10,10 @@
                 box-sizing: border-box;
             }
 
+            .page-break {
+                page-break-after: always;
+            }
+
             html {
                 font-size: 16px;
             }
@@ -264,13 +268,15 @@
                     <h1 class="text-center">Totales de entradas de dinero</h1>
                 </div>
 
-                <div class="w-80p mb-8">
+                <div class="w-80p mb-4">
                     <table>
                         <thead>
                             <tr>
                                 <th>&nbsp;</th>
                                 <th>Total ingresado en el sistema</th>
                                 <th>Total recuperado de SAINT</th>
+                                <th>Vuelto dolares</th>
+                                <th>Vuelto PM ($)</th>
                                 <th>Diferencia</th>
                             </tr>
                         </thead>
@@ -279,6 +285,8 @@
                                 <th>Detalles de dolares en efectivo ($)</th>
                                 <td class="text-center">{{ number_format($cash_register_totals->total_dollar_cash, 2) }}</td>
                                 <td class="text-center">{{ number_format($totals_from_safact->dolares, 2)  }}</td>
+                                <td class="text-center">—</td>
+                                <td class="text-center">—</td>
                                 <td 
                                     class="text-center {{  $differences['dollar_cash'] > 0 
                                         ? 'text-blue-400' 
@@ -293,6 +301,8 @@
                                 <th>Dolares en físico ($)</th>
                                 <td class="text-center">{{ number_format($cash_register_totals->total_dollar_denominations, 2) }}</td>
                                 <td class="text-center">{{ number_format($totals_from_safact->dolares, 2)  }}</td>
+                                <td class="text-center">{{ $vuelto_by_user->has('Efectivo') ? $vuelto_by_user['Efectivo']->first()->MontoDiv : 0 }}</td>
+                                <td class="text-center">{{ $vuelto_by_user->has('PM') ? $vuelto_by_user['PM']->first()->MontoDiv : 0 }}</td>
                                 <td 
                                     class="text-center {{  $differences['dollar_denominations'] > 0 
                                         ? 'text-blue-400' 
@@ -307,6 +317,8 @@
                                 <th>Bolívares en físico (Bs)</td>
                                 <td class="text-center">{{ number_format($cash_register_totals->total_bs_denominations, 2) }}</td>
                                 <td class="text-center">{{ number_format($totals_from_safact->bolivares, 2)  }}</td>
+                                <td class="text-center">—</td>
+                                <td class="text-center">—</td>
                                 <td 
                                     class="text-center {{ ($differences['bs_cash'] > 0) 
                                         ? 'text-blue-400' 
@@ -323,6 +335,8 @@
                                 <td class="text-center">{{  number_format($totals_e_payment[$user][$date]['01']['bs'] 
                                         + $totals_e_payment[$user][$date]['02']['bs'] + $totals_e_payment[$user][$date]['03']['bs']
                                                 + $totals_e_payment[$user][$date]['04']['bs'], 2)  }}</td>
+                                <td class="text-center">—</td>
+                                <td class="text-center">—</td>
                                 <td 
                                     class="text-center {{ $differences['point_sale_bs'] > 0 
                                         ? 'text-blue-400' 
@@ -337,6 +351,8 @@
                                 <th>Pago móvil y transferencias (Bs)</th>
                                 <td class="text-center">{{ number_format($cash_register_totals->total_pago_movil_bs, 2) }}</td>
                                 <td class="text-center">{{ number_format($totals_e_payment[$user][$date]['05']['bs'], 2) }}</td>
+                                <td class="text-center">—</td>
+                                <td class="text-center">—</td>
                                 <td 
                                     class="text-center {{$differences['pago_movil_bs'] > 0 
                                         ? 'text-blue-400' 
@@ -351,6 +367,8 @@
                                 <th>Punto de venta int. ($)</th>
                                 <td class="text-center">{{ number_format($cash_register_totals->total_point_sale_dollar, 2) }}</td>
                                 <td class="text-center">{{ number_format($totals_e_payment[$user][$date]['08']['dollar'], 2) }}</td>
+                                <td class="text-center">—</td>
+                                <td class="text-center">—</td>
                                 <td 
                                     class="text-center  {{ $differences['point_sale_dollar'] > 0 
                                         ? 'text-blue-400' 
@@ -365,6 +383,8 @@
                                 <th>Zelle</th>
                                 <td class="text-center">{{ number_format($cash_register_totals->total_zelle, 2) }}</td>
                                 <td class="text-center">{{ number_format($totals_e_payment[$user][$date]['07']['dollar'], 2)  }}</td>
+                                <td class="text-center">—</td>
+                                <td class="text-center">—</td>
                                 <td 
                                     class="text-center {{ $differences['zelle'] > 0 
                                         ? 'text-blue-400' 
@@ -379,6 +399,8 @@
                     </table>
                 </div>
                 
+                <div class="page-break"></div>
+
                 <div class="w-80p mb-8">
                     <h1 class="text-center">Totales de billetes tangibles</h1>
                 </div>

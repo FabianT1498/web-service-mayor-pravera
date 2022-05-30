@@ -32,6 +32,7 @@ use App\Http\Requests\PrintSingleCashRegisterRequest;
 use App\Http\Requests\PrintIntervalCashRegisterRequest;
 
 use App\Repositories\CashRegisterRepository;
+use App\Repositories\BillRepository;
 
 class CashRegisterController extends Controller
 {
@@ -648,7 +649,7 @@ class CashRegisterController extends Controller
     }
 
     // Metodo para agregar los metodos de pagos electronicos en cajas que no tuvieron ningun movimiento
-    // de este tipo, para un solo elemento.
+    // de este tipo.
     private function completeEpaymentMethodsToCashUserForRecord($user, $date, $totals_e_payment, $payment_methods){
         $default_e_payment_values = $payment_methods->keys()->reduce(function($carry, $item){
             $carry[$item] = [];
@@ -669,7 +670,7 @@ class CashRegisterController extends Controller
         return DB::table('payment_methods')->orderByRaw("CodPago asc")->get()->groupBy(['CodPago']);
     }
 
-    public function singleRecordPdf(CashRegisterRepository $cash_register_repo, PrintSingleCashRegisterRequest $request){
+    public function singleRecordPdf(CashRegisterRepository $cash_register_repo, BillRepository $bill_repo, PrintSingleCashRegisterRequest $request){
         
         $id = $request->route('id');
        
@@ -690,20 +691,27 @@ class CashRegisterController extends Controller
         $totals_e_payment  = $this
             ->mapEPaymentMethods($totals_e_payment, $payment_methods);
 
+        $vuelto_by_user = $bill_repo
+            ->getTotalValesAndVueltosByUser($date, $date, $user)
+            ->groupBy(['FactUso']);
+
         // Completar las cajas con sus respectivos metodos de pago que no tuvieron operacion con pagos electronicos
         $totals_e_payment = $this->completeEpaymentMethodsToCashUserForRecord($user, $date, $totals_e_payment, $payment_methods);
         
         $differences = [
-            'dollar_cash' => $cash_register_totals->total_dollar_cash - $totals_from_safact->dolares,
-            'bs_cash' => $cash_register_totals->total_bs_denominations - $totals_from_safact->bolivares,
-            'pago_movil_bs' => $cash_register_totals->total_pago_movil_bs - $totals_e_payment[$user][$date]['05']['bs'],
-            'point_sale_bs' => ($cash_register_totals->total_point_sale_bs - ($totals_e_payment[$user][$date]['01']['bs'] 
+            'dollar_cash' => round($cash_register_totals->total_dollar_cash - $totals_from_safact->dolares, 2),
+            'bs_cash' => round($cash_register_totals->total_bs_denominations - $totals_from_safact->bolivares, 2),
+            'pago_movil_bs' => round($cash_register_totals->total_pago_movil_bs - $totals_e_payment[$user][$date]['05']['bs'], 2),
+            'point_sale_bs' => round(($cash_register_totals->total_point_sale_bs - ($totals_e_payment[$user][$date]['01']['bs'] 
                     + $totals_e_payment[$user][$date]['02']['bs'] + $totals_e_payment[$user][$date]['03']['bs']
-                    + $totals_e_payment[$user][$date]['04']['bs'])),
-            'point_sale_dollar' => $cash_register_totals->total_point_sale_dollar - $totals_e_payment[$user][$date]['08']['dollar'],
-            'zelle' => $cash_register_totals->total_zelle - $totals_e_payment[$user][$date]['07']['dollar'],
-            'bs_denominations' => $cash_register_totals->total_bs_denominations - $totals_from_safact->bolivares,
-            'dollar_denominations' => $cash_register_totals->total_dollar_denominations - $totals_from_safact->dolares,
+                    + $totals_e_payment[$user][$date]['04']['bs'])), 2),
+            'point_sale_dollar' => round($cash_register_totals->total_point_sale_dollar - $totals_e_payment[$user][$date]['08']['dollar'], 2),
+            'zelle' => round($cash_register_totals->total_zelle - $totals_e_payment[$user][$date]['07']['dollar'], 2),
+            'bs_denominations' => round($cash_register_totals->total_bs_denominations - $totals_from_safact->bolivares, 2),
+            'dollar_denominations' => round(($cash_register_totals->total_dollar_denominations - $totals_from_safact->dolares) - (
+                ($vuelto_by_user->has('Efectivo') ? $vuelto_by_user['Efectivo']->first()->MontoDiv : 0) +
+                        ($vuelto_by_user->has('PM') ? $vuelto_by_user['PM']->first()->MontoDiv : 0) 
+            ), 2),
         ];
 
         $cash_register_data = CashRegisterData::find($id);
@@ -723,6 +731,7 @@ class CashRegisterController extends Controller
             'totals_from_safact',
             'denominations_dollar',
             'denominations_bolivar',
+            'vuelto_by_user',
             'differences',
             'currency_signs',
             'user',
