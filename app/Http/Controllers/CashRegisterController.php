@@ -743,7 +743,7 @@ class CashRegisterController extends Controller
         return $pdf->stream('arqueo-caja_' . $cash_register_totals->cash_register_user . '_' . $cash_register_totals->date . '.pdf');
     }
 
-    public function intervalRecordPdf(CashRegisterRepository $cash_register_repo, PrintIntervalCashRegisterRequest $request){
+    public function intervalRecordPdf(CashRegisterRepository $cash_register_repo, BillRepository $bill_repo, PrintIntervalCashRegisterRequest $request){
         
         $start_date = date('Y-m-d', strtotime($request->start_date));
         $end_date = date('Y-m-d', strtotime($request->end_date));
@@ -771,7 +771,11 @@ class CashRegisterController extends Controller
         // Completar las cajas con sus respectivos metodos de pago que no tuvieron operacion con pagos electronicos
         $totals_e_payment = $this->completeEpaymentMethodsToCashUserForInteval($totals_from_safact, $totals_e_payment, $payment_methods);
 
-        $differences = $this->calculateDiffToSaint($totals_from_safact, $totals_e_payment, $cash_registers_totals);
+        $vuelto_by_users = $bill_repo
+            ->getTotalValesAndVueltosByUser($start_date, $end_date)
+            ->groupBy(['CodUsua', 'FechaE', 'FactUso']);
+
+        $differences = $this->calculateDiffToSaint($totals_from_safact, $totals_e_payment, $cash_registers_totals, $vuelto_by_users);
     
         $dollar_denominations = DB::table('cash_register_data')
             ->join('dollar_denomination_records', 'cash_register_data.id', '=', 'dollar_denomination_records.cash_register_data_id')
@@ -814,6 +818,7 @@ class CashRegisterController extends Controller
             'saint_totals',
             'cash_registers_totals',
             'differences',
+            'vuelto_by_users',
             'dollar_denominations',
             'bs_denominations',
             'totals_bs_denominations',
@@ -885,33 +890,43 @@ class CashRegisterController extends Controller
         return $totals_denominations;
     }
 
-    private function calculateDiffToSaint($totals_from_safact, $totals_e_payment, $cash_registers){
+    private function calculateDiffToSaint($totals_from_safact, $totals_e_payment, $cash_registers, $money_back_by_users){
         $differences = [];
 
-        $totals_from_safact->each(function($dates, $key_user) use ($cash_registers, &$differences){
+        $totals_from_safact->each(function($dates, $key_user) use ($cash_registers, &$differences, $money_back_by_users){
             $differences[$key_user] = [];
+            $money_back_by_user = $money_back_by_users->has($key_user) ? $money_back_by_users[$key_user] : null;
             
             if ($cash_registers->has($key_user)){
-                $dates->each(function($date, $key_date) use (&$differences, $key_user, $cash_registers){
+                $dates->each(function($date, $key_date) use (&$differences, $key_user, $cash_registers, $money_back_by_user){
+
+                    $money_back_by_user_date = !is_null($money_back_by_user) && $money_back_by_user->has($key_date) ? $money_back_by_user[$key_date] : null;
+
                     if ($cash_registers[$key_user]->has($key_date)){
                         $differences[$key_user][$key_date] = [];
-                        $differences[$key_user][$key_date]['dollar_cash'] = $cash_registers[$key_user][$key_date]->first()->total_dollar_cash - $date[0]->dolares;
-                        $differences[$key_user][$key_date]['bs_denominations'] = $cash_registers[$key_user][$key_date]->first()->total_bs_denominations - $date[0]->bolivares;
-                        $differences[$key_user][$key_date]['dollar_denominations'] = $cash_registers[$key_user][$key_date]->first()->total_dollar_denominations - $date[0]->dolares;
+                        $differences[$key_user][$key_date]['dollar_cash'] = round($cash_registers[$key_user][$key_date]->first()->total_dollar_cash - $date[0]->dolares, 2);
+                        $differences[$key_user][$key_date]['bs_denominations'] = round($cash_registers[$key_user][$key_date]->first()->total_bs_denominations - $date[0]->bolivares, 2);
+                        $differences[$key_user][$key_date]['dollar_denominations'] = round(($cash_registers[$key_user][$key_date]->first()->total_dollar_denominations - $date[0]->dolares)
+                            - (((!is_null($money_back_by_user_date) && $money_back_by_user_date->has('Efectivo')) ? $money_back_by_user_date['Efectivo']->first()->MontoDiv : 0) +
+                                ((!is_null($money_back_by_user_date) && $money_back_by_user_date->has('PM')) ? $money_back_by_user_date['PM']->first()->MontoDiv : 0)), 2);
                     } else {
                         $differences[$key_user][$key_date] = [];
                         $differences[$key_user][$key_date]['dollar_cash'] = $date[0]->dolares * -1;
                         $differences[$key_user][$key_date]['bs_denominations'] = $date[0]->bolivares * -1;
-                        $differences[$key_user][$key_date]['dollar_denominations'] = $date[0]->dolares * -1;
+                        $differences[$key_user][$key_date]['dollar_denominations'] = ($date[0]->dolares + (((!is_null($money_back_by_user_date) && $money_back_by_user_date->has('Efectivo')) ? $money_back_by_user_date['Efectivo']->first()->MontoDiv : 0) +
+                            ((!is_null($money_back_by_user_date) && $money_back_by_user_date->has('PM')) ? $money_back_by_user_date['PM']->first()->MontoDiv : 0))) * -1;
 
                     }
                 });
             } else {
-                $dates->each(function($date, $key_date) use (&$differences, $key_user){
+                $dates->each(function($date, $key_date) use (&$differences, $key_user, $money_back_by_user){
+                    $money_back_by_user_date = !is_null($money_back_by_user) && $money_back_by_user->has($key_date) ? $money_back_by_user[$key_date] : null;
+
                     $differences[$key_user][$key_date] = [];
                     $differences[$key_user][$key_date]['dollar_cash'] = $date[0]->dolares * -1;
                     $differences[$key_user][$key_date]['bs_denominations'] = $date[0]->bolivares * -1;
-                    $differences[$key_user][$key_date]['dollar_denominations'] = $date[0]->dolares * -1;
+                    $differences[$key_user][$key_date]['dollar_denominations'] = ($date[0]->dolares + (((!is_null($money_back_by_user_date) && $money_back_by_user_date->has('Efectivo')) ? $money_back_by_user_date['Efectivo']->first()->MontoDiv : 0) +
+                            ((!is_null($money_back_by_user_date) && $money_back_by_user_date->has('PM')) ? $money_back_by_user_date['PM']->first()->MontoDiv : 0))) * -1;
                 });
             }
         });
@@ -926,11 +941,11 @@ class CashRegisterController extends Controller
                 
                 foreach($dates as $key_date => $date){
                     if ($cash_registers[$key_user]->has($key_date)){
-                        $differences[$key_user][$key_date]['point_sale_bs'] = $cash_registers[$key_user][$key_date]->first()->total_point_sale_bs - ($date['01']['bs'] + $date['02']['bs']
-                                + $date['03']['bs'] + $date['04']['bs']);
-                        $differences[$key_user][$key_date]['point_sale_dollar'] = $cash_registers[$key_user][$key_date]->first()->total_point_sale_dollar - $date['08']['dollar'];
-                        $differences[$key_user][$key_date]['pago_movil_bs'] = $cash_registers[$key_user][$key_date]->first()->total_pago_movil_bs - $date['05']['bs'];
-                        $differences[$key_user][$key_date]['zelle'] = $cash_registers[$key_user][$key_date]->first()->total_zelle -  $date['07']['dollar'];
+                        $differences[$key_user][$key_date]['point_sale_bs'] = round($cash_registers[$key_user][$key_date]->first()->total_point_sale_bs - ($date['01']['bs'] + $date['02']['bs']
+                                + $date['03']['bs'] + $date['04']['bs']), 2);
+                        $differences[$key_user][$key_date]['point_sale_dollar'] = round($cash_registers[$key_user][$key_date]->first()->total_point_sale_dollar - $date['08']['dollar'], 2);
+                        $differences[$key_user][$key_date]['pago_movil_bs'] = round($cash_registers[$key_user][$key_date]->first()->total_pago_movil_bs - $date['05']['bs'], 2);
+                        $differences[$key_user][$key_date]['zelle'] = round($cash_registers[$key_user][$key_date]->first()->total_zelle -  $date['07']['dollar'], 2);
                     } else {
                         // if (!array_key_exists($key_date, $differences[$key_user])){
                         //     $differences[$key_user][$key_date] = [];

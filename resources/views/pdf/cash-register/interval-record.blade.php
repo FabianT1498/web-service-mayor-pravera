@@ -290,6 +290,8 @@
                                             <th>&nbsp;</th>
                                             <th>Total ingresado en el sistema</th>
                                             <th>Total recuperado de SAINT</th>
+                                            <th>Vuelto dolares</th>
+                                            <th>Vuelto PM ($)</th>
                                             <th>Diferencia</th>
                                         </tr>
                                     </thead>
@@ -298,6 +300,8 @@
                                             <th>Detalles de dolares en efectivo ($)</th>
                                             <td class="text-center">{{ number_format($cash_registers_totals[$key_user][$key_date][0]->total_dollar_cash, 2) }}</td>
                                             <td class="text-center">{{ number_format($saint_totals[$key_user][$key_date]['dolares'], 2) }}</td>
+                                            <td class="text-center">—</td>
+                                            <td class="text-center">—</td>
                                             <td 
                                                 class="text-center {{  $differences[$key_user][$key_date]['dollar_cash'] > 0 
                                                     ? 'text-blue-400' 
@@ -312,6 +316,18 @@
                                             <th>Dolares en físico ($)</th>
                                             <td class="text-center">{{ number_format($cash_registers_totals[$key_user][$key_date][0]->total_dollar_denominations, 2) }}</td>
                                             <td class="text-center">{{ number_format($saint_totals[$key_user][$key_date]['dolares'], 2)  }}</td>
+                                            <td class="text-center">{{ number_format(($vuelto_by_users->has($key_user) && $vuelto_by_users[$key_user]->has($key_date)
+                                                 && $vuelto_by_users[$key_user][$key_date]->has('Efectivo')) 
+                                                    ? $vuelto_by_users[$key_user][$key_date]['Efectivo']->first()->MontoDiv
+                                                    : 0.00, 2)
+                                                }}
+                                            </td>
+                                            <td class="text-center">{{ number_format(($vuelto_by_users->has($key_user) && $vuelto_by_users[$key_user]->has($key_date)
+                                                 && $vuelto_by_users[$key_user][$key_date]->has('PM')) 
+                                                    ? $vuelto_by_users[$key_user][$key_date]['PM']->first()->MontoDiv
+                                                    : 0.00, 2)
+                                                }}
+                                            </td>
                                             <td 
                                                 class="text-center {{ $differences[$key_user][$key_date]['dollar_denominations'] > 0 
                                                     ? 'text-blue-400' 
@@ -326,6 +342,8 @@
                                             <th>Bs en físico (Bs)</td>
                                             <td class="text-center">{{  number_format($cash_registers_totals[$key_user][$key_date][0]->total_bs_denominations, 2) }}</td>
                                             <td class="text-center">{{  number_format($saint_totals[$key_user][$key_date]['bolivares'], 2) }}</td>
+                                            <td class="text-center">—</td>
+                                            <td class="text-center">—</td>
                                             <td 
                                                 class="text-center {{ ($differences[$key_user][$key_date]['bs_denominations'] > 0) 
                                                     ? 'text-blue-400' 
@@ -342,6 +360,8 @@
                                             <td class="text-center">{{ number_format($saint_totals[$key_user][$key_date]['01']['bs'] 
                                                     + $saint_totals[$key_user][$key_date]['02']['bs'] + $saint_totals[$key_user][$key_date]['03']['bs']
                                                             + $saint_totals[$key_user][$key_date]['04']['bs'], 2) }}</td>
+                                            <td class="text-center">—</td>
+                                            <td class="text-center">—</td>
                                             <td 
                                                 class="text-center {{ $differences[$key_user][$key_date]['point_sale_bs'] > 0 
                                                     ? 'text-blue-400' 
@@ -356,6 +376,8 @@
                                             <th>Pago móvil y transferencias</th>
                                             <td class="text-center">{{ number_format($cash_registers_totals[$key_user][$key_date][0]->total_pago_movil_bs, 2)  }}</td>
                                             <td class="text-center">{{ number_format($saint_totals[$key_user][$key_date]['05']['bs'], 2) }}</td>
+                                            <td class="text-center">—</td>
+                                            <td class="text-center">—</td>
                                             <td 
                                                 class="text-center {{$differences[$key_user][$key_date]['pago_movil_bs'] > 0 
                                                     ? 'text-blue-400' 
@@ -370,6 +392,8 @@
                                             <th>Punto de venta int. ($)</th>
                                             <td class="text-center">{{ number_format($cash_registers_totals[$key_user][$key_date][0]->total_point_sale_dollar, 2)}}</td>
                                             <td class="text-center">{{ number_format($saint_totals[$key_user][$key_date]['08']['dollar'], 2)  }}</td>
+                                            <td class="text-center">—</td>
+                                            <td class="text-center">—</td>
                                             <td 
                                                 class="text-center {{ $differences[$key_user][$key_date]['point_sale_dollar'] > 0 
                                                     ? 'text-blue-400' 
@@ -384,6 +408,8 @@
                                             <th>Zelle</th>
                                             <td class="text-center">{{ number_format($cash_registers_totals[$key_user][$key_date][0]->total_zelle, 2)}}</td>
                                             <td class="text-center">{{ number_format($saint_totals[$key_user][$key_date]['07']['dollar'], 2) }}</td>
+                                            <td class="text-center">—</td>
+                                            <td class="text-center">—</td>
                                             <td 
                                                 class="text-center {{ $differences[$key_user][$key_date]['zelle'] > 0 
                                                     ? 'text-blue-400' 

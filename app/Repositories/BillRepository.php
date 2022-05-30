@@ -59,15 +59,15 @@ class BillRepository implements BillRepositoryInterface
         return DB
             ::connection('saint_db')
             ->table('SAFACT')
-            ->selectRaw("MAX(SAFACT.CodUsua) as CodUsua, CASE WHEN EGIVALES.FactUso = '' THEN 'Efectivo' ELSE EGIVALES.FactUso END as FactUso, MAX(EGIVALES.Estado) as Estado,  CAST(ROUND(SUM(EGIVALES.MontoDiv * SAFACT.Signo), 2) AS decimal(10, 2)) AS MontoDiv, 
+            ->selectRaw("MAX(SAFACT.CodUsua) as CodUsua, CAST(SAFACT.FechaE AS date) as FechaE, CASE WHEN EGIVALES.FactUso = '' THEN 'Efectivo' ELSE EGIVALES.FactUso END as FactUso, MAX(EGIVALES.Estado) as Estado,  CAST(ROUND(SUM(EGIVALES.MontoDiv * SAFACT.Signo), 2) AS decimal(10, 2)) AS MontoDiv, 
                 CAST(ROUND(SUM(EGIVALES.MontoDiv * FactorHist.MaxFactor * SAFACT.Signo), 2) AS decimal(10, 2)) as MontoBs")  
             ->join('EGIVALES', 'EGIVALES.FactEmi', '=', 'SAFACT.NumeroD')
             ->joinSub($factors, 'FactorHist', function($query){
                 $query->on(DB::raw("CAST(SAFACT.FechaE AS date)"), '=', "FactorHist.FechaE");
             })
             ->whereRaw("EGIVALES.Estado = 'V' AND SAFACT.TipoFac IN ('A', 'B') AND SAFACT.CodUsua " . $user_params . " AND " . $interval_query, $queryParams)
-            ->groupByRaw("SAFACT.CodUsua, EGIVALES.FactUso")
-            ->orderByRaw("SAFACT.CodUsua asc")
+            ->groupByRaw("SAFACT.CodUsua, CAST(SAFACT.FechaE AS date), EGIVALES.FactUso")
+            ->orderByRaw("SAFACT.CodUsua asc, CAST(SAFACT.FechaE AS date) asc")
             ->get();
     }
 }
