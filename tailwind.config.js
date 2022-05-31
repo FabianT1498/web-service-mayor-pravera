@@ -27,7 +27,8 @@ module.exports = {
               '72': '18rem',
               '84': '21rem',
               '96': '24rem',
-              '108': '27rem'
+              '108': '27rem',
+              '132': '34rem'
             },
         },
     },
@@ -52,5 +53,9 @@ module.exports = {
         },
         variants: ['responsive'],
       }),
+      require('tailwind-scrollbar'),
     ],
+    variants: {
+      scrollbar: ['rounded']
+    }
 };

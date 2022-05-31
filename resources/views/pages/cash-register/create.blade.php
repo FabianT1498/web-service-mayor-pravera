@@ -5,10 +5,14 @@
 @endsection
 
 @section('main')
-    <form id="form" autocomplete="off" method="POST" action="{{ route('cash_register.store') }}">
+    <div class="sticky right-0 top-0 flex flex-row justify-end items-center w-full h-auto">
+        <button type="button" data-modal-toggle="notes-modal" class="absolute top-4 mr-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-centerdark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+        </button>
+    </div>
+    <form id="form" class="px-20" autocomplete="off" method="POST" action="{{ route('cash_register.store') }}">
         @csrf
-
-        <div id="cash_register_data" class="w-10/12 mb-8 mx-auto">
+        <div id="cash_register_data" class="mb-8 mx-auto">
             <h2 class="h2 text-center mb-8">Datos de la caja</h2>
 
             <!-- Cash register date -->
@@ -104,7 +108,7 @@
             @endif
         </div>
 
-        <div class="w-10/12 mb-8 mx-auto">
+        <div class=" mb-8 mx-auto">
             <h2 class="h2">Ingresos en fisico</h2>
             <h3 class="h3">Dolares</h3>
             <!-- <x-label :value="__('Fecha de registro de la última tasa: ')" />
@@ -261,7 +265,7 @@
             </div>
         </div>
     
-        <div class="w-10/12 mx-auto">
+        <div class=" mx-auto">
             <h2 class="h2">Ingresos en punto de venta</h2>
             <h3 class="h3">Bolívares</h3>
 
@@ -368,7 +372,7 @@
 
         </div>
 
-        <div class="w-10/12 mx-auto">
+        <div class=" mx-auto">
             <h2 class="h2 text-center mb-8">Transferencias y pago móviles</h2>
             <div class="flex mb-8 items-center">
                 
@@ -421,7 +425,7 @@
             </div>    
         </div>
     
-        <div class="w-10/12 mx-auto">
+        <div class=" mx-auto">
             <h2 class="h2 text-center mb-8">Entradas de Zelle ($)</h2>
     
             <div class="flex mb-8 items-center">
@@ -474,7 +478,7 @@
             </div> 
         </div>
 
-        <div class="w-10/12 flex mx-auto justify-end mb-32">
+        <div class=" flex mx-auto justify-end mb-32">
             <x-button :variation="__('rounded')">
                 {{ __('Guardar') }}
             </x-button>
@@ -522,6 +526,10 @@
             :currency="__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))"
             :modalID="__('point_sale_bs')"
             :records="old('point_sale_bs') ? old('point_sale_bs') : []"
+        />
+
+        <x-modal-notes
+            :modalID="__('notes-modal')"
         />
     </form>
   
