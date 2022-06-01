@@ -39,7 +39,9 @@ const NotesPresenterPrototype = {
 					let id = parseInt(noteID);
 					this.noteCollection.removeElementByID(id);
 					this.view.deleteNotePreview(noteID)
+                    this.view.showEmptyNote(noteID); 
                     this.view.deleteNote(noteID)
+                    
 				}
 			}
 		} else if (li && li.tagName === 'LI'){

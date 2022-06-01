@@ -34,14 +34,14 @@ const NotesViewPrototype = {
                 class="flex bg-gray-200 justify-between items-center h-1/4 w-full px-4 py-2 mb-4 first:rounded-t-lg last:rounded-b-lg hover:bg-gray-300 transition-colors ease-in-out duration-300"
                 data-id="${note.id}" aria-current="false"
             >
-                <div class="basis-9/12">
-                    <span class="font-semibold text-lg overflow-x-hidden">${note.title !== '' ? this.truncate(note.title, 20) : 'Nota sin título'}</span>
+                <div class="basis-9/12 flex-grow-0 flex-shrink-0 overflow-x-hidden">
+                    <span class="font-semibold text-lg">${note.title !== '' ? this.truncate(note.title, 20) : 'Nota sin título'}</span>
                     <p>${this.truncate(note.description, 20)}</p>
                 </div>
                 <button
                     type="button"
                     data-modal="delete"
-                    class="flex bg-white justify-center w-8 h-8 p-2 items-center transition-colors duration-150 rounded-full shadow-lg"
+                    class="flex basis-2/12 flex-grow-0 flex-shrink-0 bg-white justify-center  p-2 items-center transition-colors duration-150 rounded-full shadow-lg"
                 >
                     <i class="fas text-red-600 fa-trash"></i>
                 </button>
@@ -92,11 +92,13 @@ const NotesViewPrototype = {
 
         if (prevNote){
             prevNote.classList.remove('text-white', 'bg-blue-600', 'border-b', 'border-gray-200','focus:outline-none', 'hover:bg-blue-700')
+            prevNote.classList.add('bg-gray-200')
             prevNote.setAttribute('aria-current', "false")
         }
     },
     setListItemFocused(li){
         li.setAttribute('aria-current', "true")
+        li.classList.remove('bg-gray-200')
         li.classList.add('text-white', 'bg-blue-600', 'border-b', 'border-gray-200','focus:outline-none', 'hover:bg-blue-700');
     },
     showSelectedListItem(id){
