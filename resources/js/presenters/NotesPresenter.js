@@ -42,10 +42,14 @@ const NotesPresenterPrototype = {
 		} else if (li && li.tagName === 'LI'){
             let id = li.getAttribute('data-id');
 
+            
             if (li.getAttribute('aria-current') === "false"){
-                this.view.showSelectedListItem(id);
                 this.view.setPreviousItemUnfocused();
+                this.view.showSelectedListItem(id);
                 this.view.setListItemFocused(li)
+            } else {
+                this.view.setPreviousItemUnfocused();
+                this.view.showEmptyNote(id);                
             }
         }
     },

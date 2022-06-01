@@ -21,20 +21,49 @@
                 <div class="inline-block min-w-full align-middle h-full">
                     <div class="p-8 bg-gray-100 h-full flex justify-between">
                         <ul id={{ $modalID . '-list' }} class="basis-2/6 h-full overflow-x-hidden overflow-y-auto cursor-pointer scrollbar-thin scrollbar-track-slate-50 scrollbar-thumb-slate-400 scrollbar-thumb-rounded">
+                            @foreach($records as $key => $record)
+                                <li 
+                                    class="flex bg-gray-200 justify-between items-center h-1/4 w-full px-4 py-2 mb-4 first:rounded-t-lg last:rounded-b-lg hover:bg-gray-300 transition-colors ease-in-out duration-300"
+                                    data-id={{ $key }} aria-current="false"
+                                >
+                                    <div class="basis-9/12">
+                                        <span class="font-semibold text-lg overflow-x-hidden">{{ Str::limit($record->title, 20) }}</span>
+                                        <p>{{ Str::limit($record->description, 20) }}</p>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        data-modal="delete"
+                                        class="flex bg-white justify-center w-8 h-8 p-2 items-center transition-colors duration-150 rounded-full shadow-lg"
+                                    >
+                                        <i class="fas text-red-600 fa-trash"></i>
+                                    </button>
+                                </li>
+                            @endforeach        
                         </ul>
                         <div class="basis-2/3 flex flex-col justify-between pl-4">
                             <div class="basis-1/12 flex flex-row">
                                 <button data-modal="add" type="button" class="bg-blue-600 p-2 transition-colors ease-in-out duration-300 rounded-sm shadow-lg basis-3/12 font-medium text-white hover:bg-blue-700 ">
-                                    Agregar nota
+                                    Guardar nota
                                 </button>
                             </div>
                             <div class="basis-10/12" id={{ $modalID . '-container' }}>
-                                <div class="flex flex-col justify-between h-full" data-id="">
-                                    <input type="text" placeholder="Título" name="note_title[]" class="font-light text-xl text-gray-500 rounded-t-md min-w-0 border-solid border-0 border-b-2 border-blue-400 shadow-lg focus:outline-none focus:shadow-none
-                                        focus:border-blue-600 focus:ring-0">
-                                    <textarea class="w-full resize-none basis-4/5 border-none border-0 focus:border-none shadow-lg focus:shadow-none focus:outline-none focus:ring-0" placeholder="Descripción"  name="note_description[]"
-                                        name=""></textarea>
-                                </div>
+                                    <div class="flex flex-col justify-between h-full" data-id="">
+                                        <input type="text" placeholder="Título" name="note_title[]" class="font-light text-xl text-gray-500 rounded-t-md min-w-0 border-solid border-0 border-b-2 border-blue-400 shadow-lg focus:outline-none focus:shadow-none
+                                            focus:border-blue-600 focus:ring-0">
+                                        <textarea class="w-full resize-none basis-4/5 border-none border-0 focus:border-none shadow-lg focus:shadow-none focus:outline-none focus:ring-0" placeholder="Descripción"  name="note_description[]"></textarea>
+                                    </div>                       
+                                    @foreach($records as $key => $record)
+                                        <div class="flex flex-col justify-between h-full hidden" data-id={{ $key }}>
+                                            <input type="text" placeholder="Título" name="note_title[]" class="font-light text-xl text-gray-500 rounded-t-md min-w-0 border-solid border-0 border-b-2 border-blue-400 shadow-lg focus:outline-none focus:shadow-none
+                                                focus:border-blue-600 focus:ring-0" value={{ $record->title }}>
+                                            <textarea 
+                                                class="w-full resize-none basis-4/5 border-none border-0 focus:border-none shadow-lg focus:shadow-none focus:outline-none focus:ring-0" 
+                                                placeholder="Descripción"  
+                                                name="note_description[]"
+                                              
+                                            >{{ $record->description }}</textarea>
+                                        </div>
+                                    @endforeach
                             </div>
                         </div>
                     </div>

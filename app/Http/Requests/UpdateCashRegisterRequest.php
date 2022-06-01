@@ -84,6 +84,10 @@ class UpdateCashRegisterRequest extends FormRequest
             $rules['point_sale_bs.*.cancel_todoticket'] = ['required', new BadFormattedAmount];
         }
 
+        if (count($this->notes) > 0){
+            $rules['notes'] = [];
+        }
+
         if (count($this->zelle_record) > 0){
             $rules['zelle_record.*'] = $total_rules;
         }
@@ -215,6 +219,17 @@ class UpdateCashRegisterRequest extends FormRequest
         } else {
             $inputs['zelle_record'] = [];
         }
+
+        if ($this->has('note_title')){
+            $inputs['notes'] = array_map(function($title, $description){
+                return [
+                    'title' => $title,
+                    'description' => $description,
+                ];
+            }, $this->note_title, $this->note_description);
+        } else {
+            $inputs['notes'] = [];
+        }
          
         // }
 
@@ -243,6 +258,8 @@ class UpdateCashRegisterRequest extends FormRequest
             'point_sale_bs.*.cancel_todoticket' => 'entrada de todoticket',
             'zelle_record' => 'entrada de zelle',
             'total_point_sale_dollar' => 'entrada del punto de venta internacional',
+            'note_description' => 'Notas'
+
         ];
     }
 }

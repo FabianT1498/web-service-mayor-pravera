@@ -22,6 +22,7 @@ use App\Models\DollarDenominationRecord;
 use App\Models\PointSaleBsRecord;
 use App\Models\PointSaleDollarRecord;
 use App\Models\ZelleRecord;
+use App\Models\Note;
 
 use App\Models\DollarExchange;
 
@@ -226,6 +227,22 @@ class CashRegisterController extends Controller
                 PointSaleBsRecord::insert($validated['point_sale_bs']);
             }
 
+            if (array_key_exists('notes', $validated)){
+                
+                $data = array_reduce($validated['notes'], function($acc, $note) use ($cash_register_data){
+                    if (!is_null($note['description']) && $note['description'] !== ''){
+                        $acc[] = array(
+                            'title' => $note['title'],
+                            'description' => $note['description'],
+                            'cash_register_data_id' => $cash_register_data->id);
+                    }
+
+                    return $acc;
+                }, []);
+                
+                Note::insert($data);
+            }
+
             if (array_key_exists('total_point_sale_dollar', $validated) 
                 && $validated['total_point_sale_dollar'] > 0){
                 $data = [
@@ -274,7 +291,8 @@ class CashRegisterController extends Controller
         $bs_denomination_records = $cash_register_data->bs_denomination_records;
         $dollar_denomination_records = $cash_register_data->dollar_denomination_records;
         $zelle_records = $cash_register_data->zelle_records;
-
+        $notes = $cash_register_data->notes;
+        
         $point_sale_dollar_record = $cash_register_data
             ->point_sale_dollar_records()
             ->first();
@@ -352,7 +370,8 @@ class CashRegisterController extends Controller
             'cash_registers_id_arr',
             'cash_registers_workers_id_arr',
             'date',
-            'old_dollar_exchange'
+            'old_dollar_exchange',
+            'notes'
         ));
     }
 
@@ -521,6 +540,50 @@ class CashRegisterController extends Controller
                 'cancel_amex',
                 'cancel_todoticket',
                 'bank_name'
+            ]);
+        }
+
+        // Update Notes Records
+        $notes_coll = $cash_register_data->notes;
+
+        $notes = array_reduce($validated['notes'], function($acc, $note){
+            if (!is_null($note['description']) && $note['description'] !== ''){
+                $acc[] = array(
+                    'title' => $note['title'],
+                    'description' => $note['description'],
+                );
+            }
+
+            return $acc;
+        }, []);
+
+        if (count($notes) === 0 && $notes_coll->count() > 0){
+            $notes_coll
+                ->each(function($item, $key){
+                    $item->delete();
+                });
+
+        } else {
+            
+            $diff = $notes_coll->count() - count($notes);
+
+            if ($diff > 0){
+                $to_delete = $notes_coll->splice(0, $diff);
+                $to_delete->each(function($item, $key){
+                    $item->delete();
+                });
+            }
+
+            $data = $this->mergeOldAndNewValues(
+                $cash_register_data_id,
+                'notesColsToUpdate',
+                $notes_coll->toArray(),
+                $notes
+            );
+            
+            $cash_register_data->notes()->upsert($data, ['id'], [
+                'title',
+                'description',
             ]);
         }
 
@@ -1027,6 +1090,15 @@ class CashRegisterController extends Controller
             'cancel_amex' => $new_record[0]['cancel_amex'],
             'cancel_todoticket' => $new_record[0]['cancel_todoticket'],
             'bank_name' => $new_record[0]['bank_name'],
+            'cash_register_data_id' => $parent_id
+        ];
+    }
+
+    private function notesColsToUpdate($old_record, $new_record, $parent_id){
+        return [
+            'id' => $old_record ? $old_record['id'] : null,
+            'title' => $new_record[0]['title'],
+            'description' => $new_record[0]['description'],
             'cash_register_data_id' => $parent_id
         ];
     }

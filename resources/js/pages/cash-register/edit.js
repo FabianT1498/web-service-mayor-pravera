@@ -20,6 +20,9 @@ import SalePointModalView from '_views/SalePointModalView'
 import CashRegisterDataPresenter from '_presenters/CashRegisterDataPresenter'
 import CashRegisterDataView from '_views/CashRegisterDataView'
 
+import NotesView from '_views/NotesView'
+import NotesPresenter from '_presenters/NotesPresenter'
+
 import {decimalInputs} from '_utilities/decimalInput';
 import numericInput from '_utilities/numericInput';
 import { roundNumber, formatAmount } from '_utilities/mathUtilities'
@@ -28,6 +31,7 @@ import MoneyRecord from '_models/moneyRecord'
 import DenominationRecord from '_models/DenominationRecord'
 import PointSaleRecord from '_models/PointSaleRecord'
 import Bank from '_models/Bank';
+import Note from '_models/Note';
 
 import {default as modalBehavior} from '_app/base/modalBehavior'
 
@@ -420,6 +424,18 @@ export default {
             this.setPropWrapper(this.setSaintVueltosDOMS), casgRegisterDate, cashRegisterUser);
         let cashRegisterDataView = new CashRegisterDataView(cashRegisterDataPresenter);
         cashRegisterDataView.init(cashRegisterContainer)
+
+        // Notes
+        let notesContainer = document.querySelector('#notes-modal')
+        let notesElements = notesContainer.querySelector('#notes-modal-container').children;
+        let notesRecords = Array.prototype.map.call(notesElements, function(el, key){
+            let title = el.querySelector('input').value;
+            let description = el.querySelector('textarea').value;
+            return new Note(title,  description, key);
+        });
+        let notesPresenter = new NotesPresenter(notesRecords);
+        let notesView = new NotesView(notesPresenter);
+        notesView.init(notesContainer)
 
         // Pago movil bs
         let pagoMovilBsModal = document.querySelector('#pago_movil_record');

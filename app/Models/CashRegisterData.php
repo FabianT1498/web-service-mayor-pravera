@@ -11,6 +11,7 @@ use App\Models\PointSaleDollarRecord;
 use App\Models\BsDenominationRecord;
 use App\Models\DollarDenominationRecord;
 use App\Models\ZelleRecord;
+use App\Models\Note;
 use App\Models\PagoMovilRecord;
 
 use Carbon\Carbon;
@@ -81,5 +82,10 @@ class CashRegisterData extends Model
     public function zelle_records()
     {
         return $this->hasMany(ZelleRecord::class);
+    }    
+
+    public function notes()
+    {
+        return $this->hasMany(Note::class);
     }    
 }
