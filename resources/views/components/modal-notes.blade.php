@@ -20,15 +20,20 @@
             <div class="shadow-md sm:rounded-lg h-full">
                 <div class="inline-block min-w-full align-middle h-full">
                     <div class="p-8 bg-gray-100 h-full flex justify-between">
-                        <ul class="basis-2/6 h-full overflow-x-hidden overflow-y-auto cursor-pointer scrollbar-thin scrollbar-track-slate-50 
+                        <ul id={{ $modalID . '-list' }} class="basis-2/6 h-full overflow-x-hidden overflow-y-auto cursor-pointer scrollbar-thin scrollbar-track-slate-50 
                             scrollbar-thumb-slate-400 scrollbar-thumb-rounded">
-                            <li aria-current="true" class="flex justify-between items-center h-1/4 w-full px-4 py-2 font-medium text-left text-white bg-blue-600 border-b border-gray-200 rounded-t-lg focus:outline-none">
+                            <!-- <li 
+                                aria-current="true" 
+                                class="flex justify-between items-center h-1/4 w-full px-4 py-2 font-medium text-left text-white bg-blue-600 border-b border-gray-200 rounded-t-lg focus:outline-none"
+                                data-id="1"
+                            >
                                 <div>
                                     <span>Titulo</span>
                                     <p>Descripcion</p>
                                 </div>
                                 <button
                                     type="button"
+                                    data-modal="delete"
                                     class=" flex bg-white justify-center w-8 h-8 p-2 items-center transition-colors duration-150 rounded-full shadow-lg"
                                 >
                                     <i class="fas text-red-600 fa-trash"></i>
@@ -45,18 +50,22 @@
                                 >
                                     <i class="fas text-red-600 fa-trash"></i>
                                 </button>
-                            </li>
+                            </li> -->
                         </ul>
                         <div class="basis-2/3 flex flex-col justify-between pl-4">
-                            <div class="flex flex-row">
+                            <div class="basis-1/12 flex flex-row">
                                 <button data-modal="add" type="button" class="bg-blue-600 p-2 transition-colors ease-in-out duration-300 rounded-sm shadow-lg basis-3/12 font-medium text-white hover:bg-blue-500 ">
                                     Agregar nota
                                 </button>
                             </div>
-                            <input type="text" placeholder="Título" class="font-light text-xl text-gray-500 rounded-t-md min-w-0 border-solid border-0 border-b-2 border-blue-400 shadow-lg focus:outline-none focus:shadow-none
-                                focus:border-blue-600 focus:ring-0">
-                            <textarea class="w-full resize-none basis-3/4 border-none border-0 focus:border-none focus:outline-none focus:ring-0" placeholder="Descripción"
-                                name=""></textarea>
+                            <div class="basis-10/12" id={{ $modalID . '-container' }}>
+                                <div class="flex flex-col justify-between h-full" data-current-note="true">
+                                    <input type="text" placeholder="Título" class="font-light text-xl text-gray-500 rounded-t-md min-w-0 border-solid border-0 border-b-2 border-blue-400 shadow-lg focus:outline-none focus:shadow-none
+                                        focus:border-blue-600 focus:ring-0">
+                                    <textarea class="w-full resize-none basis-4/5 border-none border-0 focus:border-none focus:outline-none focus:ring-0" placeholder="Descripción"
+                                        name=""></textarea>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

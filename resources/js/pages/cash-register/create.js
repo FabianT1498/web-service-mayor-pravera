@@ -24,6 +24,9 @@ import CashRegisterDataView from '_views/CashRegisterDataView'
 import SalePointModalPresenter from '_presenters/SalePointModalPresenter'
 import SalePointModalView from '_views/SalePointModalView'
 
+import NotesView from '_views/NotesView'
+import NotesPresenter from '_presenters/NotesPresenter'
+
 import {decimalInputs} from '_utilities/decimalInput';
 import { formatAmount, roundNumber } from '_utilities/mathUtilities'
 
@@ -349,6 +352,11 @@ export default {
         let cashRegisterDataPresenter = new CashRegisterDataPresenter(this.setPropWrapper(this.setTotalSaintDOMS), this.setPropWrapper(this.setSaintVueltosDOMS));
         let cashRegisterDataView = new CashRegisterDataView(cashRegisterDataPresenter);
         cashRegisterDataView.init(cashRegisterContainer)
+
+        let notesContainer = document.querySelector('#notes-modal')
+        let notesPresenter = new NotesPresenter();
+        let notesView = new NotesView(notesPresenter);
+        notesView.init(notesContainer)
 
         let cashDollarRecordModal = document.querySelector('#dollar_cash_record');
         let dollarRecordMoneyPresenter = new ForeignMoneyRecordModalPresenter(CURRENCIES.DOLLAR, PAYMENT_METHODS.CASH, this.setPropWrapper(this.setTotalLiquidMoneyDollar));
