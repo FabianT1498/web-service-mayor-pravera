@@ -30,7 +30,10 @@ const NotesPresenterPrototype = {
                         this.view.updateListItemContent(currentNoteID, data)
                     }
 
-				} else if(action === 'delete') { // Remove element
+				} else if(action === 'add-blank'){
+                    this.view.setPreviousItemUnfocused();
+                    this.view.showEmptyNote(currentNoteID);  
+                } else if(action === 'delete') { // Remove element
 
 					const noteID = button.closest('li').getAttribute('data-id');
 					let id = parseInt(noteID);

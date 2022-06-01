@@ -69,7 +69,6 @@ const NotesViewPrototype = {
     },
     deleteNotePreview(id){
         let item = this.notesList.querySelector(`li[data-id="${id}"]`)
-        console.log(item)
         this.notesList.removeChild(item)
     },
     deleteNote(id){
@@ -78,12 +77,15 @@ const NotesViewPrototype = {
     },
     showEmptyNote(id){
         let currentNote = this.notesContainer.querySelector(`[data-id="${id}"]`)
-        currentNote.classList.add('hidden')
 
-        let blankNote = this.notesContainer.querySelector(`[data-id=""]`)
-        blankNote.classList.remove('hidden')
-
-        this.notesContainer.insertBefore(blankNote, currentNote)
+        if (currentNote){
+            currentNote.classList.add('hidden')
+    
+            let blankNote = this.notesContainer.querySelector(`[data-id=""]`)
+            blankNote.classList.remove('hidden')
+    
+            this.notesContainer.insertBefore(blankNote, currentNote)
+        }
     },
     setPreviousItemUnfocused(){
         let prevNote = this.notesList.querySelector('li[aria-current="true"]');
