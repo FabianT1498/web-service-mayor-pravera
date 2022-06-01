@@ -104,6 +104,13 @@ const NotesViewPrototype = {
         this.notesContainer.children[0].classList.add('hidden')
         this.notesContainer.insertBefore(selectedNote, this.notesContainer.children[0])
     },
+    updateListItemContent(id, data){
+        let noteEl = this.notesList.querySelector(`[data-id="${id}"]`)
+
+        noteEl.querySelector('span').innerHTML =  data.title !== '' ? this.truncate(data.title, 20) : 'Nota sin título'
+        noteEl.querySelector('p').innerHTML = this.truncate(data.description, 20)
+
+    },
     truncate(str, n){
         return (str.length > n) ? str.substr(0, n-1) + '&hellip;' : str;
     }

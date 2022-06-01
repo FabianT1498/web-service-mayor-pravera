@@ -20,37 +20,7 @@
             <div class="shadow-md sm:rounded-lg h-full">
                 <div class="inline-block min-w-full align-middle h-full">
                     <div class="p-8 bg-gray-100 h-full flex justify-between">
-                        <ul id={{ $modalID . '-list' }} class="basis-2/6 h-full overflow-x-hidden overflow-y-auto cursor-pointer scrollbar-thin scrollbar-track-slate-50 
-                            scrollbar-thumb-slate-400 scrollbar-thumb-rounded">
-                            <!-- <li 
-                                aria-current="true" 
-                                class="flex justify-between items-center h-1/4 w-full px-4 py-2 font-medium text-left text-white bg-blue-600 border-b border-gray-200 rounded-t-lg focus:outline-none"
-                                data-id="1"
-                            >
-                                <div>
-                                    <span>Titulo</span>
-                                    <p>Descripcion</p>
-                                </div>
-                                <button
-                                    type="button"
-                                    data-modal="delete"
-                                    class=" flex bg-white justify-center w-8 h-8 p-2 items-center transition-colors duration-150 rounded-full shadow-lg"
-                                >
-                                    <i class="fas text-red-600 fa-trash"></i>
-                                </button>
-                            </li>
-                            <li class="flex justify-between items-center h-1/4 w-full px-4 py-2 hover:bg-gray-300 transition-colors ease-in-out duration-300">
-                                <div>
-                                    <span>Titulo</span>
-                                    <p>Descripcion</p>
-                                </div>
-                                <button
-                                    type="button"
-                                    class=" flex bg-white justify-center w-8 h-8 p-2 items-center transition-colors duration-150 rounded-full shadow-lg"
-                                >
-                                    <i class="fas text-red-600 fa-trash"></i>
-                                </button>
-                            </li> -->
+                        <ul id={{ $modalID . '-list' }} class="basis-2/6 h-full overflow-x-hidden overflow-y-auto cursor-pointer scrollbar-thin scrollbar-track-slate-50 scrollbar-thumb-slate-400 scrollbar-thumb-rounded">
                         </ul>
                         <div class="basis-2/3 flex flex-col justify-between pl-4">
                             <div class="basis-1/12 flex flex-row">

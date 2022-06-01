@@ -27,6 +27,7 @@ const NotesPresenterPrototype = {
                         this.updateNote(currentNoteID, data)
                         this.view.showEmptyNote(currentNoteID);
                         this.view.setPreviousItemUnfocused();
+                        this.view.updateListItemContent(currentNoteID, data)
                     }
 
 				} else if(action === 'delete') { // Remove element
