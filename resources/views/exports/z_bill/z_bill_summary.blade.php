@@ -2,6 +2,8 @@
     <thead>
         <tr>
             <th>&nbsp;</th>
+            <th>Total Z</th>
+            <th>Total IGTF</th>
             <th>Total ventas<br/>(Con I.V.A)</th>
             <th>Base<br/>imponible</th>
             <th>Alicuota<br/>16%</th>

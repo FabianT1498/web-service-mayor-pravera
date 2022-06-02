@@ -77,13 +77,15 @@ class ZBillRecordExport implements FromView, WithEvents, WithTitle
                 $event->sheet->getColumnDimension('K')->setWidth(90, 'px');
                 $event->sheet->getColumnDimension('L')->setWidth(90, 'px');
                 $event->sheet->getColumnDimension('M')->setWidth(90, 'px');
+                $event->sheet->getColumnDimension('N')->setWidth(90, 'px');
+                $event->sheet->getColumnDimension('O')->setWidth(90, 'px');
 
-                $event->sheet->setCellValue('O2', 'Fecha: ' . $this->data['start_date'] . ($this->data['start_date'] !== $this->data['end_date'] 
+                $event->sheet->setCellValue('Q2', 'Fecha: ' . $this->data['start_date'] . ($this->data['start_date'] !== $this->data['end_date'] 
                     ? (' hasta ' . $this->data['end_date']) 
                     : ''));
-                $event->sheet->mergeCells('O2:Q2');
+                $event->sheet->mergeCells('Q2:S2');
                 $event->sheet->styleCells(
-                    'O2:Q2',
+                    'Q2:S2',
                     [
                         
                         'font' => [
@@ -105,7 +107,7 @@ class ZBillRecordExport implements FromView, WithEvents, WithTitle
                 if ($this->data['totals_from_safact']->count() > 0){
 
                     $event->sheet->styleCells(
-                        'F:M', 
+                        'F:O', 
                         [
                             'numberFormat' => [
                                 'formatCode' => \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
@@ -123,7 +125,7 @@ class ZBillRecordExport implements FromView, WithEvents, WithTitle
                         }
 
                         $event->sheet->styleCells(
-                            'A' . $start . ':M' . (is_null($prev) ? ($user_row_count - 1) : ($start + $user_row_count - 2)),
+                            'A' . $start . ':O' . (is_null($prev) ? ($user_row_count - 1) : ($start + $user_row_count - 2)),
                             [
                                 'borders' => [
                                     'allBorders' => [
@@ -135,7 +137,7 @@ class ZBillRecordExport implements FromView, WithEvents, WithTitle
                         );
 
                         $event->sheet->styleCells(
-                            'A'. $start . ':M' . $start,
+                            'A'. $start . ':O' . $start,
                             [
                                 'fill' => [
                                     'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
@@ -156,7 +158,7 @@ class ZBillRecordExport implements FromView, WithEvents, WithTitle
                         );
 
                         $event->sheet->styleCells(
-                            'A'. $start + 1 . ':M' . $start + 1,
+                            'A'. $start + 1 . ':O' . $start + 1,
                             [
                                 'fill' => [
                                     'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
@@ -179,13 +181,13 @@ class ZBillRecordExport implements FromView, WithEvents, WithTitle
 
                         
                         
-                        $event->sheet->mergeCells('A'. $start + 1 . ':M' . $start + 1);
+                        $event->sheet->mergeCells('A'. $start + 1 . ':O' . $start + 1);
                         
                         $prev = $user_row_count;
                     }
                     
                     $event->sheet->styleCells(
-                        'A:M',
+                        'A:O',
                         [
                             'alignment' => [
                                 'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,

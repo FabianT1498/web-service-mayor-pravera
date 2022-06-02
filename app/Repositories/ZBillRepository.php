@@ -20,8 +20,9 @@ class ZBillRepository implements ZBillRepositoryInterface
             ->table('SAFACT')
             ->selectRaw("MAX(SAFACT.CodUsua) as CodUsua, CAST(SAFACT.FechaE as date) as FechaE, 
             COALESCE(SAFACT.NumeroP, '—') as NumeroP, COALESCE(MAX(SAFACT.NumeroZ), '—') as NumeroZ, MAX(SAFACT.TipoFac) AS TipoFac, CAST(SUM(SAFACT.TExento * SAFACT.Signo) AS decimal(10,2)) as ventaTotalExenta,
-                CAST(SUM((SAFACT.MtoTotal - SAFACT.MtoExtra) * SAFACT.Signo) AS decimal(10,2)) as ventaTotalIVA, COUNT(SAFACT.NumeroF) AS nroFacturas,
-                COALESCE(MAX(SAFACT.NumeroF), '—')  AS ultimoNroFactura")  
+                CAST(SUM(SAFACT.MtoExtra * SAFACT.Signo) AS decimal(10,2)) as totalIGTF, CAST(SUM(SAFACT.MtoTotal * SAFACT.Signo) AS decimal(10,2)) as totalZ,
+                CAST(SUM((SAFACT.MtoTotal - SAFACT.MtoExtra) * SAFACT.Signo) AS decimal(10,2)) as ventaTotalIVA,
+                COUNT(SAFACT.NumeroF) AS nroFacturas, COALESCE(MAX(SAFACT.NumeroF), '—')  AS ultimoNroFactura")  
             ->whereRaw("SAFACT.EsNF = 0 AND SAFACT.TipoFac IN ('A', 'B') AND SAFACT.CodUsua IN ('CAJA1', 'CAJA2', 'CAJA3', 'CAJA4', 'CAJA5',
                 'CAJA6' , 'CAJA7', 'DELIVERY') AND " . $interval_query, $queryParams)
             ->groupByRaw("SAFACT.CodUsua, CAST(SAFACT.FechaE as date), SAFACT.NumeroP, SAFACT.NumeroZ, SAFACT.TipoFac")

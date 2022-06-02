@@ -11,14 +11,14 @@
             }
 
             html {
-                font-size: 16px;
+                font-size: 13px;
             }
 
             @page { margin: 50px 0px; }
         
             body * { 
                 box-sizing: border-box;
-                font-size: 0.9rem;
+                font-size: 1rem;
             }
 
             .page-break {
@@ -65,12 +65,13 @@
             th, td {
                 border: 1px solid #ccc;
                 overflow: hidden;
-                width: 160px;
-                padding: 2px 2px;
+                width: 200px;
+                padding: 2px;
+                
             }
 
             td {
-                height: 20px;
+                height: 40px;
             }
 
             p {
@@ -92,7 +93,7 @@
             }
 
             .container {
-                width: 1000px;
+                width: 1025px;
                 margin: 0 auto;
             }
 
@@ -271,6 +272,8 @@
                     <thead>
                         <tr>
                             <th>&nbsp;</th>
+                            <th>Total Z</th>
+                            <th>IGTF</th>
                             <th>Total ventas (Con I.V.A)</th>
                             <th>Base imponible</th>
                             <th>Alicuota<br/>16%</th>
@@ -311,6 +314,8 @@
                                 <th>N.º de reporte "Z"</th>
                                 <th>Cant. facturas</th>
                                 <th>Último n.º factura</th>
+                                <th>Total reporte "Z"</th>
+                                <th>IGTF</th>
                                 <th>Total ventas (Con I.V.A)</th>
                                 <th>Base imponible</th>
                                 <th>Alicuota<br/>16%</th>
@@ -332,7 +337,9 @@
                                                 <td>{{ $key_z_number }}</td>
                                                 <td>{{ $record->nroFacturas }}</td>
                                                 <td>{{ $record->ultimoNroFactura }}</td>
-                                                <td>{{ $record->ventaTotalIVA }}</td>
+                                                <td>{{ number_format($record->totalZ, 2) }}</td>
+                                                <td>{{ number_format($record->totalIGTF, 2) }}</td>
+                                                <td>{{ number_format($record->ventaTotalIVA, 2) }}</td>
                                                 
                                                 @if (count($total_base_imponible_by_tax) > 0 && key_exists($key_codusua, $total_base_imponible_by_tax)
                                                         && key_exists($key_date, $total_base_imponible_by_tax[$key_codusua])

@@ -81,6 +81,8 @@ class ZBillController extends Controller
 
         foreach($totals_from_safact as $key_codusua => $dates){
             $totals[$key_codusua] = [];
+            $totals[$key_codusua]['total_z'] = 0;
+            $totals[$key_codusua]['total_IGTF'] = 0;
             $totals[$key_codusua]['total_IVA'] = 0;
             $totals[$key_codusua]['base_imponible_16'] = 0;
             $totals[$key_codusua]['IVA_16'] = 0; 
@@ -95,6 +97,8 @@ class ZBillController extends Controller
                 foreach ($printers as $key_printer => $z_numbers){
                     foreach ($z_numbers as $key_z_number => $records){
                         foreach($records as $record){
+                            $totals[$key_codusua]['total_z'] += $record->totalZ;
+                            $totals[$key_codusua]['total_IGTF'] += $record->totalIGTF;
                             $totals[$key_codusua]['total_IVA'] += $record->ventaTotalIVA;
                             $totals[$key_codusua]['total_exento'] += $record->ventaTotalExenta;
 
@@ -131,6 +135,8 @@ class ZBillController extends Controller
 
     private function getTotals($totals_by_user){
         $total_general = [];
+        $total_general['total_z'] = 0;
+        $total_general['total_IGTF'] = 0;
         $total_general['total_IVA'] = 0;
         $total_general['base_imponible_16'] = 0;
         $total_general['IVA_16'] = 0; 

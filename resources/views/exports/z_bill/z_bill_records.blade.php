@@ -8,6 +8,8 @@
                     <th>N.º reporte<br/>"Z"</th>
                     <th>Cant.<br/>facturas</th>
                     <th>Último<br/>n.º factura</th>
+                    <th>Total Z</th>
+                    <th>Total IGTF</th>
                     <th>Total ventas<br/>(Con I.V.A)</th>
                     <th>Base<br/>imponible</th>
                     <th>Alicuota<br/>16%</th>
@@ -33,6 +35,8 @@
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
                 </tr>
                 @foreach($dates as $key_date => $printers)
                     @foreach($printers as $key_printer => $z_numbers)
@@ -44,6 +48,8 @@
                                     <td>{{ $key_z_number }}</td>
                                     <td>{{ $record->nroFacturas }}</td>
                                     <td>{{ $record->ultimoNroFactura }}</td>
+                                    <td>{{ $record->totalZ }}</td>
+                                    <td>{{ $record->totalIGTF }}</td>
                                     <td>{{ $record->ventaTotalIVA }}</td>
                                     @if (count($total_base_imponible_by_tax) > 0 && key_exists($key_codusua, $total_base_imponible_by_tax)
                                             && key_exists($key_date, $total_base_imponible_by_tax[$key_codusua])

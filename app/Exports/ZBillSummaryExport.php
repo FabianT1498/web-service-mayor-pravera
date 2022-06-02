@@ -39,7 +39,7 @@ class ZBillSummaryExport implements FromView, WithEvents, WithTitle
             AfterSheet::class => function(AfterSheet $event) {
 
                 $event->sheet->styleCells(
-                    'A1:I1',
+                    'A1:K1',
                     [
                         'fill' => [
                             'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
@@ -61,7 +61,7 @@ class ZBillSummaryExport implements FromView, WithEvents, WithTitle
                 );
 
                 $event->sheet->styleCells(
-                    'B:I', 
+                    'B:K', 
                     [
                         'numberFormat' => [
                             'formatCode' => \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
@@ -71,7 +71,7 @@ class ZBillSummaryExport implements FromView, WithEvents, WithTitle
                 );
 
                 $event->sheet->styleCells(
-                    'A'. $this->total_rows . ':I' . $this->total_rows,
+                    'A'. $this->total_rows . ':K' . $this->total_rows,
                     [
                         'fill' => [
                             'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
@@ -93,7 +93,7 @@ class ZBillSummaryExport implements FromView, WithEvents, WithTitle
                 );
 
                 $event->sheet->styleCells(
-                    'A:I',
+                    'A:K',
                     [
                         'alignment' => [
                             'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
@@ -102,7 +102,7 @@ class ZBillSummaryExport implements FromView, WithEvents, WithTitle
                 );
                               
                 $event->sheet->styleCells(
-                    'A1:I' . $this->total_rows,
+                    'A1:K' . $this->total_rows,
                     [
                         'borders' => [
                             'allBorders' => [
@@ -116,12 +116,14 @@ class ZBillSummaryExport implements FromView, WithEvents, WithTitle
                 $event->sheet->getColumnDimension('A')->setWidth(90, 'px');
                 $event->sheet->getColumnDimension('B')->setWidth(90, 'px');
                 $event->sheet->getColumnDimension('C')->setWidth(90, 'px');
-                $event->sheet->getColumnDimension('D')->setWidth(60, 'px');
+                $event->sheet->getColumnDimension('D')->setWidth(90, 'px');
                 $event->sheet->getColumnDimension('E')->setWidth(85, 'px');
                 $event->sheet->getColumnDimension('F')->setWidth(90, 'px');
                 $event->sheet->getColumnDimension('G')->setWidth(90, 'px');
                 $event->sheet->getColumnDimension('H')->setWidth(90, 'px');
                 $event->sheet->getColumnDimension('I')->setWidth(90, 'px');
+                $event->sheet->getColumnDimension('J')->setWidth(90, 'px');
+                $event->sheet->getColumnDimension('K')->setWidth(90, 'px');
               
             },
         ];
