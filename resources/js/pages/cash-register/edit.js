@@ -92,6 +92,9 @@ export default {
     proxyTotalSaint: null,
     proxy: null,
     proxyVueltosSaint: null,
+    setTotalNotesCount(count){
+        document.querySelector('#notes-count').innerHTML = count
+    },
     setTotalLiquidMoneyBs(total){
         this.proxy.liquidMoneyBs = total
         this.setTotalBsCashDiff();
@@ -428,12 +431,19 @@ export default {
         // Notes
         let notesContainer = document.querySelector('#notes-modal')
         let notesElements = notesContainer.querySelector('#notes-modal-container').children;
-        let notesRecords = Array.prototype.map.call(notesElements, function(el, key){
+        let notesRecords = Array.prototype.reduce.call(notesElements, function(acc, el, key){
             let title = el.querySelector('input').value;
             let description = el.querySelector('textarea').value;
-            return new Note(title,  description, key);
-        });
-        let notesPresenter = new NotesPresenter(notesRecords);
+            
+            if (description !== '' && key > 0){
+                acc.push(new Note(title, description, key - 1))
+            }
+
+            return acc;
+        }, []);
+
+        console.log(notesRecords)
+        let notesPresenter = new NotesPresenter(this.setPropWrapper(this.setTotalNotesCount), notesRecords);
         let notesView = new NotesView(notesPresenter);
         notesView.init(notesContainer)
 

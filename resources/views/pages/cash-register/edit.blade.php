@@ -6,9 +6,16 @@
 
 @section('main')
     <div class="sticky right-0 top-0 flex flex-row justify-end items-center w-full h-auto">
-        <button type="button"  data-tooltip-target="open-note-modal"  data-modal-toggle="notes-modal" class="absolute top-4 mr-4 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm h-12 w-12 flex justify-center items-center  items-centerdark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-            <i class="fas fa-sticky-note font-semibold text-white text-xl"></i>
-        </button>
+        <div class="absolute top-4 mr-4">
+            <button type="button" data-tooltip-target="open-note-modal"  data-modal-toggle="notes-modal" class="relative text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm h-12 w-12 flex justify-center items-center  items-centerdark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                <i class="fas fa-sticky-note font-semibold text-white text-xl"></i>
+                <span
+                    id="notes-count"
+                    class="absolute -top-1 -right-1 px-2 py-1 text-xs font-bold leading-none text-red-100 transform bg-red-600 rounded-full">
+                    {{ $notes->count() }}
+                </span>
+            </button>
+        </div>
         <div 
             id="open-note-modal"
             role="tooltip" 

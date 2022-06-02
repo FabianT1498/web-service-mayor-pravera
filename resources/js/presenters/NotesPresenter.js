@@ -9,6 +9,7 @@ const NotesPresenterPrototype = {
 
 		if(button && button.tagName === 'BUTTON'){
 			const action = button.getAttribute('data-modal');
+            const modalToggleID = button.getAttribute('data-modal-toggle');
 
 			if (action){
 				if (action === 'add'){
@@ -43,7 +44,10 @@ const NotesPresenterPrototype = {
                     this.view.deleteNote(noteID)
                     
 				}
-			}
+			} else if (modalToggleID){
+                console.log(this.noteCollection.getAll())
+                this.setTotalNotesCount(this.noteCollection.getLength());
+            }
 		} else if (li && li.tagName === 'LI'){
             let id = li.getAttribute('data-id');
 
@@ -70,8 +74,9 @@ const NotesPresenterPrototype = {
 	},
 }
 
-const NotesPresenter = function (noteCollection = []){
+const NotesPresenter = function (setTotalNotesCount, noteCollection = []){
     this.view = null;
+    this.setTotalNotesCount = setTotalNotesCount
 	this.noteCollection = new NoteCollection(noteCollection);
 }
 

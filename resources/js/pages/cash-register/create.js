@@ -83,6 +83,9 @@ export default {
     proxyTotalSaint: null,
     proxy: null,
     proxyVueltosSaint: null,
+    setTotalNotesCount(count){
+        document.querySelector('#notes-count').innerHTML = count
+    },
     setTotalLiquidMoneyBs(total){
         this.proxy.liquidMoneyBs = total
         this.setTotalBsCashDiff();
@@ -354,7 +357,7 @@ export default {
         cashRegisterDataView.init(cashRegisterContainer)
 
         let notesContainer = document.querySelector('#notes-modal')
-        let notesPresenter = new NotesPresenter();
+        let notesPresenter = new NotesPresenter(this.setPropWrapper(this.setTotalNotesCount));
         let notesView = new NotesView(notesPresenter);
         notesView.init(notesContainer)
 
