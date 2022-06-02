@@ -189,7 +189,7 @@
             }
 
             .text-lg {
-                font-size: 2rem;
+                font-size: 1.5rem;
             }
 
             .font-semibold {
@@ -479,6 +479,28 @@
                                 </div>
                                 
                                 <div class="page-break"></div>
+                                
+                                @if ($notes->has($key_user) && $notes[$key_user]->has($key_date))
+                                    <div>
+                                        <div class="w-80p mb-8">
+                                            <h1 class="text-center text-lg">{{'Notas - ' . $key_user . ' - ' . date('d-m-Y', strtotime($key_date)) }}</h1>
+                                        </div>
+                    
+                                        <ul>
+                                            @foreach($notes[$key_user][$key_date] as $key => $note)
+                                                <li>
+                                                    <p class="mb-4">
+                                                        <span class="font-semibold">{{  $note->title . ': '}}</span>
+                                                        {{ $note->description }} 
+                                                    </p>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+
+                                    <div class="page-break"></div>
+                                @endif
+
                             @endif
                         @endforeach
                     @endif                               

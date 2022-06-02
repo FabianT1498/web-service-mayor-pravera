@@ -265,7 +265,7 @@
                 </div>
 
                 <div class="w-80p mb-8">
-                    <h1 class="text-center">Totales de entradas de dinero</h1>
+                    <h1 class="text-center text-lg">Totales de entradas de dinero</h1>
                 </div>
 
                 <div class="w-80p mb-4">
@@ -402,7 +402,7 @@
                 <div class="page-break"></div>
 
                 <div class="w-80p mb-8">
-                    <h1 class="text-center">Totales de billetes tangibles</h1>
+                    <h1 class="text-center text-lg">Totales de billetes tangibles</h1>
                 </div>
 
                 <div class="w-80p mb-8 clearfix">
@@ -459,7 +459,23 @@
                         </table>
                     </div>
                 </div>
+
+                <div class="page-break"></div>
+
+                <div class="w-80p mb-8">
+                    <h1 class="text-center text-lg">Notas</h1>
+                </div>
+                
+                <ul>
+                    @foreach($notes as $key => $note)
+                        <li>
+                            <p class="mb-4">
+                                <span class="font-semibold">{{  $note->title . ': '}}</span>
+                                {{ $note->description }} 
+                            </p>
+                        </li>
+                    @endforeach
+                </ul>
             </div>
-        
     </body>
 </html>

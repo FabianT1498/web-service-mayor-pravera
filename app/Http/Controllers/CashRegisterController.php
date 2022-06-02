@@ -782,6 +782,8 @@ class CashRegisterController extends Controller
         $denominations_dollar = $cash_register_data->dollar_denomination_records;
         $denominations_bolivar = $cash_register_data->bs_denomination_records;
 
+        $notes = $cash_register_data->notes;
+
         $currency_signs = [
             'dollar' => config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')),
             'bs' => config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR'))
@@ -797,6 +799,7 @@ class CashRegisterController extends Controller
             'vuelto_by_user',
             'differences',
             'currency_signs',
+            'notes',
             'user',
             'date'
         ))
@@ -854,6 +857,13 @@ class CashRegisterController extends Controller
             ->get()
             ->groupBy(['cash_register_user', 'date']);
 
+        $notes = DB::table('cash_register_data')
+            ->join('notes', 'cash_register_data.id', '=', 'notes.cash_register_data_id')
+            ->whereRaw("cash_register_data.date BETWEEN ? AND ?", [$start_date, $end_date])
+            ->orderByRaw("cash_register_data.cash_register_user asc, cash_register_data.date asc")
+            ->get()
+            ->groupBy(['cash_register_user', 'date']);
+
         $totals_bs_denominations = $this->sumSubTotalDenomination($bs_denominations);
         $total_dollar_denominations = $this->sumSubTotalDenomination($dollar_denominations);
 
@@ -890,6 +900,7 @@ class CashRegisterController extends Controller
             'total_quantity_bs_denominations',
             'total_bs_denominations_summary',
             'total_dollar_denominations_summary',
+            'notes',
             'start_date',
             'end_date'
         ))
