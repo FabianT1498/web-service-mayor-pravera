@@ -8,8 +8,14 @@ const NotesViewPrototype = {
         this.notesContainer = container.querySelector('#' + id + '-container')
         this.notesList = container.querySelector('#' + id + '-list')
         container.addEventListener("click", this.clickEventHandlerWrapper(this.presenter));
+        container.addEventListener("keypress", this.keypressEventHandler);
     },
-  
+    keypressEventHandler(event){
+        let key = event.key || event.keyCode;
+        if (key === 13 || key === 'Enter'){
+            event.preventDefault()
+        }
+    },
     clickEventHandlerWrapper(presenter){
         let notesContainer  = this.notesContainer.children;
         return (event) => {

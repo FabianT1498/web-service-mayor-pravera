@@ -91,12 +91,32 @@
             <tbody id="cash-register-tbody">
                 @foreach ($paginator as $key => $value)
                     <tr>
-                        <td class="text-center"> {{ $key + 1 }} </td>
+                        <td class="text-center"> 
+                            <div class="relative">
+                                {{ $key + 1 }}
+                                @if ($value->notes_count > 0)
+                                    <span
+                                        data-tooltip-target="pending-notes"
+                                        class="absolute top-0 right-0 h-2 w-2 transform bg-red-600 rounded-full motion-safe:animate-pulse">
+                                            &nbsp;
+                                    </span>
+                                    <div 
+                                        id="pending-notes"
+                                        role="tooltip" 
+                                        class="inline-block absolute invisible z-10 py-2 px-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 transition-opacity duration-300 tooltip dark:bg-gray-700"
+                                    >
+                                        Notas existentes
+                                        <div class="tooltip-arrow" data-popper-arrow></div>
+                                    </div> 
+                                @endif
+                            </div>
+                        </td>
                         <td class="text-center">{{ $value->user_name }}</td>
                         <td class="text-center">{{ $value->cash_register_user }}</td>
+                        <td class="text-center">{{ $value->worker_name }}</td>
                         <td class="text-center">{{ date('d-m-Y', strtotime($value->date)) }}</td>
                         <td class="text-center">{{ $value->status }}</td>
-                        <td class="text-center">{{ date('d-m-Y H:i', strtotime($value->updated_at)) }}</td>
+                        <td class="text-center">{{ date('d-m-Y', strtotime($value->updated_at)) }}</td>
                         <td class="text-center">
                             <div class="flex items-center justify-center h-11 text-lg">
                                 @if ($value->status === config('constants.CASH_REGISTER_STATUS.EDITING'))

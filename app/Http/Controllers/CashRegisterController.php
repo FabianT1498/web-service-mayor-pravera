@@ -80,14 +80,20 @@ class CashRegisterController extends Controller
         $end_date = $request->query('end_date', '');
         $page = $request->query('page', '');
 
-        $query = CashRegisterData::select([
-            'cash_register_data.id',
-            'cash_register_data.user_id as user_name',
-            'cash_register_data.cash_register_user',
-            'cash_register_data.date',
-            'cash_register_data.status',
-            'cash_register_data.updated_at',
-        ]);
+        $query = CashRegisterData::selectRaw(
+            'cash_register_data.id,
+            MAX(cash_register_data.user_id) as user_name,
+            MAX(cash_register_data.cash_register_user) as cash_register_user,
+            MAX(workers.name) as worker_name,
+            MAX(cash_register_data.date) as date,
+            MAX(cash_register_data.status) as status,
+            MAX(cash_register_data.updated_at) as updated_at,
+            COUNT(notes.id) AS notes_count'
+        );
+
+        $query = $query->join('workers', 'cash_register_data.worker_id', '=', 'workers.id');
+
+        $query = $query->leftJoin('notes', 'cash_register_data.id', '=', 'notes.cash_register_data_id');
 
         if ($status !== "ALL"){
             $query = $query->where('cash_register_data.status', '=', $status);
@@ -106,6 +112,8 @@ class CashRegisterController extends Controller
             (object) ['key' => config('constants.CASH_REGISTER_STATUS.COMPLETED'), 'value' => 'Completado'],
         ];
 
+        $query = $query->groupBy(['id']);
+
         $query = $query->orderBy('date', 'desc');
 
         $paginator = $query->paginate(5);
@@ -117,10 +125,11 @@ class CashRegisterController extends Controller
         $columns = [
             "Nro",
             "Usuario creador",
-            "Nombre de la caja",
-            "Fecha del arqueo",
+            "Nombre caja",
+            'Cajero/a',
+            "Fecha cierre",
             "Estatus",
-            "Última modificacion",
+            "Última modificación",
             "Opciones"
         ];
 
@@ -230,7 +239,8 @@ class CashRegisterController extends Controller
             if (array_key_exists('notes', $validated)){
                 
                 $data = array_reduce($validated['notes'], function($acc, $note) use ($cash_register_data){
-                    if (!is_null($note['description']) && $note['description'] !== ''){
+                    if 
+                    (!is_null($note['description']) && $note['description'] !== ''){
                         $acc[] = array(
                             'title' => $note['title'],
                             'description' => $note['description'],

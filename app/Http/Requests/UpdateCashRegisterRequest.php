@@ -223,8 +223,8 @@ class UpdateCashRegisterRequest extends FormRequest
         if ($this->has('note_title')){
             $inputs['notes'] = array_map(function($title, $description){
                 return [
-                    'title' => $title,
-                    'description' => $description,
+                    'title' => is_null($title) ? 'Nota sin título' : $title,
+                    'description' => is_null($description) ? '' : $description,
                 ];
             }, $this->note_title, $this->note_description);
         } else {
