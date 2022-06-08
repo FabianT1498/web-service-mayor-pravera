@@ -2,7 +2,7 @@
 @extends('layouts.app')
 
 @section('js')
-    <script src="{{ asset('js/cash_register_index.js') }}" defer></script>
+    <script src="{{ asset('js/fiscal_bill_index.js') }}" defer></script>
 @endsection
 
 @section('main')
