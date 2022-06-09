@@ -24,8 +24,9 @@ class BillRepository implements BillRepositoryInterface
         return DB
             ::connection('saint_db')
             ->table('SAFACT')
-            ->selectRaw("SAFACT.CodUsua as CodUsua, CAST(SAFACT.FechaE as date) as FechaE, SAFACT.NumeroD as NumeroD, CASE WHEN EGIVALES.FactUso = '' THEN 'Efectivo' ELSE EGIVALES.FactUso END as FactUso, CAST(ROUND(EGIVALES.MontoDiv, 2) AS decimal(10, 2)) as MontoDiv,
-                FactorHist.MaxFactor as Factor, CAST(ROUND(EGIVALES.MontoDiv * Factor, 2) AS decimal(10, 2)) as MontoBs")  
+            ->selectRaw("SAFACT.CodUsua as CodUsua, CAST(SAFACT.FechaE as date) as FechaE, SAFACT.NumeroD as NumeroD, CASE WHEN EGIVALES.FactUso = '' THEN 'Efectivo' ELSE EGIVALES.FactUso END as FactUso, 
+                CAST(ROUND(EGIVALES.MontoDiv * SAFACT.Signo, 2) AS decimal(10, 2)) as MontoDiv,
+                FactorHist.MaxFactor as Factor, CAST(ROUND(EGIVALES.MontoDiv * Factor * SAFACT.Signo, 2) AS decimal(10, 2)) as MontoBs")  
             ->join('EGIVALES', 'EGIVALES.FactEmi', '=', 'SAFACT.NumeroD')
             ->joinSub($factors, 'FactorHist', function($query){
                 $query->on(DB::raw("CAST(SAFACT.FechaE AS date)"), '=', "FactorHist.FechaE");
