@@ -14,6 +14,9 @@ const NotesViewPrototype = {
         let key = event.key || event.keyCode;
         if (key === 13 || key === 'Enter'){
             event.preventDefault()
+
+            let textarea = event.target.closest('textarea');
+            if (textarea) { textarea.value = textarea.value + "\r\n"}
         }
     },
     clickEventHandlerWrapper(presenter){

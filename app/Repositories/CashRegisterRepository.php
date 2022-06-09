@@ -77,11 +77,11 @@ class CashRegisterRepository implements CashRegisterRepositoryInterface
             CAST(ROUND(MAX(FactorHist.MaxFactor), 2) AS decimal(18, 2)) as Factor,
             CAST(ROUND((SUM(SAIPAVTA.Monto * SAFACT.Signo)/MAX(FactorHist.MaxFactor)), 2) AS decimal(18, 2)) as totalDollar"
         )
-        ->joinSub($factors, 'FactorHist', function($query){
-            $query->on(DB::raw("CAST(SAIPAVTA.FechaE AS date)"), '=', "FactorHist.FechaE");
-        })
         ->join('SAFACT', function($query){
             $query->on("SAFACT.NumeroD", '=', "SAIPAVTA.NumeroD");
+        })
+        ->joinSub($factors, 'FactorHist', function($query){
+            $query->on(DB::raw("CAST(SAFACT.FechaE AS date)"), '=', "FactorHist.FechaE");
         })
         ->whereRaw("SAFACT.CodUsua " . $user_params . " AND " . $interval_query,
             $date_params)
