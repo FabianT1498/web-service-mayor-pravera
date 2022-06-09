@@ -442,7 +442,6 @@ export default {
             return acc;
         }, []);
 
-        console.log(notesRecords)
         let notesPresenter = new NotesPresenter(this.setPropWrapper(this.setTotalNotesCount), notesRecords);
         let notesView = new NotesView(notesPresenter);
         notesView.init(notesContainer)
@@ -532,10 +531,10 @@ export default {
         let pointSaleBsRecords = {'credit' : [], 'debit': [], 'amex' : [], 'todoticket': [],
                 'bank': [], 'availableBanks': []}
 
-        if (pointSaleBsRecordsElements.length > 0){
+        if (pointSaleBsRecordsElements && pointSaleBsRecordsElements.length > 0){
             // Get the availables banks
             let bankSelectEl = salePointModal.querySelector('tbody tr select[name^="point_sale_bs_bank"]');
-            if (bankSelectEl.options.length > 1){
+            if (bankSelectEl && bankSelectEl.options.length > 1){
                 for (let i = 1; i < bankSelectEl.options.length; i++){
                     pointSaleBsRecords['availableBanks']
                         .push(bankSelectEl.options[i].value);
