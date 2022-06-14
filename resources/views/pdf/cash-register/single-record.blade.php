@@ -301,8 +301,8 @@
                                 <th>Dolares en físico ($)</th>
                                 <td class="text-center">{{ number_format($cash_register_totals->total_dollar_denominations, 2) }}</td>
                                 <td class="text-center">{{ number_format($totals_from_safact->dolares, 2)  }}</td>
-                                <td class="text-center">{{ $vuelto_by_user->has('Efectivo') ? $vuelto_by_user['Efectivo']->first()->MontoDiv : 0 }}</td>
-                                <td class="text-center">{{ $vuelto_by_user->has('PM') ? $vuelto_by_user['PM']->first()->MontoDiv : 0 }}</td>
+                                <td class="text-center">{{ $vuelto_by_user->first()->MontoDivEfect }}</td>
+                                <td class="text-center">{{ $vuelto_by_user->first()->MontoDivPM }}</td>
                                 <td 
                                     class="text-center {{  $differences['dollar_denominations'] > 0 
                                         ? 'text-blue-400' 

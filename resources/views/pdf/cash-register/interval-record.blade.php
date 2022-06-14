@@ -316,15 +316,13 @@
                                             <th>Dolares en físico ($)</th>
                                             <td class="text-center">{{ number_format($cash_registers_totals[$key_user][$key_date][0]->total_dollar_denominations, 2) }}</td>
                                             <td class="text-center">{{ number_format($saint_totals[$key_user][$key_date]['dolares'], 2)  }}</td>
-                                            <td class="text-center">{{ number_format(($vuelto_by_users->has($key_user) && $vuelto_by_users[$key_user]->has($key_date)
-                                                 && $vuelto_by_users[$key_user][$key_date]->has('Efectivo')) 
-                                                    ? $vuelto_by_users[$key_user][$key_date]['Efectivo']->first()->MontoDiv
+                                            <td class="text-center">{{ number_format(($vuelto_by_users->has($key_user) && $vuelto_by_users[$key_user]->has($key_date)) 
+                                                    ? $vuelto_by_users[$key_user][$key_date]->first()->MontoDivEfect
                                                     : 0.00, 2)
                                                 }}
                                             </td>
-                                            <td class="text-center">{{ number_format(($vuelto_by_users->has($key_user) && $vuelto_by_users[$key_user]->has($key_date)
-                                                 && $vuelto_by_users[$key_user][$key_date]->has('PM')) 
-                                                    ? $vuelto_by_users[$key_user][$key_date]['PM']->first()->MontoDiv
+                                            <td class="text-center">{{ number_format(($vuelto_by_users->has($key_user) && $vuelto_by_users[$key_user]->has($key_date)) 
+                                                    ? $vuelto_by_users[$key_user][$key_date]->first()->MontoDivPM
                                                     : 0.00, 2)
                                                 }}
                                             </td>

@@ -765,8 +765,7 @@ class CashRegisterController extends Controller
             ->mapEPaymentMethods($totals_e_payment, $payment_methods);
 
         $vuelto_by_user = $bill_repo
-            ->getTotalValesAndVueltosByUser($date, $date, $user)
-            ->groupBy(['FactUso']);
+            ->getVueltosByUser($date, $date, $user);
 
         // Completar las cajas con sus respectivos metodos de pago que no tuvieron operacion con pagos electronicos
         $totals_e_payment = $this->completeEpaymentMethodsToCashUserForRecord($user, $date, $totals_e_payment, $payment_methods);
@@ -781,10 +780,8 @@ class CashRegisterController extends Controller
             'point_sale_dollar' => round($cash_register_totals->total_point_sale_dollar - $totals_e_payment[$user][$date]['08']['dollar'], 2),
             'zelle' => round($cash_register_totals->total_zelle - $totals_e_payment[$user][$date]['07']['dollar'], 2),
             'bs_denominations' => round($cash_register_totals->total_bs_denominations - $totals_from_safact->bolivares, 2),
-            'dollar_denominations' => round(($cash_register_totals->total_dollar_denominations - $totals_from_safact->dolares) - (
-                ($vuelto_by_user->has('Efectivo') ? $vuelto_by_user['Efectivo']->first()->MontoDiv : 0) +
-                        ($vuelto_by_user->has('PM') ? $vuelto_by_user['PM']->first()->MontoDiv : 0) 
-            ), 2),
+            'dollar_denominations' => round(($cash_register_totals->total_dollar_denominations - $totals_from_safact->dolares) - 
+                ($vuelto_by_user->first()->MontoDivEfect + $vuelto_by_user->first()->MontoDivPM), 2)
         ];
 
         $cash_register_data = CashRegisterData::find($id);
@@ -848,8 +845,8 @@ class CashRegisterController extends Controller
         $totals_e_payment = $this->completeEpaymentMethodsToCashUserForInteval($totals_from_safact, $totals_e_payment, $payment_methods);
 
         $vuelto_by_users = $bill_repo
-            ->getTotalValesAndVueltosByUser($start_date, $end_date)
-            ->groupBy(['CodUsua', 'FechaE', 'FactUso']);
+            ->getVueltosByUser($start_date, $end_date)
+            ->groupBy(['CodUsua', 'FechaE']);
 
         $differences = $this->calculateDiffToSaint($totals_from_safact, $totals_e_payment, $cash_registers_totals, $vuelto_by_users);
     
@@ -991,14 +988,12 @@ class CashRegisterController extends Controller
                         $differences[$key_user][$key_date]['dollar_cash'] = round($cash_registers[$key_user][$key_date]->first()->total_dollar_cash - $date[0]->dolares, 2);
                         $differences[$key_user][$key_date]['bs_denominations'] = round($cash_registers[$key_user][$key_date]->first()->total_bs_denominations - $date[0]->bolivares, 2);
                         $differences[$key_user][$key_date]['dollar_denominations'] = round(($cash_registers[$key_user][$key_date]->first()->total_dollar_denominations - $date[0]->dolares)
-                            - (((!is_null($money_back_by_user_date) && $money_back_by_user_date->has('Efectivo')) ? $money_back_by_user_date['Efectivo']->first()->MontoDiv : 0) +
-                                ((!is_null($money_back_by_user_date) && $money_back_by_user_date->has('PM')) ? $money_back_by_user_date['PM']->first()->MontoDiv : 0)), 2);
+                            - (!is_null($money_back_by_user_date) ? ($money_back_by_user_date->first()->MontoDivEfect + $money_back_by_user_date->first()->MontoDivPM) : 0), 2);
                     } else {
                         $differences[$key_user][$key_date] = [];
                         $differences[$key_user][$key_date]['dollar_cash'] = $date[0]->dolares * -1;
                         $differences[$key_user][$key_date]['bs_denominations'] = $date[0]->bolivares * -1;
-                        $differences[$key_user][$key_date]['dollar_denominations'] = ($date[0]->dolares + (((!is_null($money_back_by_user_date) && $money_back_by_user_date->has('Efectivo')) ? $money_back_by_user_date['Efectivo']->first()->MontoDiv : 0) +
-                            ((!is_null($money_back_by_user_date) && $money_back_by_user_date->has('PM')) ? $money_back_by_user_date['PM']->first()->MontoDiv : 0))) * -1;
+                        $differences[$key_user][$key_date]['dollar_denominations'] = ($date[0]->dolares + (!is_null($money_back_by_user_date) ? ($money_back_by_user_date->first()->MontoDivEfect + $money_back_by_user_date->first()->MontoDivPM) : 0)) * -1;
 
                     }
                 });
@@ -1009,8 +1004,7 @@ class CashRegisterController extends Controller
                     $differences[$key_user][$key_date] = [];
                     $differences[$key_user][$key_date]['dollar_cash'] = $date[0]->dolares * -1;
                     $differences[$key_user][$key_date]['bs_denominations'] = $date[0]->bolivares * -1;
-                    $differences[$key_user][$key_date]['dollar_denominations'] = ($date[0]->dolares + (((!is_null($money_back_by_user_date) && $money_back_by_user_date->has('Efectivo')) ? $money_back_by_user_date['Efectivo']->first()->MontoDiv : 0) +
-                            ((!is_null($money_back_by_user_date) && $money_back_by_user_date->has('PM')) ? $money_back_by_user_date['PM']->first()->MontoDiv : 0))) * -1;
+                    $differences[$key_user][$key_date]['dollar_denominations'] = ($date[0]->dolares + (!is_null($money_back_by_user_date) ? ($money_back_by_user_date->first()->MontoDivEfect + $money_back_by_user_date->first()->MontoDivPM) : 0)) * -1;
                 });
             }
         });
