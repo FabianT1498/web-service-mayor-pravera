@@ -27,17 +27,16 @@ class BillController extends Controller
 
         foreach($total_bill_vuelto_by_user as $key_user => $dates){
             $total[$key_user] = [];
-            foreach($dates as $vueltos){
-                foreach($vueltos as $key_method_vuelto => $vuelto){
-                    if (!array_key_exists($key_method_vuelto, $total[$key_user])){
-                        $total[$key_user][$key_method_vuelto] = [];
-                        $total[$key_user][$key_method_vuelto]['MontoBs'] = 0;
-                        $total[$key_user][$key_method_vuelto]['MontoDiv'] = 0;
-                    }
+            $total[$key_user]['MontoDivEfect'] = 0;
+            $total[$key_user]['MontoBsEfect'] = 0;
+            $total[$key_user]['MontoDivPM'] = 0;
+            $total[$key_user]['MontoBsPM'] = 0;
 
-                    $total[$key_user][$key_method_vuelto]['MontoBs'] += $vuelto->first()->MontoBs;
-                    $total[$key_user][$key_method_vuelto]['MontoDiv'] += $vuelto->first()->MontoDiv;
-                }
+            foreach($dates as $vuelto){
+                $total[$key_user]['MontoDivEfect'] += $vuelto->first()->MontoDivEfect;
+                $total[$key_user]['MontoBsEfect'] += $vuelto->first()->MontoBsEfect;
+                $total[$key_user]['MontoDivPM'] += $vuelto->first()->MontoDivPM;
+                $total[$key_user]['MontoBsPM'] += $vuelto->first()->MontoBsPM;
             }
         }
 
@@ -46,18 +45,17 @@ class BillController extends Controller
 
     private function getTotalVueltos($total_money_back_by_users){
         $total = [];
+        $total['MontoDivEfect'] = 0;
+        $total['MontoBsEfect'] = 0;
+        $total['MontoDivPM'] = 0;
+        $total['MontoBsPM'] = 0;
+
 
         foreach($total_money_back_by_users as $vueltos){
-            foreach($vueltos as $key_method_vuelto => $record){
-                if (!array_key_exists($key_method_vuelto, $total)){
-                    $total[$key_method_vuelto] = [];
-                    $total[$key_method_vuelto]['MontoBs'] = 0;
-                    $total[$key_method_vuelto]['MontoDiv'] = 0;
-                }
-
-                $total[$key_method_vuelto]['MontoBs'] += $record['MontoBs'];
-                $total[$key_method_vuelto]['MontoDiv'] += $record['MontoDiv'];
-            }
+            $total['MontoDivEfect'] += $vueltos['MontoDivEfect'];
+            $total['MontoBsEfect'] += $vueltos['MontoBsEfect'];
+            $total['MontoDivPM'] += $vueltos['MontoDivPM'];
+            $total['MontoBsPM'] += $vueltos['MontoBsPM'];
         }
 
         return $total;
@@ -65,22 +63,21 @@ class BillController extends Controller
 
     private function getBillData($new_start_date, $new_finish_date, BillRepository $bill_repo){
         $bill_vueltos = $bill_repo
-            ->getValesAndVueltos($new_start_date, $new_finish_date)
-            ->groupBy(['CodUsua', 'FechaE', 'NumeroD', 'FactUso']);
-    
-        $money_back_by_users = $bill_repo
-            ->getTotalValesAndVueltosByUser($new_start_date, $new_finish_date)
-            ->groupBy(['CodUsua', 'FechaE', 'FactUso']);
+            ->getVueltos($new_start_date, $new_finish_date)
+            ->groupBy(['CodUsua', 'FechaE', 'NumeroD']);
 
-        $total_money_back_by_users = $this->getTotalVueltosByUser($money_back_by_users);
+        $bill_vueltos_by_user_date = $bill_repo
+            ->getVueltosByUser($new_start_date, $new_finish_date)
+            ->groupBy(['CodUsua', 'FechaE']);
 
-        $total_money_back = $this->getTotalVueltos($total_money_back_by_users);
- 
+        $total_vuelto_by_user = $this->getTotalVueltosByUser($bill_vueltos_by_user_date);
+        $total_vuelto = $this->getTotalVueltos($total_vuelto_by_user);
+
         return compact([
             'bill_vueltos',
-            'money_back_by_users',
-            'total_money_back_by_users',
-            'total_money_back',
+            'bill_vueltos_by_user_date',
+            'total_vuelto_by_user',
+            'total_vuelto',
         ]);
     }
 
@@ -100,6 +97,8 @@ class BillController extends Controller
                 . '.pdf';
 
             $data = $this->getBillData($new_start_date, $new_finish_date, $bill_repo);
+
+            
             
             $data['start_date'] = $start_date;
             $data['end_date'] = $end_date;

@@ -29,65 +29,34 @@
                         <td>&nbsp;</td>
                         <td>&nbsp;</td>
                     </tr>
-                    @foreach($numerosD as $key_numero_d => $metodos_vueltos)
+                    @foreach($numerosD as $key_numero_d => $record)
                         <tr>
                             <td>{{ $key_numero_d }}</td>
-                            <td>{{ number_format($metodos_vueltos->first()->first()->Factor, 2) }}</td>
-                            @if ($metodos_vueltos->has('Efectivo'))
-                                <td>{{ number_format($metodos_vueltos['Efectivo']->first()->MontoDiv, 2) }}</td>
-                                <td>{{ number_format($metodos_vueltos['Efectivo']->first()->MontoBs, 2) }}</td>
-                            @else
-                                <td>0.00</td>
-                                <td>0.00</td>
-                            @endif
-
-                            @if ($metodos_vueltos->has('PM'))
-                                <td>{{ number_format($metodos_vueltos['PM']->first()->MontoDiv, 2) }}</td>
-                                <td>{{ number_format($metodos_vueltos['PM']->first()->MontoBs, 2) }}</td>
-                            @else
-                                <td>0.00</td>
-                                <td>0.00</td>
-                            @endif                            
+                            <td>{{ number_format($record->first()->Factor, 2) }}</td>
+                            <td>{{ number_format($record->first()->MontoDivEfect, 2) }}</td>
+                            <td>{{ number_format($record->first()->MontoBsEfect, 2) }}</td>
+                            <td>{{ number_format($record->first()->MontoDivPM, 2) }}</td>
+                            <td>{{ number_format($record->first()->MontoBsPM, 2) }}</td> 
                         </tr>
                     @endforeach
                     <tr>
                         <td>&nbsp;</td>
                         <td>&nbsp;</td>
-                        @if($money_back_by_users[$key_codusua][$key_date]->has('Efectivo'))
-                            <td>{{ number_format($money_back_by_users[$key_codusua][$key_date]['Efectivo']->first()->MontoDiv, 2) }}</td>
-                            <td>{{ number_format($money_back_by_users[$key_codusua][$key_date]['Efectivo']->first()->MontoBs, 2) }}</td>
-                        @else
-                            <td>0.00</td>
-                            <td>0.00</td>
-                        @endif
-                        @if($money_back_by_users[$key_codusua][$key_date]->has('PM'))
-                            <td>{{ number_format($money_back_by_users[$key_codusua][$key_date]['PM']->first()->MontoDiv, 2) }}</td>
-                            <td>{{ number_format($money_back_by_users[$key_codusua][$key_date]['PM']->first()->MontoBs, 2) }}</td>
-                        @else
-                            <td>0.00</td>
-                            <td>0.00</td>
-                        @endif
+                        <td>{{ number_format($bill_vueltos_by_user_date[$key_codusua][$key_date]->first()->MontoDivEfect, 2) }}</td>
+                        <td>{{ number_format($bill_vueltos_by_user_date[$key_codusua][$key_date]->first()->MontoBsEfect, 2) }}</td>
+                        <td>{{ number_format($bill_vueltos_by_user_date[$key_codusua][$key_date]->first()->MontoDivPM, 2) }}</td>
+                        <td>{{ number_format($bill_vueltos_by_user_date[$key_codusua][$key_date]->first()->MontoBsPM, 2) }}</td>
                     </tr>
                 @endforeach
             </tbody>
             <tfoot>
-                <tr>
+                <tr class="bg-grey-400">
                     <td>&nbsp;</td>
                     <td>Total: </td>
-                    @if(array_key_exists('Efectivo', $total_money_back_by_users[$key_codusua]))
-                        <td>{{ number_format($total_money_back_by_users[$key_codusua]['Efectivo']['MontoDiv'], 2) }}</td>
-                        <td>{{ number_format($total_money_back_by_users[$key_codusua]['Efectivo']['MontoBs'], 2) }}</td>
-                    @else
-                        <td>0.00</td>
-                        <td>0.00</td>
-                    @endif
-                    @if(array_key_exists('PM', $total_money_back_by_users[$key_codusua]))
-                        <td>{{ number_format($total_money_back_by_users[$key_codusua]['PM']['MontoDiv'], 2) }}</td>
-                        <td>{{ number_format($total_money_back_by_users[$key_codusua]['PM']['MontoBs'], 2) }}</td>
-                    @else
-                        <td>0.00</td>
-                        <td>0.00</td>
-                    @endif             
+                    <td>{{ number_format($total_vuelto_by_user[$key_codusua]['MontoDivEfect'], 2) }}</td>
+                    <td>{{ number_format($total_vuelto_by_user[$key_codusua]['MontoBsEfect'], 2) }}</td>
+                    <td>{{ number_format($total_vuelto_by_user[$key_codusua]['MontoDivPM'], 2) }}</td>
+                    <td>{{ number_format($total_vuelto_by_user[$key_codusua]['MontoBsPM'], 2) }}</td>      
                 </tr>
             </tfoot>
         </table>
