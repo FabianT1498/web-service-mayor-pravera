@@ -181,21 +181,12 @@ export default {
             Object.keys(this.proxyVueltosSaint).forEach(el => {
                 this.proxyVueltosSaint[el] = 0;
             })
-        } else {
-
-            // Liquid Money 
-            if (data.Efectivo !== undefined){
-                let vueltoDolares = data.Efectivo[0];
-                this.proxyVueltosSaint['liquidMoneyDollar'] = parseFloat(vueltoDolares.MontoDiv);
-            }
-            
-            // Pago movil
-            if (data.PM !== undefined){
-                let vueltoPagoMovil = data.PM[0];
-                this.proxyVueltosSaint['pagoMovilBs'] = parseFloat(vueltoPagoMovil.MontoDiv);
-            }
+        } else if (data.length > 0){
+            let vuelto = data[0]
+            this.proxyVueltosSaint['liquidMoneyDollar'] = parseFloat(vuelto.MontoDivEfect);
+            this.proxyVueltosSaint['pagoMovilBs'] = parseFloat(vuelto.MontoDivPM);
         }
-
+        
         this.setTotalDollarCashDenominationDiff(this);
     },
     setTotalDollarCashDiff(){
