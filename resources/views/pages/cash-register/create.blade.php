@@ -254,6 +254,9 @@
                                 Total ingresado
                             </th>
                             <th scope="col" class="px-4 py-2">
+                                Vuelto en bolívares
+                            </th>
+                            <th scope="col" class="px-4 py-2">
                                 Total SAINT
                             </th>
                             <th scope="col" class="px-4 py-2">
@@ -268,6 +271,9 @@
                             </th>
                             <td>
                                 <span id="total_bs_denominations">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}
+                            </td>
+                            <td>
+                                <span id="vuelto_bs_cash_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}
                             </td>
                             <td>
                                 <span id="total_bs_cash_saint">0</span>&nbsp;{{__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.BOLIVAR')))}}

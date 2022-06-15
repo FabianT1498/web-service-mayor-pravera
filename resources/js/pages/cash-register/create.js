@@ -61,6 +61,7 @@ export default {
     },
     vueltosSaintDOMS: {
         liquidMoneyDollar: document.querySelector('#vuelto_dollar_cash_saint'),
+        liquidMoneyBs: document.querySelector('#vuelto_bs_cash_saint'),
         pagoMovilBs: document.querySelector('#vuelto_pago_movil_bs_saint'),
     },
     totalDiffDOMS: {
@@ -176,10 +177,12 @@ export default {
             let vuelto = data[0]
             console.log(vuelto)
             this.proxyVueltosSaint['liquidMoneyDollar'] = parseFloat(vuelto.MontoDivEfect);
+            this.proxyVueltosSaint['liquidMoneyBs'] = parseFloat(vuelto.MontoBsEfect);
             this.proxyVueltosSaint['pagoMovilBs'] = parseFloat(vuelto.MontoDivPM);
         }
         
         this.setTotalDollarCashDenominationDiff(this);
+        this.setTotalBsCashDiff(this);
     },
     setTotalDollarCashDiff(){
         let diff = this.proxy.liquidMoneyDollar - this.proxyTotalSaint.liquidMoneyDollar;
@@ -202,7 +205,7 @@ export default {
         this.totalDiffDOMS.liquidMoneyDollarDenomination.innerHTML = roundNumber(diff).format();
     },
     setTotalBsCashDiff(){
-        let diff = this.proxy.denominationsBs - this.proxyTotalSaint.liquidMoneyBs;
+        let diff = this.proxy.denominationsBs - (this.proxyTotalSaint.liquidMoneyBs - this.proxyVueltosSaint.liquidMoneyBs);
         let color = this.getAmountColor(diff);
         this.totalDiffDOMS.liquidMoneyBs.className = '';
         if (color !== ''){
