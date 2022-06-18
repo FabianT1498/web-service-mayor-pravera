@@ -275,8 +275,8 @@
                                 <th>&nbsp;</th>
                                 <th>Total ingresado en el sistema</th>
                                 <th>Total recuperado de SAINT</th>
-                                <th>Vuelto dolares</th>
-                                <th>Vuelto PM ($)</th>
+                                <th>Vuelto efect.</th>
+                                <th>Vuelto PM</th>
                                 <th>Diferencia</th>
                             </tr>
                         </thead>
@@ -301,8 +301,13 @@
                                 <th>Dolares en físico ($)</th>
                                 <td class="text-center">{{ number_format($cash_register_totals->total_dollar_denominations, 2) }}</td>
                                 <td class="text-center">{{ number_format($totals_from_safact->dolares, 2)  }}</td>
-                                <td class="text-center">{{ $vuelto_by_user->first()->MontoDivEfect }}</td>
-                                <td class="text-center">{{ $vuelto_by_user->first()->MontoDivPM }}</td>
+                                @if($vuelto_by_user->count() > 0)
+                                    <td class="text-center">{{ $vuelto_by_user->first()->MontoDivEfect }}</td>
+                                    <td class="text-center">{{ $vuelto_by_user->first()->MontoDivPM }}</td>
+                                @else
+                                    <td>0.00</td>
+                                    <td>0.00</td>
+                                @endif
                                 <td 
                                     class="text-center {{  $differences['dollar_denominations'] > 0 
                                         ? 'text-blue-400' 
@@ -317,7 +322,7 @@
                                 <th>Bolívares en físico (Bs)</td>
                                 <td class="text-center">{{ number_format($cash_register_totals->total_bs_denominations, 2) }}</td>
                                 <td class="text-center">{{ number_format($totals_from_safact->bolivares, 2)  }}</td>
-                                <td class="text-center">—</td>
+                                <td class="text-center">{{ $vuelto_by_user->count() > 0 ? $vuelto_by_user->first()->MontoBsEfect : 0.00 }}</td>
                                 <td class="text-center">—</td>
                                 <td 
                                     class="text-center {{ ($differences['bs_cash'] > 0) 

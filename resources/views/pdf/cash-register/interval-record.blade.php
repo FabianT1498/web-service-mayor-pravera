@@ -290,8 +290,8 @@
                                             <th>&nbsp;</th>
                                             <th>Total ingresado en el sistema</th>
                                             <th>Total recuperado de SAINT</th>
-                                            <th>Vuelto dolares</th>
-                                            <th>Vuelto PM ($)</th>
+                                            <th>Vuelto efect.</th>
+                                            <th>Vuelto PM</th>
                                             <th>Diferencia</th>
                                         </tr>
                                     </thead>
@@ -340,7 +340,9 @@
                                             <th>Bs en físico (Bs)</td>
                                             <td class="text-center">{{  number_format($cash_registers_totals[$key_user][$key_date][0]->total_bs_denominations, 2) }}</td>
                                             <td class="text-center">{{  number_format($saint_totals[$key_user][$key_date]['bolivares'], 2) }}</td>
-                                            <td class="text-center">—</td>
+                                            <td class="text-center">{{ number_format(($vuelto_by_users->has($key_user) && $vuelto_by_users[$key_user]->has($key_date)) 
+                                                    ? $vuelto_by_users[$key_user][$key_date]->first()->MontoBsEfect
+                                                    : 0.00, 2) }}</td>
                                             <td class="text-center">—</td>
                                             <td 
                                                 class="text-center {{ ($differences[$key_user][$key_date]['bs_denominations'] > 0) 

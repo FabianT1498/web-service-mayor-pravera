@@ -772,16 +772,18 @@ class CashRegisterController extends Controller
         
         $differences = [
             'dollar_cash' => round($cash_register_totals->total_dollar_cash - $totals_from_safact->dolares, 2),
-            'bs_cash' => round($cash_register_totals->total_bs_denominations - $totals_from_safact->bolivares, 2),
+            'bs_cash' => round($cash_register_totals->total_bs_denominations - 
+                ($totals_from_safact->bolivares - ($vuelto_by_user->count() > 0 ? $vuelto_by_user->first()->MontoBsEfect : 0)), 2),
             'pago_movil_bs' => round($cash_register_totals->total_pago_movil_bs - $totals_e_payment[$user][$date]['05']['bs'], 2),
             'point_sale_bs' => round(($cash_register_totals->total_point_sale_bs - ($totals_e_payment[$user][$date]['01']['bs'] 
                     + $totals_e_payment[$user][$date]['02']['bs'] + $totals_e_payment[$user][$date]['03']['bs']
                     + $totals_e_payment[$user][$date]['04']['bs'])), 2),
             'point_sale_dollar' => round($cash_register_totals->total_point_sale_dollar - $totals_e_payment[$user][$date]['08']['dollar'], 2),
             'zelle' => round($cash_register_totals->total_zelle - $totals_e_payment[$user][$date]['07']['dollar'], 2),
-            'bs_denominations' => round($cash_register_totals->total_bs_denominations - $totals_from_safact->bolivares, 2),
+            'bs_denominations' => round($cash_register_totals->total_bs_denominations - 
+                ($totals_from_safact->bolivares - ($vuelto_by_user->count() > 0 ? $vuelto_by_user->first()->MontoBsEfect : 0)), 2),
             'dollar_denominations' => round(($cash_register_totals->total_dollar_denominations - $totals_from_safact->dolares) - 
-                ($vuelto_by_user->first()->MontoDivEfect + $vuelto_by_user->first()->MontoDivPM), 2)
+                ($vuelto_by_user->count() > 0 ? ($vuelto_by_user->first()->MontoDivEfect + $vuelto_by_user->first()->MontoDivPM) : 0), 2)
         ];
 
         $cash_register_data = CashRegisterData::find($id);
@@ -986,13 +988,14 @@ class CashRegisterController extends Controller
                     if ($cash_registers[$key_user]->has($key_date)){
                         $differences[$key_user][$key_date] = [];
                         $differences[$key_user][$key_date]['dollar_cash'] = round($cash_registers[$key_user][$key_date]->first()->total_dollar_cash - $date[0]->dolares, 2);
-                        $differences[$key_user][$key_date]['bs_denominations'] = round($cash_registers[$key_user][$key_date]->first()->total_bs_denominations - $date[0]->bolivares, 2);
+                        $differences[$key_user][$key_date]['bs_denominations'] = round($cash_registers[$key_user][$key_date]->first()->total_bs_denominations - (
+                            $date[0]->bolivares - (!is_null($money_back_by_user_date) ? $money_back_by_user_date->first()->MontoBsEfect : 0)), 2);
                         $differences[$key_user][$key_date]['dollar_denominations'] = round(($cash_registers[$key_user][$key_date]->first()->total_dollar_denominations - $date[0]->dolares)
                             - (!is_null($money_back_by_user_date) ? ($money_back_by_user_date->first()->MontoDivEfect + $money_back_by_user_date->first()->MontoDivPM) : 0), 2);
                     } else {
                         $differences[$key_user][$key_date] = [];
                         $differences[$key_user][$key_date]['dollar_cash'] = $date[0]->dolares * -1;
-                        $differences[$key_user][$key_date]['bs_denominations'] = $date[0]->bolivares * -1;
+                        $differences[$key_user][$key_date]['bs_denominations'] = ($date[0]->bolivares - (!is_null($money_back_by_user_date) ? $money_back_by_user_date->first()->MontoBsEfect : 0)) * -1;
                         $differences[$key_user][$key_date]['dollar_denominations'] = ($date[0]->dolares + (!is_null($money_back_by_user_date) ? ($money_back_by_user_date->first()->MontoDivEfect + $money_back_by_user_date->first()->MontoDivPM) : 0)) * -1;
 
                     }
@@ -1003,7 +1006,7 @@ class CashRegisterController extends Controller
 
                     $differences[$key_user][$key_date] = [];
                     $differences[$key_user][$key_date]['dollar_cash'] = $date[0]->dolares * -1;
-                    $differences[$key_user][$key_date]['bs_denominations'] = $date[0]->bolivares * -1;
+                    $differences[$key_user][$key_date]['bs_denominations'] = ($date[0]->bolivares -  (!is_null($money_back_by_user_date) ? $money_back_by_user_date->first()->MontoBsEfect : 0)) * -1;
                     $differences[$key_user][$key_date]['dollar_denominations'] = ($date[0]->dolares + (!is_null($money_back_by_user_date) ? ($money_back_by_user_date->first()->MontoDivEfect + $money_back_by_user_date->first()->MontoDivPM) : 0)) * -1;
                 });
             }
