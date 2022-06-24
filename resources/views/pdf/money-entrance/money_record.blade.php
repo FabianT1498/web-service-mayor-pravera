@@ -252,6 +252,38 @@
                 </div>
             </div>
             <div>
+                <div>    
+                    <table class="w-80p mb-12">
+                        <caption class="text-center w-80p bg-grey-400">Subtotal por fecha</caption>
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Entrada $</th>
+                                <th>Porcentaje (%)</th>
+                                <th>Entrada Bs ($)</th>
+                                <th>Porcentaje (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($total_by_date as $key_date => $record)
+                                <tr>
+                                    <td class="text-center">{{ date('d-m-Y', strtotime($key_date)) }}</td>
+                                    <td class="text-center">{{ number_format($record['dollar'], 2) }}</td>
+                                    <td class="text-center">{{ number_format($record['dollar'] / $total_dollars, 2) * 100 }}&nbsp;%</td>
+                                    <td class="text-center">{{ number_format($record['bs'], 2) }}</td>
+                                    <td class="text-center">{{ number_format($record['bs'] / $total_bs_to_dollars, 2) * 100 }}&nbsp;%</td>
+                                </tr>
+                            @endforeach
+                            <tr class="bg-grey-600">
+                                <td class="font-semibold text-center">Total</td>
+                                <td class="text-center">{{ number_format($total_dollars, 2) }}</td>
+                                <td class="text-center">100 %</td>
+                                <td class="text-center">{{ number_format($total_bs_to_dollars, 2) }}</td>
+                                <td class="text-center">100 %</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
                 <div>
                     
                     <table class="w-80p mb-12">
@@ -444,7 +476,7 @@
                     <h1 class="text-center">Totales de entradas en dinero tangible por fecha</h1>
                 </div>
 
-                @foreach($totals_safact as $key_user => $dates)
+                @foreach($totals_from_safact as $key_user => $dates)
                     
                         <table class="w-80p mb-4">
                             <caption class="text-center w-80p bg-grey-400">{{ $key_user }}</caption>
@@ -473,7 +505,7 @@
                     <h1 class="text-center">Total de entrada de credito por fecha</h1>
                 </div>
 
-                @foreach($totals_safact as $key_user => $dates)
+                @foreach($totals_from_safact as $key_user => $dates)
                     <table class="w-80p mb-4">
                         <caption class="text-center w-80p bg-grey-400">{{ $key_user }}</caption>
                         <thead>
