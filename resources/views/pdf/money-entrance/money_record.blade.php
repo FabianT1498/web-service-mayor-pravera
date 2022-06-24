@@ -262,6 +262,7 @@
                                 <th>Porcentaje (%)</th>
                                 <th>Entrada Bs ($)</th>
                                 <th>Porcentaje (%)</th>
+                                <th>Subtotal</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -272,6 +273,7 @@
                                     <td class="text-center">{{ number_format($record['dollar'] / $total_dollars, 2) * 100 }}&nbsp;%</td>
                                     <td class="text-center">{{ number_format($record['bs'], 2) }}</td>
                                     <td class="text-center">{{ number_format($record['bs'] / $total_bs_to_dollars, 2) * 100 }}&nbsp;%</td>
+                                    <td class="text-center">{{ number_format($record['subtotal'], 2) }}</td>
                                 </tr>
                             @endforeach
                             <tr class="bg-grey-600">
@@ -280,6 +282,7 @@
                                 <td class="text-center">100 %</td>
                                 <td class="text-center">{{ number_format($total_bs_to_dollars, 2) }}</td>
                                 <td class="text-center">100 %</td>
+                                <td class="text-center">{{ number_format($total, 2) }}</td>
                             </tr>
                         </tbody>
                     </table>

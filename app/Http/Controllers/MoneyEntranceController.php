@@ -231,6 +231,8 @@ class MoneyEntranceController extends Controller
                     + $total_e_payment[$cod_usua][$key_date]['05']['dollar'] 
                     + $record->first()->bolivaresADolares
                     + $record->first()->creditoADolares;
+
+                $total[$key_date]['subtotal'] = $total[$key_date]['dollar'] + $total[$key_date]['bs'];
             }
         }
 
