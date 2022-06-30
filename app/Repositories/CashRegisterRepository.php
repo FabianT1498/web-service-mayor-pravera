@@ -22,26 +22,17 @@ class CashRegisterRepository implements CashRegisterRepositoryInterface
             ? "CAST(SAFACT.FechaE as date) = ?"
             : "CAST(SAFACT.FechaE as date) BETWEEN CAST(? as date) AND CAST(? as date)";
 
-        $factors = DB::connection('saint_db')
-            ->table('SAFACT')
-            ->selectRaw("ROUND(MAX(SAFACT.Factor), 2) as MaxFactor, CAST(SAFACT.FechaE as date) as FechaE")
-            ->whereRaw($interval_query, $date_params)
-            ->groupByRaw("CAST(SAFACT.FechaE as date)");
-
         return DB
             ::connection('saint_db')
             ->table('SAFACT')
             ->selectRaw("MAX(SAFACT.CodUsua) AS CodUsua, CAST(ROUND(SUM(SAFACT.CancelE * SAFACT.Signo), 2) AS decimal(18, 2))  AS bolivares,
-            CAST(ROUND((SUM(SAFACT.CancelE * SAFACT.Signo)/MAX(FactorHist.MaxFactor)), 2) AS decimal(18, 2))  AS bolivaresADolares,
-            CAST(ROUND((SUM(SAFACT.CancelC * SAFACT.Signo)/MAX(FactorHist.MaxFactor)), 2) AS decimal(18, 2))  AS dolares,
+            CAST(ROUND((SUM(SAFACT.CancelE * SAFACT.Signo/SAFACT.FactorV)), 2) AS decimal(18, 2))  AS bolivaresADolares,
+            CAST(ROUND((SUM(SAFACT.CancelC * SAFACT.Signo/SAFACT.FactorV)), 2) AS decimal(18, 2))  AS dolares,
             CAST(ROUND(SUM(SAFACT.Credito * SAFACT.Signo), 2) AS decimal(18, 2)) AS credito,
-            CAST(ROUND((SUM(SAFACT.Credito * SAFACT.Signo)/MAX(FactorHist.MaxFactor)), 2) AS decimal(18, 2))  AS creditoADolares,
-            CAST(ROUND(MAX(FactorHist.MaxFactor), 2) AS decimal(18, 2)) as Factor,
+            CAST(ROUND((SUM(SAFACT.Credito * SAFACT.Signo/SAFACT.FactorV)), 2) AS decimal(18, 2))  AS creditoADolares,
+            CAST(ROUND(MAX(SAFACT.FactorV), 2) AS decimal(18, 2)) as Factor,
             CAST(SAFACT.FechaE as date) as FechaE")
-            ->joinSub($factors, 'FactorHist', function($query){
-                $query->on(DB::raw("CAST(SAFACT.FechaE AS date)"), '=', "FactorHist.FechaE");
-            })
-            ->whereRaw("SAFACT.CodUsua " . $user_params .  " AND " . $interval_query,
+            ->whereRaw("SAFACT.TipoFac IN ('A', 'B') AND SAFACT.CodUsua " . $user_params .  " AND " . $interval_query,
                 $date_params)
             ->groupByRaw("SAFACT.CodUsua, CAST(SAFACT.FechaE as date)")
             ->orderByRaw("SAFACT.CodUsua asc, CAST(SAFACT.FechaE as date)")
@@ -62,28 +53,19 @@ class CashRegisterRepository implements CashRegisterRepositoryInterface
           : "IN ('CAJA1', 'CAJA2', 'CAJA3', 'CAJA4', 'CAJA5',
                 'CAJA6' , 'CAJA7', 'DELIVERY')";
 
-        $factors = DB::connection('saint_db')
-            ->table('SAFACT')
-            ->selectRaw("ROUND(MAX(SAFACT.Factor), 2) as MaxFactor, CAST(SAFACT.FechaE as date) as FechaE")
-            ->whereRaw($interval_query, $date_params)
-            ->groupByRaw("CAST(SAFACT.FechaE as date)");
-
         return DB
         ::connection('saint_db')
         ->table('SAIPAVTA')
         ->selectRaw("
             MAX(SAFACT.CodUsua) as CodUsua, MAX(SAIPAVTA.CodPago) as CodPago, MAX(CAST(SAFACT.FechaE as date)) as FechaE,
             CAST(ROUND(SUM(SAIPAVTA.Monto * SAFACT.Signo), 2) AS decimal(18, 2)) as totalBs,
-            CAST(ROUND(MAX(FactorHist.MaxFactor), 2) AS decimal(18, 2)) as Factor,
-            CAST(ROUND((SUM(SAIPAVTA.Monto * SAFACT.Signo)/MAX(FactorHist.MaxFactor)), 2) AS decimal(18, 2)) as totalDollar"
+            CAST(ROUND(MAX(SAFACT.FactorV), 2) AS decimal(18, 2)) as Factor,
+            CAST(ROUND((SUM(SAIPAVTA.Monto * SAFACT.Signo / SAFACT.FactorV)), 2) AS decimal(18, 2)) as totalDollar"
         )
         ->join('SAFACT', function($query){
             $query->on("SAFACT.NumeroD", '=', "SAIPAVTA.NumeroD");
         })
-        ->joinSub($factors, 'FactorHist', function($query){
-            $query->on(DB::raw("CAST(SAFACT.FechaE AS date)"), '=', "FactorHist.FechaE");
-        })
-        ->whereRaw("SAFACT.CodUsua " . $user_params . " AND " . $interval_query,
+        ->whereRaw("SAFACT.TipoFac IN ('A', 'B') AND SAFACT.CodUsua " . $user_params . " AND " . $interval_query,
             $date_params)
         ->groupByRaw("SAFACT.CodUsua, CAST(SAFACT.FechaE AS date), SAIPAVTA.CodPago")
         ->orderByRaw("SAFACT.CodUsua asc, SAIPAVTA.CodPago asc")
@@ -268,7 +250,7 @@ class CashRegisterRepository implements CashRegisterRepositoryInterface
 
         return DB::connection('saint_db')
             ->table('SAFACT')
-            ->selectRaw("ROUND(MAX(COALESCE(SAFACT.Factor, 0)), 2) as MaxFactor, CAST(SAFACT.FechaE as date) as FechaE")
+            ->selectRaw("ROUND(MAX(COALESCE(SAFACT.FactorV, 0)), 2) as MaxFactor, CAST(SAFACT.FechaE as date) as FechaE")
             ->whereRaw($interval_query, $date_params)
             ->groupByRaw("CAST(SAFACT.FechaE as date)")
             ->orderByRaw("CAST(SAFACT.FechaE as date)")
