@@ -1,0 +1,1 @@
+exports.prism = require("./prism.js");

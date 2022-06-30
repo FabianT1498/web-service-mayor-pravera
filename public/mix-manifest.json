@@ -1,0 +1,11 @@
+{
+    "/js/app.js": "/js/app.js",
+    "/js/cash_register_create.js": "/js/cash_register_create.js",
+    "/js/cash_register_edit.js": "/js/cash_register_edit.js",
+    "/js/cash_register_index.js": "/js/cash_register_index.js",
+    "/js/fiscal_bill_index.js": "/js/fiscal_bill_index.js",
+    "/js/z_bill_index.js": "/js/z_bill_index.js",
+    "/js/igtf_tax_index.js": "/js/igtf_tax_index.js",
+    "/js/zelle_report_index.js": "/js/zelle_report_index.js",
+    "/css/app.css": "/css/app.css"
+}

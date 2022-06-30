@@ -1,0 +1,20 @@
+/public/css/
+/public/js/
+/storage/framework/sessions/
+/node_modules
+/public/hot
+/public/storage
+/storage/*.key
+/vendor
+.env
+.env.backup
+.phpunit.result.cache
+docker-compose.override.yml
+Homestead.json
+>>>>>>> c9bcee0a42fc1b49ed83331086e4837496b28129
+>>>>>>> c9bcee0a42fc1b49ed83331086e4837496b28129
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+/.idea
+/.vscode
