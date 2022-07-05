@@ -341,6 +341,17 @@ export default {
         decimalInputs[CURRENCIES.DOLLAR].mask(this.totalInputDOMS.pointSaleDollar);
         decimalInputs[CURRENCIES.BOLIVAR].mask(this.totalInputDOMS.pointSaleBs);
 
+        let form = document.querySelector('#form')
+        
+        form.addEventListener('submit', (e) => {
+            form.querySelector('button[type="submit"]').disabled = true;
+
+            let elements = form.elements;
+            for (let i = 0; i < elements.length; i++) {
+                elements[i].readOnly = true;
+            }
+        })
+
         // Point Sale Dollar Event Handler
         this.totalInputDOMS.pointSaleDollar.addEventListener('change', this.setPropWrapper(this.handlePointSaleDollar)) 
     },

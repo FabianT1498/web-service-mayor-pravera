@@ -332,6 +332,17 @@ export default {
 
         // Point Sale Dollar Event Handler
         this.totalInputDOMS.pointSaleDollar.addEventListener('change', this.setPropWrapper(this.handlePointSaleDollar)) 
+
+        let form = document.querySelector('#form')
+        
+        form.addEventListener('submit', (e) => {
+            form.querySelector('button[type="submit"]').disabled = true;
+
+            let elements = form.elements;
+            for (let i = 0; i < elements.length; i++) {
+                elements[i].readOnly = true;
+            }
+        })
     
         store.subscribe(() => {
             let state = store.getState();
