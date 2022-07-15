@@ -7,7 +7,7 @@
         </x-slot>
 
         <x-slot name="title">
-            <h4 class="h4 text-center mb-2">Sistema de arqueo de cajas</h4>
+            <h4 class="h4 text-center mb-2">Estadisticas de productos</h4>
         </x-slot>
 
         <!-- Session Status -->
