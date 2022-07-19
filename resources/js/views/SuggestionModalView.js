@@ -64,9 +64,6 @@ const SuggestionModalViewPrototype = {
         let item = this.getSuggestionItemTemplate(el)
         this.suggestionModalContainer.insertAdjacentHTML('beforeend', item)
     },
-    addNotePreview(note){
-        this.notesList.insertAdjacentHTML('beforeend', this.getNoteItemTemplate(note))
-    },
     getSuggestionItemTemplate(suggestion) {
         return `
             <tr data-id="${suggestion.id}" aria-current="false"
@@ -77,32 +74,8 @@ const SuggestionModalViewPrototype = {
             </tr>
         `
     },
-    getNoteAreaInputsTemplate(){
-        return `
-            <div class="flex flex-col justify-between h-full" data-id="">
-                <input type="text" placeholder="Título" name="note_title[]" class="font-light text-xl text-gray-500 rounded-t-md min-w-0 border-solid border-0 border-b-2 border-blue-400 shadow-lg focus:outline-none focus:shadow-none
-                    focus:border-blue-600 focus:ring-0">
-                <textarea class="w-full resize-none basis-4/5 border-none border-0 shadow-lg focus:shadow-none focus:border-none focus:outline-none focus:ring-0" placeholder="Descripción"  name="note_description[]"
-                    ></textarea>
-            </div>
-        `
-    },
-    hideSavedNote(note){
-        let currentNote = this.suggestionModalContainer.children[0]
-        currentNote.classList.add('hidden');
-        currentNote.setAttribute('data-id', note.id);
-    },
-    addNewEmptyNote(){
-        let newNote = this.getNoteAreaInputsTemplate();
-        this.notesContainer.insertAdjacentHTML('afterbegin', newNote)
-    },
-    deleteNotePreview(id){
-        let item = this.notesList.querySelector(`li[data-id="${id}"]`)
-        this.notesList.removeChild(item)
-    },
-    deleteNote(id){
-        let note = this.suggestionModalContainer.querySelector(`[data-id="${id}"]`)
-        this.suggestionModalContainer.removeChild(note)
+    emptySuggestion(){
+        this.suggestionModalContainer.innerHTML = ''
     },
     showEmptyNote(id){
         let currentNote = this.suggestionModalContainer.querySelector(`[data-id="${id}"]`)
@@ -116,15 +89,6 @@ const SuggestionModalViewPrototype = {
             this.suggestionModalContainer.insertBefore(blankNote, currentNote)
         }
     },
-    setPreviousItemUnfocused(){
-        let prevNote = this.notesList.querySelector('li[aria-current="true"]');
-
-        if (prevNote){
-            prevNote.classList.remove('text-white', 'bg-blue-600', 'border-b', 'border-gray-200','focus:outline-none', 'hover:bg-blue-700')
-            prevNote.classList.add('bg-gray-200')
-            prevNote.setAttribute('aria-current', "false")
-        }
-    },
     setListItemFocused(li){
         li.setAttribute('aria-current', "true")
         li.classList.remove('bg-gray-200')
@@ -136,13 +100,6 @@ const SuggestionModalViewPrototype = {
 
         this.notesContainer.children[0].classList.add('hidden')
         this.notesContainer.insertBefore(selectedNote, this.notesContainer.children[0])
-    },
-    updateListItemContent(id, data){
-        let noteEl = this.notesList.querySelector(`[data-id="${id}"]`)
-
-        noteEl.querySelector('span').innerHTML =  data.title !== '' ? this.truncate(data.title, 20) : 'Nota sin título'
-        noteEl.querySelector('p').innerHTML = this.truncate(data.description, 20)
-
     },
     truncate(str, n){
         return (str.length > n) ? str.substr(0, n-1) + '&hellip;' : str;

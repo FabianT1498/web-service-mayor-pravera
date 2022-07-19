@@ -79,6 +79,8 @@ const SuggestionModalPresenterPrototype = {
         this.currentCodProd = codProd
         try {
             const suggestions = await getProductSuggestions(codProd);
+
+            this.view.emptySuggestion();
             this.setSuggestions(suggestions.data.data); 
         } catch(e) {
             console.log(e);
@@ -107,8 +109,7 @@ const SuggestionModalPresenterPrototype = {
             let suggestionObj = new Suggestion(data['cod_prod'], data['percent_suggested'],
                 data['user_name'], data['created_at'], data['id'])
             this.suggestionsCollection.unshiftElement(suggestionObj)
-            console.log(suggestionObj);
-
+            
             this.view.unshifItem(suggestionObj)
         } catch(e){
             console.log(e)
