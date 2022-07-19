@@ -14,8 +14,10 @@ use Flasher\SweetAlert\Prime\SweetAlertFactory;
 
 use App\Repositories\ProductsRepository;
 
+use App\Http\Requests\StoreProductSuggestionRequest;
 
-use App\Models\ProductsNotes;
+use App\Models\Product;
+use App\Models\ProductSuggestion;
 
 class ProductsController extends Controller
 {
@@ -41,6 +43,8 @@ class ProductsController extends Controller
 
         $paginator = $repo->getProducts($descrip, $is_active, $instance, $paginator_params)->paginate(5);
 
+        $costo_inventario = $repo->getTotalCostProducts();
+
         if ($paginator->lastPage() < $page){
             $paginator = $repo->getProducts($descrip, $is_active, $instance, $paginator_params)->paginate(5, ['*'], 'page', 1);
         }
@@ -51,7 +55,10 @@ class ProductsController extends Controller
             "Costo",
             'Precio venta con IVA($)',
             'IVA',
+            'Existencia',
+            'Costo Inventario',
             "% de ganancia",
+            "Sugerencias"
         ];
 
         return view('pages.products.index', compact(
@@ -61,145 +68,41 @@ class ProductsController extends Controller
             'instance',
             'is_active',
             'instances',
+            'costo_inventario',
             'page',
         ));
     }
 
-    // public function create()
-    // {
+    public function getProductSuggestions(ProductsRepository $repo, $codProduct){
+        $suggestions = $repo->getSuggestions($codProduct);
 
-    //     $cash_registers_workers_id_arr = $this->getWorkers();
+        return $this->jsonResponse(['data' => $suggestions], 200);
+    }
 
-    //     $today_date = Carbon::now();
-    //     $cash_registers_id_arr = $this
-    //         ->getCashRegisterUsersWithoutRecord($today_date->format('Y-m-d'));
+    public function storeProduct(StoreProductSuggestionRequest $request){
 
-    //     if ($cash_registers_id_arr->count() === 0){
-    //         $this->flasher->addInfo('Ya se han registrado arqueos de caja para todas las cajas el dia de hoy,
-    //             por favor seleccione otra fecha');
-    //     }
+        $validated = $request->validated();
 
-    //     $today_date = $today_date->format('d-m-Y');
+        $data = [
+            'cod_prod' =>  $validated['cod_prod'],
+            'percent_suggested' => $validated['percent_suggested'],
+            'user_name' => Auth::user()->CodUsua,
+        ];
+        
+        if (is_null(Product::where('cod_prod', $data['cod_prod'])->first())){
+            $product = new Product(['cod_prod' => $data['cod_prod']]);
+            $product->save();
+        }
 
-    //     $data = compact(
-    //         'cash_registers_id_arr',
-    //         'cash_registers_workers_id_arr',
-    //         'today_date'
-    //     );
+        $product_suggestion = new ProductSuggestion($data);
+        
+        if ($product_suggestion->save()){
 
-    //     return view('pages.cash-register.create', $data);
-    // }
+            $data['created_at'] = date('d-m-Y', strtotime($product_suggestion->created_at));
+            return $this->jsonResponse(['data' => $data], 200);
+        }
 
-    // public function store(StoreCashRegisterRequest $request)
-    // {
-    //     $validated = $request->validated();
-
-    //     $validated += ["user_id" => Auth::user()->CodUsua];
-
-    //     if (array_key_exists('new_cash_register_worker', $validated)){
-    //         $worker = new Worker(array('name' => $validated['new_cash_register_worker']));
-    //         $worker->save();
-    //         $validated = array_merge($validated, array('worker_id' => $worker->id));
-    //     }
-
-    //     $cash_register_data = new CashRegisterData($validated);
-
-    //     if ($cash_register_data->save()){
-    //         if (array_key_exists('dollar_cash_record', $validated)){
-    //             $data = array_reduce($validated['dollar_cash_record'], function($acc, $value) use ($cash_register_data){
-    //                 if ($value > 0){
-    //                     $acc[] = array('amount' => $value, 'cash_register_data_id' => $cash_register_data->id);
-    //                 }
-
-    //                 return $acc;
-    //             }, []);
-    //             DollarCashRecord::insert($data);
-    //         }
-
-    //         if (array_key_exists('pago_movil_record', $validated)){
-    //             $data = array_reduce($validated['pago_movil_record'], function($acc, $value) use ($cash_register_data){
-    //                 if ($value > 0){
-    //                     $acc[] = array('amount' => $value, 'cash_register_data_id' => $cash_register_data->id);
-    //                 }
-
-    //                 return $acc;
-    //             }, []);
-    //             PagoMovilRecord::insert($data);
-    //         }
-
-    //         if (array_key_exists('dollar_denominations_record', $validated)){
-    //             $data = array_map(function($quantity, $denomination) use ($cash_register_data){
-    //                 return array(
-    //                     'quantity' => $quantity,
-    //                     'denomination' => floatval($denomination . 'El'),
-    //                     'cash_register_data_id' => $cash_register_data->id
-    //                 );
-    //             }, $validated['dollar_denominations_record'], array_keys($validated['dollar_denominations_record']));
-    //             DollarDenominationRecord::insert($data);
-    //         }
-
-    //         if (array_key_exists('bs_denominations_record', $validated)){
-    //             $data = array_map(function($quantity, $denomination) use ($cash_register_data){
-    //                 return array(
-    //                     'quantity' => $quantity,
-    //                     'denomination' => floatval($denomination . 'El'),
-    //                     'cash_register_data_id' => $cash_register_data->id
-    //                 );
-    //             }, $validated['bs_denominations_record'], array_keys($validated['bs_denominations_record']));
-    //             BsDenominationRecord::insert($data);
-    //         }
-
-    //         if (array_key_exists('point_sale_bs', $validated)){
-                
-    //             foreach($validated['point_sale_bs'] as &$record){
-    //                 $record['cash_register_data_id'] = $cash_register_data->id;
-    //             }
-                
-    //             PointSaleBsRecord::insert($validated['point_sale_bs']);
-    //         }
-
-    //         if (array_key_exists('notes', $validated)){
-                
-    //             $data = array_reduce($validated['notes'], function($acc, $note) use ($cash_register_data){
-    //                 if 
-    //                 (!is_null($note['description']) && $note['description'] !== ''){
-    //                     $acc[] = array(
-    //                         'title' => $note['title'],
-    //                         'description' => $note['description'],
-    //                         'cash_register_data_id' => $cash_register_data->id);
-    //                 }
-
-    //                 return $acc;
-    //             }, []);
-                
-    //             Note::insert($data);
-    //         }
-
-    //         if (array_key_exists('total_point_sale_dollar', $validated) 
-    //             && $validated['total_point_sale_dollar'] > 0){
-    //             $data = [
-    //                 'amount' => $validated['total_point_sale_dollar'],
-    //                 'cash_register_data_id' => $cash_register_data->id
-    //             ];
-    //             PointSaleDollarRecord::insert($data);
-    //         }
-
-    //         if (array_key_exists('zelle_record', $validated)){
-    //             $data = array_reduce($validated['zelle_record'], function($acc, $value) use ($cash_register_data){
-    //                 if ($value > 0){
-    //                     $acc[] = array('amount' => $value, 'cash_register_data_id' => $cash_register_data->id);
-    //                 }
-
-    //                 return $acc;
-    //             }, []);
-    //             ZelleRecord::insert($data);
-    //         }
-
-    //         $this->flasher->addSuccess('El arqueo de caja se guardó exitosamente!');
-    //     } else {
-    //         $this->flasher->addError('El arqueo de caja no se pudo guardar');
-    //     }
-
-    //     return redirect()->route('cash_register.index');
-    // }
+        return $this->jsonResponse(['data' => []], 500);
+        
+    }
 }

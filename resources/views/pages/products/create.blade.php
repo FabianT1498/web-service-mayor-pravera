@@ -550,9 +550,9 @@
             :records="old('point_sale_bs') ? old('point_sale_bs') : []"
         />
 
-        <x-modal-notes
+        <!-- <x-modal-notes
             :modalID="__('notes-modal')"
-        />
+        /> -->
     </form>
   
 @endsection

@@ -8,7 +8,7 @@
         <title>{{ config('app.name', 'Control de cajas') }}</title>
 
         <!-- FontAwesome Icons -->
-        <link rel="stylesheet" href="https://kit-pro.fontawesome.com/releases/v5.12.1/css/pro.min.css">
+        <!-- <link rel="stylesheet" href="https://kit-pro.fontawesome.com/releases/v5.12.1/css/pro.min.css"> -->
 
         <!-- Fonts -->
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
@@ -35,6 +35,6 @@
             <!-- end content -->
         </div>
         @flasher_render
-        <x-dollar-exchange-modal />
+
     </body>
 </html>

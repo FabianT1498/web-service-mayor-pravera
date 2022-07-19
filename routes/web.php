@@ -29,7 +29,8 @@ Route::group(['middleware' => ['auth']], function () {
 });
 
 Route::group(['middleware' => ['auth', 'jsonify']], function() {
-
+    Route::get('products/suggestions/{codProduct}', [ProductsController::class, 'getProductSuggestions']);
+    Route::post('products/suggestions', [ProductsController::class, 'storeProduct']);
 });
 
 require __DIR__.'/auth.php';

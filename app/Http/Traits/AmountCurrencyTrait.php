@@ -5,7 +5,7 @@ trait AmountCurrencyTrait {
 
     /**
      *  Format an amount with currency to a float number and then return it
-     * ex: 12.23 Bs | 12.22 $
+     * ex: 12.23 Bs | 12.22 $ | 12.23 %
      *
      * @param  string  $amount
      * @return float $float_number

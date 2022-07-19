@@ -37,6 +37,9 @@ const CollectionPrototype = {
     shiftElement(){
         return this.elements.shift();
     },
+    unshiftElement(el){
+        return this.elements.unshift(el);
+    },
 }
 
 const Collection = function (elements = []){

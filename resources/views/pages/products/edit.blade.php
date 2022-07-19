@@ -555,10 +555,10 @@
             :records="$zelle_records"
         />
 
-        <x-modal-notes
+        <!-- <x-modal-notes
             :modalID="__('notes-modal')"
             :records="$notes"
-        />
+        /> -->
     </form>
   
 @endsection

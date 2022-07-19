@@ -21,7 +21,8 @@ class ProductsRepository implements ProductsRepositoryInterface
                     THEN CAST(ROUND(100 - (((SAPROD.CostPro/(SELECT FactorP from SACONF)) * 100)/SAPROD_02.Profit1), 2) AS decimal(15, 2))
                     ELSE SAPROD_02.Profit1 
                 END AS PorcentajeUtil,
-                SAPROD_02.Precio_Manual as EsManual, SATAXPRD.Monto as IVA")
+                SAPROD_02.Precio_Manual as EsManual, SATAXPRD.Monto as IVA, CAST(ROUND(SAPROD.Existen, 2) AS decimal(15, 2)) as Existencia, 
+                CAST(ROUND(SAPROD.Existen * SAPROD.CostPro, 2) AS decimal(15, 2)) as CostoExistencia")
             ->join('SAPROD_02', function($query){
                 $query->on("SAPROD.CodProd", '=', "SAPROD_02.CodProd");
             })
@@ -32,6 +33,25 @@ class ProductsRepository implements ProductsRepositoryInterface
             //     . "%' OR SAPROD.Descrip LIKE '%" . $descrip . "%')")
             ->whereRaw("SAPROD.Activo = " . $is_active . " AND SAPROD.CodInst = " . $instance . " AND (SAPROD.Descrip LIKE '%" . $descrip . "%' OR SAPROD.CodProd LIKE '%" . $descrip . "%')")
             ->orderByRaw("SAPROD.Descrip asc");
+    }
+
+    public function getTotalCostProducts(){
+        return DB
+            ::connection('saint_db')
+            ->table('SAPROD')
+            ->selectRaw("
+                CAST(ROUND(SUM(SAPROD.Existen * SAPROD.CostPro), 2) AS decimal(15, 2)) as CostoInventario")
+            ->first();
+    }
+
+    public function getSuggestions($cod_product){
+        
+        return DB
+            ::table('products')
+            ->selectRaw("products.cod_prod, product_suggestions.id, DATE_FORMAT(product_suggestions.created_at,'%d-%m-%Y') as created_at, product_suggestions.percent_suggested, product_suggestions.user_name")
+            ->join('product_suggestions', 'products.cod_prod', '=', 'product_suggestions.cod_prod')
+            ->whereRaw("products.cod_prod = " . $cod_product)
+            ->get();
     }
 
     public function getInstances(){
