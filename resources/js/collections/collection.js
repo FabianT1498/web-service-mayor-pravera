@@ -10,6 +10,13 @@ const CollectionPrototype = {
 
         return this.elements[this.getLength() - 1]
     },
+    getFirst(){
+        if (this.getLength() === 0){
+            return null;
+        }
+
+        return this.elements[0]
+    },
     getLength(){
         return this.elements.length;
     },

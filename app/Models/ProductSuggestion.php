@@ -23,6 +23,7 @@ class ProductSuggestion extends Model
         'percent_suggested',
         'cod_prod',
         'user_name',
+        'status',
     ];
 
     public function __construct(array $attributes = array())
@@ -32,5 +33,6 @@ class ProductSuggestion extends Model
         $this->percent_suggested = key_exists('percent_suggested', $attributes) ? $attributes['percent_suggested'] : '';
         $this->user_name =  key_exists('user_name', $attributes) ? $attributes['user_name'] : '';
         $this->cod_prod =  key_exists('cod_prod', $attributes) ? $attributes['cod_prod'] : '';
+        $this->status =  key_exists('status', $attributes) ? $attributes['status'] : config('constants.SUGGESTION_STATUS.PROCESSING');
     }
 }

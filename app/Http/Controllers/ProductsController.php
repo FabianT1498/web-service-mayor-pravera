@@ -31,22 +31,33 @@ class ProductsController extends Controller
     public function index(Request $request, ProductsRepository $repo){
 
         $descrip = $request->query('description', '');
-        $instance = $request->query('product_instance', 1652);
+        $instance = $request->query('product_instance', '1652');
+        $status = $request->query('status', config('constants.SUGGESTION_STATUS.PROCESSING'));
         $is_active = $request->query('is_active', 1);
         $page = $request->query('page', '');
 
-        $paginator_params = [];
-        
         $instances = $repo->getInstances()->map(function($item, $key) {
             return (object) array("key" => $item->CodInst, "value" => $item->Descrip);
         });
 
-        $paginator = $repo->getProducts($descrip, $is_active, $instance, $paginator_params)->paginate(5);
+        $paginator = $repo->getProducts($descrip, $is_active, $instance, $status)->paginate(5);
+
+        $cod_prods = $paginator->map(function($item, $key) {
+            return "'" . $item->CodProd . "'";
+        })->join(',');
+
+        $products_with_sugg = $repo->getProductsBySuggestionStatus($status, $cod_prods);
+
+        return print_r($products_with_sugg);
 
         $costo_inventario = $repo->getTotalCostProducts();
 
+        $suggestion_status = array_map(function($key, $value){
+            return (object) array("key" => $key, "value" => $value);
+        }, array_keys(config('constants.SUGGESTION_STATUS_ES_UI')), array_values(config('constants.SUGGESTION_STATUS_ES_UI')));
+
         if ($paginator->lastPage() < $page){
-            $paginator = $repo->getProducts($descrip, $is_active, $instance, $paginator_params)->paginate(5, ['*'], 'page', 1);
+            $paginator = $repo->getProducts($descrip, $is_active, $instance, $status)->paginate(5, ['*'], 'page', 1);
         }
 
         $columns = [
@@ -70,6 +81,8 @@ class ProductsController extends Controller
             'instances',
             'costo_inventario',
             'page',
+            'suggestion_status',
+            'status'
         ));
     }
 
@@ -87,6 +100,7 @@ class ProductsController extends Controller
             'cod_prod' =>  $validated['cod_prod'],
             'percent_suggested' => $validated['percent_suggested'],
             'user_name' => Auth::user()->CodUsua,
+            'status' => config('constants.SUGGESTION_STATUS.PROCESSING')
         ];
         
         if (is_null(Product::where('cod_prod', $data['cod_prod'])->first())){

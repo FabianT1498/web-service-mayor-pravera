@@ -18,8 +18,8 @@ class CreateProductSuggestionsTable extends Migration
             $table->string('cod_prod', 50);
             $table->float('percent_suggested');
             $table->string('user_name', 50);
+            $table->enum('status', array_values(config('constants.SUGGESTION_STATUS')));
             $table->timestamps();
-          
             $table->foreign('cod_prod')->references('cod_prod')->on('products');
         });
     }

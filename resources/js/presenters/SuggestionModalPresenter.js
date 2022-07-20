@@ -1,99 +1,52 @@
 import SuggestionCollection from '_collections/suggestionCollection'
 import Suggestion from '_models/Suggestion'
-
-
+import { SUGGESTION_STATUS } from '_constants/productSuggestion';
+import { ERROR, SUCCESS } from '_constants/message-status'
 import { storeProductSuggestions, getProductSuggestions } from '_services/products';
 
 const SuggestionModalPresenterPrototype = {
-	clickOnModal({ target, currentNoteID, data }) {
+	clickOnModal({ target }) {
 		const button = target.closest('button');
 
-        const li = target.closest('li');
-
 		if(button && button.tagName === 'BUTTON'){
-			const action = button.getAttribute('data-modal');
+			
             const modalToggleID = button.getAttribute('data-modal-toggle');
-
-			if (action){
-				if (action === 'add'){
-                    
-					// if (data.description === ''){ // Check If there's a note with blank body
-					// 	return;
-					// }
-
-                    // if (currentNoteID === ""){
-                    //     let note = new Note(data.title, data.description);
-                    //     note = this.noteCollection.pushElement(note)
-                    //     this.view.addNotePreview(note);
-                    //     this.view.hideSavedNote(note);
-                    //     this.view.addNewEmptyNote();
-                    // } else {
-                    //     this.updateNote(currentNoteID, data)
-                    //     this.view.showEmptyNote(currentNoteID);
-                    //     this.view.setPreviousItemUnfocused();
-                    //     this.view.updateListItemContent(currentNoteID, data)
-                    // }
-
-				} else if(action === 'add-blank'){
-                    // this.view.setPreviousItemUnfocused();
-                    // this.view.showEmptyNote(currentNoteID);  
-                } else if(action === 'delete') { // Remove element
-
-					// const noteID = button.closest('li').getAttribute('data-id');
-					// let id = parseInt(noteID);
-					// this.noteCollection.removeElementByID(id);
-					// this.view.deleteNotePreview(noteID)
-                    // this.view.showEmptyNote(noteID); 
-                    // this.view.deleteNote(noteID)
-                    
-				}
-			} else if (modalToggleID){
-                console.log(this.suggestionsCollection.getAll())
-                // this.setTotalNotesCount(this.noteCollection.getLength());
-            }
-		} else if (li && li.tagName === 'LI'){
-            // let id = li.getAttribute('data-id');
-
             
-            // if (li.getAttribute('aria-current') === "false"){
-            //     this.view.setPreviousItemUnfocused();
-            //     this.view.showSelectedListItem(id);
-            //     this.view.setListItemFocused(li)
-            // } else {
-            //     this.view.setPreviousItemUnfocused();
-            //     this.view.showEmptyNote(id);                
-            // }
-        }
+			if (modalToggleID){
+                this.view.hideContent();
+                this.view.enableSubmitBtn()
+            }
+		}
     },
-    // updateNote(id, data){
-	// 	let index = this.noteCollection.getIndexByID(parseInt(id));
-	// 	this.noteCollection.setElementAtIndex(index, { 
-    //         title: data.title,
-    //         description: data.description
-    //     })
-	// },
 	setView(view){
 		this.view = view;
 	},
     async setCodProd(codProd){
         this.currentCodProd = codProd
         try {
+            this.view.showLoading();
             const suggestions = await getProductSuggestions(codProd);
-
+            const data = suggestions.data.data;
+            this.view.hideLoading();
+            this.view.showContent();
             this.view.emptySuggestion();
-            this.setSuggestions(suggestions.data.data); 
+            this.setSuggestions(data);
+            this.view.setSuggestionList(this.suggestionsCollection);
+
+            if(this.suggestionsCollection.getLength() > 0
+                    &&  SUGGESTION_STATUS[this.suggestionsCollection.getFirst().status] === SUGGESTION_STATUS.PROCESSING){
+                this.view.disableSubmitBtn()
+                this.view.showMessage('Para crear una nueva sugerencia debe esperar a que sea procesada la sugerencia anterior')
+            }
+            
         } catch(e) {
             console.log(e);
         }
     },
     setSuggestions(suggestions){
- 
         let suggestionsArr = suggestions.map(el => new Suggestion(el['cod_prod'], el['percent_suggested'],
-            el['user_name'], el['created_at'], el['id']))
-
+            el['user_name'], el['created_at'], el['status'], el['id']))
         this.suggestionsCollection.setElements(suggestionsArr)
-
-        this.view.setSuggestionList(this.suggestionsCollection);  
     },
     async handleSubmit(formData){
         const formDataEntries = formData.entries();
@@ -107,10 +60,13 @@ const SuggestionModalPresenterPrototype = {
 
             const data = suggestion.data.data
             let suggestionObj = new Suggestion(data['cod_prod'], data['percent_suggested'],
-                data['user_name'], data['created_at'], data['id'])
+                data['user_name'], data['created_at'], data['status'], data['id'])
             this.suggestionsCollection.unshiftElement(suggestionObj)
             
             this.view.unshifItem(suggestionObj)
+            this.view.disableSubmitBtn();
+            this.view.showMessage('Sugerencia creada con exito, para crear una nueva sugerencia debe esperar a que sea procesada la sugerencia.',
+                SUCCESS)
         } catch(e){
             console.log(e)
         }

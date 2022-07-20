@@ -35,6 +35,18 @@ class ProductsRepository implements ProductsRepositoryInterface
             ->orderByRaw("SAPROD.Descrip asc");
     }
 
+    public function getProductsBySuggestionStatus($status, $cod_products = ''){
+        return DB
+            ::table('products')
+            ->selectRaw("products.cod_prod")
+            ->join(DB::raw("(SELECT MAX(cod_prod) AS cod_prod, MAX(status) as status, MAX(product_suggestions.created_at) as created_at FROM `product_suggestions` GROUP BY cod_prod) `product_suggestions`"),
+                function($join){
+                    $join->on('products.cod_prod', '=', 'product_suggestions.cod_prod');
+                }
+            )
+            ->whereRaw("products.cod_prod IN (" . $cod_products . ") AND product_suggestions.status = '" . $status . "'");
+    }
+
     public function getTotalCostProducts(){
         return DB
             ::connection('saint_db')
@@ -48,9 +60,11 @@ class ProductsRepository implements ProductsRepositoryInterface
         
         return DB
             ::table('products')
-            ->selectRaw("products.cod_prod, product_suggestions.id, DATE_FORMAT(product_suggestions.created_at,'%d-%m-%Y') as created_at, product_suggestions.percent_suggested, product_suggestions.user_name")
+            ->selectRaw("products.cod_prod, product_suggestions.id, DATE_FORMAT(product_suggestions.created_at,'%d-%m-%Y') as created_at,
+                product_suggestions.percent_suggested, product_suggestions.user_name, product_suggestions.status")
             ->join('product_suggestions', 'products.cod_prod', '=', 'product_suggestions.cod_prod')
             ->whereRaw("products.cod_prod = " . $cod_product)
+            ->orderByRaw("product_suggestions.created_at DESC")
             ->get();
     }
 
