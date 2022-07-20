@@ -19,6 +19,11 @@
       <a href="{{ route('products.index') }}" class="mb-2 capitalize font-medium  hover:text-teal-600 transition ease-in-out duration-500">
         Consultar productos
       </a>
+
+      <!-- link -->
+      <a href="{{ route('products.productsSuggestions') }}" class="mb-2 capitalize font-medium  hover:text-teal-600 transition ease-in-out duration-500">
+        Consultar productos con sugerencias
+      </a>
       <!-- end link -->
     </div>
     <!-- end sidebar content -->

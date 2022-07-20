@@ -16,6 +16,7 @@ class Product extends Model
 
     protected $fillable = [
         'cod_prod',
+        'descrip'
     ];
 
     public $timestamps = false;
@@ -26,6 +27,7 @@ class Product extends Model
         parent::__construct($attributes);
 
         $this->cod_prod = key_exists('cod_prod', $attributes) ? $attributes['cod_prod'] : '';
+        $this->descrip = key_exists('descrip', $attributes) ? $attributes['descrip'] : '';
     }
 
     public function product_suggestions()

@@ -15,6 +15,7 @@ class CreateProductsTable extends Migration
     {
         Schema::connection('estadisticas_productos')->create('products', function (Blueprint $table) {
             $table->string('cod_prod', 50);
+            $table->string('descrip');
             $table->primary('cod_prod');
         });
     }

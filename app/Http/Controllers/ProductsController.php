@@ -32,7 +32,6 @@ class ProductsController extends Controller
 
         $descrip = $request->query('description', '');
         $instance = $request->query('product_instance', '1652');
-        $status = $request->query('status', config('constants.SUGGESTION_STATUS.PROCESSING'));
         $is_active = $request->query('is_active', 1);
         $page = $request->query('page', '');
 
@@ -40,24 +39,12 @@ class ProductsController extends Controller
             return (object) array("key" => $item->CodInst, "value" => $item->Descrip);
         });
 
-        $paginator = $repo->getProducts($descrip, $is_active, $instance, $status)->paginate(5);
-
-        $cod_prods = $paginator->map(function($item, $key) {
-            return "'" . $item->CodProd . "'";
-        })->join(',');
-
-        $products_with_sugg = $repo->getProductsBySuggestionStatus($status, $cod_prods);
-
-        return print_r($products_with_sugg);
+        $paginator = $repo->getProducts($descrip, $is_active, $instance)->paginate(5);
 
         $costo_inventario = $repo->getTotalCostProducts();
 
-        $suggestion_status = array_map(function($key, $value){
-            return (object) array("key" => $key, "value" => $value);
-        }, array_keys(config('constants.SUGGESTION_STATUS_ES_UI')), array_values(config('constants.SUGGESTION_STATUS_ES_UI')));
-
         if ($paginator->lastPage() < $page){
-            $paginator = $repo->getProducts($descrip, $is_active, $instance, $status)->paginate(5, ['*'], 'page', 1);
+            $paginator = $repo->getProducts($descrip, $is_active, $instance)->paginate(5, ['*'], 'page', 1);
         }
 
         $columns = [
@@ -81,6 +68,35 @@ class ProductsController extends Controller
             'instances',
             'costo_inventario',
             'page',
+        ));
+    }
+
+    public function getProductsWithSuggestions(Request $request, ProductsRepository $repo){
+        $status = $request->query('status', config('constants.SUGGESTION_STATUS.PROCESSING'));
+        $page = $request->query('page', '');
+
+        $columns = [
+            "Cod. Produc",
+            'Descripcion',
+            "% de ganancia",
+            "Ult. Fecha Solicitud",
+        ];
+
+        $paginator = $repo->getProductsBySuggestionStatus($status)->paginate(5);
+
+        $suggestion_status = array_map(function($key, $value){
+            return (object) array("key" => $key, "value" => $value);
+        }, array_keys(config('constants.SUGGESTION_STATUS_ES_UI')), array_values(config('constants.SUGGESTION_STATUS_ES_UI')));
+
+        if ($paginator->lastPage() < $page){
+            $paginator = $repo->getProductsBySuggestionStatus($status)->paginate(5, ['*'], 'page', 1);
+        }
+
+
+        return view('pages.products.suggestions-list', compact(
+            'columns',
+            'paginator',
+            'page',
             'suggestion_status',
             'status'
         ));
@@ -92,7 +108,7 @@ class ProductsController extends Controller
         return $this->jsonResponse(['data' => $suggestions], 200);
     }
 
-    public function storeProduct(StoreProductSuggestionRequest $request){
+    public function storeProduct(StoreProductSuggestionRequest $request, ProductsRepository $repo){
 
         $validated = $request->validated();
 
@@ -102,9 +118,11 @@ class ProductsController extends Controller
             'user_name' => Auth::user()->CodUsua,
             'status' => config('constants.SUGGESTION_STATUS.PROCESSING')
         ];
+
+        $product = $repo->getProductByID($data['cod_prod']);
         
         if (is_null(Product::where('cod_prod', $data['cod_prod'])->first())){
-            $product = new Product(['cod_prod' => $data['cod_prod']]);
+            $product = new Product(['cod_prod' => $data['cod_prod'], 'descrip' => $product->Descrip]);
             $product->save();
         }
 

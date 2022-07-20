@@ -6,6 +6,15 @@ use Illuminate\Support\Facades\DB;
 
 class ProductsRepository implements ProductsRepositoryInterface
 {
+    public function getProductByID($cod_product = ''){
+        
+        return DB
+            ::connection('saint_db')
+            ->table('SAPROD')
+            ->selectRaw("SAPROD.CodProd AS CodProd, SAPROD.Descrip as Descrip")
+            ->whereRaw("SAPROD.CodProd = '" . $cod_product . "'")
+            ->first();
+    }
 
     public function getProducts($descrip = '', $is_active = 1, $instance = 1652){
         
@@ -35,16 +44,18 @@ class ProductsRepository implements ProductsRepositoryInterface
             ->orderByRaw("SAPROD.Descrip asc");
     }
 
-    public function getProductsBySuggestionStatus($status, $cod_products = ''){
+    public function getProductsBySuggestionStatus($status){
         return DB
             ::table('products')
-            ->selectRaw("products.cod_prod")
-            ->join(DB::raw("(SELECT MAX(cod_prod) AS cod_prod, MAX(status) as status, MAX(product_suggestions.created_at) as created_at FROM `product_suggestions` GROUP BY cod_prod) `product_suggestions`"),
+            ->selectRaw("products.cod_prod as cod_prod, products.descrip as descrip, product_suggestions.percent_suggested as percent_suggested, 
+                product_suggestions.created_at as created_at")
+            ->join(DB::raw("(SELECT MAX(cod_prod) AS cod_prod, MAX(status) as status, MAX(product_suggestions.created_at) as created_at,
+                     MAX(product_suggestions.percent_suggested) AS percent_suggested FROM `product_suggestions` GROUP BY cod_prod ORDER BY product_suggestions.created_at DESC) `product_suggestions`"),
                 function($join){
                     $join->on('products.cod_prod', '=', 'product_suggestions.cod_prod');
                 }
             )
-            ->whereRaw("products.cod_prod IN (" . $cod_products . ") AND product_suggestions.status = '" . $status . "'");
+            ->whereRaw("product_suggestions.status = '" . $status . "'");
     }
 
     public function getTotalCostProducts(){

@@ -10,7 +10,9 @@ interface ProductsRepositoryInterface {
 
 	public function getSuggestions($cod_product);
 
+	public function getProductByID($cod_product);
+
 	public function getTotalCostProducts();
 
-	public function getProductsBySuggestionStatus($status, $cod_prods);
+	public function getProductsBySuggestionStatus($status);
 }
