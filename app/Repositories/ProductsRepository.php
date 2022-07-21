@@ -69,9 +69,13 @@ class ProductsRepository implements ProductsRepositoryInterface
     public function getTotalCostProducts(){
         return DB
             ::connection('saint_db')
-            ->table('SAPROD')
-            ->selectRaw("
-                CAST(ROUND(SUM(SAPROD.Existen * SAPROD.CostPro), 2) AS decimal(15, 2)) as CostoInventario")
+            ->table(DB::raw("(SELECT SAPROD.CodProd as CodProd, SAPROD.Existen * SAPROD.CostPro AS CostoInventario,
+                CASE 
+                    WHEN SAPROD_02.Precio_Manual = 1 THEN SAPROD.Existen * (SAPROD.CostPro/(SELECT Factor from SACONF))
+                    ELSE SAPROD.Existen * (SAPROD.CostPro/(SELECT FactorP from SACONF))
+                END AS CostoInventarioDiv FROM SAPROD INNER JOIN SAPROD_02 ON SAPROD.CodProd = SAPROD_02.CodProd) SAPROD")
+            )
+            ->selectRaw("CAST(ROUND(SUM(SAPROD.CostoInventario), 2) AS decimal(15, 2)) as CostoInventario, CAST(ROUND(SUM(SAPROD.CostoInventarioDiv), 2) AS decimal(15, 2)) AS CostoInventarioDiv")
             ->first();
     }
 

@@ -6,23 +6,13 @@
 
 @section('main')
     <div>
-        <div class="mb-4">
+        <h2 class="h2">Costos de productos</h2>
+        <div class="mb-8 p-2 rounded bg-gray-200 mx-auto w-11/12">
             @include('pages.products.components.filter-form')
-            
-            @if ($paginator->count() > 0)
-                <div class="w-11/12 mx-auto">
-                    <a 
-                        class="underline text-sm text-gray-600 hover:text-gray-900 pt-4" 
-                        href="#"
-                        data-generate-pdf="interval-report"
-                    >
-                        {{ __('Generar reporte de los productos en formato PDF') }}
-                    </a>
-                </div>
-            @endif
         </div>
-        <div class="mx-auto w-11/12">
-            <p class="mb-8"> Costo del inventario: {{ number_format($costo_inventario->CostoInventario, 2) }} Bs.s</p>
+        <div class="mx-auto w-11/12 mb-8">
+            <p class="mb-4"><span class="font-semibold">Costo del inventario (Bs):</span> {{ number_format($costo_inventario->CostoInventario, 2) }} <span class="font-semibold">Bs</span></p>
+            <p><span class="font-semibold">Costo del inventario ($):</span> {{ number_format($costo_inventario->CostoInventarioDiv, 2) }} <span class="font-semibold">$</span></p>
         </div>
         <table class="table table-bordered table-hover mx-auto w-11/12 text-center">
             <thead class="bg-blue-300">

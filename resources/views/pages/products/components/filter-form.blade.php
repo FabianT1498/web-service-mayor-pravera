@@ -1,7 +1,6 @@
-<form class="mb-4 mx-auto w-11/12" id="form_filter" method="GET" action="{{ route('products.index') }}">
-    <p class="mb-4">Parametros de busqueda</p>
+<form class=" border-slate-600" id="form_filter" method="GET" action="{{ route('products.index') }}">
     <input id="page" name="page" type="hidden" value="1">
-    <div class="flex items-center mb-4">
+    <div class="flex items-center">
 
   
         <span class="text-gray-500">Código o Descripción</span>
