@@ -44,6 +44,8 @@ class ProductsController extends Controller
 
         $paginator = $repo->getProducts($descrip, $is_active, $instance, $there_existance)->paginate(5);
 
+        // return print_r($paginator);
+
         $costo_inventario = $repo->getTotalCostProducts();
 
         if ($paginator->lastPage() < $page){

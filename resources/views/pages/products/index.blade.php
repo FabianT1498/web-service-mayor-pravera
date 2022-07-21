@@ -36,7 +36,7 @@
                             />   
                         </td>
                         <td class="text-center">{{ number_format($value->CostoProDiv, 2) }}</td>
-                        <td class="text-center">{{ number_format($value->PrecioVDiv + (!$value->EsManual && $value->IVA ? $value->PrecioVDiv * $value->IVA : 0), 2)  }}</td>
+                        <td class="text-center">{{ number_format($value->PrecioVDiv + ($value->EsManual === 0 && $value->IVA > 0 ? ($value->PrecioVDiv * $value->IVA) : 0), 2)  }}</td>
                         <td class="text-center">{{ number_format($value->IVA, 2) }}</td>
                         <td class="text-center">{{ number_format($value->Existencia, 2) }}</td>
                         <td class="text-center">{{ number_format($value->CostoExistenciaDiv, 2) }}</td>
