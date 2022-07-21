@@ -16,31 +16,39 @@ class ProductsRepository implements ProductsRepositoryInterface
             ->first();
     }
 
-    public function getProducts($descrip = '', $is_active = 1, $instance = 1652){
-        
+    public function getProducts($descrip = '', $is_active = 1, $instance = 1652, $there_existance = true){
+     
         return DB
             ::connection('saint_db')
             ->table('SAPROD')
-            ->selectRaw("SAPROD.CodProd AS CodProd, SAPROD.Descrip as Descrip, CAST(ROUND(SAPROD.CostPro, 2) AS decimal(15, 2)) as CostoPro,
+            ->selectRaw("SAPROD.CodProd AS CodProd, SAPROD.Descrip as Descrip,
+                (SELECT Factor from SACONF) as FactorV,
+                (SELECT FactorP from SACONF) as Factor, 
+                CASE WHEN SAPROD_02.Precio_Manual = 1 
+                    THEN CAST(ROUND(SAPROD.CostPro/(SELECT Factor from SACONF), 2) AS decimal(15, 2))
+                    ELSE CAST(ROUND(SAPROD.CostPro/(SELECT FactorP from SACONF), 2) AS decimal(15, 2))
+                END AS CostoProDiv,
                 CASE WHEN SAPROD_02.Precio_Manual = 1 
                     THEN SAPROD_02.Profit1 
                     ELSE CAST(ROUND(((SAPROD.CostPro/(SELECT FactorP from SACONF))/((100 - SAPROD_02.Profit1)/100)), 2) AS decimal(15, 2)) 
-                END AS PrecioV,
+                END AS PrecioVDiv,
                 CASE WHEN SAPROD_02.Precio_Manual = 1
-                    THEN CAST(ROUND(100 - (((SAPROD.CostPro/(SELECT FactorP from SACONF)) * 100)/SAPROD_02.Profit1), 2) AS decimal(15, 2))
+                    THEN CAST(ROUND(100 - (((SAPROD.CostPro/(SELECT Factor from SACONF)) * 100)/SAPROD_02.Profit1), 2) AS decimal(15, 2))
                     ELSE SAPROD_02.Profit1 
                 END AS PorcentajeUtil,
                 SAPROD_02.Precio_Manual as EsManual, SATAXPRD.Monto as IVA, CAST(ROUND(SAPROD.Existen, 2) AS decimal(15, 2)) as Existencia, 
-                CAST(ROUND(SAPROD.Existen * SAPROD.CostPro, 2) AS decimal(15, 2)) as CostoExistencia")
+                CASE WHEN SAPROD_02.Precio_Manual = 1 
+                    THEN CAST(ROUND(SAPROD.Existen * (SAPROD.CostPro/(SELECT Factor from SACONF)), 2) AS decimal(15, 2))
+                    ELSE CAST(ROUND(SAPROD.Existen * (SAPROD.CostPro/(SELECT FactorP from SACONF)), 2) AS decimal(15, 2))
+                END AS CostoExistenciaDiv")
             ->join('SAPROD_02', function($query){
                 $query->on("SAPROD.CodProd", '=', "SAPROD_02.CodProd");
             })
             ->leftJoin('SATAXPRD', function($query){
                 $query->on("SAPROD.CodProd", '=', "SATAXPRD.CodProd");
             })
-            // ->whereRaw("SAPROD.Activo = " . $is_active . " AND SAPROD.CodInst = " . $instance . " AND (SAPROD.CodProd LIKE '%" . $cod_product 
-            //     . "%' OR SAPROD.Descrip LIKE '%" . $descrip . "%')")
-            ->whereRaw("SAPROD.Activo = " . $is_active . " AND SAPROD.CodInst = " . $instance . " AND (SAPROD.Descrip LIKE '%" . $descrip . "%' OR SAPROD.CodProd LIKE '%" . $descrip . "%')")
+            ->whereRaw("SAPROD.Activo = " . $is_active . " AND SAPROD.CodInst = " . $instance . " AND (SAPROD.Descrip LIKE '%" . $descrip . "%' OR SAPROD.CodProd LIKE '%" .
+                 $descrip . "%') AND SAPROD.Existen " . ($there_existance ? ">" : "=") . " 0")
             ->orderByRaw("SAPROD.Descrip asc");
     }
 

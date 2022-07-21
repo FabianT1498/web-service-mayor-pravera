@@ -32,8 +32,13 @@ export default {
             }
         }
     },
+    handleCheck: function(event){
+        event.target.value = event.target.value === '1' ? '0' : '1'; 
+    },
     initEventListeners() {
         this.DOMElements.productsTBody.addEventListener('click', this.handleClickProductSuggestion());
+
+        this.DOMElements.formFilter.querySelector('#thereExistance').addEventListener('click', this.handleCheck);
     
         if (this.DOMElements.pagesLinksContainer){
             this.DOMElements.pagesLinksContainer.addEventListener('click', this.handleClickPaginator(this.DOMElements.pageInput, this.DOMElements.formFilter));

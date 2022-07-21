@@ -32,29 +32,33 @@ class ProductsController extends Controller
 
         $descrip = $request->query('description', '');
         $instance = $request->query('product_instance', '1652');
+        $there_existance = $request->query('there_existance') === '1' ? true : false;
+
         $is_active = $request->query('is_active', 1);
+
         $page = $request->query('page', '');
 
         $instances = $repo->getInstances()->map(function($item, $key) {
             return (object) array("key" => $item->CodInst, "value" => $item->Descrip);
         });
 
-        $paginator = $repo->getProducts($descrip, $is_active, $instance)->paginate(5);
+        $paginator = $repo->getProducts($descrip, $is_active, $instance, $there_existance)->paginate(5);
 
         $costo_inventario = $repo->getTotalCostProducts();
 
         if ($paginator->lastPage() < $page){
-            $paginator = $repo->getProducts($descrip, $is_active, $instance)->paginate(5, ['*'], 'page', 1);
+            $paginator = $repo->getProducts($descrip, $is_active, $instance, $there_existance)->paginate(5, ['*'], 'page', 1);
         }
 
         $columns = [
             "Cod. Produc",
             "Descrip.",
-            "Costo",
-            'Precio venta con IVA($)',
+            "Es Fijo",
+            "Costo ($)",
+            'Precio venta ($)',
             'IVA',
             'Existencia',
-            'Costo Inventario',
+            'Costo Inventario ($)',
             "% de ganancia",
             "Sugerencias"
         ];
@@ -64,8 +68,8 @@ class ProductsController extends Controller
             'paginator',
             'descrip',
             'instance',
-            'is_active',
             'instances',
+            'there_existance',
             'costo_inventario',
             'page',
         ));

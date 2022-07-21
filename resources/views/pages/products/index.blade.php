@@ -37,11 +37,19 @@
                     <tr>
                         <td class="text-center">{{ $value->CodProd }}</td>
                         <td class="text-center">{{ $value->Descrip }}</td>
-                        <td class="text-center">{{ number_format($value->CostoPro, 2) }}</td>
-                        <td class="text-center">{{ number_format($value->PrecioV + (!$value->EsManual && $value->IVA ? $value->PrecioV * $value->IVA : 0), 2)  }}</td>
+                        <td class="text-center">
+                            <input
+                                class="form-checkbox"
+                                type="checkbox"                      
+                                {{$value->EsManual ? "checked" : ""}}
+                                onclick="return false;"
+                            />   
+                        </td>
+                        <td class="text-center">{{ number_format($value->CostoProDiv, 2) }}</td>
+                        <td class="text-center">{{ number_format($value->PrecioVDiv + (!$value->EsManual && $value->IVA ? $value->PrecioVDiv * $value->IVA : 0), 2)  }}</td>
                         <td class="text-center">{{ number_format($value->IVA, 2) }}</td>
                         <td class="text-center">{{ number_format($value->Existencia, 2) }}</td>
-                        <td class="text-center">{{ number_format($value->CostoExistencia, 2) }}</td>
+                        <td class="text-center">{{ number_format($value->CostoExistenciaDiv, 2) }}</td>
                         <td class="text-center">{{ number_format($value->PorcentajeUtil, 2) }}</td>
                         <td>
                             <button
