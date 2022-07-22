@@ -1,4 +1,4 @@
-@if ($zelle_records->count() > 0)
+@if ($zelle_records_from_saint->count() > 0)
     @foreach($zelle_records_from_saint as $key_codusua => $dates)
         <table>
             <thead>

@@ -62,7 +62,7 @@ class ZelleRecordSaintExport implements FromView, WithEvents, WithTitle
                 $event->sheet->getColumnDimension('A')->setWidth(100, 'px');
                 $event->sheet->getColumnDimension('B')->setWidth(100, 'px');
                 $event->sheet->getColumnDimension('C')->setWidth(100, 'px');
-                $event->sheet->getColumnDimension('D')->setWidth(120, 'px');
+                $event->sheet->getColumnDimension('D')->setWidth(300, 'px');
 
                 $event->sheet->setCellValue('G2', 'Fecha: ' . $this->data['start_date'] . ($this->data['start_date'] !== $this->data['end_date'] 
                     ? (' hasta ' . $this->data['end_date']) 
