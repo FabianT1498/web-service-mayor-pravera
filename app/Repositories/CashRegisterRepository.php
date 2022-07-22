@@ -240,6 +240,88 @@ class CashRegisterRepository implements CashRegisterRepositoryInterface
             ->get();
     }
 
+    public function getZelleRecordsFromSaint($start_date, $end_date, $user = null){
+        /* Consulta para obtener los totales de las facturas*/
+        $date_params = ($start_date === $end_date) ? [$start_date] : [$start_date, $end_date];
+
+        $interval_query = ($start_date === $end_date)
+            ? "CAST(SAIPAVTA.FechaE as date) = ?"
+            : "CAST(SAIPAVTA.FechaE as date) BETWEEN CAST(? as date) AND CAST(? as date)";
+
+        $user_params = $user
+          ? " = '" . $user . "'"
+          : "IN ('CAJA1', 'CAJA2', 'CAJA3', 'CAJA4', 'CAJA5',
+                'CAJA6' , 'CAJA7', 'DELIVERY')";
+
+        return DB
+        ::connection('saint_db')
+        ->table('SAIPAVTA')
+        ->selectRaw("SAFACT.CodUsua as CodUsua, SAFACT.FactorV as FactorV, CAST(SAIPAVTA.FechaE as date) as FechaE,
+            CAST(ROUND(SAIPAVTA.Monto * SAFACT.Signo, 2) AS decimal(18, 2)) as Monto,
+            CAST(ROUND((SAIPAVTA.Monto / SAFACT.FactorV) * SAFACT.Signo, 2) AS decimal(18, 2)) as MontoDiv,
+            SAFACT.Notas2 as TitularCta"
+        )
+        ->join('SAFACT', function($query){
+            $query->on("SAFACT.NumeroD", '=', "SAIPAVTA.NumeroD");
+        })
+        ->whereRaw("SAFACT.TipoFac IN ('A', 'B') AND SAIPAVTA.CodPago = '07' AND SAFACT.CodUsua " . $user_params . " AND " . $interval_query,
+            $date_params)
+        ->orderByRaw("SAFACT.CodUsua asc")
+        ->get();
+    }
+
+    public function getZelleTotalByUserFromSaint($start_date, $end_date, $user = null){
+        /* Consulta para obtener los totales de las facturas*/
+        $date_params = ($start_date === $end_date) ? [$start_date] : [$start_date, $end_date];
+
+        $interval_query = ($start_date === $end_date)
+            ? "CAST(SAIPAVTA.FechaE as date) = ?"
+            : "CAST(SAIPAVTA.FechaE as date) BETWEEN CAST(? as date) AND CAST(? as date)";
+
+        $user_params = $user
+          ? " = '" . $user . "'"
+          : "IN ('CAJA1', 'CAJA2', 'CAJA3', 'CAJA4', 'CAJA5',
+                'CAJA6' , 'CAJA7', 'DELIVERY')";
+
+        return DB
+        ::connection('saint_db')
+        ->table('SAIPAVTA')
+        ->selectRaw("SAFACT.CodUsua as CodUsua, CAST(ROUND(SUM(SAIPAVTA.Monto * SAFACT.Signo), 2) AS decimal(18, 2)) as Monto,
+            CAST(ROUND(SUM((SAIPAVTA.Monto / SAFACT.FactorV) * SAFACT.Signo), 2) AS decimal(18, 2)) as MontoDiv"
+        )
+        ->join('SAFACT', function($query){
+            $query->on("SAFACT.NumeroD", '=', "SAIPAVTA.NumeroD");
+        })
+        ->whereRaw("SAFACT.TipoFac IN ('A', 'B') AND SAIPAVTA.CodPago = '07' AND SAFACT.CodUsua " . $user_params . " AND " . $interval_query,
+            $date_params)
+        ->groupByRaw("SAFACT.CodUsua")
+        ->orderByRaw("SAFACT.CodUsua asc")
+        ->get();
+    }
+
+    public function getZelleTotalFromSaint($start_date, $end_date){
+        /* Consulta para obtener los totales de las facturas*/
+        $date_params = ($start_date === $end_date) ? [$start_date] : [$start_date, $end_date];
+
+        $interval_query = ($start_date === $end_date)
+            ? "CAST(SAIPAVTA.FechaE as date) = ?"
+            : "CAST(SAIPAVTA.FechaE as date) BETWEEN CAST(? as date) AND CAST(? as date)";
+
+        return DB
+        ::connection('saint_db')
+        ->table('SAIPAVTA')
+        ->selectRaw("CAST(ROUND(SUM(SAIPAVTA.Monto * SAFACT.Signo), 2) AS decimal(18, 2)) as Monto,
+            CAST(ROUND(SUM((SAIPAVTA.Monto / SAFACT.FactorV) * SAFACT.Signo), 2) AS decimal(18, 2)) as MontoDiv"
+        )
+        ->join('SAFACT', function($query){
+            $query->on("SAFACT.NumeroD", '=', "SAIPAVTA.NumeroD");
+        })
+        ->whereRaw("SAFACT.TipoFac IN ('A', 'B') AND SAIPAVTA.CodPago = '07' AND " . $interval_query,
+            $date_params)
+        ->first();
+    }
+
+
     public function getFactorByDate($start_date, $end_date){
         /* Consulta para obtener el valor del factor por cada dia */
         $date_params = ($start_date === $end_date) ? [$start_date] : [$start_date, $end_date];

@@ -14,14 +14,15 @@ Sheet::macro('styleCells', function (Sheet $sheet, string $cellRange, array $sty
     $sheet->getDelegate()->getStyle($cellRange)->applyFromArray($style);
 });
 
-class ZelleRecordsExport implements FromView, WithEvents, WithTitle
+class ZelleRecordSaintExport implements FromView, WithEvents, WithTitle
 {
     protected $data;
+
 
     public function __construct(array $data)
     {
         $this->data = $data;
-        $this->row_count_by_user = $this->getTotalRowsWorkSheetByUser($data['zelle_records']);
+        $this->row_count_by_user = $this->getTotalRowsWorkSheetByUser($data['zelle_records_from_saint']);
         $this->total_rows = $this->getTotalRows($this->row_count_by_user);
     }
 
@@ -50,7 +51,7 @@ class ZelleRecordsExport implements FromView, WithEvents, WithTitle
     */
     public function view(): View
     {
-        return view('exports.zelle_record.zelle_report', $this->data);
+        return view('exports.zelle_record.zelle_report_saint', $this->data);
     }
 
     public function registerEvents(): array
@@ -88,7 +89,7 @@ class ZelleRecordsExport implements FromView, WithEvents, WithTitle
                     ]
                 );
 
-                if ($this->data['zelle_records']->count() > 0){
+                if ($this->data['zelle_records_from_saint']->count() > 0){
                     $event->sheet->styleCells(
                         'A:C', 
                         [
@@ -107,9 +108,9 @@ class ZelleRecordsExport implements FromView, WithEvents, WithTitle
                     $event->sheet->mergeCells('G5:H5');
                     $event->sheet->setCellValue('I5', 'bolivares');
                     $event->sheet->mergeCells('I5:J5');
-                    $event->sheet->setCellValue('G6', $this->data['total_zelle_amount']['dollar']);
+                    $event->sheet->setCellValue('G6', $this->data['total_zelle_amount_from_saint']->MontoDiv);
                     $event->sheet->mergeCells('G6:H6');
-                    $event->sheet->setCellValue('I6', $this->data['total_zelle_amount']['bs']);
+                    $event->sheet->setCellValue('I6', $this->data['total_zelle_amount_from_saint']->Monto);
                     $event->sheet->mergeCells('I6:J6');
 
                     $event->sheet->styleCells(
@@ -244,7 +245,7 @@ class ZelleRecordsExport implements FromView, WithEvents, WithTitle
                         $start_dates = $start + 2;
                         $prev_dates = null;
                         
-                        foreach($this->data['zelle_records'][$key_user] as $dates){
+                        foreach($this->data['zelle_records_from_saint'][$key_user] as $dates){
                             
 
                             if (!is_null($prev_dates)){
@@ -298,6 +299,6 @@ class ZelleRecordsExport implements FromView, WithEvents, WithTitle
 
     public function title(): string
     {
-        return 'Detalles Zelle';
+        return 'Detalles Zelle SAINT';
     }
 }
