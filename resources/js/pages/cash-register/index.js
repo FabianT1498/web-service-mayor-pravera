@@ -12,6 +12,7 @@ export default {
         cashRegisterTBody: document.querySelector('#cash-register-tbody'),
         loadingModalEl: document.querySelector('#modal-loading'),
         intervalLink: document.querySelector('a[data-generate-pdf=interval-report]'),
+        cashRegisterAlert: document.querySelector('#cash-register-alert'),
     },
     lastClickedCloseBtnID: -1,
     changeDateEventHandlerWrapper: (form) => {
@@ -29,11 +30,36 @@ export default {
         return (event) => {
             let button = event.target.closest('button');
             let link = event.target.closest('a');
+
             if (button && button.getAttribute('data_cash_register_id')){
                 self.lastClickedCloseBtnID = button.getAttribute('data_cash_register_id');
             } else if(link && link.getAttribute('data-generate-pdf')){
-                let modal = new Modal(self.DOMElements.loadingModalEl, {placement: 'center-bottom'});
-                modal.show();
+                
+                let dateRangePicker = new DateRangePicker(this.DOMElements.dateRangePicker, {
+                    format: 'dd-mm-yyyy',
+                    language: 'es'
+                });
+
+                let splittedStartDate = dateRangePicker.inputs[0].value.split('-')
+                let splittedEndDate = dateRangePicker.inputs[1].value.split('-')
+
+                let startDate = new Date(splittedStartDate[1] + '-' + splittedStartDate[0] + '-' + splittedStartDate[2])
+                let endDate = new Date(splittedEndDate[1] + '-' + splittedEndDate[0] + '-' + splittedEndDate[2])
+        
+                let timeDiff = endDate.getTime() - startDate.getTime();  
+  
+                //calculate days difference by dividing total milliseconds in a day  
+                let dayDiff = timeDiff / (1000 * 60 * 60 * 24);
+                
+                if (dayDiff + 1 > 10){
+                    event.preventDefault();
+                    this.DOMElements.cashRegisterAlert.classList.remove('hidden', 'opacity-0')
+                   
+                } else {
+                    let modal = new Modal(self.DOMElements.loadingModalEl, {placement: 'center-bottom'});
+                    modal.show();
+                }
+                        
             }
         }
     },
@@ -58,7 +84,7 @@ export default {
 
         let dateRangePicker = new DateRangePicker(this.DOMElements.dateRangePicker, {
             format: 'dd-mm-yyyy',
-            language: 'es'
+            language: 'es',
         });
 
         /** Filtrar registros  */

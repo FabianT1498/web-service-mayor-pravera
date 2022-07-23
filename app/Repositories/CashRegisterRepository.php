@@ -26,12 +26,13 @@ class CashRegisterRepository implements CashRegisterRepositoryInterface
             ::connection('saint_db')
             ->table('SAFACT')
             ->selectRaw("MAX(SAFACT.CodUsua) AS CodUsua, CAST(ROUND(SUM(SAFACT.CancelE * SAFACT.Signo), 2) AS decimal(18, 2))  AS bolivares,
-            CAST(ROUND((SUM(SAFACT.CancelE * SAFACT.Signo/SAFACT.FactorV)), 2) AS decimal(18, 2))  AS bolivaresADolares,
-            CAST(ROUND((SUM(SAFACT.CancelC * SAFACT.Signo/SAFACT.FactorV)), 2) AS decimal(18, 2))  AS dolares,
-            CAST(ROUND(SUM(SAFACT.Credito * SAFACT.Signo), 2) AS decimal(18, 2)) AS credito,
-            CAST(ROUND((SUM(SAFACT.Credito * SAFACT.Signo/SAFACT.FactorV)), 2) AS decimal(18, 2))  AS creditoADolares,
-            CAST(ROUND(MAX(SAFACT.FactorV), 2) AS decimal(18, 2)) as Factor,
-            CAST(SAFACT.FechaE as date) as FechaE")
+                CAST(ROUND((SUM(SAFACT.CancelE * SAFACT.Signo/SAFACT.FactorV)), 2) AS decimal(18, 2))  AS bolivaresADolares,
+                CAST(ROUND((SUM(SAFACT.CancelC * SAFACT.Signo/SAFACT.FactorV)), 2) AS decimal(18, 2))  AS dolares,
+                CAST(ROUND(SUM(SAFACT.Credito * SAFACT.Signo), 2) AS decimal(18, 2)) AS credito,
+                CAST(ROUND((SUM(SAFACT.Credito * SAFACT.Signo/SAFACT.FactorV)), 2) AS decimal(18, 2))  AS creditoADolares,
+                CAST(ROUND(MAX(SAFACT.FactorV), 2) AS decimal(18, 2)) as Factor,
+                CAST(SAFACT.FechaE as date) as FechaE"
+            )
             ->whereRaw("SAFACT.TipoFac IN ('A', 'B') AND SAFACT.CodUsua " . $user_params .  " AND " . $interval_query,
                 $date_params)
             ->groupByRaw("SAFACT.CodUsua, CAST(SAFACT.FechaE as date)")
@@ -60,7 +61,7 @@ class CashRegisterRepository implements CashRegisterRepositoryInterface
             MAX(SAFACT.CodUsua) as CodUsua, MAX(SAIPAVTA.CodPago) as CodPago, MAX(CAST(SAFACT.FechaE as date)) as FechaE,
             CAST(ROUND(SUM(SAIPAVTA.Monto * SAFACT.Signo), 2) AS decimal(18, 2)) as totalBs,
             CAST(ROUND(MAX(SAFACT.FactorV), 2) AS decimal(18, 2)) as Factor,
-            CAST(ROUND((SUM(SAIPAVTA.Monto * SAFACT.Signo / SAFACT.FactorV)), 2) AS decimal(18, 2)) as totalDollar"
+            CAST(ROUND(SUM((SAIPAVTA.Monto / SAFACT.FactorV) * SAFACT.Signo), 2) AS decimal(18, 2)) as totalDollar"
         )
         ->join('SAFACT', function($query){
             $query->on("SAFACT.NumeroD", '=', "SAIPAVTA.NumeroD");
