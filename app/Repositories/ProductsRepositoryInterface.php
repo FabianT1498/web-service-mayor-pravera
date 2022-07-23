@@ -4,15 +4,15 @@ namespace App\Repositories;
 
 interface ProductsRepositoryInterface {
 
-	public function getProducts($descrip, $is_active, $instance, $exists);
+	public function getProducts($descrip, $is_active, $instance, $exists, $conn);
 
-	public function getInstances();
+	public function getInstances($conn);
 
 	public function getSuggestions($cod_product);
 
 	public function getProductByID($cod_product);
 
-	public function getTotalCostProducts();
+	public function getTotalCostProducts($conn);
 
 	public function getProductsBySuggestionStatus($status);
 }

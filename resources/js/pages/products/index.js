@@ -8,6 +8,7 @@ export default {
         pageInput: document.querySelector('#page'),
         intervalLink: document.querySelector('a[data-generate-pdf=interval-report]'),
         productsTBody: document.querySelector('#products-tbody'),
+        databaseNameSelect: document.querySelector('#databaseName'),
     },
     handleClickProductSuggestion: function() {
         let self = this;
@@ -32,6 +33,12 @@ export default {
             }
         }
     },
+    handleDatabaseChange: function() {
+        let self = this;
+        return (e) => {
+            this.DOMElements.formFilter.submit();
+        }
+    },
     handleCheck: function(event){
         event.target.value = event.target.value === '1' ? '0' : '1'; 
     },
@@ -39,6 +46,8 @@ export default {
         this.DOMElements.productsTBody.addEventListener('click', this.handleClickProductSuggestion());
 
         this.DOMElements.formFilter.querySelector('#thereExistance').addEventListener('click', this.handleCheck);
+
+        this.DOMElements.databaseNameSelect.addEventListener('change', this.handleDatabaseChange())
     
         if (this.DOMElements.pagesLinksContainer){
             this.DOMElements.pagesLinksContainer.addEventListener('click', this.handleClickPaginator(this.DOMElements.pageInput, this.DOMElements.formFilter));

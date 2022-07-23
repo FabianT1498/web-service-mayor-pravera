@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'caja_mayorista'),
+    'default' => env('DB_CONNECTION', 'estadisticas_productos'),
 
     /*
     |--------------------------------------------------------------------------
@@ -59,6 +59,19 @@ return [
             'host' => env('DB_HOST_SAINT', '192.168.1.77'),
             'port' => env('DB_PORT_SAINT', '1433'),
             'database' => env('DB_DATABASE_SAINT', 'Mayorista'),
+            'username' => env('DB_USERNAME_SAINT', 'sa'),
+            'password' => env('DB_PASSWORD_SAINT', 'FenixXG22300'),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'trust_server_certificate' => true // Esta línea le dice al servidor que no intente verficar el certificado enviado por el servidor
+        ],
+        'saint_db_pravera' => [
+            'driver' => 'sqlsrv',
+            'url' => env('DATABASE_URL_SAINT'),
+            'host' => env('DB_HOST_SAINT', '192.168.1.77'),
+            'port' => env('DB_PORT_SAINT', '1433'),
+            'database' => env('DB_DATABASE_SAINT_PRAVERA', 'PRAVERADB'),
             'username' => env('DB_USERNAME_SAINT', 'sa'),
             'password' => env('DB_PASSWORD_SAINT', 'FenixXG22300'),
             'charset' => 'utf8',

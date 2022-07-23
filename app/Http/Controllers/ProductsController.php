@@ -30,26 +30,39 @@ class ProductsController extends Controller
 
     public function index(Request $request, ProductsRepository $repo){
 
-        $descrip = $request->query('description', '');
-        $instance = $request->query('product_instance', '1652');
-        $there_existance = $request->query('there_existance') === '1' ? true : false;
+        $databases = array_map(function($val, $key){
+            return (object) array("key" => $key, "value" => $val);
+        }, config('constants.DB_CONN_NAMES'), array_keys(config('constants.DB_CONN_NAMES')));
 
-        $is_active = $request->query('is_active', 1);
+        $database = $request->query('database', $databases[0]->key);
+        $prev_conn = $request->query('prev_conn', $database);
 
-        $page = $request->query('page', '');
-
-        $instances = $repo->getInstances()->map(function($item, $key) {
+        $conn = config("constants.DB_CONN_MAP." . $database);
+        
+        $instances = $repo->getInstances($conn)->map(function($item, $key) {
             return (object) array("key" => $item->CodInst, "value" => $item->Descrip);
         });
 
-        $paginator = $repo->getProducts($descrip, $is_active, $instance, $there_existance)->paginate(5);
+        $descrip = $request->query('description', '');
+        $instance = $request->query('product_instance', count($instances) > 0 ? $instances[0]->key : '');
+        $there_existance = $request->query('there_existance') === '1' ? true : false;
+        $is_active = $request->query('is_active', 1);
+        $page = $request->query('page', '');
 
-        // return print_r($paginator);
+        if ($prev_conn !== $database) {
+            $descrip = '';
+            $instance = count($instances) > 0 ? $instances[0]->key : '';
+            $there_existance = true;
+            $is_active = 1;
+            $page = 1;
+        }
 
-        $costo_inventario = $repo->getTotalCostProducts();
+        $costo_inventario = $repo->getTotalCostProducts($conn);
+
+        $paginator = $repo->getProducts($descrip, $is_active, $instance, $there_existance, $conn)->paginate(5);
 
         if ($paginator->lastPage() < $page){
-            $paginator = $repo->getProducts($descrip, $is_active, $instance, $there_existance)->paginate(5, ['*'], 'page', 1);
+            $paginator = $repo->getProducts($descrip, $is_active, $instance, $there_existance, $conn)->paginate(5, ['*'], 'page', 1);
         }
 
         $columns = [
@@ -71,6 +84,8 @@ class ProductsController extends Controller
             'descrip',
             'instance',
             'instances',
+            'database',
+            'databases',
             'there_existance',
             'costo_inventario',
             'page',

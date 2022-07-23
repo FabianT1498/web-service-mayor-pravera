@@ -16,10 +16,10 @@ class ProductsRepository implements ProductsRepositoryInterface
             ->first();
     }
 
-    public function getProducts($descrip = '', $is_active = 1, $instance = 1652, $there_existance = true){
+    public function getProducts($descrip = '', $is_active = 1, $instance = 1652, $there_existance = true, $conn = ''){
      
         return DB
-            ::connection('saint_db')
+            ::connection($conn)
             ->table('SAPROD')
             ->selectRaw("SAPROD.CodProd AS CodProd, SAPROD.Descrip as Descrip,
                 (SELECT Factor from SACONF) as FactorV,
@@ -66,9 +66,9 @@ class ProductsRepository implements ProductsRepositoryInterface
             ->whereRaw("product_suggestions.status = '" . $status . "'");
     }
 
-    public function getTotalCostProducts(){
+    public function getTotalCostProducts($conn){
         return DB
-            ::connection('saint_db')
+            ::connection($conn)
             ->table(DB::raw("(SELECT SAPROD.CodProd as CodProd, SAPROD.Existen * SAPROD.CostPro AS CostoInventario,
                 CASE 
                     WHEN SAPROD_02.Precio_Manual = 1 THEN SAPROD.Existen * (SAPROD.CostPro/(SELECT Factor from SACONF))
@@ -91,9 +91,9 @@ class ProductsRepository implements ProductsRepositoryInterface
             ->get();
     }
 
-    public function getInstances(){
+    public function getInstances($conn){
         return DB
-            ::connection('saint_db')
+            ::connection($conn)
             ->table('SAINSTA')
             ->selectRaw("CodInst, Descrip")
             ->whereRaw("Nivel = 0 AND InsPadre = 0")
