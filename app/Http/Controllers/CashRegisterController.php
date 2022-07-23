@@ -837,14 +837,14 @@ class CashRegisterController extends Controller
 
         $totals_e_payment =  $cash_register_repo
             ->getTotalsEPaymentMethods($start_date, $end_date)
-            ->groupBy(['CodUsua', 'FechaE']);
-        
+            ->groupBy(['CodUsua', 'FechaE', 'CodPago']);
+
         // Completar los metodos de pagos que no tuvieron registros en cada caja
-        $totals_e_payment  = $this
-            ->mapEPaymentMethods($totals_e_payment, $payment_methods);
+        // $totals_e_payment  = $this
+        //     ->mapEPaymentMethods($totals_e_payment, $payment_methods);
 
         // Completar las cajas con sus respectivos metodos de pago que no tuvieron operacion con pagos electronicos
-        $totals_e_payment = $this->completeEpaymentMethodsToCashUserForInteval($totals_from_safact, $totals_e_payment, $payment_methods);
+        // $totals_e_payment = $this->completeEpaymentMethodsToCashUserForInteval($totals_from_safact, $totals_e_payment, $payment_methods);
 
         $vuelto_by_users = $bill_repo
             ->getVueltosByUser($start_date, $end_date)
@@ -896,6 +896,7 @@ class CashRegisterController extends Controller
         }
 
         $pdf = App::make('dompdf.wrapper');
+        
         $pdf = $pdf->loadView('pdf.cash-register.interval-record', compact(
             'saint_totals',
             'cash_registers_totals',
@@ -949,7 +950,7 @@ class CashRegisterController extends Controller
                 $saint_totals[$key_user][$key_date] = [];
                 $saint_totals[$key_user][$key_date]['bolivares'] = $date->first()->bolivares;
                 $saint_totals[$key_user][$key_date]['dolares'] = $date->first()->dolares;
-                $saint_totals[$key_user][$key_date] = array_merge($saint_totals[$key_user][$key_date], $totals_e_payment[$key_user][$key_date]);
+                $saint_totals[$key_user][$key_date] = array_merge($saint_totals[$key_user][$key_date], $totals_e_payment[$key_user][$key_date]->toArray());
             }
         }
 
@@ -1014,43 +1015,34 @@ class CashRegisterController extends Controller
 
         foreach($totals_e_payment as $key_user => $dates){
             
-            // if (!array_key_exists($key_user, $differences)){
-            //     $differences[$key_user]  = [];
-            // }
-
             if ($cash_registers->has($key_user)){
                 
                 foreach($dates as $key_date => $date){
                     if ($cash_registers[$key_user]->has($key_date)){
-                        $differences[$key_user][$key_date]['point_sale_bs'] = round($cash_registers[$key_user][$key_date]->first()->total_point_sale_bs - ($date['01']['bs'] + $date['02']['bs']
-                                + $date['03']['bs'] + $date['04']['bs']), 2);
-                        $differences[$key_user][$key_date]['point_sale_dollar'] = round($cash_registers[$key_user][$key_date]->first()->total_point_sale_dollar - $date['08']['dollar'], 2);
-                        $differences[$key_user][$key_date]['pago_movil_bs'] = round($cash_registers[$key_user][$key_date]->first()->total_pago_movil_bs - $date['05']['bs'], 2);
-                        $differences[$key_user][$key_date]['zelle'] = round($cash_registers[$key_user][$key_date]->first()->total_zelle -  $date['07']['dollar'], 2);
+                        $differences[$key_user][$key_date]['point_sale_bs'] = round($cash_registers[$key_user][$key_date]->first()->total_point_sale_bs 
+                            - (($date->has('01') ? $date['01']->first()->totalBs : 0) + ($date->has('02') ? $date['02']->first()->totalBs : 0)
+                                + ($date->has('03') ? $date['03']->first()->totalBs : 0) + ($date->has('04') ? $date['04']->first()->totalBs : 0)), 2);
+                        $differences[$key_user][$key_date]['point_sale_dollar'] = round($cash_registers[$key_user][$key_date]->first()->total_point_sale_dollar - ($date->has('08') ? $date['08']->first()->totalDollar : 0), 2);
+                        $differences[$key_user][$key_date]['pago_movil_bs'] = round($cash_registers[$key_user][$key_date]->first()->total_pago_movil_bs - ($date->has('05') ? $date['05']->first()->totalBs : 0), 2);
+                        $differences[$key_user][$key_date]['zelle'] = round($cash_registers[$key_user][$key_date]->first()->total_zelle -  ($date->has('07') ? $date['07']->first()->totalDollar : 0), 2);
                     } else {
-                        // if (!array_key_exists($key_date, $differences[$key_user])){
-                        //     $differences[$key_user][$key_date] = [];
-                        // }
                         $differences[$key_user][$key_date] = [];
-                        $differences[$key_user][$key_date]['point_sale_bs'] = ($date['01']['bs'] + $date['02']['bs'] 
-                                + $date['03']['bs'] + $date['04']['bs']) * -1;
-                        $differences[$key_user][$key_date]['point_sale_dollar'] = $date['08']['dollar'] * -1;
-                        $differences[$key_user][$key_date]['pago_movil_bs'] = $date['05']['bs'] * -1;
-                        $differences[$key_user][$key_date]['zelle'] = $date['07']['dollar'] * -1;
+                        $differences[$key_user][$key_date]['point_sale_bs'] = round((($date->has('01') ? $date['01']->first()->totalBs : 0) + ($date->has('02') ? $date['02']->first()->totalBs : 0)
+                            + ($date->has('03') ? $date['03']->first()->totalBs : 0) + ($date->has('04') ? $date['04']->first()->totalBs : 0)), 2) * -1;
+                        $differences[$key_user][$key_date]['point_sale_dollar'] = ($date->has('08') ? $date['08']->first()->totalDollar : 0) * -1;
+                        $differences[$key_user][$key_date]['pago_movil_bs'] = ($date->has('05') ? $date['05']->first()->totalBs : 0) * -1;
+                        $differences[$key_user][$key_date]['zelle'] = ($date->has('07') ? $date['07']->first()->totalDollar : 0) * -1;
                     }
                 }
             } else {
                 foreach($dates as $key_date => $date){
-                    // if (!array_key_exists($key_date, $differences[$key_user])){
-                    //     $differences[$key_user][$key_date] = [];
-                    // }
                     $differences[$key_user][$key_date] = [];
 
-                    $differences[$key_user][$key_date]['point_sale_bs'] = ($date['01']['bs'] + $date['02']['bs']
-                            + $date['03']['bs'] + $date['04']['bs']) * -1;
-                    $differences[$key_user][$key_date]['point_sale_dollar'] = $date['08']['dollar'] * -1;
-                    $differences[$key_user][$key_date]['pago_movil_bs'] = $date['05']['bs'] * -1;
-                    $differences[$key_user][$key_date]['zelle'] = $date['07']['dollar'] * -1;
+                    $differences[$key_user][$key_date]['point_sale_bs'] = round((($date->has('01') ? $date['01']->first()->totalBs : 0) + ($date->has('02') ? $date['02']->first()->totalBs : 0)
+                    + ($date->has('03') ? $date['03']->first()->totalBs : 0) + ($date->has('04') ? $date['04']->first()->totalBs : 0)), 2) * -1;
+                    $differences[$key_user][$key_date]['point_sale_dollar'] = ($date->has('08') ? $date['08']->first()->totalDollar : 0) * -1;
+                    $differences[$key_user][$key_date]['pago_movil_bs'] = ($date->has('05') ? $date['05']->first()->totalBs : 0) * -1;
+                    $differences[$key_user][$key_date]['zelle'] = ($date->has('07') ? $date['07']->first()->totalDollar : 0) * -1;
                 }
             }
         }

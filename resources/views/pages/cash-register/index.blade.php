@@ -6,6 +6,9 @@
 
 @section('main')
     <div>
+        <div class="mx-auto w-11/12">
+            @include('pages.cash-register.components.alert')
+        </div>
         <div class="mb-4">
             <form class="mb-4 mx-auto w-11/12" id="form_filter" method="GET" action="{{ route('cash_register.index') }}">
                 <p class="mb-4">Parametros de busqueda</p>
