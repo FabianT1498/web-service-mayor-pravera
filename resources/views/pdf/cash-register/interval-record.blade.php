@@ -357,9 +357,10 @@
                                         <tr>
                                             <th>Punto de venta (Bs)</th>
                                             <td class="text-center">{{ number_format($cash_registers_totals[$key_user][$key_date][0]->total_point_sale_bs, 2)  }}</td>
-                                            <td class="text-center">{{ number_format($saint_totals[$key_user][$key_date]['01']['bs'] 
-                                                    + $saint_totals[$key_user][$key_date]['02']['bs'] + $saint_totals[$key_user][$key_date]['03']['bs']
-                                                            + $saint_totals[$key_user][$key_date]['04']['bs'], 2) }}</td>
+                                            <td class="text-center">{{ number_format((key_exists('01', $saint_totals[$key_user][$key_date]) ? $saint_totals[$key_user][$key_date]['01'][0]->totalBs : 0) 
+                                                    + (key_exists('02', $saint_totals[$key_user][$key_date]) ? $saint_totals[$key_user][$key_date]['02'][0]->totalBs : 0) 
+                                                    + (key_exists('03', $saint_totals[$key_user][$key_date]) ? $saint_totals[$key_user][$key_date]['03'][0]->totalBs : 0)
+                                                            + (key_exists('04', $saint_totals[$key_user][$key_date]) ? $saint_totals[$key_user][$key_date]['04'][0]->totalBs : 0), 2) }}</td>
                                             <td class="text-center">—</td>
                                             <td class="text-center">—</td>
                                             <td 
@@ -375,7 +376,7 @@
                                         <tr>
                                             <th>Pago móvil y transferencias</th>
                                             <td class="text-center">{{ number_format($cash_registers_totals[$key_user][$key_date][0]->total_pago_movil_bs, 2)  }}</td>
-                                            <td class="text-center">{{ number_format($saint_totals[$key_user][$key_date]['05']['bs'], 2) }}</td>
+                                            <td class="text-center">{{ number_format(key_exists('05', $saint_totals[$key_user][$key_date]) ? $saint_totals[$key_user][$key_date]['05'][0]->totalBs : 0, 2) }}</td>
                                             <td class="text-center">—</td>
                                             <td class="text-center">—</td>
                                             <td 
@@ -391,7 +392,7 @@
                                         <tr>
                                             <th>Punto de venta int. ($)</th>
                                             <td class="text-center">{{ number_format($cash_registers_totals[$key_user][$key_date][0]->total_point_sale_dollar, 2)}}</td>
-                                            <td class="text-center">{{ number_format($saint_totals[$key_user][$key_date]['08']['dollar'], 2)  }}</td>
+                                            <td class="text-center">{{ number_format(key_exists('08', $saint_totals[$key_user][$key_date]) ? $saint_totals[$key_user][$key_date]['08'][0]->totalDollar : 0, 2)  }}</td>
                                             <td class="text-center">—</td>
                                             <td class="text-center">—</td>
                                             <td 
@@ -407,7 +408,7 @@
                                         <tr>
                                             <th>Zelle</th>
                                             <td class="text-center">{{ number_format($cash_registers_totals[$key_user][$key_date][0]->total_zelle, 2)}}</td>
-                                            <td class="text-center">{{ number_format($saint_totals[$key_user][$key_date]['07']['dollar'], 2) }}</td>
+                                            <td class="text-center">{{ number_format(key_exists('07', $saint_totals[$key_user][$key_date]) ? $saint_totals[$key_user][$key_date]['07'][0]->totalDollar : 0, 2) }}</td>
                                             <td class="text-center">—</td>
                                             <td class="text-center">—</td>
                                             <td 

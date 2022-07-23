@@ -9,7 +9,7 @@ use Carbon\Carbon;
 use Excel;
 
 use App\Repositories\CashRegisterRepository;
-use App\Exports\ZelleRecordsExport;
+use App\Exports\ZelleDataExport;
 
 class ZelleReportController extends Controller
 {
@@ -63,30 +63,45 @@ class ZelleReportController extends Controller
             $new_start_date = date('Y-m-d', strtotime($start_date));
             $new_finish_date = date('Y-m-d', strtotime($end_date));
 
-            $zelle_records = $cash_register_repo
-                ->getZelleRecords($new_start_date, $new_finish_date)
-                ->groupBy(['cash_register_user', 'date']);
-
-                
             $factors = $cash_register_repo
                 ->getFactorByDate($new_start_date, $new_finish_date)
                 ->groupBy(['FechaE']);
-                
+
+            // Zelle from Local Database
+            $zelle_records = $cash_register_repo
+                ->getZelleRecords($new_start_date, $new_finish_date)
+                ->groupBy(['cash_register_user', 'date']);
+ 
             $total_zelle_amount_by_user = $this->getTotalZelleAmountByUser($zelle_records, $factors);
 
             $total_zelle_amount =  $this->getTotalZelleAmount($total_zelle_amount_by_user);
 
+            // Zelle total from SAINT
+            $zelle_records_from_saint = $cash_register_repo
+                ->getZelleRecordsFromSaint($new_start_date, $new_finish_date)
+                ->groupBy(['CodUsua', 'FechaE']);
+
+            $total_zelle_amount_by_user_from_saint = $cash_register_repo
+                ->getZelleTotalByUserFromSaint($new_start_date, $new_finish_date)
+                ->groupBy(['CodUsua']);
+
+            $total_zelle_amount_from_saint = $cash_register_repo
+                ->getZelleTotalFromSaint($new_start_date, $new_finish_date);
+                
             $file_name = 'Detalles_Zelle_' . ($new_start_date === $new_finish_date 
                 ? $start_date 
                 : 'desde_' . $start_date . '_hasta_' . $end_date
                 )
                 . '.xlsx';
 
-            return Excel::download(new ZelleRecordsExport(compact(
+            return Excel::download(new ZelleDataExport(compact(
                 'zelle_records',
                 'total_zelle_amount_by_user',
                 'factors',
                 'total_zelle_amount',
+                'zelle_records_from_saint',
+                'total_zelle_amount_by_user_from_saint',
+                'total_zelle_amount_from_saint',
                 'start_date',
                 'end_date')
             ), $file_name);
