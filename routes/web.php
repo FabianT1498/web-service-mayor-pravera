@@ -2,36 +2,18 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\ProductsController;
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
+use App\Http\Controllers\DashboardController;
 
 Route::get('/', function () {
     return redirect()->route('login');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth'])->name('dashboard');
 
-Route::group(['middleware' => ['auth']], function () {
-    // Cash register routes
-    Route::get('products', [ProductsController::class, 'index'])->name('products.index');
-    Route::get('products_suggestions', [ProductsController::class, 'getProductsWithSuggestions'])->name('products.productsSuggestions');
-});
+// ---- CASH REGISTER ROUTES  ---
+require __DIR__.'/cash-register.php';
 
-Route::group(['middleware' => ['auth', 'jsonify']], function() {
-    Route::get('products/suggestions/{codProduct}', [ProductsController::class, 'getProductSuggestions']);
-    Route::post('products/suggestions', [ProductsController::class, 'storeProduct']);
-});
+// ---- PRODUCT ROUTES  ---
+require __DIR__.'/product.php';
 
 require __DIR__.'/auth.php';

@@ -13,7 +13,7 @@ class CreateProductsTable extends Migration
      */
     public function up()
     {
-        Schema::connection('estadisticas_productos')->create('products', function (Blueprint $table) {
+        Schema::connection('web_services_db')->create('products', function (Blueprint $table) {
             $table->string('cod_prod', 50);
             $table->string('descrip');
             $table->primary('cod_prod');

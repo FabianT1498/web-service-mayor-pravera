@@ -26,8 +26,11 @@
 
         <!-- start wrapper -->
         <div class="h-screen w-full flex flex-row justify-between">
-            @include('layouts.sidebar')
-            
+
+            @if (Request::route()->getName() !== 'dashboard')
+                @include('layouts.sidebar')
+            @endif
+
             <!-- strat content -->
             <div id="main" class="relative bg-gray-100 md:mb-16 flex-1 pt-8 overflow-y-scroll">
                 @yield('main')

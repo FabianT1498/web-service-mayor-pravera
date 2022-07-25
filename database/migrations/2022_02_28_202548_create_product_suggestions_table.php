@@ -13,7 +13,7 @@ class CreateProductSuggestionsTable extends Migration
      */
     public function up()
     {
-       Schema::connection('estadisticas_productos')->create('product_suggestions', function (Blueprint $table) {
+       Schema::connection('web_services_db')->create('product_suggestions', function (Blueprint $table) {
             $table->id();
             $table->string('cod_prod', 50);
             $table->float('percent_suggested');

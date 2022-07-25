@@ -3,9 +3,10 @@
     
     <!-- logo -->
     <div class="flex-none w-56 flex flex-row items-center">
-      <img src="{{ asset('images/logo-isotipo.svg') }}" class="w-10 flex-none">
-      <strong class="capitalize ml-1 flex-1">El mayorista</strong>
-
+      <a href="/" class="flex items-center">
+        <img src="{{ asset('images/logo-isotipo.svg') }}" class="w-14 flex-none">
+        <strong class="capitalize ml-4 flex-1">Sistema de control interno</strong>
+      </a>
       <button id="sliderBtn" class="flex-none text-right text-gray-900 hidden md:block">
         <i class="fad fa-list-ul"></i>
       </button>

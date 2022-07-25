@@ -1,17 +1,18 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
-                    You're logged in!
+@section('main')
+<div class="w-5/6 mx-auto flex">
+    @foreach($modules_indexes as $key => $value)
+        <a href="{{ route($modules_indexes[$key]) }}" class="block ">
+            <div class="h-72 w-72 p-8 bg-white rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-700 ml-4 flex flex-col justify-between items-center">
+                <div class="h-3/5">
+                    <img class="h-full w-full" src="{{ asset("images/" . $modules_images[$key]) }}" />
+                </div>
+                <div class="h-1/4">
+                    <h5 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ $modules_titles[$key] }}</h5>
                 </div>
             </div>
-        </div>
-    </div>
-</x-app-layout>
+        </a>
+    @endforeach
+</div>
+@endsection

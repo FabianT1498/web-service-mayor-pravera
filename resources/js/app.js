@@ -16,3 +16,5 @@ import("./pages/products/index" /* webpackChunkName: "/js/products_index" */).th
 });
 
 import LogoIsotipo from './../assets/logo-isotipo.svg';
+import ProductBanner from './../assets/products.jpg';
+import CashRegisterBanner from './../assets/cash-register.jpg';
