@@ -9,7 +9,7 @@ class DollarDenominationRecord extends Model
 {
     use HasFactory;
 
-    protected $connection = 'caja_mayorista';
+    protected $connection = 'web_services_db';
     protected $table = 'dollar_denomination_records';
     public $timestamps = false;
 

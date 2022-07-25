@@ -10,7 +10,7 @@ class ProductSuggestion extends Model
 {
     use HasFactory;
 
-    protected $connection = 'estadisticas_productos';
+    protected $connection = 'web_services_db';
     protected $table = 'product_suggestions';
 
     /**

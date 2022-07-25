@@ -13,7 +13,7 @@ class BankController extends Controller
     public function getAll(Request $request)
     {  
         
-        $banks = DB::connection('caja_mayorista')
+        $banks = DB::connection('web_services_db')
             ->table('banks')
             ->select('name')
             ->get();

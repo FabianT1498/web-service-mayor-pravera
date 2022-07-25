@@ -9,7 +9,7 @@ class DollarCashRecord extends Model
 {
     use HasFactory;
 
-    protected $connection = 'caja_mayorista';
+    protected $connection = 'web_services_db';
     protected $table = 'dollar_cash_records';
 
     public $timestamps = false;

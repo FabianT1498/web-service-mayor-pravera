@@ -9,7 +9,7 @@ class PointSaleBsRecord extends Model
 {
     use HasFactory;
 
-    protected $connection = 'caja_mayorista';
+    protected $connection = 'web_services_db';
     protected $table = 'point_sale_bs_records_2';
     public $timestamps = false;
 

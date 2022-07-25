@@ -11,7 +11,7 @@ class ZPrinter extends Model
 {
     use HasFactory;
 
-    protected $connection = 'caja_mayorista';
+    protected $connection = 'web_services_db';
     protected $table = 'z_printers';
 
     public function __construct(array $attributes = array()){

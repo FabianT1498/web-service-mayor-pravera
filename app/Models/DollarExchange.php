@@ -15,7 +15,7 @@ class DollarExchange extends Model
         'bs_exchange',
     ];
 
-    protected $connection = 'caja_mayorista';
+    protected $connection = 'web_services_db';
     protected $table = 'dollar_exchange';
 
     public function __construct(array $attributes = array())

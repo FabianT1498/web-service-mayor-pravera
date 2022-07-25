@@ -19,6 +19,11 @@
         <!-- Scripts -->
         <script src="{{ asset('js/app.js') }}" defer></script>
 
+        <!-- Global scripts -->
+        @if (session('current_module') === 'cash_register')
+            <script src="{{ asset('js/dollar_exchange_modal_index.js') }}" defer></script>
+        @endif
+        
         @yield('js')
     </head>
     <body class="font-sans antialiased bg-gray-100 overflow-y-hidden">
@@ -38,6 +43,12 @@
             <!-- end content -->
         </div>
         @flasher_render
+
+
+        <!-- Global modal -->
+        @if (session('current_module') === 'cash_register')
+            <x-dollar-exchange-modal />
+        @endif
 
     </body>
 </html>

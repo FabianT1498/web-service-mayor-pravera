@@ -9,7 +9,7 @@ class ZelleRecord extends Model
 {
     use HasFactory;
 
-    protected $connection = 'caja_mayorista';
+    protected $connection = 'web_services_db';
     protected $table = 'zelle_records';
     public $timestamps = false;
 

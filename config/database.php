@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'estadisticas_productos'),
+    'default' => env('DB_CONNECTION', 'web_services_db'),
 
     /*
     |--------------------------------------------------------------------------

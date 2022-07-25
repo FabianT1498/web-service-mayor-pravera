@@ -19,9 +19,13 @@ use App\Http\Requests\StoreProductSuggestionRequest;
 use App\Models\Product;
 use App\Models\ProductSuggestion;
 
+use App\Http\Traits\SessionTrait;
+
 class ProductsController extends Controller
 {
     private $flasher = null;
+
+    use SessionTrait;
 
     public function __construct(SweetAlertFactory $flasher)
     {
@@ -29,6 +33,8 @@ class ProductsController extends Controller
     }
 
     public function index(Request $request, ProductsRepository $repo){
+
+        $this->setSession($request, 'current_module', 'products');
 
         $databases = array_map(function($val, $key){
             return (object) array("key" => $key, "value" => $val);
@@ -93,6 +99,9 @@ class ProductsController extends Controller
     }
 
     public function getProductsWithSuggestions(Request $request, ProductsRepository $repo){
+        
+        $this->setSession($request, 'current_module', 'products');
+
         $status = $request->query('status', config('constants.SUGGESTION_STATUS.PROCESSING'));
         $page = $request->query('page', '');
 

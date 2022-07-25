@@ -9,7 +9,7 @@ class Worker extends Model
 {
     use HasFactory;
 
-    protected $connection = 'caja_mayorista';
+    protected $connection = 'web_services_db';
     protected $table = 'workers';
 
     public function __construct(array $attributes = array()){

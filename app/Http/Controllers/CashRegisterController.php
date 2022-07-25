@@ -35,9 +35,13 @@ use App\Http\Requests\PrintIntervalCashRegisterRequest;
 use App\Repositories\CashRegisterRepository;
 use App\Repositories\BillRepository;
 
+use App\Http\Traits\SessionTrait;
+
 class CashRegisterController extends Controller
 {
     private $flasher = null;
+
+    use SessionTrait;
 
     public function __construct(SweetAlertFactory $flasher)
     {
@@ -74,6 +78,8 @@ class CashRegisterController extends Controller
     }
 
     public function index(Request $request){
+
+        $this->setSession($request, 'current_module', 'cash_register');
 
         $status = $request->query('status', config('constants.CASH_REGISTER_STATUS.EDITING'));
         $start_date = $request->query('start_date', '');
@@ -143,8 +149,10 @@ class CashRegisterController extends Controller
         ));
     }
 
-    public function create()
+    public function create(Request $request)
     {
+
+        $this->setSession($request, 'current_module', 'cash_register');
 
         $cash_registers_workers_id_arr = $this->getWorkers();
 
@@ -283,6 +291,8 @@ class CashRegisterController extends Controller
 
     public function edit(EditCashRegisterRequest $request){
 
+        $this->setSession($request, 'current_module', 'cash_register');
+
         $cash_register_data = CashRegisterData::where('id', $request->id)->first();
 
         // Obtener el ultimo valor registrado para la tasa en esta fecha o una fecha anterior al arqueo
@@ -319,7 +329,7 @@ class CashRegisterController extends Controller
             'value' => $cash_register_data->cash_register_user]
         );
 
-        $banks = DB::connection('caja_mayorista')
+        $banks = DB::connection('web_services_db')
             ->table('banks')
             ->select('name')
             ->whereNotIn('banks.name', function($query) use ($cash_register_data){

@@ -1,4 +1,4 @@
-import numericInput from '_utilities/numericInput';
+import { numericInput } from '_utilities/numericInput';
 
 import { CURRENCIES} from '_constants/currencies';
 

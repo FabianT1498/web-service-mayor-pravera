@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ZBill extends Model
 {
-    protected $connection = 'caja_mayorista';
+    protected $connection = 'web_services_db';
     protected $table = 'z_bills';
 
     protected $fillable = [

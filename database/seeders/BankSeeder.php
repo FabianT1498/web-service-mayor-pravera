@@ -22,7 +22,7 @@ class BankSeeder extends Seeder
     {
         //
         foreach($this->banks as $bank){
-            DB::connection('caja_mayorista')->table('banks')->insert([
+            DB::connection('web_services_db')->table('banks')->insert([
                 'name' => Str::upper($bank)
             ]);
         }
