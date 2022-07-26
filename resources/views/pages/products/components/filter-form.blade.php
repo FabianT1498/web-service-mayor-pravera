@@ -16,20 +16,22 @@
                 autocomplete="off"
             >
         </div>
-      
-        <span class="text-gray-500 ml-8">Instancia</span>
-        <div class="w-1/6 flex-initial ml-4">
-            <x-select-input 
-                data-form="filter"
-                :defaultOptTitle="__('Seleccione una instancia')"
-                id="productInstance"
-                :value="$instance"
-                :name="__('product_instance')" 
-                :options="$instances"
-                class="w-full relative"
-            />
-        </div>
 
+        @if (!(config("constants.DB_CONN_NAMES." . $database) === config("constants.DB_CONN_NAMES.PRAV")))
+            <span class="text-gray-500 ml-8">Instancia</span>
+            <div class="w-1/6 flex-initial ml-4">
+                <x-select-input 
+                    data-form="filter"
+                    :defaultOptTitle="__('Seleccione una instancia')"
+                    id="productInstance"
+                    :value="$instance"
+                    :name="__('product_instance')" 
+                    :options="$instances"
+                    class="w-full relative"
+                />
+            </div>
+        @endif
+       
         <span class="text-gray-500 ml-8">Hay existencia</span>
         <div class="flex-initial ml-4">
             <input

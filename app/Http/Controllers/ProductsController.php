@@ -41,6 +41,7 @@ class ProductsController extends Controller
         }, config('constants.DB_CONN_NAMES'), array_keys(config('constants.DB_CONN_NAMES')));
 
         $database = $request->query('database', $databases[0]->key);
+
         $prev_conn = $request->query('prev_conn', $database);
 
         $conn = config("constants.DB_CONN_MAP." . $database);
@@ -49,6 +50,8 @@ class ProductsController extends Controller
             return (object) array("key" => $item->CodInst, "value" => $item->Descrip);
         });
 
+        $instances->prepend((object) array("key" => null, "value" => 'TODOS')); 
+      
         $descrip = $request->query('description', '');
         $instance = $request->query('product_instance', count($instances) > 0 ? $instances[0]->key : '');
         $there_existance = $request->query('there_existance') === '1' ? true : false;
@@ -64,6 +67,10 @@ class ProductsController extends Controller
         }
 
         $costo_inventario = $repo->getTotalCostProducts($conn);
+
+        if (config('constants.DB_CONN_MAP.PRAV') === $conn){
+            $instance = count($instances) > 0 ? $instances[0]->key : '';
+        }
 
         $paginator = $repo->getProducts($descrip, $is_active, $instance, $there_existance, $conn)->paginate(5);
 

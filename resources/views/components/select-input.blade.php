@@ -7,9 +7,6 @@
 ])
 
 <select {{ $disabled ? 'disabled' : '' }} {!! $attributes->merge(['name' => $name, 'class' => 'rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50']) !!}>
-    @if($value === '')
-        <option hidden disabled value {{ old($name) ? "" : 'selected' }}>{{$defaultOptTitle}}</option>
-    @endif
     @foreach ($options as $option)
         @if ($value === $option->key))
             <option value="{{ $option->key }}" selected>{{ $option->value }}</option>

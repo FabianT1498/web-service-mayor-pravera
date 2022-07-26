@@ -16,7 +16,7 @@ class ProductsRepository implements ProductsRepositoryInterface
             ->first();
     }
 
-    public function getProducts($descrip = '', $is_active = 1, $instance = 1652, $there_existance = true, $conn = ''){
+    public function getProducts($descrip = '', $is_active = 1, $instance = null, $there_existance = true, $conn = ''){
      
         return DB
             ::connection($conn)
@@ -47,7 +47,7 @@ class ProductsRepository implements ProductsRepositoryInterface
             ->leftJoin('SATAXPRD', function($query){
                 $query->on("SAPROD.CodProd", '=', "SATAXPRD.CodProd");
             })
-            ->whereRaw("SAPROD.Activo = " . $is_active . " AND SAPROD.CodInst = " . $instance . " AND (SAPROD.Descrip LIKE '%" . $descrip . "%' OR SAPROD.CodProd LIKE '%" .
+            ->whereRaw("SAPROD.Activo = " . $is_active . (!is_null($instance) ? " AND SAPROD.CodInst = " . $instance  : '') . " AND (SAPROD.Descrip LIKE '%" . $descrip . "%' OR SAPROD.CodProd LIKE '%" .
                  $descrip . "%') AND SAPROD.Existen " . ($there_existance ? ">" : "=") . " 0")
             ->orderByRaw("SAPROD.Descrip asc");
     }
