@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Control de cajas') }}</title>
+        <title>{{ config('app.name', 'Control Interno') }}</title>
 
         <!-- FontAwesome Icons -->
         <!-- <link rel="stylesheet" href="https://kit-pro.fontawesome.com/releases/v5.12.1/css/pro.min.css"> -->
