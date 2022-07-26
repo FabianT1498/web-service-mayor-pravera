@@ -33,7 +33,8 @@ class StoreProductSuggestionRequest extends FormRequest
         $total_rules = ['required', new BadFormattedAmount, 'gte:0'];
 
         $rules = [
-            'cod_prod' => ['required', 'exists:saint_db.SAPROD,CodProd'],
+            'database' => ['required'],
+            'cod_prod' => ['required', 'exists:' . config("constants.DB_CONN_MAP." . $this->database) . '.SAPROD,CodProd'],
             'percent_suggested' => $total_rules
         ];
 

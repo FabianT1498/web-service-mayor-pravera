@@ -6,10 +6,10 @@ use Illuminate\Support\Facades\DB;
 
 class ProductsRepository implements ProductsRepositoryInterface
 {
-    public function getProductByID($cod_product = ''){
+    public function getProductByID($cod_product = '', $conn = ''){
         
         return DB
-            ::connection('saint_db')
+            ::connection($conn)
             ->table('SAPROD')
             ->selectRaw("SAPROD.CodProd AS CodProd, SAPROD.Descrip as Descrip")
             ->whereRaw("SAPROD.CodProd = '" . $cod_product . "'")

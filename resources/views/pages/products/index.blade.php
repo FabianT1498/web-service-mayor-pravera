@@ -74,6 +74,7 @@
         </div>
         <x-modal-product-suggestions
             :modalID="__('suggestion-modal')"
+            :database="$database"
         />
     </div>
     <x-modal-loading :title="__('Espere mientras se genera el documento PDF')"/>
