@@ -45,7 +45,7 @@ class UpdateCashRegisterRequest extends FormRequest
         if ($this->has('exist_cash_register_worker') 
                 && $this->exist_cash_register_worker === '1' 
                     && $this->has('new_cash_register_worker')){
-            $rules['new_cash_register_worker'] = ['required', 'unique:caja_mayorista.workers,name', 'max:100'];
+            $rules['new_cash_register_worker'] = ['required', 'unique:web_services_db.workers,name', 'max:100'];
         } else {
             $rules['worker_id'] = ['required', 'exists:workers,id'];
         }
@@ -71,13 +71,7 @@ class UpdateCashRegisterRequest extends FormRequest
         // }
 
         if (count($this->point_sale_bs) > 0){
-            // $rules['point_sale_bs_bank.*'] = ['exists:caja_mayorista.banks,name'];
-            // $rules['point_sale_bs_debit.*'] = ['required', new BadFormattedAmount];
-            // $rules['point_sale_bs_credit.*'] = ['required', new BadFormattedAmount];
-            // $rules['point_sale_bs_amex.*'] = ['required', new BadFormattedAmount];
-            // $rules['point_sale_bs_todoticket.*'] = ['required', new BadFormattedAmount];
-
-            $rules['point_sale_bs.*.bank_name'] = ['exists:caja_mayorista.banks,name'];
+            $rules['point_sale_bs.*.bank_name'] = ['exists:web_services_db.banks,name'];
             $rules['point_sale_bs.*.cancel_debit'] = ['required', new BadFormattedAmount];
             $rules['point_sale_bs.*.cancel_credit'] = ['required', new BadFormattedAmount];
             $rules['point_sale_bs.*.cancel_amex'] = ['required', new BadFormattedAmount];
