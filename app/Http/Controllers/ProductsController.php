@@ -156,7 +156,9 @@ class ProductsController extends Controller
             'status' => config('constants.SUGGESTION_STATUS.PROCESSING')
         ];
 
-        $product = $repo->getProductByID($data['cod_prod']);
+        $conn = config("constants.DB_CONN_MAP." . $validated['database']);
+
+        $product = $repo->getProductByID($data['cod_prod'], $conn);
         
         if (is_null(Product::where('cod_prod', $data['cod_prod'])->first())){
             $product = new Product(['cod_prod' => $data['cod_prod'], 'descrip' => $product->Descrip]);

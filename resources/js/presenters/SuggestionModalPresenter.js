@@ -50,11 +50,12 @@ const SuggestionModalPresenterPrototype = {
     },
     async handleSubmit(formData){
         const formDataEntries = formData.entries();
-        const { percentSuggested } = Object.fromEntries(formDataEntries);
+        const { percentSuggested, database } = Object.fromEntries(formDataEntries);
         
         try {
             const suggestion = await storeProductSuggestions({
                 percentSuggested, 
+                database,
                 codProd: this.currentCodProd
             });
 

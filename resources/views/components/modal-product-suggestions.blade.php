@@ -1,6 +1,7 @@
 @props([
     'modalID' => '',
     'records' => [],
+    'database' => ''
 ])
 
 <!-- Main modal -->
@@ -34,6 +35,7 @@
                             <p class="hidden mb-4" id={{ $modalID . '-message' }}></p>
                             <form class="flex items-center w-full mb-4" id={{ $modalID . '-form' }}>
                                 <label for="percentSuggested">Porcentaje sugerido: </label>
+                                <input type="hidden" name="database" value="{{ $database }}">
                                 <input
                                     name="percentSuggested"
                                     id="percentSuggested"
