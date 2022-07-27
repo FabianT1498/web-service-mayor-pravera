@@ -33,7 +33,7 @@ class ProductsRepository implements ProductsRepositoryInterface
                     ELSE CAST(ROUND(((SAPROD.CostPro/(SELECT FactorP from SACONF))/((100 - SAPROD_02.Profit1)/100)), 2) AS decimal(15, 2)) 
                 END AS PrecioVDiv,
                 CASE WHEN SAPROD_02.Precio_Manual = 1
-                    THEN CAST(ROUND(100 - (((SAPROD.CostPro/(SELECT Factor from SACONF)) * 100)/SAPROD_02.Profit1), 2) AS decimal(15, 2))
+                    THEN CAST(ROUND(100 - (((SAPROD.CostPro/(SELECT Factor from SACONF)) * 100)/(SAPROD_02.Profit1 - (SAPROD_02.Profit1 * (SATAXPRD.Monto / 100)))), 2) AS decimal(15, 2))
                     ELSE SAPROD_02.Profit1 
                 END AS PorcentajeUtil,
                 SAPROD_02.Precio_Manual as EsManual, SATAXPRD.Monto as IVA, CAST(ROUND(SAPROD.Existen, 2) AS decimal(15, 2)) as Existencia, 
