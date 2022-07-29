@@ -33,25 +33,29 @@ class BillsPayableController extends Controller
     public function index(Request $request, BillsPayableRepository $repo){
 
         $is_dolar = $request->query('is_dolar', 1);
-        $start_emision_date = $request->query('start_emision_date', '');
-        $end_emision_date = $request->query('end_emision_date', '');
+        $start_emision_date = $request->query('start_emision_date', Carbon::now()->format('d-m-Y'));
+        $end_emision_date = $request->query('end_emision_date', Carbon::now()->format('d-m-Y'));
         $min_available_days = $request->query('min_available_days', 0);
         $max_available_days = $request->query('max_available_days', 0);
         $is_caduced = $request->query('is_caduced', 1);
    
         $page = $request->query('page', '');
 
+        $new_start_emision_date = '';
+        $new_end_emision_date = '';
+
         if($start_emision_date === '' && $end_emision_date === ''){
-            $start_emision_date = $end_emision_date = Carbon::now()->format('Y-m-d');
+            $new_start_emision_date = $new_end_emision_date = Carbon::now()->format('Y-m-d');
+        } else {
+            $new_start_emision_date = date('Y-m-d', strtotime($start_emision_date));
+            $new_end_emision_date = date('Y-m-d', strtotime($end_emision_date));
         }
     
-        $paginator = $repo->getBillsPayable($is_dolar, $start_emision_date, $end_emision_date)->paginate(5);
+        $paginator = $repo->getBillsPayable($is_dolar, $new_start_emision_date, $new_end_emision_date)->paginate(5);
 
         if ($paginator->lastPage() < $page){
-            $paginator = $repo->getBillsPayable($is_dolar, $start_emision_date, $end_emision_date)->paginate(5, ['*'], 'page', 1);
+            $paginator = $repo->getBillsPayable($is_dolar, $new_start_emision_date, $new_end_emision_date)->paginate(5, ['*'], 'page', 1);
         }
-
-        $start_emision_date = $end_emision_date = Carbon::now()->format('d-m-Y');
 
         $columns = [
             "Numero Fac.",
