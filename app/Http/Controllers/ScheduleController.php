@@ -32,26 +32,20 @@ class BillsPayableController extends Controller
 
     public function index(Request $request, BillsPayableRepository $repo){
 
-        $is_dolar = $request->query('is_dolar', 1);
+        $is_dolar = $request->query('is_dolar', '');
         $start_emision_date = $request->query('start_emision_date', '');
-        $end_emision_date = $request->query('end_emision_date', '');
-        $min_available_days = $request->query('min_available_days', 0);
-        $max_available_days = $request->query('max_available_days', 0);
+        $end_emision_date = $request->query('end_emision_date');
+        $min_remaining_days = $request->query('min_remaining_days', 1);
+        $max_remaining_days = $request->query('max_remaining_days', 1);
         $is_caduced = $request->query('is_caduced', 1);
-   
+
         $page = $request->query('page', '');
 
-        if($start_emision_date === '' && $end_emision_date === ''){
-            $start_emision_date = $end_emision_date = Carbon::now()->format('Y-m-d');
-        }
-    
         $paginator = $repo->getBillsPayable($is_dolar, $start_emision_date, $end_emision_date)->paginate(5);
 
         if ($paginator->lastPage() < $page){
             $paginator = $repo->getBillsPayable($is_dolar, $start_emision_date, $end_emision_date)->paginate(5, ['*'], 'page', 1);
         }
-
-        $start_emision_date = $end_emision_date = Carbon::now()->format('d-m-Y');
 
         $columns = [
             "Numero Fac.",
@@ -59,17 +53,18 @@ class BillsPayableController extends Controller
             "F. Posteo",
             "Proveedor",
             'Monto',
+            'Es dolar',
             "Opciones"
         ];
 
-        return view('pages.bills-payable.index', compact(
+        return view('pages.products.index', compact(
             'columns',
             'paginator',
             'is_dolar',
             'start_emision_date',
             'end_emision_date',
-            'min_available_days',
-            'max_available_days',
+            'min_remaining_days',
+            'max_remaining_days',
             'is_caduced',
             'page',
         ));

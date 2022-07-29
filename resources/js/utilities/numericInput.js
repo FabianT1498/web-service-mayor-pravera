@@ -1,6 +1,7 @@
 import Inputmask from "inputmask";
 
 const numericInput = Inputmask("(999){+|1}", {
+    alias: 'numeric',
     numericInput: true,
     placeholder: "0",
     definitions: {

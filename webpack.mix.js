@@ -21,7 +21,7 @@ mix
     ])
     .webpackConfig({
         output: {
-          assetModuleFilename: 'images/[hash][ext][query]'
+          assetModuleFilename: 'images/[hash][ext][query]',
         },
         resolve,
         module: {
