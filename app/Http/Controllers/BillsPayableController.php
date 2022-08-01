@@ -55,7 +55,7 @@ class BillsPayableController extends Controller
         } else {
             $new_end_emission_date = date('Y-m-d', strtotime($end_emission_date));
         }
-    
+
         $paginator = $repo->getBillsPayable($is_dolar, $new_end_emission_date, $bill_type)->paginate(5);
 
         if ($paginator->lastPage() < $page){
