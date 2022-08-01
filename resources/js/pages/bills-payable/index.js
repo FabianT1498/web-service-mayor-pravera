@@ -1,12 +1,12 @@
 import Datepicker from '@themesberg/tailwind-datepicker/Datepicker';
-import DateRangePicker from '@themesberg/tailwind-datepicker/DateRangePicker';
+
 import es from '@themesberg/tailwind-datepicker/locales/es';
 
 import { numericInput } from '_utilities/numericInput';
 
 export default {
     DOMElements: {
-        dateRangePicker: document.querySelector('#date_range_picker'),
+        endDatePicker: document.querySelector('#endEmissionDatePicker'),
         pagesLinksContainer: document.querySelector('#pages_links_container'),
         formFilter: document.querySelector('#form_filter'),
         pageInput: document.querySelector('#page'),
@@ -69,26 +69,22 @@ export default {
     },
     handleCheck: function(event){
         event.target.value = event.target.value === '1' ? '0' : '1';
-
-
     },
-
     initEventListener(){
 
         // Apply mask to inputs
-        numericInput.mask(this.DOMElements.formFilter.querySelector('#maxAvailableDays'))
-        numericInput.mask(this.DOMElements.formFilter.querySelector('#minAvailableDays'))
+        // numericInput.mask(this.DOMElements.formFilter.querySelector('#maxAvailableDays'))
+        // numericInput.mask(this.DOMElements.formFilter.querySelector('#minAvailableDays'))
 
         // Initialize date range picker
         Object.assign(Datepicker.locales, es);
 
-        let dateRangePicker = new DateRangePicker(this.DOMElements.dateRangePicker, {
+        new Datepicker(this.DOMElements.endDatePicker, {
             format: 'dd-mm-yyyy',
             language: 'es',
         });
 
         // Attach event listener to containers
-      
         this.DOMElements.formFilter.addEventListener('keypress', this.keypressWrapper());
         this.DOMElements.formFilter.addEventListener('keydown', this.keydownWrapper());
 

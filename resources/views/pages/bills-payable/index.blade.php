@@ -23,10 +23,19 @@
                 @foreach ($paginator as $key => $value)
                     <tr>
                         <td class="text-center">{{ $value->NumeroD }}</td>
-                        <td class="text-center">{{ date('d-m-Y', strtotime($value->FechaE)) }}</td>
-                        <td class="text-center">{{ date('d-m-Y', strtotime($value->FechaPost)) }}</td>
+                        <td class="text-center">{{ $value->CodProv }}</td>
                         <td class="text-center">{{ $value->Descrip }}</td>
-                        <td class="text-center">{{ number_format($value->MtoTotal, 2) }}</td>
+                        <td class="text-center">{{ date('d-m-Y', strtotime($value->FechaE)) }}</td>
+                        <td class="text-center">{{ date('d-m-Y', strtotime($value->FechaPosteo)) }}</td>
+                        <td class="text-center">{{ number_format($value->MontoTotal, 2) }}</td>
+                        <td class="text-center">{{ number_format($value->MontoPagar, 2) }}</td>
+                        <td class="text-center">
+                            <input
+                                class="form-checkbox"
+                                type="checkbox"                      
+                                {{$value->esDolar ? "checked" : "" }}
+                            />   
+                        </td>
                         <td>
                             <button
                                 type="button"
