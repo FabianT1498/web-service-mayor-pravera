@@ -70,6 +70,7 @@ class BillsPayableController extends Controller
             "F. Posteo",
             'Monto Factura',
             'Monto Pagar',
+            'Tasa',
             'Es dolar',
             "Opciones"
         ];

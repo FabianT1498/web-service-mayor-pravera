@@ -10,6 +10,13 @@
         <div class="mb-8 p-4 rounded bg-gray-200 mx-auto w-11/12">
             @include('pages.bills-payable.components.filter-form')
         </div>
+
+        <div class="mx-auto w-11/12">
+            <x-alert 
+                :alertID="__('bill-payable-alert')"
+                :message="__('Debe ingresar una tasa mayor que cero')"
+            />
+        </div>
        
         <table class="table table-bordered table-hover mx-auto w-11/12 text-center">
             <thead class="bg-blue-300">
@@ -21,7 +28,7 @@
             </thead>
             <tbody id="billsPayableTBody">
                 @foreach ($paginator as $key => $value)
-                    <tr>
+                    <tr data-numeroD="{{ $value->NumeroD }}" data-prov="{{ $value->CodProv }}">
                         <td class="text-center">{{ $value->NumeroD }}</td>
                         <td class="text-center">{{ $value->CodProv }}</td>
                         <td class="text-center">{{ $value->Descrip }}</td>
@@ -30,10 +37,23 @@
                         <td class="text-center">{{ number_format($value->MontoTotal, 2) }}</td>
                         <td class="text-center">{{ number_format($value->MontoPagar, 2) }}</td>
                         <td class="text-center">
+                            <input 
+                                class="w-32 bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                type="text" 
+                                id="tasa" 
+                                value="{{ number_format($value->Tasa, 2) }}"
+                                data-bill="tasa"
+                            >
+                        </td>
+                        <td class="text-center">
                             <input
-                                class="form-checkbox"
+                                class="form-checkbox w-4 h-4 text-blue-600 rounded  focus:ring-blue-500 focus:ring-2 {{ number_format($value->Tasa, 2) === '0.00' ? "bg-gray-100 border-gray-300" : ""}}"
                                 type="checkbox"                      
                                 {{$value->esDolar ? "checked" : "" }}
+                                data-bill="isDolar"
+                                @if (number_format($value->Tasa, 2) === '0.00') 
+                                    onclick= "return false;" 
+                                @endif
                             />   
                         </td>
                         <td>

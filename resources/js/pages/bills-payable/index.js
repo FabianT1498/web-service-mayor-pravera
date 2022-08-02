@@ -2,7 +2,9 @@ import Datepicker from '@themesberg/tailwind-datepicker/Datepicker';
 
 import es from '@themesberg/tailwind-datepicker/locales/es';
 
-import { numericInput } from '_utilities/numericInput';
+import { decimalInputs } from '_utilities/decimalInput';
+
+import { formatAmount, roundNumber } from '_utilities/mathUtilities'
 
 export default {
     DOMElements: {
@@ -11,6 +13,7 @@ export default {
         formFilter: document.querySelector('#form_filter'),
         pageInput: document.querySelector('#page'),
         billsPayableTBody: document.querySelector('#billsPayableTBody'),
+        billPayableAlert: document.querySelector('#bill-payable-alert'),
     },
     lastClickedCloseBtnID: -1,
     keypressOnAvailableDaysRange(event, form){
@@ -70,6 +73,71 @@ export default {
     handleCheck: function(event){
         event.target.value = event.target.value === '1' ? '0' : '1';
     },
+    handleClick: function(){
+        let self = this;
+        return function(event){
+            const target = event.target.closest('input');
+
+            if (target){
+                const isDolarCheck = target.getAttribute('data-bill');
+
+                if (isDolarCheck && isDolarCheck === "isDolar"){
+                    let row = event.target.closest('tr')
+
+                    let inputTasa = row.querySelector('input[data-bill=tasa]');
+                    let tasaValue = formatAmount(inputTasa.value);
+
+                    if (tasaValue === 0){
+                        self.DOMElements.billPayableAlert.classList.remove('hidden', 'opacity-0')
+
+                        setTimeout(function(){
+                            self.DOMElements.billPayableAlert.classList.add('hidden', 'opacity-0')
+                        }, 5000)
+                        
+                    }
+                }
+            }
+        }
+    },
+    handleKeypressOnTBody: function(){
+        let self = this;
+        return function(event){
+            const target = event.target.closest('input');
+
+            if (target){
+                const tasaInput = target.getAttribute('data-bill');
+
+                if (tasaInput && tasaInput === "tasa"){
+                    let row = event.target.closest('tr')
+                    let inputIsDolar = row.querySelector('input[data-bill=isDolar]');
+                    let tasaValue = formatAmount(target.value);
+                    
+                    inputIsDolar.onclick = function(){ return tasaValue === 0 ? false : true}
+                }
+            }
+        }
+    },
+    handleKeydownOnTBody: function(){
+        let self = this;
+        return function(event){
+            const target = event.target.closest('input');
+
+            if (target){
+                const tasaInput = target.getAttribute('data-bill');
+
+                if (event.key === 8 || event.key === 'Backspace'){
+                    if (tasaInput && tasaInput === "tasa"){
+                        let row = event.target.closest('tr')
+                        let inputIsDolar = row.querySelector('input[data-bill=isDolar]');
+                        let tasaValue = formatAmount(target.value);
+                        inputIsDolar.onclick = function(){ return tasaValue === 0 ? false : true}
+                        
+                    }
+                }
+
+            }
+        }
+    },
     initEventListener(){
 
         // Apply mask to inputs
@@ -89,6 +157,16 @@ export default {
         this.DOMElements.formFilter.addEventListener('keydown', this.keydownWrapper());
 
         this.DOMElements.formFilter.querySelector('#isDolar').addEventListener('click', this.handleCheck);
+
+        const tasaInputs = this.DOMElements.billsPayableTBody.querySelectorAll('input[data-bill=tasa]')
+
+        tasaInputs.forEach((el) => {
+            decimalInputs['bs'].mask(el)
+        })
+
+        this.DOMElements.billsPayableTBody.addEventListener('click', this.handleClick())
+        this.DOMElements.billsPayableTBody.addEventListener('keypress', this.handleKeypressOnTBody())
+        this.DOMElements.billsPayableTBody.addEventListener('keydown', this.handleKeydownOnTBody())
 
         if (this.DOMElements.pagesLinksContainer){
             this.DOMElements.pagesLinksContainer.addEventListener('click', function(pageInput, form){
