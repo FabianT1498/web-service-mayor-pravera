@@ -40,7 +40,7 @@ class ProductsController extends Controller
             return (object) array("key" => $key, "value" => $val);
         }, config('constants.DB_CONN_NAMES'), array_keys(config('constants.DB_CONN_NAMES')));
 
-        $database = $request->query('database', $databases[0]->key);
+        $database = $request->query('database', $databases[1]->key);
 
         $prev_conn = $request->query('prev_conn', $database);
 
