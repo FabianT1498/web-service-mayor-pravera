@@ -11,6 +11,11 @@ window.Alpine = Alpine;
 
 Alpine.start();
 
+/** ---- BILLS PAYABLE SCRIPTS --- */
+import("./pages/bills-payable/index" /* webpackChunkName: "/js/bills_payable_index" */).then(({default: billsPayableIndex}) => {
+   billsPayableIndex.init()
+});
+
 /** ---- PRODUCTS SCRIPTS --- */
 import("./pages/products/index" /* webpackChunkName: "/js/products_index" */).then(({default: productsIndex}) => {
    productsIndex.init()

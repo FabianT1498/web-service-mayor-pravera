@@ -13,6 +13,9 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['au
 // ---- CASH REGISTER ROUTES  ---
 require __DIR__.'/cash-register.php';
 
+// ---- CASH REGISTER ROUTES  ---
+require __DIR__.'/bills-payable.php';
+
 // ---- PRODUCT ROUTES  ---
 require __DIR__.'/product.php';
 

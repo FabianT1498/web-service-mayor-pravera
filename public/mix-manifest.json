@@ -1,5 +1,6 @@
 {
     "/js/app.js": "/js/app.js",
+    "/js/bills_payable_index.js": "/js/bills_payable_index.js",
     "/js/products_index.js": "/js/products_index.js",
     "/js/cash_register_create.js": "/js/cash_register_create.js",
     "/js/cash_register_edit.js": "/js/cash_register_edit.js",

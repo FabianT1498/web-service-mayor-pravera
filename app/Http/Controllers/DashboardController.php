@@ -40,11 +40,23 @@ class DashboardController extends Controller
     
     public function index(Request $request){
 
-        $modules_indexes = ['products' => 'products.index', 'cash_register' => 'cash_register.index'];
+        $modules_indexes = [
+            'products' => 'products.index', 
+            'cash_register' => 'cash_register.index',
+            'bill_payable' => 'bill_payable.index'
+        ];
 
-        $modules_titles = ['products' => 'Estadisticas de productos', 'cash_register' => 'Cierre de caja'];
+        $modules_titles = [
+            'products' => 'Estadisticas de productos', 
+            'cash_register' => 'Cierre de caja',
+            'bill_payable' => 'Facturas por pagar'
+        ];
 
-        $modules_images = ['products' => 'products.jpg', 'cash_register' => 'cash-register.jpg'];
+        $modules_images = [
+            'products' => 'products.jpg', 
+            'cash_register' => 'cash-register.jpg',
+            'bill_payable' => 'cash-register.jpg',
+        ];
 
         return view('dashboard', compact('modules_indexes', 'modules_images', 'modules_titles'));
     }
