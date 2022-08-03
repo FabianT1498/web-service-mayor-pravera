@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 require __DIR__.'\constants\product.php';
 require __DIR__.'\constants\cash-register.php';
@@ -16,5 +16,7 @@ return [
     'BAD_FORMATTED_AMOUNT' => -1,
     'CASH_REGISTER_STATUS' => $cash_register_status,
     'POINT_SALE_METHODS' => $point_sale_methods,
-    'BILL_PAYABLE_TYPE' => $bill_payable_types
+    'BILL_PAYABLE_TYPE' => $bill_payable_types,
+    'BILL_PAYABLE_STATUS' => $bill_payable_status,
+    'BILL_PAYABLE_SCHEDULE_STATUS' => $bill_payable_schedule_status
 ];

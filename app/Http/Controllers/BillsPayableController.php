@@ -89,6 +89,10 @@ class BillsPayableController extends Controller
         ));
     }
 
+    public function getBillPayable(Request $request, BillsPayableRepository $repo){
+
+    }
+
     // public function storeProduct(StoreProductSuggestionRequest $request, ProductsRepository $repo){
 
     //     $validated = $request->validated();

@@ -4,7 +4,9 @@ import es from '@themesberg/tailwind-datepicker/locales/es';
 
 import { decimalInputs } from '_utilities/decimalInput';
 
-import { formatAmount, roundNumber } from '_utilities/mathUtilities'
+import { formatAmount } from '_utilities/mathUtilities'
+
+import { getBillPayable } from '_services/bill-payable';
 
 export default {
     DOMElements: {
@@ -75,7 +77,7 @@ export default {
     },
     handleClick: function(){
         let self = this;
-        return function(event){
+        return async function(event){
             const target = event.target.closest('input');
 
             if (target){
@@ -93,7 +95,27 @@ export default {
                         setTimeout(function(){
                             self.DOMElements.billPayableAlert.classList.add('hidden', 'opacity-0')
                         }, 5000)
+                    } else {
+
+                        let numeroD = row.getAttribute('data-numeroD')
+                        let codProv = row.getAttribute('data-prov');
+
+                        // 0. Obtener el tipo de factura
+                        let billType = self.DOMElements.formFilter.querySelector('#billType').value;
+
+                        try {
+                            let data = await getBillPayable({numeroD, codProv, billType})
+
+                            console.log(data)
+                        } catch(err){
+                            console.log(err);
+                        }
                         
+                        // 1. Calcular el nuevo monto a pagar
+
+                        
+                        // 2. Mostrar el nuevo monto en la tabla
+                        // 3. Guardar en la base de datos el NumeroD, CodProv, Divisa, y Monto nuevo
                     }
                 }
             }
