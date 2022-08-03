@@ -103,7 +103,7 @@ class CashRegisterRepository implements CashRegisterRepositoryInterface
             }
         )
         ->leftJoin(
-            DB::raw("(SELECT SUM(`point_sale_bs_records_2`.`cancel_debit` + `point_sale_bs_records_2`.`cancel_credit` 
+            DB::raw("(SELECT SUM(`point_sale_bs_records_2`.`cancel_debit` + `point_sale_bs_records_2`.`cancel_credit`
                 + `point_sale_bs_records_2`.`cancel_amex` + `point_sale_bs_records_2`.`cancel_todoticket`) as `total`, `point_sale_bs_records_2`.`cash_register_data_id` FROM `point_sale_bs_records_2` GROUP BY `point_sale_bs_records_2`.`cash_register_data_id`) `ps_bs_join`"),
             function($join) use ($id) {
                 $join->on('ps_bs_join.cash_register_data_id', '=', 'cash_register_data.id');
@@ -178,7 +178,7 @@ class CashRegisterRepository implements CashRegisterRepositoryInterface
                 }
             )
             ->leftJoin(
-                DB::raw("(SELECT SUM(`point_sale_bs_records_2`.`cancel_debit` + `point_sale_bs_records_2`.`cancel_credit` 
+                DB::raw("(SELECT SUM(`point_sale_bs_records_2`.`cancel_debit` + `point_sale_bs_records_2`.`cancel_credit`
                     + `point_sale_bs_records_2`.`cancel_amex` + `point_sale_bs_records_2`.`cancel_todoticket`) as `total`, `point_sale_bs_records_2`.`cash_register_data_id` FROM `point_sale_bs_records_2` GROUP BY `point_sale_bs_records_2`.`cash_register_data_id`) `ps_bs_join`"),
                 function($join)  {
                     $join->on('ps_bs_join.cash_register_data_id', '=', 'cash_register_data.id');
@@ -265,9 +265,13 @@ class CashRegisterRepository implements CashRegisterRepositoryInterface
         ->join('SAFACT', function($query){
             $query->on("SAFACT.NumeroD", '=', "SAIPAVTA.NumeroD");
         })
-        ->whereRaw("SAFACT.TipoFac IN ('A', 'B') AND SAIPAVTA.CodPago = '07' AND SAFACT.CodUsua " . $user_params . " AND " . $interval_query,
+        ->leftJoin(DB::raw("(SELECT SAFACT.NumeroR FROM SAFACT WHERE SAFACT.TipoFac = 'B' AND SAFACT.CodUsua " . $user_params
+                . ") SAFACT_DEV"), function($join){
+            $join->on('SAFACT.NumeroD', '=', 'SAFACT_DEV.NumeroR');
+        })
+        ->whereRaw("SAFACT.TipoFac = 'A' AND SAFACT_DEV.NumeroR IS NULL AND SAIPAVTA.CodPago = '07' AND SAFACT.CodUsua " . $user_params . " AND " . $interval_query,
             $date_params)
-        ->orderByRaw("SAFACT.CodUsua asc")
+        ->orderByRaw("SAFACT.CodUsua asc, SAFACT.FechaE ASC")
         ->get();
     }
 
@@ -293,7 +297,11 @@ class CashRegisterRepository implements CashRegisterRepositoryInterface
         ->join('SAFACT', function($query){
             $query->on("SAFACT.NumeroD", '=', "SAIPAVTA.NumeroD");
         })
-        ->whereRaw("SAFACT.TipoFac IN ('A', 'B') AND SAIPAVTA.CodPago = '07' AND SAFACT.CodUsua " . $user_params . " AND " . $interval_query,
+        ->leftJoin(DB::raw("(SELECT SAFACT.NumeroR FROM SAFACT WHERE SAFACT.TipoFac = 'B' AND SAFACT.CodUsua " . $user_params
+            . ") SAFACT_DEV"), function($join){
+            $join->on('SAFACT.NumeroD', '=', 'SAFACT_DEV.NumeroR');
+        })
+        ->whereRaw("SAFACT.TipoFac = 'A' AND SAFACT_DEV.NumeroR IS NULL AND SAIPAVTA.CodPago = '07' AND SAFACT.CodUsua " . $user_params . " AND " . $interval_query,
             $date_params)
         ->groupByRaw("SAFACT.CodUsua")
         ->orderByRaw("SAFACT.CodUsua asc")
@@ -317,7 +325,10 @@ class CashRegisterRepository implements CashRegisterRepositoryInterface
         ->join('SAFACT', function($query){
             $query->on("SAFACT.NumeroD", '=', "SAIPAVTA.NumeroD");
         })
-        ->whereRaw("SAFACT.TipoFac IN ('A', 'B') AND SAIPAVTA.CodPago = '07' AND " . $interval_query,
+        ->leftJoin(DB::raw("(SELECT SAFACT.NumeroR FROM SAFACT WHERE SAFACT.TipoFac = 'B') SAFACT_DEV"), function($join){
+            $join->on('SAFACT.NumeroD', '=', 'SAFACT_DEV.NumeroR');
+        })
+        ->whereRaw("SAFACT.TipoFac = 'A' AND SAFACT_DEV.NumeroR IS NULL AND SAIPAVTA.CodPago = '07' AND " . $interval_query,
             $date_params)
         ->first();
     }
