@@ -6,8 +6,8 @@ $bill_payable_types = [
 ];
 
 $bill_payable_status = [
+    'NOTPAID' => "POR PAGAR",
     'PAID' => "PAGADA",
-    'NOT_PAID' => "POR PAGAR"
 ];
 
 $bill_payable_schedule_status = [

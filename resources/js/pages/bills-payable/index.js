@@ -6,7 +6,7 @@ import { decimalInputs } from '_utilities/decimalInput';
 
 import { formatAmount } from '_utilities/mathUtilities'
 
-import { getBillPayable } from '_services/bill-payable';
+import { getBillPayable, storeBillPayable } from '_services/bill-payable';
 
 export default {
     DOMElements: {
@@ -28,16 +28,16 @@ export default {
 
         if (targetID === 'minAvailableDays'){
             let maxAvailableDaysEl = form.querySelector('#maxAvailableDays')
-            
+
             if (targetDays > parseInt(maxAvailableDaysEl.value)){
                 maxAvailableDaysEl.value = targetDays
 
                 console.log('Maximos dias' + maxAvailableDaysEl.value);
             }
         } else {
-            
+
             let minAvailableDaysEl = form.querySelector('#minAvailableDays')
-            
+
             if (targetDays < parseInt(minAvailableDaysEl.value)){
                 minAvailableDaysEl.value = targetDays
             }
@@ -62,9 +62,9 @@ export default {
         return (event) => {
             let key = event.key || event.keyCode
             if (key === 8 || key === 'Backspace'){
-                
+
                 let id = event.target.getAttribute('id')
-                
+
                 if (id === "maxAvailableDays" || id === 'minAvailableDays'){
                     let form = self.DOMElements.formFilter
                     self.keypressOnAvailableDaysRange(event, form)
@@ -84,11 +84,15 @@ export default {
                 const isDolarCheck = target.getAttribute('data-bill');
 
                 if (isDolarCheck && isDolarCheck === "isDolar"){
+
+                    event.target.value = event.target.value === '0' ? '1' : '0'
+
                     let row = event.target.closest('tr')
 
-                    let inputTasa = row.querySelector('input[data-bill=tasa]');
+                    let inputTasa = row.querySelector('input[data-bill=tasa]');  
                     let tasaValue = formatAmount(inputTasa.value);
-
+                    let montoPagar = formatAmount(row.querySelector('td[data-bill=montoPagar]').innerHTML);
+ 
                     if (tasaValue === 0){
                         self.DOMElements.billPayableAlert.classList.remove('hidden', 'opacity-0')
 
@@ -97,23 +101,34 @@ export default {
                         }, 5000)
                     } else {
 
+
+
                         let numeroD = row.getAttribute('data-numeroD')
                         let codProv = row.getAttribute('data-prov');
-
+                       
                         // 0. Obtener el tipo de factura
                         let billType = self.DOMElements.formFilter.querySelector('#billType').value;
 
                         try {
-                            let data = await getBillPayable({numeroD, codProv, billType})
+                            let data = {
+                                numeroD, 
+                                codProv, 
+                                billType, 
+                                tasa: tasaValue,
+                                isDollar: event.target.value,
+                                amount: montoPagar
+                            };
+
+                            let res = await storeBillPayable(data)
 
                             console.log(data)
                         } catch(err){
                             console.log(err);
                         }
-                        
+
                         // 1. Calcular el nuevo monto a pagar
 
-                        
+
                         // 2. Mostrar el nuevo monto en la tabla
                         // 3. Guardar en la base de datos el NumeroD, CodProv, Divisa, y Monto nuevo
                     }
@@ -133,7 +148,7 @@ export default {
                     let row = event.target.closest('tr')
                     let inputIsDolar = row.querySelector('input[data-bill=isDolar]');
                     let tasaValue = formatAmount(target.value);
-                    
+
                     inputIsDolar.onclick = function(){ return tasaValue === 0 ? false : true}
                 }
             }
@@ -153,7 +168,7 @@ export default {
                         let inputIsDolar = row.querySelector('input[data-bill=isDolar]');
                         let tasaValue = formatAmount(target.value);
                         inputIsDolar.onclick = function(){ return tasaValue === 0 ? false : true}
-                        
+
                     }
                 }
 

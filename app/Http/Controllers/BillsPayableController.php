@@ -3,10 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Date;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\App;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 
@@ -14,12 +10,9 @@ use Flasher\SweetAlert\Prime\SweetAlertFactory;
 
 use App\Repositories\BillsPayableRepository;
 
-use App\Http\Requests\StoreProductSuggestionRequest;
+use App\Models\BillPayable;
 
-use App\Models\Product;
-use App\Models\ProductSuggestion;
-
-use App\Http\Traits\SessionTrait;
+// use App\Http\Traits\SessionTrait;
 
 class BillsPayableController extends Controller
 {
@@ -34,12 +27,12 @@ class BillsPayableController extends Controller
 
         $is_dolar = $request->query('is_dolar', 0);
         $end_emission_date = $request->query('end_emission_date', Carbon::now()->format('d-m-Y'));
-        
+
         $min_available_days = $request->query('min_available_days', 0);
         $max_available_days = $request->query('max_available_days', 0);
- 
+
         $is_caduced = $request->query('is_caduced', 1);
-   
+
         $page = $request->query('page', '');
 
         $new_end_emission_date = '';
@@ -49,7 +42,7 @@ class BillsPayableController extends Controller
         }, config('constants.BILL_PAYABLE_TYPE'), array_keys(config('constants.BILL_PAYABLE_TYPE')));
 
         $bill_type = $request->query('bill_type', $bill_types[0]->key);
-   
+
         if($end_emission_date === ''){
             $new_end_emission_date = Carbon::now()->format('Y-m-d');
         } else {
@@ -93,35 +86,37 @@ class BillsPayableController extends Controller
 
     }
 
-    // public function storeProduct(StoreProductSuggestionRequest $request, ProductsRepository $repo){
+    public function storeBillPayable(Request $request, BillsPayableRepository $repo){
 
-    //     $validated = $request->validated();
-
-    //     $data = [
-    //         'cod_prod' =>  $validated['cod_prod'],
-    //         'percent_suggested' => $validated['percent_suggested'],
-    //         'user_name' => Auth::user()->CodUsua,
-    //         'status' => config('constants.SUGGESTION_STATUS.PROCESSING')
-    //     ];
-
-    //     $conn = config("constants.DB_CONN_MAP." . $validated['database']);
-
-    //     $product = $repo->getProductByID($data['cod_prod'], $conn);
+        // 1. Consultar si la factura esta almacenada en la base de datos
+        $nro_doc = $request->numeroD;
+        $cod_prov = $request->codProv;
+        $bill_type = $request->billType;
+        $tasa = $request->tasa;
+        $is_dollar = $request->isDollar;
+        $amount = $request->amount;
+    
+        if ($is_dollar){
+            $amount = $amount / $tasa;
+        } else {
+            $amount = $amount * $tasa;
+        }
         
-    //     if (is_null(Product::where('cod_prod', $data['cod_prod'])->first())){
-    //         $product = new Product(['cod_prod' => $data['cod_prod'], 'descrip' => $product->Descrip]);
-    //         $product->save();
-    //     }
+        $data = [
+            'nro_doc' => $nro_doc,
+            'cod_prov' => $cod_prov,
+            'bill_type' => $bill_type,
+            'amount' => $amount,
+            'is_dollar' => $is_dollar,
+            'tasa' => $tasa,
+        ];
 
-    //     $product_suggestion = new ProductSuggestion($data);
-        
-    //     if ($product_suggestion->save()){
+        BillPayable::upsert($data,
+            ['nro_doc', 'cod_prov'],
+            ['amount', 'is_dollar', 'tasa', 'bill_type']);
 
-    //         $data['created_at'] = date('d-m-Y', strtotime($product_suggestion->created_at));
-    //         return $this->jsonResponse(['data' => $data], 200);
-    //     }
-
-    //     return $this->jsonResponse(['data' => []], 500);
-        
-    // }
+            return $this->jsonResponse(['data' => [
+                'status' => array_keys(config('constants.BILL_PAYABLE_STATUS'))[0] 
+            ]], 200);
+    }
 }

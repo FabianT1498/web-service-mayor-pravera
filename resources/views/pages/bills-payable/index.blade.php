@@ -35,7 +35,7 @@
                         <td class="text-center">{{ date('d-m-Y', strtotime($value->FechaE)) }}</td>
                         <td class="text-center">{{ date('d-m-Y', strtotime($value->FechaPosteo)) }}</td>
                         <td class="text-center">{{ number_format($value->MontoTotal, 2) }}</td>
-                        <td class="text-center">{{ number_format($value->MontoPagar, 2) }}</td>
+                        <td class="text-center"  data-bill="montoPagar">{{ number_format($value->MontoPagar, 2) }}</td>
                         <td class="text-center">
                             <input 
                                 class="w-32 bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -48,7 +48,8 @@
                         <td class="text-center">
                             <input
                                 class="form-checkbox w-4 h-4 text-blue-600 rounded  focus:ring-blue-500 focus:ring-2 {{ number_format($value->Tasa, 2) === '0.00' ? "bg-gray-100 border-gray-300" : ""}}"
-                                type="checkbox"                      
+                                type="checkbox"       
+                                value="{{ $value->esDolar ? '1' : '0' }}"               
                                 {{$value->esDolar ? "checked" : "" }}
                                 data-bill="isDolar"
                                 @if (number_format($value->Tasa, 2) === '0.00') 

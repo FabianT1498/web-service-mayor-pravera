@@ -24,8 +24,6 @@ class CreateBillPaymentsTable extends Migration
             $table->foreign(['nro_doc', 'cod_prov'])
                 ->references(['nro_doc', 'cod_prov'])->on('bills_payable');
 
-            $table->foreign('bank_name')->references('name')->on('banks');
-
             $table->unique(['nro_doc', 'cod_prov', 'ref_number']);
         });
     }
