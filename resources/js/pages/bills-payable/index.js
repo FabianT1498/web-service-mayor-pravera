@@ -4,11 +4,13 @@ import es from '@themesberg/tailwind-datepicker/locales/es';
 
 import { decimalInputs } from '_utilities/decimalInput';
 
-import { formatAmount, roundNumber } from '_utilities/mathUtilities'
+import { formatAmount } from '_utilities/mathUtilities'
 
 import { timerDelay } from '_utilities/timerDelay'
 
-import { getBillPayable, storeBillPayable } from '_services/bill-payable';
+import { storeBillPayable } from '_services/bill-payable';
+
+import { SIGN } from '_constants/currencies';
 
 export default {
     DOMElements: {
@@ -106,7 +108,7 @@ export default {
         }
     },
     handleClick: function(){
-        return (event) =>{
+        return (event) => {
             const target = event.target.closest('input');
 
             if (target){
@@ -144,6 +146,18 @@ export default {
                 }
             }
         }
+    },
+    changeAmountSign(parentEl, selector, isDollar){
+        let targetEl = parentEl.querySelector(selector)
+        let innerHtml = targetEl.innerHTML;
+        innerHtml = innerHtml.split(' ')
+        console.log(isDollar)
+        innerHtml[1] = isDollar === '1' ? SIGN['dollar'] : SIGN['bs']
+        console.log(innerHtml)
+        innerHtml = innerHtml.join(' ')
+
+        console.log(innerHtml);
+        targetEl.innerHTML = innerHtml
     },
     initEventListener(){
 
@@ -192,9 +206,11 @@ export default {
         }
     },
     submitBillPayable(data){
-        console.log(this)
         storeBillPayable(data).then((res) => {
-            console.log(res);
+            let el = this.DOMElements.billsPayableTBody.querySelector(`tr[data-numeroD="${res.data.nro_doc}"][data-prov="${res.data.cod_prov}"]`)
+
+            this.changeAmountSign(el, 'td[data-bill=montoTotal]', res.data.is_dollar)
+            this.changeAmountSign(el, 'td[data-bill=montoPagar]', res.data.is_dollar)
         }).catch(err => {
             console.log(err);
         })
