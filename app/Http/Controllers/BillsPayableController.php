@@ -56,21 +56,21 @@ class BillsPayableController extends Controller
 
         $paginator = $repo->getBillsPayableFromSaint($is_dollar, $new_end_emission_date, $bill_type)->paginate(5);
 
+        if ($paginator->lastPage() < $page){
+            $paginator = $repo->getBillsPayableFromSaint($is_dollar, $new_end_emission_date, $bill_type)->paginate(5, ['*'], 'page', 1);
+        }
+
         $bills_payable_keys = implode(" OR ", array_map(function($item){
             return "(bills_payable.cod_prov = '" . $item->CodProv . "' AND bills_payable.nro_doc = '" . $item->NumeroD . "')";
         }, $paginator->items()));
 
         $bills_payable_records = $repo->getBillsPayable($bills_payable_keys)->take(5)->get()->groupBy(['CodProv', 'NumeroD']);
 
-        if ($paginator->lastPage() < $page){
-            $paginator = $repo->getBillsPayableFromSaint($is_dollar, $new_end_emission_date, $bill_type)->paginate(5, ['*'], 'page', 1);
-        }
-
         $data = array_map(function($item) use ($bills_payable_records){
             
             $record = $bills_payable_records->has($item->CodProv) && $bills_payable_records[$item->CodProv]->has($item->NumeroD)
-            ? $bills_payable_records[$item->CodProv][$item->NumeroD]->first()
-            : $item;
+                ? $bills_payable_records[$item->CodProv][$item->NumeroD]->first()
+                : $item;
 
             return (object) [
                 'NumeroD' => $record->NumeroD,
@@ -81,7 +81,8 @@ class BillsPayableController extends Controller
                 'esDolar' => $record->esDolar,
                 'MontoTotal' => number_format($record->MontoTotal, 2) . " " . config("constants.CURRENCY_SIGNS." . ($record->esDolar ? "dollar" : "bolivar")),
                 'MontoPagar' => number_format($record->MontoPagar, 2) . " " . config("constants.CURRENCY_SIGNS." . ($record->esDolar ? "dollar" : "bolivar")),
-                'Tasa' => number_format($record->Tasa, 2)
+                'Tasa' => number_format($record->Tasa, 2),
+                'Estatus' => isset($record->Status)  ? config("constants.BILL_PAYABLE_STATUS." . $record->Status) : config("constants.BILL_PAYABLE_STATUS.NOTPAID")
             ];
         }, $paginator->items());
 
@@ -95,6 +96,7 @@ class BillsPayableController extends Controller
             'Monto Pagar',
             'Tasa',
             'Es dolar',
+            'Estatus',
             "Opciones"
         ];
 

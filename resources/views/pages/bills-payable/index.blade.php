@@ -59,6 +59,7 @@
                                 @endif
                             />   
                         </td>
+                        <td class="text-center" >{{ $value->Estatus }}</td>
                         <td>
                             <button
                                 type="button"
