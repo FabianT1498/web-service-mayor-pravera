@@ -60,6 +60,7 @@
                             />   
                         </td>
                         <td class="text-center" >{{ $value->Estatus }}</td>
+                        <td class="text-center" >{{ $value->DiasTranscurridos }}</td>
                         <td>
                             <button
                                 type="button"

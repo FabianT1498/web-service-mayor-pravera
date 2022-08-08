@@ -72,6 +72,11 @@ class BillsPayableController extends Controller
                 ? $bills_payable_records[$item->CodProv][$item->NumeroD]->first()
                 : $item;
 
+            $datetime1 = new \DateTime();
+            $datetime2 = new \DateTime($item->FechaPosteo);
+            $interval = $datetime1->diff($datetime2);
+            $days = $interval->format('%a');//now do whatever you like with $days
+
             return (object) [
                 'NumeroD' => $record->NumeroD,
                 'CodProv' => $record->CodProv,
@@ -82,7 +87,8 @@ class BillsPayableController extends Controller
                 'MontoTotal' => number_format($record->MontoTotal, 2) . " " . config("constants.CURRENCY_SIGNS." . ($record->esDolar ? "dollar" : "bolivar")),
                 'MontoPagar' => number_format($record->MontoPagar, 2) . " " . config("constants.CURRENCY_SIGNS." . ($record->esDolar ? "dollar" : "bolivar")),
                 'Tasa' => number_format($record->Tasa, 2),
-                'Estatus' => isset($record->Status)  ? config("constants.BILL_PAYABLE_STATUS." . $record->Status) : config("constants.BILL_PAYABLE_STATUS.NOTPAID")
+                'Estatus' => isset($record->Status)  ? config("constants.BILL_PAYABLE_STATUS." . $record->Status) : config("constants.BILL_PAYABLE_STATUS.NOTPAID"),
+                'DiasTranscurridos' => $days
             ];
         }, $paginator->items());
 
@@ -97,6 +103,7 @@ class BillsPayableController extends Controller
             'Tasa',
             'Es dolar',
             'Estatus',
+            'Dias transcurridos',
             "Opciones"
         ];
 
