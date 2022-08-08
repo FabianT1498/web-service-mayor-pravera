@@ -11,12 +11,15 @@ use Flasher\SweetAlert\Prime\SweetAlertFactory;
 use App\Repositories\BillsPayableRepository;
 
 use App\Models\BillPayable;
+use PhpParser\Node\Stmt\Return_;
 
-// use App\Http\Traits\SessionTrait;
+use App\Http\Traits\SessionTrait;
 
 class BillsPayableController extends Controller
 {
     private $flasher = null;
+
+    use SessionTrait;
 
     public function __construct(SweetAlertFactory $flasher)
     {
@@ -25,7 +28,9 @@ class BillsPayableController extends Controller
 
     public function index(Request $request, BillsPayableRepository $repo){
 
-        $is_dolar = $request->query('is_dolar', 0);
+        $this->setSession($request, 'current_module', 'bill_payable');
+
+        $is_dollar = $request->query('is_dollar', 0);
         $end_emission_date = $request->query('end_emission_date', Carbon::now()->format('d-m-Y'));
 
         $min_available_days = $request->query('min_available_days', 0);
@@ -49,11 +54,36 @@ class BillsPayableController extends Controller
             $new_end_emission_date = date('Y-m-d', strtotime($end_emission_date));
         }
 
-        $paginator = $repo->getBillsPayable($is_dolar, $new_end_emission_date, $bill_type)->paginate(5);
+        $paginator = $repo->getBillsPayableFromSaint($is_dollar, $new_end_emission_date, $bill_type)->paginate(5);
+
+        $bills_payable_keys = implode(" OR ", array_map(function($item){
+            return "(bills_payable.cod_prov = '" . $item->CodProv . "' AND bills_payable.nro_doc = '" . $item->NumeroD . "')";
+        }, $paginator->items()));
+
+        $bills_payable_records = $repo->getBillsPayable($bills_payable_keys)->take(5)->get()->groupBy(['CodProv', 'NumeroD']);
 
         if ($paginator->lastPage() < $page){
-            $paginator = $repo->getBillsPayable($is_dolar, $new_end_emission_date, $bill_type)->paginate(5, ['*'], 'page', 1);
+            $paginator = $repo->getBillsPayableFromSaint($is_dollar, $new_end_emission_date, $bill_type)->paginate(5, ['*'], 'page', 1);
         }
+
+        $data = array_map(function($item) use ($bills_payable_records){
+            
+            $record = $bills_payable_records->has($item->CodProv) && $bills_payable_records[$item->CodProv]->has($item->NumeroD)
+            ? $bills_payable_records[$item->CodProv][$item->NumeroD]->first()
+            : $item;
+
+            return (object) [
+                'NumeroD' => $record->NumeroD,
+                'CodProv' => $record->CodProv,
+                'Descrip' => $item->Descrip,
+                'FechaE' => $item->FechaE,
+                'FechaPosteo' => $item->FechaPosteo,
+                'esDolar' => $record->esDolar,
+                'MontoTotal' => number_format($record->MontoTotal, 2) . " " . config("constants.CURRENCY_SIGNS." . ($record->esDolar ? "dollar" : "bolivar")),
+                'MontoPagar' => number_format($record->MontoPagar, 2) . " " . config("constants.CURRENCY_SIGNS." . ($record->esDolar ? "dollar" : "bolivar")),
+                'Tasa' => number_format($record->Tasa, 2)
+            ];
+        }, $paginator->items());
 
         $columns = [
             "Numero Fac.",
@@ -71,7 +101,8 @@ class BillsPayableController extends Controller
         return view('pages.bills-payable.index', compact(
             'columns',
             'paginator',
-            'is_dolar',
+            'data',
+            'is_dollar',
             'bill_type',
             'bill_types',
             'end_emission_date',
@@ -82,26 +113,15 @@ class BillsPayableController extends Controller
         ));
     }
 
-    public function getBillPayable(Request $request, BillsPayableRepository $repo){
+    public function storeBillPayable(Request $request){
 
-    }
-
-    public function storeBillPayable(Request $request, BillsPayableRepository $repo){
-
-        // 1. Consultar si la factura esta almacenada en la base de datos
         $nro_doc = $request->numeroD;
         $cod_prov = $request->codProv;
         $bill_type = $request->billType;
         $tasa = $request->tasa;
         $is_dollar = $request->isDollar;
         $amount = $request->amount;
-    
-        if ($is_dollar){
-            $amount = $amount / $tasa;
-        } else {
-            $amount = $amount * $tasa;
-        }
-        
+      
         $data = [
             'nro_doc' => $nro_doc,
             'cod_prov' => $cod_prov,
@@ -115,8 +135,6 @@ class BillsPayableController extends Controller
             ['nro_doc', 'cod_prov'],
             ['amount', 'is_dollar', 'tasa', 'bill_type']);
 
-            return $this->jsonResponse(['data' => [
-                'status' => array_keys(config('constants.BILL_PAYABLE_STATUS'))[0] 
-            ]], 200);
+        return $this->jsonResponse($data, 200);
     }
 }

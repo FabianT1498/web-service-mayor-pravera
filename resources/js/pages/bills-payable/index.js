@@ -4,7 +4,9 @@ import es from '@themesberg/tailwind-datepicker/locales/es';
 
 import { decimalInputs } from '_utilities/decimalInput';
 
-import { formatAmount } from '_utilities/mathUtilities'
+import { formatAmount, roundNumber } from '_utilities/mathUtilities'
+
+import { timerDelay } from '_utilities/timerDelay'
 
 import { getBillPayable, storeBillPayable } from '_services/bill-payable';
 
@@ -17,7 +19,6 @@ export default {
         billsPayableTBody: document.querySelector('#billsPayableTBody'),
         billPayableAlert: document.querySelector('#bill-payable-alert'),
     },
-    lastClickedCloseBtnID: -1,
     keypressOnAvailableDaysRange(event, form){
         let targetDays = parseInt(event.target.value);
         let targetID = event.target.getAttribute('id')
@@ -75,70 +76,50 @@ export default {
     handleCheck: function(event){
         event.target.value = event.target.value === '1' ? '0' : '1';
     },
+    showTasaMessage(){
+        this.DOMElements.billPayableAlert.classList.remove('hidden', 'opacity-0')
+        setTimeout(() => {
+            this.DOMElements.billPayableAlert.classList.add('hidden', 'opacity-0')
+        }, 5000)
+    },
+    getBillPayableData(event){
+        let row = event.target.closest('tr')
+        let numeroD = row.getAttribute('data-numeroD')
+        let codProv = row.getAttribute('data-prov');
+        let billType = this.DOMElements.formFilter.querySelector('#billType').value;
+        let tasa = formatAmount(row.querySelector('input[data-bill=tasa]').value);
+        let amount = formatAmount(row.querySelector('td[data-bill=montoTotal]').innerHTML);
+        let isDollar = row.querySelector('input[data-bill=isDollar]').value;
+       
+        return {numeroD, codProv, billType, tasa, amount, isDollar}
+    },
+    handleDollarCheckClicked: function(event){
+        let data = this.getBillPayableData(event);
+
+        if (data.tasa === 0){
+            this.showTasaMessage()
+        } else {
+            event.target.value = event.target.value === '0' ? '1' : '0'
+            data.isDollar = event.target.value;
+
+            this.submitBillPayable(data);
+        }
+    },
     handleClick: function(){
-        let self = this;
-        return async function(event){
+        return (event) =>{
             const target = event.target.closest('input');
 
             if (target){
                 const isDolarCheck = target.getAttribute('data-bill');
 
-                if (isDolarCheck && isDolarCheck === "isDolar"){
-
-                    event.target.value = event.target.value === '0' ? '1' : '0'
-
-                    let row = event.target.closest('tr')
-
-                    let inputTasa = row.querySelector('input[data-bill=tasa]');  
-                    let tasaValue = formatAmount(inputTasa.value);
-                    let montoPagar = formatAmount(row.querySelector('td[data-bill=montoPagar]').innerHTML);
- 
-                    if (tasaValue === 0){
-                        self.DOMElements.billPayableAlert.classList.remove('hidden', 'opacity-0')
-
-                        setTimeout(function(){
-                            self.DOMElements.billPayableAlert.classList.add('hidden', 'opacity-0')
-                        }, 5000)
-                    } else {
-
-
-
-                        let numeroD = row.getAttribute('data-numeroD')
-                        let codProv = row.getAttribute('data-prov');
-                       
-                        // 0. Obtener el tipo de factura
-                        let billType = self.DOMElements.formFilter.querySelector('#billType').value;
-
-                        try {
-                            let data = {
-                                numeroD, 
-                                codProv, 
-                                billType, 
-                                tasa: tasaValue,
-                                isDollar: event.target.value,
-                                amount: montoPagar
-                            };
-
-                            let res = await storeBillPayable(data)
-
-                            console.log(data)
-                        } catch(err){
-                            console.log(err);
-                        }
-
-                        // 1. Calcular el nuevo monto a pagar
-
-
-                        // 2. Mostrar el nuevo monto en la tabla
-                        // 3. Guardar en la base de datos el NumeroD, CodProv, Divisa, y Monto nuevo
-                    }
+                if (isDolarCheck && isDolarCheck === "isDollar"){
+                    this.handleDollarCheckClicked(event)
                 }
             }
         }
     },
-    handleKeypressOnTBody: function(){
-        let self = this;
-        return function(event){
+    keyEventsOnTBodyHandlerWrapper: function(){
+        return (event) => {
             const target = event.target.closest('input');
 
             if (target){
@@ -146,32 +127,21 @@ export default {
 
                 if (tasaInput && tasaInput === "tasa"){
                     let row = event.target.closest('tr')
-                    let inputIsDolar = row.querySelector('input[data-bill=isDolar]');
-                    let tasaValue = formatAmount(target.value);
+                    let inputIsDollar = row.querySelector('input[data-bill=isDollar]');
+                    let tasa = formatAmount(target.value);
+                    let res = null;
 
-                    inputIsDolar.onclick = function(){ return tasaValue === 0 ? false : true}
-                }
-            }
-        }
-    },
-    handleKeydownOnTBody: function(){
-        let self = this;
-        return function(event){
-            const target = event.target.closest('input');
-
-            if (target){
-                const tasaInput = target.getAttribute('data-bill');
-
-                if (event.key === 8 || event.key === 'Backspace'){
-                    if (tasaInput && tasaInput === "tasa"){
-                        let row = event.target.closest('tr')
-                        let inputIsDolar = row.querySelector('input[data-bill=isDolar]');
-                        let tasaValue = formatAmount(target.value);
-                        inputIsDolar.onclick = function(){ return tasaValue === 0 ? false : true}
-
+                    if (tasa === 0) {
+                        inputIsDollar.onclick = function(){ return false }
+                        res = this.submitBillPayableCb(true)
+                        
+                    } else {
+                        inputIsDollar.onclick = function(){ return true }
+                        let data = this.getBillPayableData(event);
+                       
+                        res = this.submitBillPayableCb(false, data)
                     }
                 }
-
             }
         }
     },
@@ -193,7 +163,7 @@ export default {
         this.DOMElements.formFilter.addEventListener('keypress', this.keypressWrapper());
         this.DOMElements.formFilter.addEventListener('keydown', this.keydownWrapper());
 
-        this.DOMElements.formFilter.querySelector('#isDolar').addEventListener('click', this.handleCheck);
+        this.DOMElements.formFilter.querySelector('#isDollar').addEventListener('click', this.handleCheck);
 
         const tasaInputs = this.DOMElements.billsPayableTBody.querySelectorAll('input[data-bill=tasa]')
 
@@ -202,8 +172,8 @@ export default {
         })
 
         this.DOMElements.billsPayableTBody.addEventListener('click', this.handleClick())
-        this.DOMElements.billsPayableTBody.addEventListener('keypress', this.handleKeypressOnTBody())
-        this.DOMElements.billsPayableTBody.addEventListener('keydown', this.handleKeydownOnTBody())
+        this.DOMElements.billsPayableTBody.addEventListener('keypress', this.keyEventsOnTBodyHandlerWrapper())
+        this.DOMElements.billsPayableTBody.addEventListener('keydown', this.keyEventsOnTBodyHandlerWrapper())
 
         if (this.DOMElements.pagesLinksContainer){
             this.DOMElements.pagesLinksContainer.addEventListener('click', function(pageInput, form){
@@ -221,7 +191,19 @@ export default {
             }(this.DOMElements.pageInput, this.DOMElements.formFilter));
         }
     },
+    submitBillPayable(data){
+        console.log(this)
+        storeBillPayable(data).then((res) => {
+            console.log(res);
+        }).catch(err => {
+            console.log(err);
+        })
+    },
+    initData(){
+        this.submitBillPayableCb = timerDelay(this.submitBillPayable, 3000)
+    },
     init(){
         this.initEventListener()
+        this.initData();
     }
 }

@@ -29,11 +29,11 @@
         <input
             class="ml-4"
             data-form="filter"
-            id="isDolar"
+            id="isDollar"
             type="checkbox"
-            name={{__('is_dolar') }} 
-            value={{ $is_dolar ? "1" : "0" }} 
-            {{ $is_dolar ? "checked" : "" }}
+            name={{__('is_dollar') }} 
+            value={{ $is_dollar ? "1" : "0" }} 
+            {{ $is_dollar ? "checked" : "" }}
         />
 
         <span class="text-gray-500 ml-4">Tipo de factura: </span>

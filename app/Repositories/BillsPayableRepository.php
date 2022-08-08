@@ -8,7 +8,7 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
 {
 
     // Metodo para obtener las facturas por pagar
-    public function getBillsPayable($is_dolar, $before_emission_date, $bill_type){
+    public function getBillsPayableFromSaint($is_dolar, $before_emission_date, $bill_type){
 
         $is_bill_NE = config('constants.BILL_PAYABLE_TYPE.' . $bill_type) === config('constants.BILL_PAYABLE_TYPE.NE');
 
@@ -51,6 +51,31 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
                 is_dollar as esDolar, status as Status")
             ->whereRaw("nro_doc = ? AND cod_prov = ?", [$n_doc, $cod_prov])
             ->first();
+    }
+
+    public function getBillsPayable($ids = ''){
+        $whereRaw = '';
+
+        if ($ids !== ''){
+            $whereRaw = $whereRaw .  $ids;
+        }
+
+        $query = DB
+            ::connection('web_services_db')
+            ->table('bills_payable')
+            ->selectRaw("bills_payable.nro_doc as NumeroD, bills_payable.cod_prov as CodProv, bills_payable.bill_type as TipoCom, bills_payable.amount as MontoTotal,
+                bills_payable.is_dollar as esDolar, bills_payable.status as Status, bills_payable.tasa as Tasa, (bills_payable.amount - COALESCE(bill_payments.total_paid, 0)) as MontoPagar")
+            ->leftJoin(DB::raw('(SELECT bill_payments.nro_doc, bill_payments.cod_prov, SUM(bill_payments.amount) as total_paid FROM bill_payments GROUP BY bill_payments.cod_prov, bill_payments.nro_doc) AS bill_payments'),
+                 function($join){
+                    $join->on('bills_payable.nro_doc', '=', 'bill_payments.nro_doc')
+                        ->on('bills_payable.cod_prov', '=', 'bill_payments.cod_prov');
+                });
+
+        if ($whereRaw !== ''){
+            $query = $query->whereRaw($whereRaw);
+        }
+
+        return $query;
     }
 
     public function getBillPayableFromSaint($cod_prov, $n_doc, $bill_type){
