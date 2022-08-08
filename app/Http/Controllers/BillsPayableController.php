@@ -3,10 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Date;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\App;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 
@@ -14,16 +10,16 @@ use Flasher\SweetAlert\Prime\SweetAlertFactory;
 
 use App\Repositories\BillsPayableRepository;
 
-use App\Http\Requests\StoreProductSuggestionRequest;
-
-use App\Models\Product;
-use App\Models\ProductSuggestion;
+use App\Models\BillPayable;
+use PhpParser\Node\Stmt\Return_;
 
 use App\Http\Traits\SessionTrait;
 
 class BillsPayableController extends Controller
 {
     private $flasher = null;
+
+    use SessionTrait;
 
     public function __construct(SweetAlertFactory $flasher)
     {
@@ -32,14 +28,16 @@ class BillsPayableController extends Controller
 
     public function index(Request $request, BillsPayableRepository $repo){
 
-        $is_dolar = $request->query('is_dolar', 0);
+        $this->setSession($request, 'current_module', 'bill_payable');
+
+        $is_dollar = $request->query('is_dollar', 0);
         $end_emission_date = $request->query('end_emission_date', Carbon::now()->format('d-m-Y'));
-        
+
         $min_available_days = $request->query('min_available_days', 0);
         $max_available_days = $request->query('max_available_days', 0);
- 
+
         $is_caduced = $request->query('is_caduced', 1);
-   
+
         $page = $request->query('page', '');
 
         $new_end_emission_date = '';
@@ -49,18 +47,43 @@ class BillsPayableController extends Controller
         }, config('constants.BILL_PAYABLE_TYPE'), array_keys(config('constants.BILL_PAYABLE_TYPE')));
 
         $bill_type = $request->query('bill_type', $bill_types[0]->key);
-   
+
         if($end_emission_date === ''){
             $new_end_emission_date = Carbon::now()->format('Y-m-d');
         } else {
             $new_end_emission_date = date('Y-m-d', strtotime($end_emission_date));
         }
 
-        $paginator = $repo->getBillsPayable($is_dolar, $new_end_emission_date, $bill_type)->paginate(5);
+        $paginator = $repo->getBillsPayableFromSaint($is_dollar, $new_end_emission_date, $bill_type)->paginate(5);
+
+        $bills_payable_keys = implode(" OR ", array_map(function($item){
+            return "(bills_payable.cod_prov = '" . $item->CodProv . "' AND bills_payable.nro_doc = '" . $item->NumeroD . "')";
+        }, $paginator->items()));
+
+        $bills_payable_records = $repo->getBillsPayable($bills_payable_keys)->take(5)->get()->groupBy(['CodProv', 'NumeroD']);
 
         if ($paginator->lastPage() < $page){
-            $paginator = $repo->getBillsPayable($is_dolar, $new_end_emission_date, $bill_type)->paginate(5, ['*'], 'page', 1);
+            $paginator = $repo->getBillsPayableFromSaint($is_dollar, $new_end_emission_date, $bill_type)->paginate(5, ['*'], 'page', 1);
         }
+
+        $data = array_map(function($item) use ($bills_payable_records){
+            
+            $record = $bills_payable_records->has($item->CodProv) && $bills_payable_records[$item->CodProv]->has($item->NumeroD)
+            ? $bills_payable_records[$item->CodProv][$item->NumeroD]->first()
+            : $item;
+
+            return (object) [
+                'NumeroD' => $record->NumeroD,
+                'CodProv' => $record->CodProv,
+                'Descrip' => $item->Descrip,
+                'FechaE' => $item->FechaE,
+                'FechaPosteo' => $item->FechaPosteo,
+                'esDolar' => $record->esDolar,
+                'MontoTotal' => number_format($record->MontoTotal, 2) . " " . config("constants.CURRENCY_SIGNS." . ($record->esDolar ? "dollar" : "bolivar")),
+                'MontoPagar' => number_format($record->MontoPagar, 2) . " " . config("constants.CURRENCY_SIGNS." . ($record->esDolar ? "dollar" : "bolivar")),
+                'Tasa' => number_format($record->Tasa, 2)
+            ];
+        }, $paginator->items());
 
         $columns = [
             "Numero Fac.",
@@ -70,6 +93,7 @@ class BillsPayableController extends Controller
             "F. Posteo",
             'Monto Factura',
             'Monto Pagar',
+            'Tasa',
             'Es dolar',
             "Opciones"
         ];
@@ -77,7 +101,8 @@ class BillsPayableController extends Controller
         return view('pages.bills-payable.index', compact(
             'columns',
             'paginator',
-            'is_dolar',
+            'data',
+            'is_dollar',
             'bill_type',
             'bill_types',
             'end_emission_date',
@@ -88,35 +113,28 @@ class BillsPayableController extends Controller
         ));
     }
 
-    // public function storeProduct(StoreProductSuggestionRequest $request, ProductsRepository $repo){
+    public function storeBillPayable(Request $request){
 
-    //     $validated = $request->validated();
+        $nro_doc = $request->numeroD;
+        $cod_prov = $request->codProv;
+        $bill_type = $request->billType;
+        $tasa = $request->tasa;
+        $is_dollar = $request->isDollar;
+        $amount = $request->amount;
+      
+        $data = [
+            'nro_doc' => $nro_doc,
+            'cod_prov' => $cod_prov,
+            'bill_type' => $bill_type,
+            'amount' => $amount,
+            'is_dollar' => $is_dollar,
+            'tasa' => $tasa,
+        ];
 
-    //     $data = [
-    //         'cod_prod' =>  $validated['cod_prod'],
-    //         'percent_suggested' => $validated['percent_suggested'],
-    //         'user_name' => Auth::user()->CodUsua,
-    //         'status' => config('constants.SUGGESTION_STATUS.PROCESSING')
-    //     ];
+        BillPayable::upsert($data,
+            ['nro_doc', 'cod_prov'],
+            ['amount', 'is_dollar', 'tasa', 'bill_type']);
 
-    //     $conn = config("constants.DB_CONN_MAP." . $validated['database']);
-
-    //     $product = $repo->getProductByID($data['cod_prod'], $conn);
-        
-    //     if (is_null(Product::where('cod_prod', $data['cod_prod'])->first())){
-    //         $product = new Product(['cod_prod' => $data['cod_prod'], 'descrip' => $product->Descrip]);
-    //         $product->save();
-    //     }
-
-    //     $product_suggestion = new ProductSuggestion($data);
-        
-    //     if ($product_suggestion->save()){
-
-    //         $data['created_at'] = date('d-m-Y', strtotime($product_suggestion->created_at));
-    //         return $this->jsonResponse(['data' => $data], 200);
-    //     }
-
-    //     return $this->jsonResponse(['data' => []], 500);
-        
-    // }
+        return $this->jsonResponse($data, 200);
+    }
 }

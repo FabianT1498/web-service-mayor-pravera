@@ -20,9 +20,9 @@ class DollarExchangeServiceProvider extends ServiceProvider
     public function register()
     {
         
-        $this->app->bind(DollarExchangeRepository::class, function ($app) {
-            return new DollarExchangeRepository();
-        });
+        // $this->app->bind(DollarExchangeRepository::class, function ($app) {
+        //     return new DollarExchangeRepository();
+        // });
     }
 
     /**
@@ -32,8 +32,8 @@ class DollarExchangeServiceProvider extends ServiceProvider
      */
     public function boot(DollarExchangeRepository $dollar_repo)
     {
-        if (!App::runningInConsole()) {
-            View::share('dollar_exchange', $dollar_repo->getLast()); 
-        }
+        // if (!App::runningInConsole()) {
+        //     View::share('dollar_exchange', $dollar_repo->getLast()); 
+        // }
     }
 }
