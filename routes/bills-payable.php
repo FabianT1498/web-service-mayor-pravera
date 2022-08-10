@@ -13,6 +13,8 @@ Route::group(['middleware' => ['auth']], function () {
 
     // ----- Schedules -----
     Route::get('schedule', [SchedulePayableController::class, 'index'])->name('schedule.index');
+    Route::get('schedule/create', [SchedulePayableController::class, 'create'])->name('schedule.create');
+
     Route::post('schedule', [SchedulePayableController::class, 'store'])->name('schedule.store');
     Route::get('schedule/{id}', [SchedulePayableController::class, 'getSchedule'])->name('schedule.getSchedule');
 

@@ -90,6 +90,7 @@ export default {
         /** Filtrar registros  */
         dateRangePicker.datepickers[0].element.addEventListener('hide', this.changeDateEventHandlerWrapper(this.DOMElements.formFilter));
         dateRangePicker.datepickers[1].element.addEventListener('hide', this.changeDateEventHandlerWrapper(this.DOMElements.formFilter));
+        
         this.DOMElements.formFilter.addEventListener('change', this.changeWrapper(this.DOMElements.formFilter));
     
         if (this.DOMElements.pagesLinksContainer){

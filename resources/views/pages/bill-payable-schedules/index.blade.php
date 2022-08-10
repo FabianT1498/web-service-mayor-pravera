@@ -7,8 +7,17 @@
 @section('main')
     <div>
         <h2 class="h2">Programaciones de facturas por pagar</h2>
-        <div class="mb-8 p-4 rounded bg-gray-200 mx-auto w-11/12">
+        <div class="mb-4 p-4 rounded bg-gray-200 mx-auto w-11/12">
             @include('pages.bill-payable-schedules.components.filter-form')
+        </div>
+
+        <div class="mb-8 mx-auto w-11/12">
+            <form id="form" class="px-20" autocomplete="off" method="POST" action="{{ route('schedule.store') }}">
+                @csrf
+                <x-button :variation="__('rounded')">
+                    {{ __('Crear programación') }}
+                </x-button>
+            </form>
         </div>
   
         <table class="table table-bordered table-hover mx-auto w-11/12 text-center">
@@ -21,7 +30,7 @@
             </thead>
             <tbody id="billPayableScheduleTBody">
                 @foreach($paginator as $key => $value)
-                    <tr data-numeroD="{{ $value->NumeroD }}" data-prov="{{ $value->CodProv }}">
+                    <tr>
                         <td class="text-center">{{ $value->WeekNumber }}</td>
                         <td class="text-center">{{ date('d-m-Y', strtotime($value->StartDate)) }}</td>
                         <td class="text-center">{{ date('d-m-Y', strtotime($value->EndDate)) }}</td>

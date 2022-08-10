@@ -30,8 +30,8 @@ class BillSchedulesRepository implements BillSchedulesRepositoryInterface
             ::connection('web_services_db')
             ->table('bill_payable_schedules')
             ->selectRaw("bill_payable_schedules.id as WeekNumber, bill_payable_schedules.start_date as StartDate, bill_payable_schedules.end_date as EndDate, bill_payable_schedules.status as Status,
-                scheduled_bills.count as QtyBillsScheduled")
-            ->join(DB::raw('(SELECT COUNT(bills_payable.nro_doc) AS count, bills_payable.bill_payable_schedules_id AS bill_payable_schedules_id 
+                COALESCE(scheduled_bills.count, 0) as QtyBillsScheduled")
+            ->leftJoin(DB::raw('(SELECT COUNT(bills_payable.nro_doc) AS count, bills_payable.bill_payable_schedules_id AS bill_payable_schedules_id 
                     FROM bills_payable WHERE bills_payable.bill_payable_schedules_id IS NOT NULL GROUP BY bills_payable.bill_payable_schedules_id) AS scheduled_bills'),
                  function($join){
                     $join->on('scheduled_bills.bill_payable_schedules_id', '=', 'bill_payable_schedules.id');
