@@ -12,6 +12,9 @@ import { storeBillPayable } from '_services/bill-payable';
 
 import { SIGN } from '_constants/currencies';
 
+import BillPayableScheduleView from '_views/BillPayableScheduleView'
+import BillPayableSchedulePresenter from '_presenters/BillPayableSchedulePresenter'
+
 export default {
     DOMElements: {
         endDatePicker: document.querySelector('#endEmissionDatePicker'),
@@ -92,8 +95,9 @@ export default {
         let tasa = formatAmount(row.querySelector('input[data-bill=tasa]').value);
         let amount = formatAmount(row.querySelector('td[data-bill=montoTotal]').innerHTML);
         let isDollar = row.querySelector('input[data-bill=isDollar]').value;
+        let provDescrip = row.getAttribute('data-descripProv')
        
-        return {numeroD, codProv, billType, tasa, amount, isDollar}
+        return {numeroD, codProv, billType, tasa, amount, isDollar, provDescrip}
     },
     handleDollarCheckClicked: function(event){
         let data = this.getBillPayableData(event);
@@ -109,13 +113,24 @@ export default {
     },
     handleClick: function(){
         return (event) => {
-            const target = event.target.closest('input');
 
-            if (target){
-                const isDolarCheck = target.getAttribute('data-bill');
+            const input = event.target.closest('input');
+            const modalBtn = event.target.closest('button');
 
-                if (isDolarCheck && isDolarCheck === "isDollar"){
+            let dataBill = input && input.getAttribute('data-bill') 
+                ? input.getAttribute('data-bill') : 
+                (modalBtn && modalBtn.getAttribute('data-bill')
+                    ? modalBtn.getAttribute('data-bill') 
+                    : null)
+
+            if (dataBill){
+                if (dataBill === 'isDollar'){
                     this.handleDollarCheckClicked(event)
+                } else if (dataBill === 'modalBtn'){
+                    let data = this.getBillPayableData(event);
+                    
+                   
+                    this.billPayableSchedulePresenter.setBillPayable(data)
                 }
             }
         }
@@ -221,5 +236,10 @@ export default {
     init(){
         this.initEventListener()
         this.initData();
+
+        let billPayableScheduleContainer = document.querySelector('#bill_payable_schedules')
+        this.billPayableSchedulePresenter = new BillPayableSchedulePresenter();
+        this.billPayableScheduleView = new BillPayableScheduleView(this.billPayableSchedulePresenter);
+        this.billPayableScheduleView.init(billPayableScheduleContainer)
     }
 }

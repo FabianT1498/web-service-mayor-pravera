@@ -42,13 +42,15 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
             ->orderByRaw("SAACXP.FechaE DESC");
     }
 
-    public function getBillPayable($cod_prov, $n_doc){
+    public function getBillPayable($n_doc, $cod_prov){
 
         return DB
             ::connection('web_services_db')
             ->table('bills_payable')
-            ->selectRaw("nro_doc as NumeroD, cod_prov as CodProv, bill_type as TipoCom, amount as MontoPagar,
-                is_dollar as esDolar, status as Status")
+            ->selectRaw("bills_payable.nro_doc as NumeroD, bills_payable.cod_prov as CodProv, bills_payable.bill_type as TipoCom, bills_payable.amount as MontoPagar,
+                bills_payable.is_dollar as esDolar, bills_payable.status as Status, bills_payable.cod_prov as CodProv, 
+                bills_payable.bill_payable_schedules_id as ScheduleID, bill_payable_schedules.start_date as ScheduleStartDate, bill_payable_schedules.end_date as ScheduleEndDate")
+            ->leftjoin("bill_payable_schedules", "bill_payable_schedules.id", "=", "bills_payable.bill_payable_schedules_id")
             ->whereRaw("nro_doc = ? AND cod_prov = ?", [$n_doc, $cod_prov])
             ->first();
     }
@@ -66,10 +68,10 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
             ->selectRaw("bills_payable.nro_doc as NumeroD, bills_payable.cod_prov as CodProv, bills_payable.bill_type as TipoCom, bills_payable.amount as MontoTotal,
                 bills_payable.is_dollar as esDolar, bills_payable.status as Status, bills_payable.tasa as Tasa, (bills_payable.amount - COALESCE(bill_payments.total_paid, 0)) as MontoPagar")
             ->leftJoin(DB::raw('(SELECT bill_payments.nro_doc, bill_payments.cod_prov, SUM(bill_payments.amount) as total_paid FROM bill_payments GROUP BY bill_payments.cod_prov, bill_payments.nro_doc) AS bill_payments'),
-                 function($join){
-                    $join->on('bills_payable.nro_doc', '=', 'bill_payments.nro_doc')
-                        ->on('bills_payable.cod_prov', '=', 'bill_payments.cod_prov');
-                });
+                function($join){
+                $join->on('bills_payable.nro_doc', '=', 'bill_payments.nro_doc')
+                    ->on('bills_payable.cod_prov', '=', 'bill_payments.cod_prov');
+            });
 
         if ($whereRaw !== ''){
             $query = $query->whereRaw($whereRaw);

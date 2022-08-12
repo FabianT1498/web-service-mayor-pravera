@@ -28,7 +28,7 @@
             </thead>
             <tbody id="billsPayableTBody">
                 @foreach ($data as $key => $value)
-                    <tr data-numeroD="{{ $value->NumeroD }}" data-prov="{{ $value->CodProv }}">
+                    <tr data-numeroD="{{ $value->NumeroD }}" data-prov="{{ $value->CodProv }}" data-descripProv="{{ $value->Descrip }}">
                         <td class="text-center">{{ $value->NumeroD }}</td>
                         <td class="text-center">{{ $value->CodProv }}</td>
                         <td class="text-center">{{ $value->Descrip }}</td>
@@ -65,8 +65,8 @@
                             <button
                                 type="button"
                                 data-tooltip-target="suggestion-tooltip"
-                                data-modal-toggle="suggestion-modal"
-                                data_numero_d="{{ $value->NumeroD }}"
+                                data-modal-toggle="bill_payable_schedules"
+                                data-bill="modalBtn"
                                 class="font-medium hover:text-teal-600 transition ease-in-out duration-500"
                             >
                                 <i class="fa-solid fa-calendar"></i>
@@ -94,4 +94,8 @@
         </div>
     </div>
     <x-modal-loading :title="__('Espere mientras se genera el documento PDF')"/>
+    <x-modal-bill-payable-schedules
+        :modalID="__('bill_payable_schedules')"
+        :schedules="$schedules"
+    />
 @endsection

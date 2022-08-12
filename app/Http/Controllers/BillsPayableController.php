@@ -9,9 +9,11 @@ use Carbon\Carbon;
 use Flasher\SweetAlert\Prime\SweetAlertFactory;
 
 use App\Repositories\BillsPayableRepository;
+use App\Repositories\BillSchedulesRepository;
+
+use App\Http\Requests\LinkBillPayableToScheduleRequest;
 
 use App\Models\BillPayable;
-use PhpParser\Node\Stmt\Return_;
 
 use App\Http\Traits\SessionTrait;
 
@@ -26,7 +28,7 @@ class BillsPayableController extends Controller
         $this->flasher = $flasher;
     }
 
-    public function index(Request $request, BillsPayableRepository $repo){
+    public function index(Request $request, BillsPayableRepository $repo, BillSchedulesRepository $repo_schedule){
 
         $this->setSession($request, 'current_module', 'bill_payable');
 
@@ -92,6 +94,10 @@ class BillsPayableController extends Controller
             ];
         }, $paginator->items());
 
+        $schedules = $repo_schedule->getBillSchedules()->get()->map(function($item){
+            return (object) array("key" => $item->WeekNumber, "value" => "Semana " . $item->WeekNumber);
+        });
+
         $columns = [
             "Numero Fac.",
             "Cod. Proveedor",
@@ -119,6 +125,7 @@ class BillsPayableController extends Controller
             'max_available_days',
             'is_caduced',
             'page',
+            'schedules'
         ));
     }
 
@@ -144,6 +151,46 @@ class BillsPayableController extends Controller
             ['nro_doc', 'cod_prov'],
             ['amount', 'is_dollar', 'tasa', 'bill_type']);
 
+        return $this->jsonResponse($data, 200);
+    }
+
+    public function getBillPayable(Request $request, BillsPayableRepository $repo){
+        $bill = $repo->getBillPayable($request->numero_d, $request->cod_prov);
+
+        return $this->jsonResponse($bill ? [$bill] : [], 200);
+    }
+
+    public function linkBillPayableToSchedule(LinkBillPayableToScheduleRequest $request, BillsPayableRepository $repo){
+
+        $nro_doc = $request->numeroD;
+        $cod_prov = $request->codProv;
+        $bill_type = $request->billType;
+        $tasa = $request->tasa;
+        $is_dollar = $request->isDollar;
+        $amount = $request->amount;
+        $schedule_id = $request->scheduleID;
+
+        $data = [
+            'nro_doc' => $nro_doc,
+            'cod_prov' => $cod_prov,
+            'bill_type' => $bill_type,
+            'amount' => $amount,
+            'is_dollar' => $is_dollar,
+            'tasa' => $tasa,
+            'bill_payable_schedules_id' => $schedule_id
+        ];
+
+        $bill = BillPayable::whereRaw("nro_doc = ? AND cod_prov = ?", [$request->numeroD, $request->codProv])->first();
+
+        if ($bill){
+            $bill->bill_payable_schedules_id = $request->scheduleID;
+            BillPayable::upsert($data,
+                ['nro_doc', 'cod_prov'],
+                ['bill_payable_schedules_id']);
+        } else {
+            BillPayable::insert($data);
+        }
+      
         return $this->jsonResponse($data, 200);
     }
 }

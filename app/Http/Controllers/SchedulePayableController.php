@@ -130,5 +130,14 @@ class SchedulePayableController extends Controller
         return redirect()->route('schedule.index');
     }
 
-    
+    // Function to get processing schedules
+    public function getBillPayableSchedules(Request $request, BillSchedulesRepository $repo){
+        $schedules = $repo->getBillSchedules()->get();
+        return $this->jsonResponse(['data' => $schedules], 200);
+    }
+
+    public function getSchedule($id, BillSchedulesRepository $repo){
+        $schedule = $repo->getBillSchedule($id)->first();
+        return $this->jsonResponse($schedule, 200);
+    }
 }

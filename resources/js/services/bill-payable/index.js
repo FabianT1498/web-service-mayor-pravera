@@ -1,14 +1,21 @@
 import axiosClient from '../../utilities/axiosClient';
 
-const getBillPayable = function({numeroD, codProv, billType}){
-    return asyncFunction(axiosClient.get(`/bill_payable/${codProv}/${numeroD}/${billType}`))
+const getBillPayable = function({numeroD, codProv}){
+    return asyncFunction(axiosClient.get(`/bill_payable/${codProv}/${numeroD}`))
 };
 
 const storeBillPayable = function(data){
     return asyncFunction(axiosClient.post('/bill_payable/', data))
 };
 
+const getBillPayableSchedule = function(id){
+    return asyncFunction(axiosClient.get(`/schedule/${id}`))
+};
+const linkBillPayableToSchedule = function(data){
+    return asyncFunction(axiosClient.post(`/bill_payable/${data.scheduleID}`, data))
+}
+
 const asyncFunction = (promise) => promise.then(res => res).catch(err => err)
 
 
-export { getBillPayable, storeBillPayable };
+export { getBillPayable, storeBillPayable, getBillPayableSchedule, linkBillPayableToSchedule};
