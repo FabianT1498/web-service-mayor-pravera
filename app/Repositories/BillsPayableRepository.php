@@ -55,6 +55,17 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
             ->first();
     }
 
+    public function getBillPayablePayments($n_doc, $cod_prov){
+
+        return DB
+            ::connection('web_services_db')
+            ->table('bill_payments')
+            ->selectRaw("bill_payments.nro_doc as NumeroD, bill_payments.cod_prov as CodProv, bill_payments.amount as Amount, bill_payments.ref_number as RefNumber,
+                bill_payments.is_dollar as esDolar, bill_payments.tasa as Tasa, bill_payments.bank_name as BankName, 
+                bill_payments.date as Date")
+            ->whereRaw("nro_doc = ? AND cod_prov = ?", [$n_doc, $cod_prov]);
+    }
+
     public function getBillsPayable($ids = ''){
         $whereRaw = '';
 

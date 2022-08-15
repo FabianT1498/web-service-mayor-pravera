@@ -1,6 +1,7 @@
 {
     "/js/app.js": "/js/app.js",
     "/js/bills_payable_index.js": "/js/bills_payable_index.js",
+    "/js/bills_payable_show.js": "/js/bills_payable_show.js",
     "/js/bill_payable_schedules_create.js": "/js/bill_payable_schedules_create.js",
     "/js/products_index.js": "/js/products_index.js",
     "/js/cash_register_create.js": "/js/cash_register_create.js",

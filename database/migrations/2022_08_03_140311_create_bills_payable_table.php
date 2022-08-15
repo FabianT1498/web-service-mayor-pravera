@@ -16,6 +16,7 @@ class CreateBillsPayableTable extends Migration
         Schema::create('bills_payable', function (Blueprint $table) {
             $table->string('nro_doc', 50);
             $table->string('cod_prov', 50);
+            $table->string('descrip_prov', 250);
             $table->enum('bill_type', array_keys(config('constants.BILL_PAYABLE_TYPE')));
             $table->decimal('amount', 28, 4);
             $table->decimal('tasa', 28, 4);

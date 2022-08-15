@@ -30,13 +30,16 @@
             </thead>
             <tbody id="billPayableScheduleTBody">
                 @foreach($paginator as $key => $value)
-                    <tr>
-                        <td class="text-center">{{ $value->WeekNumber }}</td>
-                        <td class="text-center">{{ date('d-m-Y', strtotime($value->StartDate)) }}</td>
-                        <td class="text-center">{{ date('d-m-Y', strtotime($value->EndDate)) }}</td>
-                        <td class="text-center">{{ $value->Status }}</td>
-                        <td class="text-center">{{ $value->QtyBillsScheduled }}</td>
-                    </tr>
+                    <a href="#">
+                        <tr>
+                            <td class="text-center p-0"><a class="block" href="{{ route('schedule.show', $value->WeekNumber) }}">{{ $value->WeekNumber }}</a></td>
+                            <td class="text-center p-0"><a class="block" href="{{ route('schedule.show', $value->WeekNumber) }}">{{ date('d-m-Y', strtotime($value->StartDate)) }}</a></td>
+                            <td class="text-center p-0"><a class="block" href="{{ route('schedule.show', $value->WeekNumber) }}">{{ date('d-m-Y', strtotime($value->EndDate)) }}</a></td>
+                            <td class="text-center p-0"><a class="block" href="{{ route('schedule.show', $value->WeekNumber) }}">{{ $value->Status }}</a></td>
+                            <td class="text-center p-0"><a class="block" href="{{ route('schedule.show', $value->WeekNumber) }}">{{ $value->QtyBillsScheduled }}</a></td>
+                            <td>&nbsp;</td>
+                        </tr>
+                    </a>
                 @endforeach
             </tbody>
         </table>

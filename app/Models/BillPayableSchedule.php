@@ -32,7 +32,7 @@ class BillPayableSchedule extends Model
 
     public function bills_payable()
     {
-        return $this->hasMany(BillPayable::class);
+        return $this->hasMany(BillPayable::class, 'bill_payable_schedules_id');
     }
 
     

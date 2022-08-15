@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 use Flasher\SweetAlert\Prime\SweetAlertFactory;
 
@@ -12,8 +13,10 @@ use App\Repositories\BillsPayableRepository;
 use App\Repositories\BillSchedulesRepository;
 
 use App\Http\Requests\LinkBillPayableToScheduleRequest;
+use App\Http\Requests\StoreBillPayablePaymentRequest;
 
 use App\Models\BillPayable;
+use App\Models\BillPayablePayment;
 
 use App\Http\Traits\SessionTrait;
 
@@ -129,10 +132,75 @@ class BillsPayableController extends Controller
         ));
     }
 
+    public function show(Request $request, BillsPayableRepository $repo){
+
+        $columns = [
+            "Fecha pago",
+            'Banco',
+            'Nro. referencia',
+            'Es dolar',
+            'Tasa',
+            "Cantidad"
+        ];
+
+        $today_date = Carbon::now()->format('d-m-Y');
+        
+        $bill = $repo->getBillPayable($request->numero_d, $request->cod_prov);
+
+        $bill_payments = $repo->getBillPayablePayments($request->numero_d, $request->cod_prov)->get();
+        
+        // return print_r($bill_payments);
+
+        $banks = DB::connection('web_services_db')
+            ->table('banks')
+            ->select('name')
+            ->get()
+            ->map(function($item){
+                return (object) array('key' => $item->name, 'value' => $item->name);
+            });
+
+        return view('pages.bills-payable.show', compact(
+            'bill',
+            'bill_payments',
+            'banks',
+            'today_date',
+            'columns'
+        ));
+    }
+
+    public function storePayment(StoreBillPayablePaymentRequest $request){
+
+        $validated = $request->validated();
+
+        $validated['cod_prov'] = $request->cod_prov;
+        $validated['is_dollar'] = $request->isDollar === null ? '0' : '1';
+        $validated['bank_name'] = $validated['bank'];
+        $validated['ref_number'] = $validated['referenceNumber'];
+
+        unset($validated['bank']);
+        unset($validated['referenceNumber']);
+
+
+        $result = BillPayablePayment::upsert($validated,
+            ['nro_doc', 'cod_prov'],
+            ['amount', 'bank_name', 'is_dollar', 'tasa', 'ref_number', 'date']);
+
+        if ($result > 0){
+            $this->flasher->addSuccess('El pago fue creado exitosamente!');
+        } else {
+            $this->flasher->addError('No se pudo crear el pago para la factura');
+        }
+        
+        return redirect()->route('bill_payable.showBillPayable', 
+            ['numero_d' => $validated['nro_doc'], 'cod_prov' => $validated['cod_prov']]);
+
+    }
+
     public function storeBillPayable(Request $request){
 
         $nro_doc = $request->numeroD;
         $cod_prov = $request->codProv;
+        $descrip_prov = $request->provDescrip;
         $bill_type = $request->billType;
         $tasa = $request->tasa;
         $is_dollar = $request->isDollar;
@@ -141,6 +209,7 @@ class BillsPayableController extends Controller
         $data = [
             'nro_doc' => $nro_doc,
             'cod_prov' => $cod_prov,
+            'descrip_prov' => $descrip_prov,
             'bill_type' => $bill_type,
             'amount' => $amount,
             'is_dollar' => $is_dollar,
@@ -169,6 +238,7 @@ class BillsPayableController extends Controller
         $is_dollar = $request->isDollar;
         $amount = $request->amount;
         $schedule_id = $request->scheduleID;
+        $descrip_prov = $request->provDescrip;
 
         $data = [
             'nro_doc' => $nro_doc,
@@ -177,6 +247,7 @@ class BillsPayableController extends Controller
             'amount' => $amount,
             'is_dollar' => $is_dollar,
             'tasa' => $tasa,
+            'descrip_prov' => $descrip_prov,
             'bill_payable_schedules_id' => $schedule_id
         ];
 

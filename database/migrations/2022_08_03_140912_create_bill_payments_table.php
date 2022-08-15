@@ -20,6 +20,8 @@ class CreateBillPaymentsTable extends Migration
             $table->string('bank_name', 100);
             $table->string('ref_number', 50);
             $table->date('date');
+            $table->boolean('is_dollar');
+            $table->decimal('tasa', 28, 4);
 
             $table->foreign(['nro_doc', 'cod_prov'])
                 ->references(['nro_doc', 'cod_prov'])->on('bills_payable');

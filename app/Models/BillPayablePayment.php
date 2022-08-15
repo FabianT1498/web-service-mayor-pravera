@@ -3,24 +3,24 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
-use App\Models\BillPayablePayment;
-
-class BillPayable extends Model
+class BillPayablePayment extends Model
 {
    
     protected $connection = 'web_services_db';
-    protected $table = 'bills_payable';
+    protected $table = 'bill_payments';
     public $timestamps = false;
 
     protected $fillable = [
         'nro_doc',
         'cod_prov',
-        'bill_type',
         'amount',
-        'tasa',
+        'bank_name',
+        'ref_number',
+        'date',
         'is_dollar',
-        'status'
+        'tasa'
     ];
 
     public function __construct(array $attributes = array())
@@ -29,12 +29,17 @@ class BillPayable extends Model
 
         $this->nro_doc = key_exists('nro_doc', $attributes) ? $attributes['nro_doc'] : '';
         $this->cod_prov =  key_exists('cod_prov', $attributes) ? $attributes['cod_prov'] : '';
-        $this->descrip_prov =  key_exists('descrip_prov', $attributes) ? $attributes['descrip_prov'] : '';
-        $this->bill_type = key_exists('bill_type', $attributes) ? $attributes['bill_type'] : '';
         $this->amount = key_exists('amount', $attributes) ? $attributes['amount'] : '';
+        $this->bank_name =  key_exists('bank_name', $attributes) ? $attributes['bank_name'] : '';
+        $this->ref_number = key_exists('ref_number', $attributes) ? $attributes['ref_number'] : '';
         $this->is_dollar = key_exists('is_dollar', $attributes) ? $attributes['is_dollar'] : '';
-        $this->status = key_exists('status', $attributes) ? $attributes['status'] : array_keys(config('constants.BILL_PAYABLE_STATUS'))[0];
         $this->tasa = key_exists('tasa', $attributes) ? $attributes['tasa'] : 0;
-        $this->bill_payable_schedules_id = key_exists('bill_payable_schedules_id', $attributes) ? $attributes['bill_payable_schedules_id'] : null;
+        $this->date = key_exists('date', $attributes) ? $attributes['date'] : Carbon::now()->format('Y-m-d');
     }
+
+    public function bill_payable_payments()
+    {
+        return $this->hasMany(BillPayable::class, 'bill_payable_schedules_id');
+    }
+
 }

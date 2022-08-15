@@ -129,7 +129,6 @@ export default {
                 } else if (dataBill === 'modalBtn'){
                     let data = this.getBillPayableData(event);
                     
-                   
                     this.billPayableSchedulePresenter.setBillPayable(data)
                 }
             }

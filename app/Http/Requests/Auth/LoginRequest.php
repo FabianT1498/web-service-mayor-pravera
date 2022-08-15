@@ -31,7 +31,7 @@ class LoginRequest extends FormRequest
     public function rules()
     {
         return [
-            'CodUsua' => ['required', 'string', 'exists:saint_db.SAESTA,CodUsua'],
+            'CodUsua' => ['required', 'string'],
             'Pass' => ['required', 'string'],
         ];
     }
@@ -47,12 +47,14 @@ class LoginRequest extends FormRequest
     {
         $validated = $this->validated();
         
-        $CodEsta =  DB::connection('saint_db')->table('SAESTA')
-            ->select('CodEsta')
-            ->where("CodUsua", $validated['CodUsua'])
-            ->first();
+        // $CodEsta =  DB::connection('saint_db')->table('SAESTA')
+        //     ->select('CodEsta')
+        //     ->where("CodUsua", $validated['CodUsua'])
+        //     ->first();
 
-        $validated['CodEsta'] = $CodEsta->CodEsta;
+        // $validated['CodEsta'] = $CodEsta->CodEsta;
+
+        $validated['CodEsta'] = null;
 
         $this->ensureIsNotRateLimited();
 

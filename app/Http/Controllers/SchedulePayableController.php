@@ -130,6 +130,22 @@ class SchedulePayableController extends Controller
         return redirect()->route('schedule.index');
     }
 
+    public function show(Request $request, $id)
+    {
+
+        $this->setSession($request, 'current_module', 'bill_payable');
+
+        $bills = BillPayableSchedule::find($id)->bills_payable;
+
+        $columns = [
+            "Numero Documento",
+            "Proveedor",
+            "Monto total"
+        ];
+
+        return view('pages.bill-payable-schedules.show', compact('columns', 'bills'));
+    }
+
     // Function to get processing schedules
     public function getBillPayableSchedules(Request $request, BillSchedulesRepository $repo){
         $schedules = $repo->getBillSchedules()->get();
