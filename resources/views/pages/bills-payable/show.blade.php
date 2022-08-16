@@ -123,7 +123,7 @@
                             <td class="text-center p-0">{{ date('d-m-Y', strtotime($bill_payment->Date)) }}</td>
                             <td class="text-center p-0">{{ $bill_payment->BankName }}</td>
                             <td class="text-center p-0">{{ $bill_payment->RefNumber }}</td>
-                            <td class="text-center p-0">{{ $bill_payment->esDolar }}</td>
+                            <td class="text-center p-0">{{ $bill_payment->esDolar ? "Si" : "No" }}</td>
                             <td class="text-center p-0">{{ $bill_payment->Tasa }}</td>
                             <td class="text-center p-0">{{ $bill_payment->Amount }}</td>
                         </tr>

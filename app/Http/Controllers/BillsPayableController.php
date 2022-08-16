@@ -148,7 +148,20 @@ class BillsPayableController extends Controller
         $bill = $repo->getBillPayable($request->numero_d, $request->cod_prov);
 
         $bill_payments = $repo->getBillPayablePayments($request->numero_d, $request->cod_prov)->get();
-        
+
+        $bill_payments = $bill_payments->map(function($record){
+            return (object) [
+                'NumeroD' => $record->NumeroD,
+                'CodProv' => $record->CodProv,
+                'esDolar' => $record->esDolar,
+                'Amount' => number_format($record->Amount, 2) . " " . config("constants.CURRENCY_SIGNS." . ($record->esDolar ? "dollar" : "bolivar")),
+                'Tasa' => number_format($record->Tasa, 2) . " " . config("constants.CURRENCY_SIGNS.bolivar"),
+                'BankName' => $record->BankName,
+                'RefNumber' => $record->RefNumber,
+                'Date' => date('d-m-Y', strtotime($record->Date))
+            ];
+        });
+
         // return print_r($bill_payments);
 
         $banks = DB::connection('web_services_db')
