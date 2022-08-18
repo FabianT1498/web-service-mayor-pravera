@@ -39,7 +39,9 @@ class BillsPayableController extends Controller
         $is_dollar = $request->query('is_dollar', 0);
         $nro_doc = $request->query('nro_doc', '');
         $end_emission_date = $request->query('end_emission_date', Carbon::now()->format('d-m-Y'));
-
+        $cod_prov = $request->query('cod_prov', '');
+        $descrip_prov =  $request->query('cod_prov_value', '');
+      
         $min_available_days = $request->query('min_available_days', 0);
         $max_available_days = $request->query('max_available_days', 0);
 
@@ -55,16 +57,18 @@ class BillsPayableController extends Controller
 
         $bill_type = $request->query('bill_type', $bill_types[0]->key);
 
-        if($end_emission_date === ''){
-            $new_end_emission_date = Carbon::now()->format('Y-m-d');
+        if(is_null($end_emission_date) || $end_emission_date === ''){
+            $now = Carbon::now();
+            $end_emission_date =  $now->format('d-m-Y');
+            $new_end_emission_date = $now->format('Y-m-d');
         } else {
             $new_end_emission_date = date('Y-m-d', strtotime($end_emission_date));
         }
 
-        $paginator = $repo->getBillsPayableFromSaint($is_dollar, $new_end_emission_date, $bill_type)->paginate(5);
+        $paginator = $repo->getBillsPayableFromSaint($is_dollar, $new_end_emission_date, $bill_type, $nro_doc, $cod_prov)->paginate(5);
 
         if ($paginator->lastPage() < $page){
-            $paginator = $repo->getBillsPayableFromSaint($is_dollar, $new_end_emission_date, $bill_type)->paginate(5, ['*'], 'page', 1);
+            $paginator = $repo->getBillsPayableFromSaint($is_dollar, $new_end_emission_date, $bill_type, $nro_doc, $cod_prov)->paginate(5, ['*'], 'page', 1);
         }
 
         $bills_payable_keys = implode(" OR ", array_map(function($item){
@@ -126,6 +130,8 @@ class BillsPayableController extends Controller
             'nro_doc',
             'bill_type',
             'bill_types',
+            'cod_prov',
+            'descrip_prov',
             'end_emission_date',
             'min_available_days',
             'max_available_days',

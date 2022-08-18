@@ -8,7 +8,7 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
 {
 
     // Metodo para obtener las facturas por pagar
-    public function getBillsPayableFromSaint($is_dolar, $before_emission_date, $bill_type){
+    public function getBillsPayableFromSaint($is_dolar, $before_emission_date, $bill_type, $nro_doc, $cod_prov){
 
         $is_bill_NE = config('constants.BILL_PAYABLE_TYPE.' . $bill_type) === config('constants.BILL_PAYABLE_TYPE.NE');
 
@@ -38,7 +38,8 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
                     ->on('SACOMP_SUB.CodProv', '=', 'SACOMP_02.CodProv');
                 }
             )
-            ->whereRaw("SAACXP.TipoCxP = 10 AND SAACXP.Saldo > 0 AND CAST(SAACXP.FechaE AS date) <= '" . $before_emission_date . "' AND SACOMP_02.USD = " . $is_dolar)
+            ->whereRaw("SAACXP.TipoCxP = 10 AND SAACXP.Saldo > 0 AND CAST(SAACXP.FechaE AS date) <= '" . $before_emission_date . "' AND SACOMP_02.USD = " . $is_dolar 
+                . ($nro_doc && $nro_doc !== '' ? " AND UPPER(SAACXP.NumeroD) = UPPER('" . $nro_doc . "')" : '') . ( $cod_prov && $cod_prov !== '' ? " AND SAACXP.CodProv = '" . $cod_prov . "'" : ''))
             ->orderByRaw("SAACXP.FechaE DESC");
     }
 

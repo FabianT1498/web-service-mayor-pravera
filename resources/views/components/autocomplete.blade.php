@@ -1,16 +1,21 @@
 @props([
     'disabled' => false, 
     'id' => '',
-    'placeholder' => "Ingrese un texto"
+    'placeholder' => "Ingrese un texto",
+    'key' => "",
+    'value' => "",
+    'name' => ''
 ])
 
 <div 
     id="{{ $id }}" 
     {!! $attributes->merge(['class' => 'flex flex-col items-center justify-start rounded-md w-full shadow-sm border-gray-300 relative']) !!}
 >
-    <input id="{{ $id . '_hidden' }}"type="hidden" value="" name="cod_prov">
+    <input id="{{ $id . '_hidden' }}" type="hidden" value="{{ $key }}" name="{{ $name }}">
     <input 
         type="text" 
+        value="{{ $value }}"
+        name="{{ $name . "_value" }}"
         placeholder="{{ $placeholder }}" 
         id="{{ $id . '_input' }}" 
         {{ $disabled ? 'disabled' : '' }} 

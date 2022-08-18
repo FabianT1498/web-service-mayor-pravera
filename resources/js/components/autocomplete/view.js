@@ -63,6 +63,7 @@ const AutocompleteViewPrototype = {
         this.resultsContainer.innerHTML = ''
         
         if (data.length === 0){
+            this.resetAutocomplete()
             innerHTML = this.getItemTemplate()
             this.resultsContainer.classList.remove('h-60')
         } else {
@@ -80,6 +81,9 @@ const AutocompleteViewPrototype = {
     },
     hideResultsContainer(){
         this.resultsContainer.classList.add('hidden')
+    },
+    resetAutocomplete(){
+        this.hiddenValElement.value = ''
     },
     getItemTemplate(value = null, key = null){
         return `<li data-key="${key !== null ? key : 'null'}" class="cursor-pointer hover:bg-slate-400 p-2 transition-colors duration-300 last:rounded-b-md">${value !== null ? this.truncate(value, 25) : 'No hay resultados'}</li>`

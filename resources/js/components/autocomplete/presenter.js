@@ -5,6 +5,8 @@ const AutocompletePresenterPrototype = {
 	onKeyEvent(value){
         if (value === '') {
 			this.autocompleteCb(true)
+			this.view.hideResultsContainer()
+			this.view.resetAutocomplete();
 		} else {
 			this.autocompleteCb(false, value)
 		}

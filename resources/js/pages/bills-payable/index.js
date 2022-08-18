@@ -26,6 +26,7 @@ export default {
         pageInput: document.querySelector('#page'),
         billsPayableTBody: document.querySelector('#billsPayableTBody'),
         billPayableAlert: document.querySelector('#bill-payable-alert'),
+        cleanFormBtn: document.querySelector('#cleanFormBtn')
     },
     keypressOnAvailableDaysRange(event, form){
         let targetDays = parseInt(event.target.value);
@@ -137,6 +138,17 @@ export default {
             }
         }
     },
+    handleClickWrapperCleanFormBtn: function(){
+        return (event) => {
+            this.DOMElements.formFilter.querySelector('#endEmissionDatePicker').value = ''
+            this.DOMElements.formFilter.querySelector('#nroDoc').value = ''
+            this.DOMElements.formFilter.querySelector('#provider_search_hidden').value = ''
+            this.DOMElements.formFilter.querySelector('#provider_search_input').value = ''
+            this.DOMElements.formFilter.querySelector('#isDollar').value = '0'
+            this.DOMElements.formFilter.querySelector('#billType').value = ''
+            this.DOMElements.formFilter.submit()
+        }
+    },
     keyEventsOnTBodyHandlerWrapper: function(){
         return (event) => {
             const target = event.target.closest('input');
@@ -205,6 +217,8 @@ export default {
         this.DOMElements.billsPayableTBody.addEventListener('click', this.handleClick())
         this.DOMElements.billsPayableTBody.addEventListener('keypress', this.keyEventsOnTBodyHandlerWrapper())
         this.DOMElements.billsPayableTBody.addEventListener('keydown', this.keyEventsOnTBodyHandlerWrapper())
+
+        this.DOMElements.cleanFormBtn.addEventListener('click', this.handleClickWrapperCleanFormBtn())
 
         if (this.DOMElements.pagesLinksContainer){
             this.DOMElements.pagesLinksContainer.addEventListener('click', function(pageInput, form){
