@@ -4,15 +4,14 @@ import es from '@themesberg/tailwind-datepicker/locales/es';
 
 import { decimalInputs } from '_utilities/decimalInput';
 
+import BillPayablePaymentFormView from '_views/BillPayablePaymentFormView'
+
 export default {
     DOMElements: {
         amount: document.querySelector('#amount'),
         tasa: document.querySelector('#tasa'),
         date: document.querySelector('#date'),
         isDollar: document.querySelector('#isDollar'),
-    },
-    handleCheck: function(event){
-        event.target.value = event.target.value === '0' ? '1' : '0';
     },
     initEventListener(){
 
@@ -29,10 +28,14 @@ export default {
 
         this.DOMElements.isDollar.addEventListener('click', this.handleCheck);
 
-        decimalInputs['bs'].mask(this.DOMElements.tasa)
+        // decimalInputs['bs'].mask(this.DOMElements.tasa)
         decimalInputs['bs'].mask(this.DOMElements.amount)
     },
     init(){
         this.initEventListener()
+
+        let billPayablePaymentFormContainer = document.querySelector('#billPaymentForm')
+        this.billPayablePaymentFormView = new BillPayablePaymentFormView();
+        this.billPayablePaymentFormView.init(billPayablePaymentFormContainer)
     }
 }
