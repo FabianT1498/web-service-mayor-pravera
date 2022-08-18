@@ -11,6 +11,7 @@ use Flasher\SweetAlert\Prime\SweetAlertFactory;
 
 use App\Repositories\BillsPayableRepository;
 use App\Repositories\BillSchedulesRepository;
+use App\Repositories\ProviderRepository;
 
 use App\Http\Requests\LinkBillPayableToScheduleRequest;
 use App\Http\Requests\StoreBillPayablePaymentRequest;
@@ -36,6 +37,7 @@ class BillsPayableController extends Controller
         $this->setSession($request, 'current_module', 'bill_payable');
 
         $is_dollar = $request->query('is_dollar', 0);
+        $nro_doc = $request->query('nro_doc', '');
         $end_emission_date = $request->query('end_emission_date', Carbon::now()->format('d-m-Y'));
 
         $min_available_days = $request->query('min_available_days', 0);
@@ -121,6 +123,7 @@ class BillsPayableController extends Controller
             'paginator',
             'data',
             'is_dollar',
+            'nro_doc',
             'bill_type',
             'bill_types',
             'end_emission_date',
@@ -276,5 +279,15 @@ class BillsPayableController extends Controller
         }
       
         return $this->jsonResponse($data, 200);
+    }
+
+    public function getProviders(Request $request, ProviderRepository $repo){
+        $descrip = $request->query('descrip', '');
+
+        $data = $repo->getProviders($descrip);
+
+
+        return $this->jsonResponse($data, 200);
+
     }
 }

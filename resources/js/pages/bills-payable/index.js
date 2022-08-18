@@ -8,12 +8,15 @@ import { formatAmount } from '_utilities/mathUtilities'
 
 import { timerDelay } from '_utilities/timerDelay'
 
-import { storeBillPayable } from '_services/bill-payable';
+import { storeBillPayable, getProviders } from '_services/bill-payable';
 
 import { SIGN } from '_constants/currencies';
 
 import BillPayableScheduleView from '_views/BillPayableScheduleView'
 import BillPayableSchedulePresenter from '_presenters/BillPayableSchedulePresenter'
+
+import AutocompletePresenter from '_components/autocomplete/presenter'
+import AutocompleteView from '_components/autocomplete/view'
 
 export default {
     DOMElements: {
@@ -231,6 +234,7 @@ export default {
     },
     initData(){
         this.submitBillPayableCb = timerDelay(this.submitBillPayable, 3000)
+        
     },
     init(){
         this.initEventListener()
@@ -240,5 +244,10 @@ export default {
         this.billPayableSchedulePresenter = new BillPayableSchedulePresenter();
         this.billPayableScheduleView = new BillPayableScheduleView(this.billPayableSchedulePresenter);
         this.billPayableScheduleView.init(billPayableScheduleContainer)
+
+        let providerSearchBoxElement =  document.querySelector('#provider_search');
+        let providerSearchBoxPresenter = new AutocompletePresenter(getProviders);
+        let providerSearchBoxView = new AutocompleteView(providerSearchBoxPresenter);
+        providerSearchBoxView.init(providerSearchBoxElement)
     }
 }

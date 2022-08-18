@@ -11,6 +11,11 @@ const storeBillPayable = function(data){
 const getBillPayableSchedule = function(id){
     return asyncFunction(axiosClient.get(`/schedule/${id}`))
 };
+
+const getProviders = function(q){
+    return asyncFunction(axiosClient.get(`/provider?descrip=${q}`))
+};
+
 const linkBillPayableToSchedule = function(data){
     return asyncFunction(axiosClient.post(`/bill_payable/${data.scheduleID}`, data))
 }
@@ -18,4 +23,4 @@ const linkBillPayableToSchedule = function(data){
 const asyncFunction = (promise) => promise.then(res => res).catch(err => err)
 
 
-export { getBillPayable, storeBillPayable, getBillPayableSchedule, linkBillPayableToSchedule};
+export { getBillPayable, storeBillPayable, getBillPayableSchedule, linkBillPayableToSchedule, getProviders};

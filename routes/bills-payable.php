@@ -32,4 +32,7 @@ Route::group(['middleware' => ['auth', 'jsonify']], function() {
     Route::get('schedule/{id}', [SchedulePayableController::class, 'getSchedule']);
 
     
+    // ----- Providers -----
+    Route::get('provider', [BillsPayableController::class, 'getProviders']);
+    
 });

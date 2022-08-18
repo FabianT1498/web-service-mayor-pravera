@@ -24,10 +24,28 @@
                 autocomplete="off"
             >
         </div>
+
+        <span class="text-gray-500 ml-4">Número de factura</span>
+        <div class="relative w-1/6 flex-initial ml-4">
+            <input 
+                data-form="filter"
+                id="nroDoc"
+                name="nro_doc" 
+                type="text" 
+                value="{{$nro_doc}}"
+                class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+                autocomplete="off"
+            >
+        </div>
+
+        <span class="text-gray-500 ml-4">Proveedor</span>
+        <div class="relative w-2/6 flex-initial ml-4">
+            <x-autocomplete :id="__('provider_search')"/>
+        </div>
       
         <span class="text-gray-500 ml-4">Es factura en $:</span>
         <input
-            class="ml-4"
+            class=""
             data-form="filter"
             id="isDollar"
             type="checkbox"
