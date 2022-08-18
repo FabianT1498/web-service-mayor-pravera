@@ -12,10 +12,11 @@ const AutocompleteViewPrototype = {
         this.resultsContainer = searchBoxElement.querySelector('#' + id + '_results')
         
         this.inputElement.addEventListener("keyup", this.keyupWrapper());
-        this.inputElement.addEventListener("focusout", this.handleFocusOutWrapper());
-        this.inputElement.addEventListener("focus", this.handleFocusWrapper());
-
+        
         this.resultsContainer.addEventListener('click', this.handleClickWrapper())
+        
+        searchBoxElement.addEventListener("mouseenter", this.handleMouseEnterWrapper());
+        searchBoxElement.addEventListener("mouseleave", this.handleMouseLeaveWrapper());
     },
     handleClickWrapper(){
         return event => {
@@ -27,17 +28,18 @@ const AutocompleteViewPrototype = {
                 if (key !== 'null'){
                     this.hiddenValElement.value = key
                     this.inputElement.value = target.innerHTML;
+                    this.hideResultsContainer()
                 }
             }
         }
     },
-    handleFocusOutWrapper(){
+    handleMouseLeaveWrapper(){
         return (event) => {
             console.log(event)
             this.hideResultsContainer()
         }
     },
-    handleFocusWrapper(){
+    handleMouseEnterWrapper(){
         return event => {
             if(this.inputElement.value !== ''){
                 this.showResultsContainer()

@@ -27,7 +27,7 @@ const AutocompletePresenterPrototype = {
 const AutocompletePresenter = function (service){
     this.view = null;
 	this.service = service
-	this.autocompleteCb = timerDelay(this.submitData, 3000)
+	this.autocompleteCb = timerDelay(this.submitData, 500)
 }
 
 AutocompletePresenter.prototype = AutocompletePresenterPrototype;
