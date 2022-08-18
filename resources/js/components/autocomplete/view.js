@@ -64,7 +64,9 @@ const AutocompleteViewPrototype = {
         
         if (data.length === 0){
             innerHTML = this.getItemTemplate()
+            this.resultsContainer.classList.remove('h-60')
         } else {
+            this.resultsContainer.classList.add('h-60')
             innerHTML = data.map(el => this.getItemTemplate(el.Descrip, el.CodProv)).join('')
         }
         this.showResultsContainer();

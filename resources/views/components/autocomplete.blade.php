@@ -17,7 +17,7 @@
         class="w-full rounded-tl-md rounded-tr-md focus:ring-0 border-gray-300 focus:border-gray-400"
     >
     <div class="relative w-full">
-        <ul class="w-full list-none bg-slate-300 rounded-b-md absolute hidden" id="{{ $id . '_results' }}">
+        <ul class="w-full list-none bg-slate-300 rounded-b-md absolute hidden h-60 overflow-x-hidden overflow-y-auto" id="{{ $id . '_results' }}">
         </ul>
     </div>
 </div>
