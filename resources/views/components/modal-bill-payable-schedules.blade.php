@@ -20,19 +20,21 @@
         <div class="flex flex-col flex-grow ">
             <div class="shadow-md sm:rounded-lg h-full">
                 <div class="inline-block min-w-full align-middle h-full">
-                    <div class="p-8 bg-gray-100 h-full">
-                        <div class="mb-8">
-                            <div class="mb-4">
-                                <h4 class="h4 text-center">Datos de la factura</h4>
+                    <div class="p-8 bg-gray-100 flex justify-between">
+                        <div class="mb-8 bg-white w-5/12 p-4 rounded-md">
+                            <div class="mb-4 flex">
+                                <h4 class="h4">Datos de la factura</h4>
                             </div>
-                            <div class="flex flex-row items-center" id="billPayableContainer">
-                                <p>Número de Documento: <span id="numeroDInfoModal"></span></p>
-                                <p class="ml-4">Proveedor: <span id="proveedorInfoModal"></span></p>
+                            <div id="billPayableContainer">
+                                <p class="mb-2"><span class="font-semibold">Número de Documento:</span>&nbsp;<span id="numeroDInfoModal"></span></p>
+                                <p><span class="font-semibold">Proveedor:</span>&nbsp;<span id="proveedorInfoModal"></span></p>
                             </div>
                         </div>
-                        <div id="scheduleContainer" class="flex flex-row items-center">
-                            <label>Programación: </label>
-                            <div class="w-1/5 ml-4">
+                        <div id="scheduleContainer" class="mb-8 bg-white w-5/12 p-4 rounded-md">
+                            <div class="mb-2">
+                                <div class="mb-4 flex">
+                                    <h4 class="h4">Datos de la programación</h4>
+                                </div>
                                 <x-select-input
                                     class="w-full"
                                     :options="$schedules"
@@ -40,8 +42,8 @@
                                     id="scheduleSelect"
                                 />
                             </div>
-                            <p class="ml-8">Fecha Inicio: <span id="startDateSchedule"></span></p>
-                            <p class="ml-4">Fecha Final: <span id="endDateSchedule"></span></p>
+                            <p class="mb-2"><span class="font-semibold">Fecha Inicio:</span>&nbsp;<span id="startDateSchedule"></span></p>
+                            <p><span class="font-semibold">Fecha Final:</span>&nbsp;<span id="endDateSchedule"></span></p>
                         </div>
                     </div>
                 </div>

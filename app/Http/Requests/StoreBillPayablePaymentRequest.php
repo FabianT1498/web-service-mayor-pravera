@@ -46,9 +46,10 @@ class StoreBillPayablePaymentRequest extends FormRequest
             'date' => ['required', 'date_format:Y-m-d', 'before_or_equal:' . Carbon::now()->format('Y-m-d')],
         ];
 
-        if (isset($this->isDollar) && $this->isDollar === '1'){
+        if (isset($this->is_dollar) && $this->is_dollar === '1'){
             $rules['foreign_currency_payment_method'] = ['required'];
-            $rules['retirement_date'] = ['required', 'date_format:Y-m-d', 'before_or_equal:' . Carbon::now()->format('Y-m-d')];
+            $rules['retirement_date'] = ['required', 'date_format:Y-m-d', 'after_or_equal:' . $this->date,
+                'before_or_equal:' . Carbon::now()->format('Y-m-d')];
         } else {
             $rules['tasa'] = $total_rules;
             $rules['ref_number'] = ['required'];
