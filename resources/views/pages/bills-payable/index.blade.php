@@ -29,13 +29,13 @@
             <tbody id="billsPayableTBody">
                 @foreach ($data as $key => $value)
                     <tr data-numeroD="{{ $value->NumeroD }}" data-prov="{{ $value->CodProv }}" data-descripProv="{{ $value->Descrip }}">
-                        <td class="text-center">{{ $value->NumeroD }}</td>
-                        <td class="text-center">{{ $value->CodProv }}</td>
-                        <td class="text-center">{{ $value->Descrip }}</td>
-                        <td class="text-center">{{ date('d-m-Y', strtotime($value->FechaE)) }}</td>
-                        <td class="text-center">{{ date('d-m-Y', strtotime($value->FechaPosteo)) }}</td>
-                        <td class="text-center"  data-bill="montoTotal">{{ $value->MontoTotal }}</td>
-                        <td class="text-center"  data-bill="montoPagar">{{ $value->MontoPagar }}</td>
+                        <td class="text-center"><a class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ $value->NumeroD }}</a></td>
+                        <td class="text-center"><a class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ $value->CodProv }}</a></td>
+                        <td class="text-center"><a class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ $value->Descrip }}</a></td>
+                        <td class="text-center"><a class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ date('d-m-Y', strtotime($value->FechaE)) }}</a></td>
+                        <td class="text-center"><a class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ date('d-m-Y', strtotime($value->FechaPosteo)) }}</a></td>
+                        <td class="text-center" data-bill="montoTotal"><a class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ $value->MontoTotal }}</a></td>
+                        <td class="text-center"  data-bill="montoPagar"><a class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ $value->MontoPagar }}</a></td>
                         <td class="text-center">
                             <input 
                                 class="{{ 'w-32 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700' . 
@@ -59,8 +59,8 @@
                                 @endif
                             />   
                         </td>
-                        <td class="text-center" >{{ $value->Estatus }}</td>
-                        <td class="text-center" >{{ $value->DiasTranscurridos }}</td>
+                        <td class="text-center" ><a class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ $value->Estatus }}</a></td>
+                        <td class="text-center" ><a class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ $value->DiasTranscurridos }}</a></td>
                         <td>
                             <button
                                 type="button"

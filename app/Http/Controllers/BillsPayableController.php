@@ -18,6 +18,8 @@ use App\Http\Requests\StoreBillPayablePaymentRequest;
 
 use App\Models\BillPayable;
 use App\Models\BillPayablePayment;
+use App\Models\BillPayablePaymentBs;
+use App\Models\BillPayablePaymentDollar;
 
 use App\Http\Traits\SessionTrait;
 
@@ -99,7 +101,8 @@ class BillsPayableController extends Controller
                 'MontoPagar' => number_format($record->MontoPagar, 2) . " " . config("constants.CURRENCY_SIGNS." . ($record->esDolar ? "dollar" : "bolivar")),
                 'Tasa' => number_format($record->Tasa, 2),
                 'Estatus' => isset($record->Status)  ? config("constants.BILL_PAYABLE_STATUS." . $record->Status) : config("constants.BILL_PAYABLE_STATUS.NOTPAID"),
-                'DiasTranscurridos' => $days
+                'DiasTranscurridos' => $days,
+                'BillPayableSchedulesID' => isset($record->BillPayableSchedulesID) ? $record->BillPayableSchedulesID : null
             ];
         }, $paginator->items());
 
@@ -217,21 +220,35 @@ class BillsPayableController extends Controller
 
         $validated = $request->validated();
 
-        $validated['is_dollar'] = key_exists('is_dollar', $validated) ? $validated['is_dollar'] : '0';
+        $validated['is_dollar'] = key_exists('is_dollar', $request->all()) ? $request->all()['is_dollar'] : '0';
 
-        $result = BillPayablePayment::upsert($validated,
-            ['nro_doc', 'cod_prov'],
-            ['amount', 'is_dollar', 'date']);
+        $bill_payment = BillPayablePayment::create($validated);
 
-        if ($result > 0){
-            $this->flasher->addSuccess('El pago fue creado exitosamente!');
+        if ($bill_payment){
+            $bill_payment_child = null;
+
+            $validated['bill_payments_id'] = $bill_payment->id;
+
+            if ($validated['is_dollar'] === '0'){
+                $bill_payment_child = BillPayablePaymentBs::create($validated);
+            } else if ($validated['is_dollar'] === '1') {
+                $validated['payment_method'] = $validated['foreign_currency_payment_method'];
+                unset($validated['foreign_currency_payment_method']);
+                $bill_payment_child = BillPayablePaymentDollar::create($validated);
+            }
+
+            if ($bill_payment_child){
+                $this->flasher->addSuccess('El pago fue creado exitosamente!');
+            } else {
+                $bill_payment->delete();
+                $this->flasher->addError('No se pudo crear el pago para la factura');
+            }
         } else {
             $this->flasher->addError('No se pudo crear el pago para la factura');
         }
         
         return redirect()->route('bill_payable.showBillPayable', 
             ['numero_d' => $validated['nro_doc'], 'cod_prov' => $validated['cod_prov']]);
-
     }
 
     public function storeBillPayable(Request $request){

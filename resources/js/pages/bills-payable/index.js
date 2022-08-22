@@ -100,7 +100,7 @@ export default {
         let amount = formatAmount(row.querySelector('td[data-bill=montoTotal]').innerHTML);
         let isDollar = row.querySelector('input[data-bill=isDollar]').value;
         let provDescrip = row.getAttribute('data-descripProv')
-       
+  
         return {numeroD, codProv, billType, tasa, amount, isDollar, provDescrip}
     },
     handleDollarCheckClicked: function(event){
@@ -132,7 +132,7 @@ export default {
                     this.handleDollarCheckClicked(event)
                 } else if (dataBill === 'modalBtn'){
                     let data = this.getBillPayableData(event);
-                    
+
                     this.billPayableSchedulePresenter.setBillPayable(data)
                 }
             }

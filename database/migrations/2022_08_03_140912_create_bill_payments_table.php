@@ -14,6 +14,7 @@ class CreateBillPaymentsTable extends Migration
     public function up()
     {
         Schema::create('bill_payments', function (Blueprint $table) {
+            $table->id();
             $table->string('nro_doc', 50);
             $table->string('cod_prov', 50);
             $table->decimal('amount', 28, 4);

@@ -14,15 +14,14 @@ class CreateBillPaymentsDollarTable extends Migration
     public function up()
     {
         Schema::create('bill_payments_dollar', function (Blueprint $table) {
-            $table->string('nro_doc', 50);
-            $table->string('cod_prov', 50);
+            $table->unsignedBigInteger('bill_payments_id');
            
-
             $table->enum('payment_method', array_keys(config('constants.FOREIGN_CURRENCY_BILL_PAYMENT_METHODS')));
             $table->date('retirement_date');
 
-            $table->foreign(['nro_doc', 'cod_prov'])
-                ->references(['nro_doc', 'cod_prov'])->on('bill_payments');
+            $table->foreign('bill_payments_id')
+                ->references('id')
+                ->on('bill_payments');
         });
     }
 

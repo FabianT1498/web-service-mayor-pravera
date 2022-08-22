@@ -100,12 +100,11 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
         return DB
             ::connection('web_services_db')
             ->table('bill_payments')
-            ->selectRaw("bill_payments.nro_doc as NumeroD, bill_payments.cod_prov as CodProv, bill_payments.amount as Amount,
+            ->selectRaw("bill_payments.id as id, bill_payments.nro_doc as NumeroD, bill_payments.cod_prov as CodProv, bill_payments.amount as Amount,
                 bill_payments.date as Date, bill_payments.is_dollar as esDolar, bill_payments_bs.ref_number as RefNumber,
                 bill_payments_bs.tasa as Tasa, bill_payments_bs.bank_name as BankName")
             ->join('bill_payments_bs', function($join){
-                $join->on('bill_payments.nro_doc', '=', 'bill_payments_bs.nro_doc')
-                    ->on('bill_payments.cod_prov', '=', 'bill_payments_bs.cod_prov');
+                $join->on('bill_payments.id', '=', 'bill_payments_bs.bill_payments_id');
             })
             ->whereRaw("bill_payments.nro_doc = ? AND bill_payments.cod_prov = ? AND is_dollar = 0", [$n_doc, $cod_prov]);
     }
@@ -115,12 +114,11 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
         return DB
             ::connection('web_services_db')
             ->table('bill_payments')
-            ->selectRaw("bill_payments.nro_doc as NumeroD, bill_payments.cod_prov as CodProv, bill_payments.amount as Amount,
+            ->selectRaw("bill_payments.id as id, bill_payments.nro_doc as NumeroD, bill_payments.cod_prov as CodProv, bill_payments.amount as Amount,
                 bill_payments.date as Date, bill_payments.is_dollar as esDolar, bill_payments_dollar.payment_method as PaymentMethod,
                 bill_payments_dollar.retirement_date as RetirementDate")
             ->join('bill_payments_dollar', function($join){
-                $join->on('bill_payments.nro_doc', '=', 'bill_payments_dollar.nro_doc')
-                    ->on('bill_payments.cod_prov', '=', 'bill_payments_dollar.cod_prov');
+                $join->on('bill_payments.id', '=', 'bill_payments_dollar.bill_payments_id');
             })
             ->whereRaw("bill_payments.nro_doc = ? AND bill_payments.cod_prov = ? AND is_dollar = 1", [$n_doc, $cod_prov]);
     }
@@ -136,7 +134,8 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
             ::connection('web_services_db')
             ->table('bills_payable')
             ->selectRaw("bills_payable.nro_doc as NumeroD, bills_payable.cod_prov as CodProv, bills_payable.bill_type as TipoCom, bills_payable.amount as MontoTotal,
-                bills_payable.is_dollar as esDolar, bills_payable.status as Status, bills_payable.tasa as Tasa, (bills_payable.amount - COALESCE(bill_payments.total_paid, 0)) as MontoPagar")
+                bills_payable.is_dollar as esDolar, bills_payable.status as Status, bills_payable.tasa as Tasa, (bills_payable.amount - COALESCE(bill_payments.total_paid, 0)) as MontoPagar,
+                bills_payable.bill_payable_schedules_id as BillPayableSchedulesID")
             ->leftJoin(DB::raw('(SELECT bill_payments.nro_doc, bill_payments.cod_prov, SUM(bill_payments.amount) as total_paid FROM bill_payments GROUP BY bill_payments.cod_prov, bill_payments.nro_doc) AS bill_payments'),
                 function($join){
                 $join->on('bills_payable.nro_doc', '=', 'bill_payments.nro_doc')
