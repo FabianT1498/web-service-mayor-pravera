@@ -16,6 +16,14 @@ import("./pages/bills-payable/index" /* webpackChunkName: "/js/bills_payable_ind
    billsPayableIndex.init()
 });
 
+import("./pages/bills-payable/show" /* webpackChunkName: "/js/bills_payable_show" */).then(({default: billPayableShow}) => {
+   billPayableShow.init()
+});
+
+import("./pages/bill-payable-schedules/create" /* webpackChunkName: "/js/bill_payable_schedules_create" */).then(({default: createSchedule}) => {
+   createSchedule.init()
+});
+
 /** ---- PRODUCTS SCRIPTS --- */
 import("./pages/products/index" /* webpackChunkName: "/js/products_index" */).then(({default: productsIndex}) => {
    productsIndex.init()

@@ -3,7 +3,7 @@
     <div class="flex items-center">
 
         <span class="text-gray-500">Fac. emitidas antes del:</span>
-        <div class="ml-4 basis-1/6">
+        <div class="ml-4 basis-1/6 relative">
             <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
                 <svg 
                     class="w-5 h-5 text-gray-500 dark:text-gray-400" 
@@ -24,16 +24,39 @@
                 autocomplete="off"
             >
         </div>
+
+        <span class="text-gray-500 ml-4">Número de factura</span>
+        <div class="relative w-1/6 flex-initial ml-4">
+            <input 
+                data-form="filter"
+                id="nroDoc"
+                name="nro_doc" 
+                type="text" 
+                value="{{$nro_doc}}"
+                class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+                autocomplete="off"
+            >
+        </div>
+
+        <span class="text-gray-500 ml-4">Proveedor</span>
+        <div class="relative w-2/6 flex-initial ml-4">
+            <x-autocomplete 
+                :id="__('provider_search')"
+                :key="$cod_prov"
+                :value="$descrip_prov"
+                :name="__('cod_prov')"
+            />
+        </div>
       
         <span class="text-gray-500 ml-4">Es factura en $:</span>
         <input
-            class="ml-4"
+            class=""
             data-form="filter"
-            id="isDolar"
+            id="isDollar"
             type="checkbox"
-            name={{__('is_dolar') }} 
-            value={{ $is_dolar ? "1" : "0" }} 
-            {{ $is_dolar ? "checked" : "" }}
+            name={{__('is_dollar') }} 
+            value={{ $is_dollar ? "1" : "0" }} 
+            {{ $is_dollar ? "checked" : "" }}
         />
 
         <span class="text-gray-500 ml-4">Tipo de factura: </span>
@@ -49,11 +72,31 @@
             />
         </div>
 
-        <div class="basis-1/12 ml-8">
-            <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+        <div class="ml-8">
+            <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                 <i class="fas fa-search"></i>
             </button>
         </div>
+
+        <div class="ml-4">
+            <button 
+                type="button"
+                id="cleanFormBtn"
+                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center  dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                data-tooltip-target="clear-form-tooltip"
+            >
+                <i class="fas fa-trash-can-arrow-up"></i>
+            </button>
+        </div>
+
+        <div 
+            id="clear-form-tooltip"
+            role="tooltip" 
+            class="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 transition-opacity duration-300 tooltip dark:bg-gray-700"
+        >
+            Limpiar formulario
+            <div class="tooltip-arrow" data-popper-arrow></div>
+        </div> 
 
         <!-- <div class="flex basis-1/5 items-center">
             

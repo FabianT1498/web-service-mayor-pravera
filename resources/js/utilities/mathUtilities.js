@@ -34,6 +34,10 @@ const formatAmount = (amount, defaultValue = '0.00') => {
 };
 
 const roundNumber = (number, decimals = 2) => {
+    if (typeof number === 'string'){
+        number = parseFloat(number)
+    }
+
     if (number === 0){
         return number
     }
