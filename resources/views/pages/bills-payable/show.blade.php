@@ -46,6 +46,10 @@
             </div>
         @endif
 
+        <div class="mb-8">
+            <h3 class="h3">Pagos en Bs</h3>
+        </div>
+
         <div class="w-1/2 mx-auto text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 mb-8">
             <table class="table table-bordered table-hover mx-auto text-center p-0">
                 <thead class="bg-blue-300">
@@ -80,7 +84,11 @@
             </table>
         </div>
 
-        <div class="w-1/2 mx-auto text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200">
+        <div class="mb-8">
+            <h3 class="h3">Pagos en Dolares</h3>
+        </div>
+
+        <div class="w-1/2 mx-auto text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 mb-40">
             <table class="table table-bordered table-hover mx-auto text-center p-0">
                 <thead class="bg-blue-300">
                     <tr>
