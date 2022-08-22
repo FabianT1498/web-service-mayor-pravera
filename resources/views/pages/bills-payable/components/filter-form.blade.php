@@ -1,7 +1,7 @@
 <form class=" border-slate-600" id="form_filter" method="GET" action="{{ route('bill_payable.index') }}">
     <input id="page" name="page" type="hidden" value="1">
     <div class="flex items-center justify-between w-full">
-        <div class="flex items-center wrap w-10/12">
+        <div class="flex items-start wrap w-10/12">
 
             <div class="w-2/6 ml-4">
                 <span class="text-gray-500 mb-2 font-semibold inline-block">Fac. emitidas antes del:</span>
@@ -65,17 +65,31 @@
                 />
             </div>
 
-            <div class="w-2/6 h-full ml-4">
-                <span class="text-gray-500 font-semibold inline-block">Es factura en $:</span>
-                <input
-                    class="ml-2"
-                    data-form="filter"
-                    id="isDollar"
-                    type="checkbox"
-                    name={{__('is_dollar') }} 
-                    value={{ $is_dollar ? "1" : "0" }} 
-                    {{ $is_dollar ? "checked" : "" }}
-                />
+            <div class="w-2/6 ml-4">
+                <div class="flex items-center justify-start mb-2">
+                    <span class="text-gray-500 font-semibold inline-block  w-4/5">Es factura en $:</span>
+                    <input
+                        data-form="filter"
+                        id="isDollar"
+                        type="checkbox"
+                        name={{__('is_dollar') }} 
+                        value={{ $is_dollar ? "1" : "0" }} 
+                        {{ $is_dollar ? "checked" : "" }}
+                    />
+                </div>
+
+                <div class="flex items-center justify-start">
+                    <span class="text-gray-500 font-semibold inline-block w-4/5">Facturas programadas:</span>
+                    <input
+                        data-form="filter"
+                        id="scheduledBill"
+                        type="checkbox"
+                        name={{__('is_scheduled_bill') }} 
+                        value={{ $is_scheduled_bill ? "1" : "0" }} 
+                        {{ $is_scheduled_bill ? "checked" : "" }}
+                    />
+                </div>
+                
             </div>
 
     

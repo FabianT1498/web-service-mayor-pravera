@@ -34,7 +34,7 @@
                         <td class="text-center"><a class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ $value->Descrip }}</a></td>
                         <td class="text-center"><a class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ date('d-m-Y', strtotime($value->FechaE)) }}</a></td>
                         <td class="text-center"><a class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ date('d-m-Y', strtotime($value->FechaPosteo)) }}</a></td>
-                        <td class="text-center" data-bill="montoTotal"><a class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ $value->MontoTotal }}</a></td>
+                        <td class="text-center"><a data-bill="montoTotal" class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ $value->MontoTotal }}</a></td>
                         <td class="text-center"  data-bill="montoPagar"><a class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ $value->MontoPagar }}</a></td>
                         <td class="text-center">
                             <input 

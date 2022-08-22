@@ -39,6 +39,7 @@ class BillsPayableController extends Controller
         $this->setSession($request, 'current_module', 'bill_payable');
 
         $is_dollar = $request->query('is_dollar', 0);
+        $is_scheduled_bill = $request->query('is_scheduled_bill', 0);
         $nro_doc = $request->query('nro_doc', '');
         $end_emission_date = $request->query('end_emission_date', Carbon::now()->format('d-m-Y'));
         $cod_prov = $request->query('cod_prov', '');
@@ -130,6 +131,7 @@ class BillsPayableController extends Controller
             'paginator',
             'data',
             'is_dollar',
+            'is_scheduled_bill',
             'nro_doc',
             'bill_type',
             'bill_types',

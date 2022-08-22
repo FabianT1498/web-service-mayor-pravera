@@ -97,10 +97,10 @@ export default {
         let codProv = row.getAttribute('data-prov');
         let billType = this.DOMElements.formFilter.querySelector('#billType').value;
         let tasa = formatAmount(row.querySelector('input[data-bill=tasa]').value);
-        let amount = formatAmount(row.querySelector('td[data-bill=montoTotal]').innerHTML);
+        let amount = formatAmount(row.querySelector('a[data-bill=montoTotal]').innerHTML);
         let isDollar = row.querySelector('input[data-bill=isDollar]').value;
         let provDescrip = row.getAttribute('data-descripProv')
-  
+
         return {numeroD, codProv, billType, tasa, amount, isDollar, provDescrip}
     },
     handleDollarCheckClicked: function(event){
@@ -132,6 +132,8 @@ export default {
                     this.handleDollarCheckClicked(event)
                 } else if (dataBill === 'modalBtn'){
                     let data = this.getBillPayableData(event);
+
+                    console.log(data)
 
                     this.billPayableSchedulePresenter.setBillPayable(data)
                 }
@@ -207,6 +209,7 @@ export default {
         this.DOMElements.formFilter.addEventListener('keydown', this.keydownWrapper());
 
         this.DOMElements.formFilter.querySelector('#isDollar').addEventListener('click', this.handleCheck);
+        this.DOMElements.formFilter.querySelector('#scheduledBill').addEventListener('click', this.handleCheck);
 
         const tasaInputs = this.DOMElements.billsPayableTBody.querySelectorAll('input[data-bill=tasa]')
 
