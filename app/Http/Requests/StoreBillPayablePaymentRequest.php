@@ -35,18 +35,25 @@ class StoreBillPayablePaymentRequest extends FormRequest
     public function rules(BillsPayableRepository $repo)
     {
 
-        $total_rules = ['required', new BadFormattedAmount, 'gte:0'];
+        $total_rules = ['required', new BadFormattedAmount, 'gt:0'];
 
         $bill_payable_exists_validation =  (new BillPayableExists($repo))->setData(['nro_doc' => $this->nro_doc, 'cod_prov' => $this->cod_prov]);
-       
+        
         $rules = [
             'nro_doc' => ['required', $bill_payable_exists_validation],
+            'cod_prov' => ['required'],
             'amount' => $total_rules,
-            'tasa' => $total_rules,
             'date' => ['required', 'date_format:Y-m-d', 'before_or_equal:' . Carbon::now()->format('Y-m-d')],
-            'referenceNumber' => ['required'],
-            'bank' => ['required']
         ];
+
+        if (isset($this->isDollar) && $this->isDollar === '1'){
+            $rules['foreign_currency_payment_method'] = ['required'];
+            $rules['retirement_date'] = ['required', 'date_format:Y-m-d', 'before_or_equal:' . Carbon::now()->format('Y-m-d')];
+        } else {
+            $rules['tasa'] = $total_rules;
+            $rules['ref_number'] = ['required'];
+            $rules['bank_name'] = ['required'];
+        }
 
         return $rules;
     }
@@ -61,7 +68,8 @@ class StoreBillPayablePaymentRequest extends FormRequest
         $inputs = [
             'amount' => $this->formatAmount($this->amount),
             'tasa' => $this->formatAmount($this->tasa),
-            'date' => isset($this->date) ? Carbon::createFromFormat('d-m-Y', $this->date)->format('Y-m-d') : null
+            'date' => isset($this->date) ? Carbon::createFromFormat('d-m-Y', $this->date)->format('Y-m-d') : null,
+            'retirement_date' => isset($this->retirement_date) ? Carbon::createFromFormat('d-m-Y', $this->retirement_date)->format('Y-m-d') : null
         ];
  
         $this->merge($inputs);
@@ -75,7 +83,7 @@ class StoreBillPayablePaymentRequest extends FormRequest
             'amount' => 'Monto a pagar',
             'tasa' => 'Tasa',
             'date' => 'Fecha de pago',
-            'referenceNumber' => 'Numero de referencia'
+            'reference_number' => 'Numero de referencia'
         ];
     }
 

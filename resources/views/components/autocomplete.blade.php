@@ -14,6 +14,7 @@
     <input id="{{ $id . '_hidden' }}" type="hidden" value="{{ $key }}" name="{{ $name }}">
     <input 
         type="text" 
+        autocomplete="off"
         value="{{ $value }}"
         name="{{ $name . "_value" }}"
         placeholder="{{ $placeholder }}" 

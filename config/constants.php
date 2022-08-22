@@ -18,5 +18,6 @@ return [
     'POINT_SALE_METHODS' => $point_sale_methods,
     'BILL_PAYABLE_TYPE' => $bill_payable_types,
     'BILL_PAYABLE_STATUS' => $bill_payable_status,
-    'BILL_PAYABLE_SCHEDULE_STATUS' => $bill_payable_schedule_status
+    'BILL_PAYABLE_SCHEDULE_STATUS' => $bill_payable_schedule_status,
+    'FOREIGN_CURRENCY_BILL_PAYMENT_METHODS' => $foreing_currency_bill_payment_methods
 ];

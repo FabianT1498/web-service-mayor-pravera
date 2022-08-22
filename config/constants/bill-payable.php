@@ -14,3 +14,9 @@ $bill_payable_schedule_status = [
     'CLOSED' => "CERRADO",
     'PROCESSING' => "EN PROCESO"
 ];
+
+$foreing_currency_bill_payment_methods = [
+    'CASH' => "EFECTIVO",
+    'DEPOSIT' => "DEPOSITO",
+    'ZELLE' => 'ZELLE'
+];

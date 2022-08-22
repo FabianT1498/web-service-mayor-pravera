@@ -143,26 +143,33 @@ class BillsPayableController extends Controller
 
     public function show(Request $request, BillsPayableRepository $repo){
 
-        $columns = [
+
+        $payment_dollar_table_cols = [
+            "Fecha pago",
+            'Método pago',
+            'Fecha retiro',
+            'Monto'
+        ];
+
+        $payment_bs_table_cols = [
             "Fecha pago",
             'Banco',
             'Nro. referencia',
-            'Es dolar',
             'Tasa',
-            "Cantidad"
+            "Monto"
         ];
 
         $today_date = Carbon::now()->format('d-m-Y');
         
         $bill = $repo->getBillPayable($request->numero_d, $request->cod_prov);
 
-        $bill_payments = $repo->getBillPayablePayments($request->numero_d, $request->cod_prov)->get();
+        $bill_payments_bs = $repo->getBillPayablePaymentsBs($request->numero_d, $request->cod_prov)->get();
+        $bill_payments_dollar = $repo->getBillPayablePaymentsDollar($request->numero_d, $request->cod_prov)->get();
 
-        $bill_payments = $bill_payments->map(function($record){
+        $bill_payments_bs = $bill_payments_bs->map(function($record){
             return (object) [
                 'NumeroD' => $record->NumeroD,
                 'CodProv' => $record->CodProv,
-                'esDolar' => $record->esDolar,
                 'Amount' => number_format($record->Amount, 2) . " " . config("constants.CURRENCY_SIGNS." . ($record->esDolar ? "dollar" : "bolivar")),
                 'Tasa' => number_format($record->Tasa, 2) . " " . config("constants.CURRENCY_SIGNS.bolivar"),
                 'BankName' => $record->BankName,
@@ -171,7 +178,16 @@ class BillsPayableController extends Controller
             ];
         });
 
-        // return print_r($bill_payments);
+        $bill_payments_dollar = $bill_payments_dollar->map(function($record){
+            return (object) [
+                'NumeroD' => $record->NumeroD,
+                'CodProv' => $record->CodProv,
+                'Amount' => number_format($record->Amount, 2) . " " . config("constants.CURRENCY_SIGNS." . ($record->esDolar ? "dollar" : "bolivar")),
+                'Date' => date('d-m-Y', strtotime($record->Date)),
+                'PaymentMethod' => $record->PaymentMethod,
+                'RetirementDate' => date('d-m-Y', strtotime($record->RetirementDate)),
+            ];
+        });
 
         $banks = DB::connection('web_services_db')
             ->table('banks')
@@ -181,12 +197,19 @@ class BillsPayableController extends Controller
                 return (object) array('key' => $item->name, 'value' => $item->name);
             });
 
+        $foreign_currency_payment_methods = array_map(function($val, $key){
+            return (object) array("key" => $key, "value" => $val);
+        }, config('constants.FOREIGN_CURRENCY_BILL_PAYMENT_METHODS'), array_keys(config('constants.FOREIGN_CURRENCY_BILL_PAYMENT_METHODS')));
+
         return view('pages.bills-payable.show', compact(
             'bill',
-            'bill_payments',
+            'foreign_currency_payment_methods',
+            'bill_payments_bs',
+            'bill_payments_dollar',
+            'payment_dollar_table_cols',
+            'payment_bs_table_cols',
             'banks',
             'today_date',
-            'columns'
         ));
     }
 
@@ -194,18 +217,11 @@ class BillsPayableController extends Controller
 
         $validated = $request->validated();
 
-        $validated['cod_prov'] = $request->cod_prov;
-        $validated['is_dollar'] = $request->isDollar === null ? '0' : '1';
-        $validated['bank_name'] = $validated['bank'];
-        $validated['ref_number'] = $validated['referenceNumber'];
-
-        unset($validated['bank']);
-        unset($validated['referenceNumber']);
-
+        $validated['is_dollar'] = key_exists('is_dollar', $validated) ? $validated['is_dollar'] : '0';
 
         $result = BillPayablePayment::upsert($validated,
             ['nro_doc', 'cod_prov'],
-            ['amount', 'bank_name', 'is_dollar', 'tasa', 'ref_number', 'date']);
+            ['amount', 'is_dollar', 'date']);
 
         if ($result > 0){
             $this->flasher->addSuccess('El pago fue creado exitosamente!');
