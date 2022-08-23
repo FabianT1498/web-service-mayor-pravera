@@ -83,23 +83,27 @@
                         <td class="text-center" ><a class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ $value->Estatus }}</a></td>
                         <td class="text-center" ><a class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ $value->DiasTranscurridos }}</a></td>
                         <td>
-                            <button
-                                type="button"
-                                data-tooltip-target="suggestion-tooltip"
-                                data-modal-toggle="bill_payable_schedules"
-                                data-bill="modalBtn"
-                                class="font-medium hover:text-teal-600 transition ease-in-out duration-500"
-                            >
-                                <i class="fa-solid fa-calendar"></i>
-                            </button>
-                            <div 
-                                id="suggestion-tooltip"
-                                role="tooltip" 
-                                class="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 transition-opacity duration-300 tooltip dark:bg-gray-700"
-                            >
-                                Programar factura
-                                <div class="tooltip-arrow" data-popper-arrow></div>
-                            </div> 
+                            @if ($value->Estatus === config("constants.BILL_PAYABLE_STATUS.NOTPAID"))
+                                <button
+                                    type="button"
+                                    data-tooltip-target="suggestion-tooltip"
+                                    data-modal-toggle="bill_payable_schedules"
+                                    data-bill="modalBtn"
+                                    class="font-medium hover:text-teal-600 transition ease-in-out duration-500"
+                                >
+                                    <i class="fa-solid fa-calendar"></i>
+                                </button>
+                                <div 
+                                    id="suggestion-tooltip"
+                                    role="tooltip" 
+                                    class="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 transition-opacity duration-300 tooltip dark:bg-gray-700"
+                                >
+                                    Programar factura
+                                    <div class="tooltip-arrow" data-popper-arrow></div>
+                                </div>
+                            @else
+                                &nbsp;
+                            @endif
                         </td>
                     </tr>
                 @endforeach

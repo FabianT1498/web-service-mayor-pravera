@@ -348,6 +348,10 @@ class BillsPayableController extends Controller
         $bill = BillPayable::whereRaw("nro_doc = ? AND cod_prov = ?", [$request->numeroD, $request->codProv])->first();
 
         if ($bill){
+            if (config("constants.BILL_PAYABLE_STATUS." . $bill->status) === config("constants.BILL_PAYABLE_STATUS.PAID")){
+                return $this->jsonResponse(['error' => 400, 'message' => 'Ya esta factura fue pagada', 'data' => null], 400);
+            }
+
             $bill->bill_payable_schedules_id = $request->scheduleID;
             BillPayable::upsert($data,
                 ['nro_doc', 'cod_prov'],

@@ -27,7 +27,7 @@ class BillPayable extends Model
         parent::__construct($attributes);
 
         $this->nro_doc = key_exists('nro_doc', $attributes) ? $attributes['nro_doc'] : '';
-        $this->cod_prov =  key_exists('cod_prov', $attributes) ? $attributes['cod_prov'] : '';
+        $this->cod_prov = key_exists('cod_prov', $attributes) ? $attributes['cod_prov'] : '';
         $this->descrip_prov =  key_exists('descrip_prov', $attributes) ? $attributes['descrip_prov'] : '';
         $this->bill_type = key_exists('bill_type', $attributes) ? $attributes['bill_type'] : '';
         $this->amount = key_exists('amount', $attributes) ? $attributes['amount'] : '';
