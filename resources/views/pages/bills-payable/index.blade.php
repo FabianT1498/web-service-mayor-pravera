@@ -32,7 +32,7 @@
                         <td class="text-center"><a class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ $value->NumeroD }}</a></td>
                         <td class="text-center"><a class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ $value->CodProv }}</a></td>
                         <td class="text-center"><a class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ $value->Descrip }}</a></td>
-                        <td class="text-center"><a class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ date('d-m-Y', strtotime($value->FechaE)) }}</a></td>
+                        <td class="text-center"><a data-bill="fechaE" class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ date('d-m-Y', strtotime($value->FechaE)) }}</a></td>
                         <td class="text-center"><a class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ date('d-m-Y', strtotime($value->FechaPosteo)) }}</a></td>
                         <td class="text-center"><a data-bill="montoTotal" class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ $value->MontoTotal }}</a></td>
                         <td class="text-center"  data-bill="montoPagar"><a class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ $value->MontoPagar }}</a></td>
@@ -76,7 +76,7 @@
                                 role="tooltip" 
                                 class="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 transition-opacity duration-300 tooltip dark:bg-gray-700"
                             >
-                                Programar pago
+                                Programar factura
                                 <div class="tooltip-arrow" data-popper-arrow></div>
                             </div> 
                         </td>

@@ -18,7 +18,8 @@ class BillPayable extends Model
         'amount',
         'tasa',
         'is_dollar',
-        'status'
+        'status',
+        'emission_date'
     ];
 
     public function __construct(array $attributes = array())
@@ -33,6 +34,7 @@ class BillPayable extends Model
         $this->is_dollar = key_exists('is_dollar', $attributes) ? $attributes['is_dollar'] : '';
         $this->status = key_exists('status', $attributes) ? $attributes['status'] : array_keys(config('constants.BILL_PAYABLE_STATUS'))[0];
         $this->tasa = key_exists('tasa', $attributes) ? $attributes['tasa'] : 0;
+        $this->emission_date = key_exists('emission_date', $attributes) ? $attributes['emission_date'] : '';
         $this->bill_payable_schedules_id = key_exists('bill_payable_schedules_id', $attributes) ? $attributes['bill_payable_schedules_id'] : null;
     }
 }
