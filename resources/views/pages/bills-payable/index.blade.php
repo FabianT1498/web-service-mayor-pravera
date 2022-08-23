@@ -29,7 +29,28 @@
             <tbody id="billsPayableTBody">
                 @foreach ($data as $key => $value)
                     <tr data-numeroD="{{ $value->NumeroD }}" data-prov="{{ $value->CodProv }}" data-descripProv="{{ $value->Descrip }}">
-                        <td class="text-center"><a class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ $value->NumeroD }}</a></td>
+                        <td class="text-center">
+                            <a class="block relative" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">
+                                @if ($value->BillPayableSchedulesID)
+                                    <div class="absolute top-0 right-2">
+                                        <span
+                                            data-tooltip-target="scheduled-bill"
+                                            class="absolute top-0 right-0 h-2 w-2 transform bg-red-600 rounded-full motion-safe:animate-pulse">
+                                                &nbsp;
+                                        </span>
+                                        <div 
+                                            id="scheduled-bill"
+                                            role="tooltip" 
+                                            class="inline-block absolute invisible z-10 w-28 py-2 px-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 transition-opacity duration-300 tooltip dark:bg-gray-700"
+                                        >
+                                            Factura programada
+                                            <div class="tooltip-arrow" data-popper-arrow></div>
+                                        </div> 
+                                    </div>
+                                @endif
+                                {{ $value->NumeroD }}
+                            </a>
+                        </td>
                         <td class="text-center"><a class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ $value->CodProv }}</a></td>
                         <td class="text-center"><a class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ $value->Descrip }}</a></td>
                         <td class="text-center"><a data-bill="fechaE" class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ date('d-m-Y', strtotime($value->FechaE)) }}</a></td>
