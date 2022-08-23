@@ -24,6 +24,10 @@ import("./pages/bill-payable-schedules/create" /* webpackChunkName: "/js/bill_pa
    createSchedule.init()
 });
 
+import("./pages/bill-payable-schedules/index" /* webpackChunkName: "/js/bill_payable_schedules_index" */).then(({default: billsPayableScheduleIndex}) => {
+   billsPayableScheduleIndex.init()
+});
+
 /** ---- PRODUCTS SCRIPTS --- */
 import("./pages/products/index" /* webpackChunkName: "/js/products_index" */).then(({default: productsIndex}) => {
    productsIndex.init()

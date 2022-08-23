@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('js')
-    <script src="{{ asset('js/bills_payable_schedules_index.js') }}" defer></script>
+    <script src="{{ asset('js/bill_payable_schedules_index.js') }}" defer></script>
 @endsection
 
 @section('main')
