@@ -123,13 +123,28 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
             ->whereRaw("bill_payments.nro_doc = ? AND bill_payments.cod_prov = ? AND is_dollar = 1", [$n_doc, $cod_prov]);
     }
 
-    public function getBillsPayable($ids = ''){
-        $whereRaw = '';
+    public function getBillsPayable($is_dolar, $before_emission_date, $bill_type, $nro_doc, $cod_prov){
+      
+        $query = DB
+            ::connection('web_services_db')
+            ->table('bills_payable')
+            ->selectRaw("bills_payable.nro_doc as NumeroD, bills_payable.cod_prov as CodProv, bills_payable.emission_date as FechaE,  bills_payable.bill_type as TipoCom, bills_payable.amount as MontoTotal,
+                bills_payable.is_dollar as esDolar, bills_payable.status as Status, bills_payable.tasa as Tasa, (bills_payable.amount - COALESCE(bill_payments.total_paid, 0)) as MontoPagar,
+                bills_payable.bill_payable_schedules_id as BillPayableSchedulesID, bills_payable.descrip_prov as Descrip")
+            ->leftJoin(DB::raw('(SELECT bill_payments.nro_doc, bill_payments.cod_prov, SUM(bill_payments.amount) as total_paid FROM bill_payments GROUP BY bill_payments.cod_prov, bill_payments.nro_doc) AS bill_payments'),
+                function($join){
+                $join->on('bills_payable.nro_doc', '=', 'bill_payments.nro_doc')
+                    ->on('bills_payable.cod_prov', '=', 'bill_payments.cod_prov');
+            })
+            ->whereRaw("bills_payable.emission_date <= '" . $before_emission_date . "' AND bills_payable.is_dollar = " . $is_dolar . " AND bills_payable.bill_type = '" . $bill_type . "' "  
+                . ($nro_doc && $nro_doc !== '' ? " AND UPPER(bills_payable.nro_doc) = UPPER('" . $nro_doc . "')" : '') . ( $cod_prov && $cod_prov !== '' ? " AND bills_payable.cod_prov = '" . $cod_prov . "'" : ''));
 
-        if ($ids !== ''){
-            $whereRaw = $whereRaw .  $ids;
-        }
+        return $query;
+    } 
 
+    public function getBillsPayableByIds($ids = ''){
+        
+        
         $query = DB
             ::connection('web_services_db')
             ->table('bills_payable')
@@ -142,9 +157,9 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
                     ->on('bills_payable.cod_prov', '=', 'bill_payments.cod_prov');
             });
 
-        if ($whereRaw !== ''){
-            $query = $query->whereRaw($whereRaw);
-        }
+            if ($ids !== ''){
+                $query = $query->whereRaw($ids);
+            }
 
         return $query;
     } 

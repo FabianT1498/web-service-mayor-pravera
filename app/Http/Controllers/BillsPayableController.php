@@ -38,18 +38,18 @@ class BillsPayableController extends Controller
 
         $this->setSession($request, 'current_module', 'bill_payable');
 
+        // Filter params
         $is_dollar = $request->query('is_dollar', 0);
         $is_scheduled_bill = $request->query('is_scheduled_bill', 0);
         $nro_doc = $request->query('nro_doc', '');
         $end_emission_date = $request->query('end_emission_date', Carbon::now()->format('d-m-Y'));
         $cod_prov = $request->query('cod_prov', '');
         $descrip_prov =  $request->query('cod_prov_value', '');
-      
         $min_available_days = $request->query('min_available_days', 0);
         $max_available_days = $request->query('max_available_days', 0);
-
         $is_caduced = $request->query('is_caduced', 1);
 
+        // Current page
         $page = $request->query('page', '');
 
         $new_end_emission_date = '';
@@ -68,45 +68,80 @@ class BillsPayableController extends Controller
             $new_end_emission_date = date('Y-m-d', strtotime($end_emission_date));
         }
 
-        $paginator = $repo->getBillsPayableFromSaint($is_dollar, $new_end_emission_date, $bill_type, $nro_doc, $cod_prov)->paginate(5);
+        $paginator = null;
 
-        if ($paginator->lastPage() < $page){
-            $paginator = $repo->getBillsPayableFromSaint($is_dollar, $new_end_emission_date, $bill_type, $nro_doc, $cod_prov)->paginate(5, ['*'], 'page', 1);
-        }
+        if ($is_scheduled_bill === '1'){
+            $paginator = $repo->getBillsPayable($is_dollar, $new_end_emission_date, $bill_type, $nro_doc, $cod_prov)->paginate(5);
 
-        $bills_payable_keys = implode(" OR ", array_map(function($item){
-            return "(bills_payable.cod_prov = '" . $item->CodProv . "' AND bills_payable.nro_doc = '" . $item->NumeroD . "')";
-        }, $paginator->items()));
+            if ($paginator->lastPage() < $page){
+                $paginator = $repo->getBillsPayable($is_dollar, $new_end_emission_date, $bill_type, $nro_doc, $cod_prov)->paginate(5, ['*'], 'page', 1);
+            }
 
-        $bills_payable_records = $repo->getBillsPayable($bills_payable_keys)->take(5)->get()->groupBy(['CodProv', 'NumeroD']);
+            $data = array_map(function($item){
+                
+                $datetime1 = new \DateTime();
+                $datetime2 = new \DateTime($item->FechaE);
+                $interval = $datetime1->diff($datetime2);
+                $days = $interval->format('%a');//now do whatever you like with $days
 
-        $data = array_map(function($item) use ($bills_payable_records){
+                return (object) [
+                    'NumeroD' => $item->NumeroD,
+                    'CodProv' => $item->CodProv,
+                    'Descrip' => $item->Descrip,
+                    'FechaE' => $item->FechaE,
+                    'FechaPosteo' => $item->FechaE,
+                    'esDolar' => $item->esDolar,
+                    'MontoTotal' => number_format($item->MontoTotal, 2) . " " . config("constants.CURRENCY_SIGNS." . ($item->esDolar ? "dollar" : "bolivar")),
+                    'MontoPagar' => number_format($item->MontoPagar, 2) . " " . config("constants.CURRENCY_SIGNS." . ($item->esDolar ? "dollar" : "bolivar")),
+                    'Tasa' => number_format($item->Tasa, 2),
+                    'Estatus' => isset($item->Status)  ? config("constants.BILL_PAYABLE_STATUS." . $item->Status) : config("constants.BILL_PAYABLE_STATUS.NOTPAID"),
+                    'DiasTranscurridos' => $days,
+                    'BillPayableSchedulesID' => isset($item->BillPayableSchedulesID) ? $item->BillPayableSchedulesID : null
+                ];
+            }, $paginator->items());
+
+        } else {
             
-            $record = $bills_payable_records->has($item->CodProv) && $bills_payable_records[$item->CodProv]->has($item->NumeroD)
-                ? $bills_payable_records[$item->CodProv][$item->NumeroD]->first()
-                : $item;
+            $paginator = $repo->getBillsPayableFromSaint($is_dollar, $new_end_emission_date, $bill_type, $nro_doc, $cod_prov)->paginate(5);
 
-            $datetime1 = new \DateTime();
-            $datetime2 = new \DateTime($item->FechaPosteo);
-            $interval = $datetime1->diff($datetime2);
-            $days = $interval->format('%a');//now do whatever you like with $days
+            if ($paginator->lastPage() < $page){
+                $paginator = $repo->getBillsPayableFromSaint($is_dollar, $new_end_emission_date, $bill_type, $nro_doc, $cod_prov)->paginate(5, ['*'], 'page', 1);
+            }
 
-            return (object) [
-                'NumeroD' => $record->NumeroD,
-                'CodProv' => $record->CodProv,
-                'Descrip' => $item->Descrip,
-                'FechaE' => $item->FechaE,
-                'FechaPosteo' => $item->FechaPosteo,
-                'esDolar' => $record->esDolar,
-                'MontoTotal' => number_format($record->MontoTotal, 2) . " " . config("constants.CURRENCY_SIGNS." . ($record->esDolar ? "dollar" : "bolivar")),
-                'MontoPagar' => number_format($record->MontoPagar, 2) . " " . config("constants.CURRENCY_SIGNS." . ($record->esDolar ? "dollar" : "bolivar")),
-                'Tasa' => number_format($record->Tasa, 2),
-                'Estatus' => isset($record->Status)  ? config("constants.BILL_PAYABLE_STATUS." . $record->Status) : config("constants.BILL_PAYABLE_STATUS.NOTPAID"),
-                'DiasTranscurridos' => $days,
-                'BillPayableSchedulesID' => isset($record->BillPayableSchedulesID) ? $record->BillPayableSchedulesID : null
-            ];
-        }, $paginator->items());
+            $bills_payable_keys = implode(" OR ", array_map(function($item){
+                return "(bills_payable.cod_prov = '" . $item->CodProv . "' AND bills_payable.nro_doc = '" . $item->NumeroD . "')";
+            }, $paginator->items()));
 
+            $bills_payable_records = $repo->getBillsPayableByIds($bills_payable_keys)->take(5)->get()->groupBy(['CodProv', 'NumeroD']);
+
+            $data = array_map(function($item) use ($bills_payable_records){
+                
+                $record = $bills_payable_records->has($item->CodProv) && $bills_payable_records[$item->CodProv]->has($item->NumeroD)
+                    ? $bills_payable_records[$item->CodProv][$item->NumeroD]->first()
+                    : $item;
+
+                $datetime1 = new \DateTime();
+                $datetime2 = new \DateTime($item->FechaPosteo);
+                $interval = $datetime1->diff($datetime2);
+                $days = $interval->format('%a');//now do whatever you like with $days
+
+                return (object) [
+                    'NumeroD' => $record->NumeroD,
+                    'CodProv' => $record->CodProv,
+                    'Descrip' => $item->Descrip,
+                    'FechaE' => $item->FechaE,
+                    'FechaPosteo' => $item->FechaPosteo,
+                    'esDolar' => $record->esDolar,
+                    'MontoTotal' => number_format($record->MontoTotal, 2) . " " . config("constants.CURRENCY_SIGNS." . ($record->esDolar ? "dollar" : "bolivar")),
+                    'MontoPagar' => number_format($record->MontoPagar, 2) . " " . config("constants.CURRENCY_SIGNS." . ($record->esDolar ? "dollar" : "bolivar")),
+                    'Tasa' => number_format($record->Tasa, 2),
+                    'Estatus' => isset($record->Status)  ? config("constants.BILL_PAYABLE_STATUS." . $record->Status) : config("constants.BILL_PAYABLE_STATUS.NOTPAID"),
+                    'DiasTranscurridos' => $days,
+                    'BillPayableSchedulesID' => isset($record->BillPayableSchedulesID) ? $record->BillPayableSchedulesID : null
+                ];
+            }, $paginator->items());
+        }
+        
         $schedules = $repo_schedule->getBillSchedules()->get()->map(function($item){
             return (object) array("key" => $item->WeekNumber, "value" => "Semana " . $item->WeekNumber);
         });
@@ -296,6 +331,7 @@ class BillsPayableController extends Controller
         $amount = $request->amount;
         $schedule_id = $request->scheduleID;
         $descrip_prov = $request->provDescrip;
+        $emission_date = $request->fechaE;
 
         $data = [
             'nro_doc' => $nro_doc,
@@ -305,6 +341,7 @@ class BillsPayableController extends Controller
             'is_dollar' => $is_dollar,
             'tasa' => $tasa,
             'descrip_prov' => $descrip_prov,
+            'emission_date' =>  Carbon::createFromFormat('d-m-Y', $emission_date)->format('Y-m-d'),
             'bill_payable_schedules_id' => $schedule_id
         ];
 

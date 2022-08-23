@@ -100,8 +100,9 @@ export default {
         let amount = formatAmount(row.querySelector('a[data-bill=montoTotal]').innerHTML);
         let isDollar = row.querySelector('input[data-bill=isDollar]').value;
         let provDescrip = row.getAttribute('data-descripProv')
+        let fechaE = row.querySelector('a[data-bill=fechaE]').innerHTML
 
-        return {numeroD, codProv, billType, tasa, amount, isDollar, provDescrip}
+        return {numeroD, codProv, billType, tasa, amount, isDollar, provDescrip, fechaE}
     },
     handleDollarCheckClicked: function(event){
         let data = this.getBillPayableData(event);
