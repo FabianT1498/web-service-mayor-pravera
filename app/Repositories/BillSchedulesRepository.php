@@ -18,7 +18,7 @@ class BillSchedulesRepository implements BillSchedulesRepositoryInterface
         $where_params = [];
 
         if($start_date !== ''  && $end_date !== ''){
-            $interval_query = "bill_payable_schedules.start_date => ? AND bill_payable_schedules.end_date <= ?";
+            $interval_query = "bill_payable_schedules.start_date >= ? AND bill_payable_schedules.end_date <= ?";
             $where_params = [$start_date, $end_date];
         } else if($start_date !== ''){
             $interval_query = "bill_payable_schedules.start_date => ?";

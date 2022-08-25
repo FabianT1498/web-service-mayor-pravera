@@ -1,4 +1,9 @@
-<form id="billPaymentForm" action="{{ route('bill_payable.store-payment') }}" method="POST" class="w-full">
+<form 
+    id="billPaymentForm" 
+    action="{{ route('bill_payable.store-payment') }}" 
+    method="POST" 
+    class="w-full"
+>
     @csrf
     <input type="hidden" value="{{$bill->NumeroD}}" name="nro_doc" id="nroDoc">
     <input type="hidden" value="{{$bill->CodProv}}" name="cod_prov" id="codProv">
@@ -28,6 +33,7 @@
                 class="{{ 'w-full ml-4 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700' . 
                     ' dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 bg-gray-50'
                 }}"
+                data-bill="amount"
                 type="text" 
                 id="amount" 
                 value="{{ old('amount') ? old('amount') : 0.00 }}"
@@ -91,10 +97,10 @@
                 class="{{ 'border w-full ml-4  border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700' . 
                     ' dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 bg-gray-50'
                 }}"
+                data-bill="tasa"
                 type="text" 
                 id="tasaInput" 
                 value="{{ old('tasa') ? old('tasa') : 0.00 }}"
-                disabled
                 required
             >
         </div>
@@ -105,11 +111,12 @@
                 class="{{ 'ml-4 w-full border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700' . 
                     ' dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 bg-gray-50'
                 }}"
+                data-bill="dollarAmount"
                 type="text" 
                 id="dollarAmount" 
                 value="{{ old('dollarAmount') ? old('dollarAmount') : 0.00 }}"
                 name="dollarAmount"
-                disabled
+                required
             >
         </div>
     </div>
@@ -143,7 +150,21 @@
         </div>        
     </div>
 
-    <x-button class="justify-center" :variation="__('rounded')">
+    <x-button 
+        class="justify-center" 
+        :variation="__('rounded')" 
+        :disabled="$bill->Tasa === 0.00"
+        :dataTooltipTarget="__('tasaNotDefinedSuggestion')"
+        :dataTooltipPlacement="__('right')"
+    >
         <span>Guardar</span>
     </x-button>
+    <div 
+        id="tasaNotDefinedSuggestion"
+        role="tooltip" 
+        class="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 transition-opacity duration-300 tooltip dark:bg-gray-700"
+    >
+        No puede generar un pago hasta que la factura tenga definida una tasa
+        <div class="tooltip-arrow" data-popper-arrow></div>
+    </div>
 </form> 

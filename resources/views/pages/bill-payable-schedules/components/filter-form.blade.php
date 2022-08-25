@@ -16,10 +16,10 @@
                     </svg>
                 </div>
                 <input 
-                    id="endDatePicker"
-                    name="end_date" 
+                    id="startDatePicker"
+                    name="start_date" 
                     type="text" 
-                    value="{{$end_date}}"
+                    value="{{$start_date}}"
                     class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
                     placeholder="Seleccione la fecha inicial"
                     autocomplete="off"
@@ -39,10 +39,10 @@
                     </svg>
                 </div>
                 <input 
-                    id="startDatePicker"
-                    name="start_date" 
+                    id="endDatePicker"
+                    name="end_date" 
                     type="text" 
-                    value="{{$start_date}}"
+                    value="{{$end_date}}"
                     class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
                     placeholder="Seleccione la fecha final"
                     autocomplete="off"
