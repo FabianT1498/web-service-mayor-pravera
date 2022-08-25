@@ -79,15 +79,13 @@
                         </div>
                     </div>
                     
-                    @if ($errors->count() > 0)
+                    @if ($errors->first('bill_tasa'))
                         <div>
                             <div class="mb-2 flex">
-                                <h4 class="h4 mb-0">Erores</h4>
+                                <h4 class="h4 mb-0">Errores</h4>
                             </div>
                             <ul>
-                                @foreach($errors->all() as $error)
-                                    <li class="list-none error">{{$error}}</li>
-                                @endforeach
+                                <li class="list-none error">{{$errors->first('bill_tasa')}}</li>
                             </ul>
                         </div>
                     @endif
@@ -106,7 +104,7 @@
             </div>
         </div>
 
-        @if ($errors->count() > 0)
+        @if ($errors->count() > 0 && is_null($errors->first('bill_tasa')))
             <div class="w-4/6 p-4 mx-auto text-gray-900 mb-8 bg-white rounded-lg border border-gray-200 shadow-sm">
                 <div class="mb-2">
                     <h3 class="h3 mb-0">Erores</h3>

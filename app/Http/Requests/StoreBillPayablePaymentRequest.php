@@ -43,7 +43,7 @@ class StoreBillPayablePaymentRequest extends FormRequest
 
         $rules = [
             'cod_prov' => ['required'],
-            'nro_doc' => ['required', $bill_payable_exists_validation, $bill_payable_has_tasa],
+            'nro_doc' => ['required', $bill_payable_exists_validation],
             'amount' => $total_rules,
             'date' => ['required', 'date_format:Y-m-d', 'before_or_equal:' . Carbon::now()->format('Y-m-d')],
         ];
@@ -56,6 +56,8 @@ class StoreBillPayablePaymentRequest extends FormRequest
             $rules['tasa'] = $total_rules;
             $rules['ref_number'] = ['required'];
             $rules['bank_name'] = ['required'];
+            
+            array_push($rules['nro_doc'], [$bill_payable_has_tasa]);
         }
 
         return $rules;
