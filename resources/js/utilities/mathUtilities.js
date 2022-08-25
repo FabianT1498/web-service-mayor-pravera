@@ -30,8 +30,6 @@ const formatAmount = (amount, defaultValue = '0.00') => {
 
     let numberString = integer + '.' + decimal;
 
-    console.log(numberString)
-    
     return roundNumber(parseFloat(numberString))
 };
 

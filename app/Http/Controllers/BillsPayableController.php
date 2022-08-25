@@ -15,19 +15,21 @@ use App\Repositories\ProviderRepository;
 
 use App\Http\Requests\LinkBillPayableToScheduleRequest;
 use App\Http\Requests\StoreBillPayablePaymentRequest;
-
+use App\Http\Requests\UpdateBillPayableTasaRequest;
 use App\Models\BillPayable;
 use App\Models\BillPayablePayment;
 use App\Models\BillPayablePaymentBs;
 use App\Models\BillPayablePaymentDollar;
 
 use App\Http\Traits\SessionTrait;
+use App\Http\Traits\AmountCurrencyTrait;
 
 class BillsPayableController extends Controller
 {
     private $flasher = null;
 
     use SessionTrait;
+    use AmountCurrencyTrait;
 
     public function __construct(SweetAlertFactory $flasher)
     {
@@ -203,6 +205,8 @@ class BillsPayableController extends Controller
         
         $bill = $repo->getBillPayable($request->numero_d, $request->cod_prov);
 
+        $bill->Tasa = $this->formatAmount($bill->Tasa);
+
         $bill_payments_bs = $repo->getBillPayablePaymentsBs($request->numero_d, $request->cod_prov)->get();
         $bill_payments_dollar = $repo->getBillPayablePaymentsDollar($request->numero_d, $request->cod_prov)->get();
 
@@ -284,6 +288,24 @@ class BillsPayableController extends Controller
             $this->flasher->addError('No se pudo crear el pago para la factura');
         }
         
+        return redirect()->route('bill_payable.showBillPayable', 
+            ['numero_d' => $validated['nro_doc'], 'cod_prov' => $validated['cod_prov']]);
+    }
+
+    public function updateBillPayableTasa(UpdateBillPayableTasaRequest $request){
+
+        $validated = $request->validated();
+ 
+        $bill = BillPayable::whereRaw("nro_doc = ? AND cod_prov = ?", [$validated['nro_doc'], $validated['cod_prov']])->first();
+
+        $bill->tasa = $validated['bill_tasa'];
+
+        if ($bill->save()){
+            $this->flasher->addSuccess('La tasa fue actualizada!');
+        } else {
+            $this->flasher->addError('La tasa no pudo ser actualizada');
+        }
+
         return redirect()->route('bill_payable.showBillPayable', 
             ['numero_d' => $validated['nro_doc'], 'cod_prov' => $validated['cod_prov']]);
     }

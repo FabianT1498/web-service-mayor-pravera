@@ -10,15 +10,88 @@
             <h2 class="h2">Pagos de la factura</h2>
         </div>
 
-        <div class="w-4/6 mx-auto p-4 bg-white rounded-lg border border-gray-200 shadow-sm mb-8">
+        <div class="w-4/6 mx-auto p-6 bg-white rounded-lg border border-gray-200 shadow-sm mb-8">
             <div class="flex mb-4">
                 <h4 class="h4">Datos de la factura</h4>
             </div>
-            <div class="flex">
-                <p><span class="font-semibold">Monto total: </span>{{ number_format($bill->MontoTotal, 2) . " " . config("constants.CURRENCY_SIGNS." . ($bill->esDolar ? "dollar" : "bolivar")) }}</p>
-                <p class="ml-8"><span class="font-semibold">Monto por pagar: </span>{{ number_format($bill->MontoPagar, 2) . " " . config("constants.CURRENCY_SIGNS." . ($bill->esDolar ? "dollar" : "bolivar")) }}</p>
-                <p class="ml-8"><span class="font-semibold">Nro Factura: </span>{{$bill->NumeroD}}</p>
-                <p class="ml-8"><span class="font-semibold">Proveedor: </span>{{$bill->DescripProv}}</p>
+            <div>
+                <form action="{{ route('bill_payable.update-tasa') }}" method="POST" class="w-full">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" value="{{$bill->NumeroD}}" name="nro_doc" id="nroDoc">
+                    <input type="hidden" value="{{$bill->CodProv}}" name="cod_prov" id="codProv">
+                    
+                    <div class="flex mb-4">
+    
+                        <div class="w-1/5">
+                            <span class="font-semibold">Monto total: </span>
+                            <p>{{ number_format($bill->MontoTotal, 2) . " " . config("constants.CURRENCY_SIGNS." . ($bill->esDolar ? "dollar" : "bolivar")) }}</p>
+                        </div>
+    
+                        <div class="w-1/5 ml-4">
+                            <span class="font-semibold">Monto ref. ($): </span>
+                            @if(!$bill->esDolar && $bill->Tasa > 0)
+                                <p>{{ number_format(($bill->MontoTotal / $bill->Tasa), 2) . " " . config("constants.CURRENCY_SIGNS.dollar") }}</p>
+                            @else(!$bill->esDolar && $bill->Tasa === 0)
+                                <p>Suministre la tasa de la factura</p>
+                            @endif
+                        </div>
+                        
+                        <div class="w-1/5 ml-4">
+                            <span class="font-semibold">Monto por pagar: </span>
+                            <p>{{ number_format($bill->MontoPagar, 2) . " " . config("constants.CURRENCY_SIGNS." . ($bill->esDolar ? "dollar" : "bolivar")) }}</p>
+                        </div>
+    
+                        <div class="w-1/5 ml-4">
+                            <span class="font-semibold">Nro Factura: </span>
+                            <p>{{$bill->NumeroD}}</p>
+                        </div>
+
+                    </div>
+                    <div class="flex justify-between mb-4">
+                        <div class="flex justify-between items-center w-1/2">
+                            
+                            <div>
+                                <span class="font-semibold">Proveedor: </span>
+                                <p>{{$bill->DescripProv}}</p>
+                            </div>
+        
+                            <div>
+                                <span class="font-semibold block mb-2">Tasa: </span>
+                                <input 
+                                    class="{{ 'border w-full  border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700' . 
+                                        ' dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 bg-gray-50'
+                                    }}"
+                                    type="text"
+                                    name="bill_tasa"
+                                    id="billTasa" 
+                                    value="{{ old('bill_tasa') ? old('bill_tasa') : $bill->Tasa }}"
+                                    required
+                                >
+                            </div>
+
+                        </div>
+                       
+                        <div class="flex flex-col justify-end">
+                            <x-button :variation="__('rounded')">
+                                <span>Actualizar tasa</span>
+                            </x-button>
+                        </div>
+                    </div>
+                    
+                    @if ($errors->count() > 0)
+                        <div>
+                            <div class="mb-2 flex">
+                                <h4 class="h4 mb-0">Erores</h4>
+                            </div>
+                            <ul>
+                                @foreach($errors->all() as $error)
+                                    <li class="list-none error">{{$error}}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+                </form>
             </div>
         </div>
 

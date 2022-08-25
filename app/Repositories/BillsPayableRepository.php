@@ -82,7 +82,7 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
             ::connection('web_services_db')
             ->table('bills_payable')
             ->selectRaw("bills_payable.nro_doc as NumeroD, bills_payable.cod_prov as CodProv, bills_payable.bill_type as TipoCom, bills_payable.amount as MontoTotal,
-                bills_payable.is_dollar as esDolar, bills_payable.status as Status, bills_payable.cod_prov as CodProv, bills_payable.descrip_prov as DescripProv, 
+                bills_payable.is_dollar as esDolar, bills_payable.status as Status, bills_payable.cod_prov as CodProv, bills_payable.descrip_prov as DescripProv, bills_payable.tasa as Tasa, 
                 bills_payable.bill_payable_schedules_id as ScheduleID, bill_payable_schedules.start_date as ScheduleStartDate,
                 bill_payable_schedules.end_date as ScheduleEndDate, (bills_payable.amount - COALESCE(bill_payments.total_paid, 0)) as MontoPagar")
             ->leftjoin("bill_payable_schedules", "bill_payable_schedules.id", "=", "bills_payable.bill_payable_schedules_id")
