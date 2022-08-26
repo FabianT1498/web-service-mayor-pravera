@@ -87,7 +87,7 @@
                                 class="inline-block mr-2"
                                 type="radio"
                                 name="{{__('is_scheduled_bill') }}"
-                                checked
+                                {{ $is_scheduled_bill === 'yes' ? 'checked' : ''}}
                                 value="yes">Si
                         </div>
                         <div class="ml-4">
@@ -95,6 +95,7 @@
                                 class="inline-block mr-2" 
                                 type="radio"
                                 name="{{__('is_scheduled_bill') }}" 
+                                {{ $is_scheduled_bill === 'no' ? 'checked' : ''}}
                                 value="no">No
                         </div>
                     </div>

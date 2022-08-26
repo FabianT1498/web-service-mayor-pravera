@@ -81,13 +81,13 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
         return DB
             ::connection('web_services_db')
             ->table('bills_payable')
-            ->selectRaw("bills_payable.nro_doc as NumeroD, bills_payable.cod_prov as CodProv, bills_payable.bill_type as TipoCom, bills_payable.amount as MontoTotal,
+            ->selectRaw("bills_payable.nro_doc as NumeroD, bills_payable.cod_prov as CodProv, bills_payable.bill_type as TipoCom, CAST(ROUND(bills_payable.amount, 2) AS decimal(28, 4)) as MontoTotal,
                 bills_payable.is_dollar as esDolar, bills_payable.status as Status, bills_payable.cod_prov as CodProv, bills_payable.descrip_prov as DescripProv, bills_payable.tasa as Tasa, 
                 bills_payable.bill_payable_schedules_id as ScheduleID, bill_payable_schedules.start_date as ScheduleStartDate,
                 bill_payable_schedules.end_date as ScheduleEndDate,
                 CASE WHEN bills_payable.is_dollar = 1 
-                    THEN CAST(ROUND(bills_payable.amount - (COALESCE(bill_payments_bs_div.total_paid, 0) + COALESCE(bill_payments_dollar.total_paid, 0)), 2) AS decimal(15, 2))
-                ELSE CAST(ROUND((bills_payable.amount / COALESCE(bills_payable.tasa, 1)) - (COALESCE(bill_payments_bs_div.total_paid, 0) + COALESCE(bill_payments_dollar.total_paid, 0)), 2) AS decimal(15, 2))
+                    THEN CAST(ROUND(bills_payable.amount - (COALESCE(bill_payments_bs_div.total_paid, 0) + COALESCE(bill_payments_dollar.total_paid, 0)), 2) AS decimal(28, 4))
+                ELSE CAST(ROUND((bills_payable.amount / COALESCE(bills_payable.tasa, 1)) - (COALESCE(bill_payments_bs_div.total_paid, 0) + COALESCE(bill_payments_dollar.total_paid, 0)), 2) AS decimal(28, 4))
                 END AS MontoPagar")
             ->leftJoin("bill_payable_schedules", "bill_payable_schedules.id", "=", "bills_payable.bill_payable_schedules_id")
             ->leftJoin(DB::raw("(SELECT bill_payments.nro_doc, bill_payments.cod_prov, SUM(bill_payments.amount / bill_payments_bs.tasa) as total_paid FROM bill_payments 
@@ -107,6 +107,17 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
                         ->on('bills_payable.cod_prov', '=', 'bill_payments_dollar.cod_prov');
                 })
             ->whereRaw("bills_payable.nro_doc = ? AND bills_payable.cod_prov = ?", [$n_doc, $cod_prov])
+            ->first();
+    }
+
+    public function getBillPayablePaymentsCount($n_doc, $cod_prov){
+
+        return DB
+            ::connection('web_services_db')
+            ->table('bill_payments')
+            ->selectRaw("COALESCE(COUNT(bill_payments.id), 0) as count")
+            ->groupByRaw("cod_prov, nro_doc")
+            ->whereRaw("nro_doc = ? AND cod_prov = ?", [$n_doc, $cod_prov])
             ->first();
     }
 
@@ -138,20 +149,34 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
             ->whereRaw("bill_payments.nro_doc = ? AND bill_payments.cod_prov = ? AND is_dollar = 1", [$n_doc, $cod_prov]);
     }
 
-    public function getBillsPayable($is_dolar, $before_emission_date, $bill_type, $nro_doc, $cod_prov){
+    public function getBillsPayable($is_dolar, $before_emission_date, $bill_type, $nro_doc, $cod_prov, $is_scheduled_bill = 0){
       
         $query = DB
             ::connection('web_services_db')
             ->table('bills_payable')
             ->selectRaw("bills_payable.nro_doc as NumeroD, bills_payable.cod_prov as CodProv, bills_payable.emission_date as FechaE,  bills_payable.bill_type as TipoCom, bills_payable.amount as MontoTotal,
-                bills_payable.is_dollar as esDolar, bills_payable.status as Status, bills_payable.tasa as Tasa, (bills_payable.amount - COALESCE(bill_payments.total_paid, 0)) as MontoPagar,
+                bills_payable.is_dollar as esDolar, bills_payable.status as Status, bills_payable.tasa as Tasa,
+                CASE WHEN bills_payable.is_dollar = 1 
+                    THEN CAST(ROUND(bills_payable.amount - (COALESCE(bill_payments_bs_div.total_paid, 0) + COALESCE(bill_payments_dollar.total_paid, 0)), 2) AS decimal(28, 4))
+                ELSE CAST(ROUND((bills_payable.amount / COALESCE(bills_payable.tasa, 1)) - (COALESCE(bill_payments_bs_div.total_paid, 0) + COALESCE(bill_payments_dollar.total_paid, 0)), 2) AS decimal(28, 4))
+                END AS MontoPagar,
+                CAST(ROUND(COALESCE(bill_payments_bs_div.total_paid, 0) + COALESCE(bill_payments_dollar.total_paid, 0), 2) AS decimal(28, 4)) AS MontoPagado,
                 bills_payable.bill_payable_schedules_id as BillPayableSchedulesID, bills_payable.descrip_prov as Descrip")
-            ->leftJoin(DB::raw('(SELECT bill_payments.nro_doc, bill_payments.cod_prov, SUM(bill_payments.amount) as total_paid FROM bill_payments GROUP BY bill_payments.cod_prov, bill_payments.nro_doc) AS bill_payments'),
+            ->leftJoin(DB::raw("(SELECT bill_payments.nro_doc, bill_payments.cod_prov, SUM(bill_payments.amount / bill_payments_bs.tasa) as total_paid FROM bill_payments 
+                    INNER JOIN bill_payments_bs ON bill_payments_bs.bill_payments_id = bill_payments.id
+                    GROUP BY bill_payments.cod_prov, bill_payments.nro_doc) AS bill_payments_bs_div"),
                 function($join){
-                $join->on('bills_payable.nro_doc', '=', 'bill_payments.nro_doc')
-                    ->on('bills_payable.cod_prov', '=', 'bill_payments.cod_prov');
-            })
-            ->whereRaw("bills_payable.emission_date <= '" . $before_emission_date . "' AND bills_payable.is_dollar = " . $is_dolar . " AND bills_payable.bill_type = '" . $bill_type . "' "  
+                    $join->on('bills_payable.nro_doc', '=', 'bill_payments_bs_div.nro_doc')
+                        ->on('bills_payable.cod_prov', '=', 'bill_payments_bs_div.cod_prov');
+                })
+            ->leftJoin(DB::raw("(SELECT bill_payments.nro_doc, bill_payments.cod_prov, SUM(bill_payments.amount) as total_paid FROM bill_payments 
+                    INNER JOIN bill_payments_dollar ON bill_payments_dollar.bill_payments_id = bill_payments.id
+                    GROUP BY bill_payments.cod_prov, bill_payments.nro_doc) AS bill_payments_dollar"),
+                function($join){
+                    $join->on('bills_payable.nro_doc', '=', 'bill_payments_dollar.nro_doc')
+                        ->on('bills_payable.cod_prov', '=', 'bill_payments_dollar.cod_prov');
+                })
+            ->whereRaw("bills_payable.emission_date <= '" . $before_emission_date . "' AND bills_payable.bill_payable_schedules_id " . ($is_scheduled_bill ? "IS NOT" : "IS" ) . " NULL AND bills_payable.is_dollar = " . $is_dolar . " AND bills_payable.bill_type = '" . $bill_type . "' "  
                 . ($nro_doc && $nro_doc !== '' ? " AND UPPER(bills_payable.nro_doc) = UPPER('" . $nro_doc . "')" : '') . ( $cod_prov && $cod_prov !== '' ? " AND bills_payable.cod_prov = '" . $cod_prov . "'" : ''));
 
         return $query;
@@ -164,13 +189,26 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
             ::connection('web_services_db')
             ->table('bills_payable')
             ->selectRaw("bills_payable.nro_doc as NumeroD, bills_payable.cod_prov as CodProv, bills_payable.bill_type as TipoCom, bills_payable.amount as MontoTotal,
-                bills_payable.is_dollar as esDolar, bills_payable.status as Status, bills_payable.tasa as Tasa, (bills_payable.amount - COALESCE(bill_payments.total_paid, 0)) as MontoPagar,
+                CASE WHEN bills_payable.is_dollar = 1 
+                    THEN CAST(ROUND(bills_payable.amount - (COALESCE(bill_payments_bs_div.total_paid, 0) + COALESCE(bill_payments_dollar.total_paid, 0)), 2) AS decimal(28, 4))
+                    ELSE CAST(ROUND((bills_payable.amount / COALESCE(bills_payable.tasa, 1)) - (COALESCE(bill_payments_bs_div.total_paid, 0) + COALESCE(bill_payments_dollar.total_paid, 0)), 2) AS decimal(28, 4))
+                END AS MontoPagar,
+                CAST(ROUND(COALESCE(bill_payments_bs_div.total_paid, 0) + COALESCE(bill_payments_dollar.total_paid, 0), 2) AS decimal(28, 4)) AS MontoPagado,
                 bills_payable.bill_payable_schedules_id as BillPayableSchedulesID")
-            ->leftJoin(DB::raw('(SELECT bill_payments.nro_doc, bill_payments.cod_prov, SUM(bill_payments.amount) as total_paid FROM bill_payments GROUP BY bill_payments.cod_prov, bill_payments.nro_doc) AS bill_payments'),
+            ->leftJoin(DB::raw("(SELECT bill_payments.nro_doc, bill_payments.cod_prov, SUM(bill_payments.amount / bill_payments_bs.tasa) as total_paid FROM bill_payments 
+                    INNER JOIN bill_payments_bs ON bill_payments_bs.bill_payments_id = bill_payments.id
+                    GROUP BY bill_payments.cod_prov, bill_payments.nro_doc) AS bill_payments_bs_div"),
                 function($join){
-                $join->on('bills_payable.nro_doc', '=', 'bill_payments.nro_doc')
-                    ->on('bills_payable.cod_prov', '=', 'bill_payments.cod_prov');
-            });
+                    $join->on('bills_payable.nro_doc', '=', 'bill_payments_bs_div.nro_doc')
+                        ->on('bills_payable.cod_prov', '=', 'bill_payments_bs_div.cod_prov');
+                })
+            ->leftJoin(DB::raw("(SELECT bill_payments.nro_doc, bill_payments.cod_prov, SUM(bill_payments.amount) as total_paid FROM bill_payments 
+                    INNER JOIN bill_payments_dollar ON bill_payments_dollar.bill_payments_id = bill_payments.id
+                    GROUP BY bill_payments.cod_prov, bill_payments.nro_doc) AS bill_payments_dollar"),
+                function($join){
+                    $join->on('bills_payable.nro_doc', '=', 'bill_payments_dollar.nro_doc')
+                        ->on('bills_payable.cod_prov', '=', 'bill_payments_dollar.cod_prov');
+                });
 
             if ($ids !== ''){
                 $query = $query->whereRaw($ids);

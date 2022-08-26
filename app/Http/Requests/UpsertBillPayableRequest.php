@@ -9,12 +9,11 @@ use Carbon\Carbon;
 use App\Http\Traits\AmountCurrencyTrait;
 
 use App\Rules\BadFormattedAmount;
+use App\Rules\BillPayableExists;
 
 use App\Repositories\BillsPayableRepository;
 
-use App\Models\BillPayable;
-
-class LinkBillPayableToScheduleRequest extends FormRequest
+class UpsertBillPayableRequest extends FormRequest
 {
     use AmountCurrencyTrait;
 
@@ -25,10 +24,9 @@ class LinkBillPayableToScheduleRequest extends FormRequest
      */
     public function authorize(BillsPayableRepository $repo)
     {
-        $bill = BillPayable::whereRaw("nro_doc = ? AND cod_prov = ?", [$this->numeroD, $this->codProv])->first();
         $bill_payment_count = $repo->getBillPayablePaymentsCount($this->numeroD, $this->codProv);
         $count = isset($bill_payment_count->count) ? $bill_payment_count->count : 0;
-        return !$bill || ($bill && $count === 0 && config("constants.BILL_PAYABLE_STATUS." . $bill->status) === config("constants.BILL_PAYABLE_STATUS.NOTPAID"));
+        return $count === 0;
     }
 
     /**
@@ -50,7 +48,6 @@ class LinkBillPayableToScheduleRequest extends FormRequest
             'amount' => $total_rules,
             'provDescrip' => ['required'],
             'fechaE' => ['required', 'date_format:Y-m-d', 'before_or_equal:' . Carbon::now()->format('Y-m-d')],
-            'scheduleID' =>  ['required', 'exists:bill_payable_schedules,id'],
         ];
 
         return $rules;
@@ -81,7 +78,6 @@ class LinkBillPayableToScheduleRequest extends FormRequest
             'tasa' => 'Tasa',
             'amount' => 'Monto total de la factura',
             'fechaE' => 'Fecha de emision',
-            'scheduleID' => 'Programación'
         ];
     }
 

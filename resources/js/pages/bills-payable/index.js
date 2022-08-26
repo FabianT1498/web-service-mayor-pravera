@@ -209,7 +209,7 @@ export default {
         this.DOMElements.formFilter.addEventListener('keypress', this.keypressWrapper());
         this.DOMElements.formFilter.addEventListener('keydown', this.keydownWrapper());
 
-        this.DOMElements.formFilter.querySelector('#isDollar').addEventListener('click', this.handleCheck);
+        // this.DOMElements.formFilter.querySelector('#isDollar').addEventListener('click', this.handleCheck);
         // this.DOMElements.formFilter.querySelector('#scheduledBill').addEventListener('click', this.handleCheck);
 
         const tasaInputs = this.DOMElements.billsPayableTBody.querySelectorAll('input[data-bill=tasa]')
@@ -244,8 +244,9 @@ export default {
         storeBillPayable(data).then((res) => {
             let el = this.DOMElements.billsPayableTBody.querySelector(`tr[data-numeroD="${res.data.nro_doc}"][data-prov="${res.data.cod_prov}"]`)
 
-            this.changeAmountSign(el, 'td[data-bill=montoTotal]', res.data.is_dollar)
-            this.changeAmountSign(el, 'td[data-bill=montoPagar]', res.data.is_dollar)
+            this.changeAmountSign(el, 'a[data-bill=montoTotal]', res.data.is_dollar)
+            // this.changeAmountSign(el, 'a[data-bill=montoPagar]', res.data.is_dollar)
+            
         }).catch(err => {
             console.log(err);
         })
