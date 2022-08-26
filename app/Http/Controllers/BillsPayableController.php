@@ -198,13 +198,14 @@ class BillsPayableController extends Controller
             'Banco',
             'Nro. referencia',
             'Tasa',
-            "Monto"
+            "Monto",
+            "Monto ($)"
         ];
 
         $today_date = Carbon::now()->format('d-m-Y');
         
         $bill = $repo->getBillPayable($request->numero_d, $request->cod_prov);
-
+      
         $bill->Tasa = $this->formatAmount($bill->Tasa);
 
         $bill_payments_bs = $repo->getBillPayablePaymentsBs($request->numero_d, $request->cod_prov)->get();
@@ -215,6 +216,7 @@ class BillsPayableController extends Controller
                 'NumeroD' => $record->NumeroD,
                 'CodProv' => $record->CodProv,
                 'Amount' => number_format($record->Amount, 2) . " " . config("constants.CURRENCY_SIGNS." . ($record->esDolar ? "dollar" : "bolivar")),
+                'DollarAmount' => number_format($record->Amount / $record->Tasa, 2) . " " . config("constants.CURRENCY_SIGNS.dollar"),
                 'Tasa' => number_format($record->Tasa, 2) . " " . config("constants.CURRENCY_SIGNS.bolivar"),
                 'BankName' => $record->BankName,
                 'RefNumber' => $record->RefNumber,
@@ -257,7 +259,7 @@ class BillsPayableController extends Controller
         ));
     }
 
-    public function storePayment(StoreBillPayablePaymentRequest $request){
+    public function storePayment(StoreBillPayablePaymentRequest $request, BillsPayableRepository $repo){
 
         $validated = $request->validated();
 
@@ -266,20 +268,39 @@ class BillsPayableController extends Controller
         $bill_payment = BillPayablePayment::create($validated);
 
         if ($bill_payment){
+
             $bill_payment_child = null;
 
             $validated['bill_payments_id'] = $bill_payment->id;
 
+            $bill = $repo->getBillPayable($validated['nro_doc'], $validated['cod_prov']);
+
+            $bill_amount_to_pay_ref = $bill->MontoPagar;
+            $payment_amount_ref = 0;
+
             if ($validated['is_dollar'] === '0'){
+                $payment_amount_ref = $validated['amount'] / $validated['tasa'];
                 $bill_payment_child = BillPayablePaymentBs::create($validated);
+               
             } else if ($validated['is_dollar'] === '1') {
+                $payment_amount_ref = $validated['amount'];
                 $validated['payment_method'] = $validated['foreign_currency_payment_method'];
                 unset($validated['foreign_currency_payment_method']);
                 $bill_payment_child = BillPayablePaymentDollar::create($validated);
             }
 
+            $diff = $bill_amount_to_pay_ref - $payment_amount_ref;
+
+            $bill_status_change = false;
+
+            if ($diff <= 0){
+                $bill_model = BillPayable::whereRaw("nro_doc = ? AND cod_prov = ?", [$validated['nro_doc'], $validated['cod_prov']])->first();
+                $bill_model->status = array_keys(config("constants.BILL_PAYABLE_STATUS"))[1];
+                $bill_status_change = $bill_model->save();
+            }
+
             if ($bill_payment_child){
-                $this->flasher->addSuccess('El pago fue creado exitosamente!');
+                $this->flasher->addSuccess("El pago fue creado exitosamente " . ($bill_status_change ? "y la factura fue pagada completamente !" : "!"));
             } else {
                 $bill_payment->delete();
                 $this->flasher->addError('No se pudo crear el pago para la factura');

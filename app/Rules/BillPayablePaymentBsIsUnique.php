@@ -3,13 +3,10 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
-use App\Models\BillPayable;
-use App\Http\Traits\AmountCurrencyTrait;
+use App\Models\BillPayablePaymentBs;
 
-
-class BillPayableHasTasa implements Rule
+class BillPayablePaymentBsIsUnique implements Rule
 {
-    use AmountCurrencyTrait;
    
     /**
      * Determine if the validation rule passes.
@@ -20,9 +17,9 @@ class BillPayableHasTasa implements Rule
      */
     public function passes($attribute, $value)
     {
-        $bill = BillPayable::whereRaw("nro_doc = ? AND cod_prov = ?", [$this->data['nro_doc'], $this->data['cod_prov']])->first();
+        $bill_payment_bs = BillPayablePaymentBs::whereRaw("ref_number = ? AND bank_name = ?", [$this->data['ref_number'], $this->data['bank_name']])->first();
     
-        return $bill->tasa > 0;
+        return !$bill_payment_bs;
     }
 
     /**
@@ -32,7 +29,7 @@ class BillPayableHasTasa implements Rule
      */
     public function message()
     {
-        return 'La factura no tiene una tasa definida';
+        return 'El número de referencia y el banco ya esta asociado a otro pago.';
     }
 
     /**

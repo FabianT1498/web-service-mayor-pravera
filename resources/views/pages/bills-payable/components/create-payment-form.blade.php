@@ -35,8 +35,8 @@
                 }}"
                 data-bill="amount"
                 type="text" 
-                id="amount" 
                 value="{{ old('amount') ? old('amount') : 0.00 }}"
+                id="amount" 
                 name="amount"
                 required
                 autocomplete="off"
@@ -149,22 +149,30 @@
             />
         </div>        
     </div>
-
+                
     <x-button 
         class="justify-center" 
         :variation="__('rounded')" 
-        :disabled="$bill->Tasa === 0.00"
+        :disabled="$bill->Tasa === 0.00 || config('constants.BILL_PAYABLE_STATUS.' . $bill->Status) === config('constants.BILL_PAYABLE_STATUS.PAID')"
         :dataTooltipTarget="__('tasaNotDefinedSuggestion')"
         :dataTooltipPlacement="__('right')"
     >
         <span>Guardar</span>
     </x-button>
-    <div 
-        id="tasaNotDefinedSuggestion"
-        role="tooltip" 
-        class="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 transition-opacity duration-300 tooltip dark:bg-gray-700"
-    >
-        No puede generar un pago hasta que la factura tenga definida una tasa
-        <div class="tooltip-arrow" data-popper-arrow></div>
-    </div>
+
+    @if ($bill->Tasa === 0.00 || config("constants.BILL_PAYABLE_STATUS." . $bill->Status) === config("constants.BILL_PAYABLE_STATUS.PAID"))
+        <div 
+            id="tasaNotDefinedSuggestion"
+            role="tooltip" 
+            class="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 transition-opacity duration-300 tooltip dark:bg-gray-700"
+        >
+            {{ $bill->Tasa === 0.00 
+                ? 'No puede generar un pago hasta que la factura tenga definida una tasa.'
+                : (config("constants.BILL_PAYABLE_STATUS." . $bill->Status) === config("constants.BILL_PAYABLE_STATUS.PAID") 
+                    ? 'Esta factura ya ha sido pagada, no puede generar mas pagos.'
+                    : '')
+            }}
+            <div class="tooltip-arrow" data-popper-arrow></div>
+        </div>
+    @endif
 </form> 
