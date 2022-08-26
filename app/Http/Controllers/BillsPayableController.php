@@ -41,16 +41,13 @@ class BillsPayableController extends Controller
         $this->setSession($request, 'current_module', 'bill_payable');
 
         // Filter params
-        $is_dollar = $request->query('is_dollar', 0);
-        $is_scheduled_bill = $request->query('is_scheduled_bill', 0);
+        $is_scheduled_bill = $request->query('is_scheduled_bill', 'yes');
+
         $nro_doc = $request->query('nro_doc', '');
         $end_emission_date = $request->query('end_emission_date', Carbon::now()->format('d-m-Y'));
         $cod_prov = $request->query('cod_prov', '');
         $descrip_prov =  $request->query('cod_prov_value', '');
-        $min_available_days = $request->query('min_available_days', 0);
-        $max_available_days = $request->query('max_available_days', 0);
-        $is_caduced = $request->query('is_caduced', 1);
-
+      
         // Current page
         $page = $request->query('page', '');
 
@@ -62,6 +59,14 @@ class BillsPayableController extends Controller
 
         $bill_type = $request->query('bill_type', $bill_types[0]->key);
 
+        $bill_currencies =  array_map(function($val){
+            return (object) array("key" => $val, "value" => $val);
+        }, array_keys(config('constants.CURRENCIES')));
+
+        $bill_currency = $request->query('bill_currency', $bill_currencies[0]->key);
+
+        $is_dollar = config('constants.CURRENCIES.' . $bill_currency) === config('constants.CURRENCIES.BOLIVAR') ? 0 : 1;
+
         if(is_null($end_emission_date) || $end_emission_date === ''){
             $now = Carbon::now();
             $end_emission_date =  $now->format('d-m-Y');
@@ -72,7 +77,7 @@ class BillsPayableController extends Controller
 
         $paginator = null;
 
-        if ($is_scheduled_bill === '1'){
+        if ($is_scheduled_bill === 'yes'){
             $paginator = $repo->getBillsPayable($is_dollar, $new_end_emission_date, $bill_type, $nro_doc, $cod_prov)->paginate(5);
 
             if ($paginator->lastPage() < $page){
@@ -167,7 +172,6 @@ class BillsPayableController extends Controller
             'columns',
             'paginator',
             'data',
-            'is_dollar',
             'is_scheduled_bill',
             'nro_doc',
             'bill_type',
@@ -175,11 +179,10 @@ class BillsPayableController extends Controller
             'cod_prov',
             'descrip_prov',
             'end_emission_date',
-            'min_available_days',
-            'max_available_days',
-            'is_caduced',
             'page',
-            'schedules'
+            'schedules',
+            'bill_currencies',
+            'bill_currency'
         ));
     }
 

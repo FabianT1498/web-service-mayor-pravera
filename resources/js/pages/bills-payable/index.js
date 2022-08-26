@@ -210,7 +210,7 @@ export default {
         this.DOMElements.formFilter.addEventListener('keydown', this.keydownWrapper());
 
         this.DOMElements.formFilter.querySelector('#isDollar').addEventListener('click', this.handleCheck);
-        this.DOMElements.formFilter.querySelector('#scheduledBill').addEventListener('click', this.handleCheck);
+        // this.DOMElements.formFilter.querySelector('#scheduledBill').addEventListener('click', this.handleCheck);
 
         const tasaInputs = this.DOMElements.billsPayableTBody.querySelectorAll('input[data-bill=tasa]')
 
