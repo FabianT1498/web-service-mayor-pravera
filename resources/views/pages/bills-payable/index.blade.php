@@ -58,7 +58,7 @@
                         <td class="text-center"><a data-bill="montoTotal" class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ $value->MontoTotal }}</a></td>
                         <td class="text-center"><a data-bill="montoPagar" class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ $value->MontoPagar }}</a></td>
                         <td class="text-center">
-                            @if ($value->Estatus === config("constants.BILL_PAYABLE_STATUS.NOTPAID") && $value->MontoPagado === '0.00')
+                            @if ($value->Estatus === config("constants.BILL_PAYABLE_STATUS.NOTPAID") && $value->MontoPagado === 0.00)
                                 <input 
                                     class="{{ 'w-32 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700' . 
                                         ' dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 bg-gray-50'
@@ -74,13 +74,13 @@
                         </td>
                         <td class="text-center">
                             <input
-                                class="form-checkbox w-4 h-4 text-blue-600 rounded  focus:ring-blue-500 focus:ring-2 {{ number_format($value->Tasa, 2) === '0.00' ? "bg-gray-100 border-gray-300" : ""}}"
+                                class="form-checkbox w-4 h-4 text-blue-600 rounded  focus:ring-blue-500 focus:ring-2 {{ $value->Tasa === 0.00 ? "bg-gray-100 border-gray-300" : ""}}"
                                 type="checkbox"       
                                 value="{{ $value->esDolar }}"               
                                 {{ $value->esDolar ? "checked" : "" }}
                                 data-bill="isDollar"
-                                {{  $value->Estatus === config("constants.BILL_PAYABLE_STATUS.NOTPAID") && $value->MontoPagado === '0.00' ? '' : 'disabled' }}
-                                @if ($value->Tasa === "0.00") 
+                                {{  $value->Estatus === config("constants.BILL_PAYABLE_STATUS.NOTPAID") && $value->MontoPagado === 0.00 ? '' : 'disabled' }}
+                                @if ($value->Tasa === 0.00) 
                                     onclick= "return false;" 
                                 @endif
                             />
@@ -88,7 +88,7 @@
                         <td class="text-center" ><a class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ $value->Estatus }}</a></td>
                         <td class="text-center" ><a class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ $value->DiasTranscurridos }}</a></td>
                         <td>
-                            @if ($value->Estatus === config("constants.BILL_PAYABLE_STATUS.NOTPAID") && $value->MontoPagado === '0.00')
+                            @if ($value->Estatus === config("constants.BILL_PAYABLE_STATUS.NOTPAID") && $value->MontoPagado === 0.00)
                                 <button
                                     type="button"
                                     data-tooltip-target="suggestion-tooltip"

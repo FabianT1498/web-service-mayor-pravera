@@ -105,8 +105,8 @@ class BillsPayableController extends Controller
                     'esDolar' => $item->esDolar,
                     'MontoTotal' => number_format($item->MontoTotal, 2) . " " . config("constants.CURRENCY_SIGNS." . ($item->esDolar ? "dollar" : "bolivar")),
                     'MontoPagar' => number_format($item->MontoPagar, 2) . " " . config("constants.CURRENCY_SIGNS.dollar"),
-                    'MontoPagado' => isset($item->MontoPagado) ? number_format($item->MontoPagado, 2) : '0.00',
-                    'Tasa' => number_format($item->Tasa, 2),
+                    'MontoPagado' => isset($item->MontoPagado) ? $this->formatAmount($item->MontoPagado) : 0.00,
+                    'Tasa' => $this->formatAmount($item->Tasa),
                     'Estatus' => isset($item->Status)  ? config("constants.BILL_PAYABLE_STATUS." . $item->Status) : config("constants.BILL_PAYABLE_STATUS.NOTPAID"),
                     'DiasTranscurridos' => $days,
                     'BillPayableSchedulesID' => isset($item->BillPayableSchedulesID) ? $item->BillPayableSchedulesID : null
@@ -147,8 +147,8 @@ class BillsPayableController extends Controller
                     'esDolar' => $record->esDolar,
                     'MontoTotal' => number_format($record->MontoTotal, 2) . " " . config("constants.CURRENCY_SIGNS." . ($record->esDolar ? "dollar" : "bolivar")),
                     'MontoPagar' => number_format($record->MontoPagar, 2) . " " . config("constants.CURRENCY_SIGNS." . ($record->esDolar ? "dollar" : "bolivar")),
-                    'MontoPagado' => isset($item->MontoPagado) ? number_format($item->MontoPagado, 2) : '0.00',
-                    'Tasa' => number_format($record->Tasa, 2),
+                    'MontoPagado' => isset($item->MontoPagado) ? $this->formatAmount($item->MontoPagado) : 0.00,
+                    'Tasa' => floatval($record->Tasa),
                     'Estatus' => isset($record->Status)  ? config("constants.BILL_PAYABLE_STATUS." . $record->Status) : config("constants.BILL_PAYABLE_STATUS.NOTPAID"),
                     'DiasTranscurridos' => $days,
                     'BillPayableSchedulesID' => isset($record->BillPayableSchedulesID) ? $record->BillPayableSchedulesID : null
@@ -217,8 +217,7 @@ class BillsPayableController extends Controller
         $bill = $repo->getBillPayable($request->numero_d, $request->cod_prov);
 
         $bill->Tasa = $this->formatAmount($bill->Tasa);
-
-        // return print_r($bill);
+        $bill->MontoPagado = $this->formatAmount($bill->MontoPagado);
 
         $bill_payments_bs = $repo->getBillPayablePaymentsBs($request->numero_d, $request->cod_prov)->get();
         $bill_payments_dollar = $repo->getBillPayablePaymentsDollar($request->numero_d, $request->cod_prov)->get();

@@ -17,7 +17,7 @@ class CreateBillPaymentsTable extends Migration
             $table->id();
             $table->string('nro_doc', 50);
             $table->string('cod_prov', 50);
-            $table->decimal('amount', 28, 4);
+            $table->decimal('amount', 28, 2);
             $table->date('date');
             $table->boolean('is_dollar');
 

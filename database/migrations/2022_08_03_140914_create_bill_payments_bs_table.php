@@ -18,7 +18,7 @@ class CreateBillPaymentsBsTable extends Migration
             
             $table->string('bank_name', 100);
             $table->string('ref_number', 50);
-            $table->decimal('tasa', 28, 4);
+            $table->decimal('tasa', 28, 2);
 
             $table->foreign('bill_payments_id')
                 ->references('id')
