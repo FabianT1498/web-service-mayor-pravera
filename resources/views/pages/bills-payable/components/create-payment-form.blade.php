@@ -153,14 +153,14 @@
     <x-button 
         class="justify-center" 
         :variation="__('rounded')" 
-        :disabled="$bill->Tasa === 0.00 || config('constants.BILL_PAYABLE_STATUS.' . $bill->Status) === config('constants.BILL_PAYABLE_STATUS.PAID')"
+        :disabled="$bill->Tasa === 0.00 || config('constants.BILL_PAYABLE_STATUS.' . $bill->Estatus) === config('constants.BILL_PAYABLE_STATUS.PAID')"
         :dataTooltipTarget="__('tasaNotDefinedSuggestion')"
         :dataTooltipPlacement="__('right')"
     >
         <span>Guardar</span>
     </x-button>
 
-    @if ($bill->Tasa === 0.00 || config("constants.BILL_PAYABLE_STATUS." . $bill->Status) === config("constants.BILL_PAYABLE_STATUS.PAID"))
+    @if ($bill->Tasa === 0.00 || config("constants.BILL_PAYABLE_STATUS." . $bill->Estatus) === config("constants.BILL_PAYABLE_STATUS.PAID"))
         <div 
             id="tasaNotDefinedSuggestion"
             role="tooltip" 
@@ -168,7 +168,7 @@
         >
             {{ $bill->Tasa === 0.00 
                 ? 'No puede generar un pago hasta que la factura tenga definida una tasa.'
-                : (config("constants.BILL_PAYABLE_STATUS." . $bill->Status) === config("constants.BILL_PAYABLE_STATUS.PAID") 
+                : (config("constants.BILL_PAYABLE_STATUS." . $bill->Estatus) === config("constants.BILL_PAYABLE_STATUS.PAID") 
                     ? 'Esta factura ya ha sido pagada, no puede generar mas pagos.'
                     : '')
             }}

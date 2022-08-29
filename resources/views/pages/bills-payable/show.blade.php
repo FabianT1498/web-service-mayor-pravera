@@ -55,35 +55,53 @@
 
                     </div>
                     <div class="flex mb-4">
-                        <div class="flex items-center">
+                        <div class="flex items-center w-3/4">
                             
-                            <div>
+                            <div class="w-2/6">
                                 <span class="font-semibold">Proveedor: </span>
                                 <p>{{$bill->DescripProv}}</p>
                             </div>
         
-                            <div class="ml-8">
+                            <div class="ml-8 w-2/6">
                                 <span class="font-semibold block mb-2">Tasa: </span>
-                                <input 
-                                    class="{{ 'border w-full  border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700' . 
-                                        ' dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 bg-gray-50'
-                                    }}"
-                                    type="text"
-                                    name="bill_tasa"
-                                    id="billTasa" 
-                                    value="{{ old('bill_tasa') ? old('bill_tasa') : $bill->Tasa }}"
-                                    required
-                                >
+                                @if (config("constants.BILL_PAYABLE_STATUS." . $bill->Estatus) === config("constants.BILL_PAYABLE_STATUS.NOTPAID") && $bill->MontoPagado === '0.00')
+                                    <input 
+                                        class="{{ 'border w-full  border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700' . 
+                                            ' dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 bg-gray-50'
+                                        }}"
+                                        type="text"
+                                        name="bill_tasa"
+                                        id="billTasa" 
+                                        value="{{ old('bill_tasa') ? old('bill_tasa') : $bill->Tasa }}"
+                                        required
+                                    >
+                                @else
+                                   <p>{{ $bill->Tasa . ' ' . config("constants.CURRENCY_SIGNS.bolivar") }}</p>
+                                @endif
                             </div>
-
                         </div>
-                       
-                        <div class="ml-8 flex flex-col justify-end">
-                            <x-button :variation="__('rounded')">
-                                <span>Actualizar tasa</span>
-                            </x-button>
-                        </div>
+                        
+                        @if (config("constants.BILL_PAYABLE_STATUS." . $bill->Estatus) === config("constants.BILL_PAYABLE_STATUS.NOTPAID") && $bill->MontoPagado === '0.00')
+                            <div class="ml-8 flex flex-col justify-end">
+                                <x-button 
+                                    :variation="__('rounded')"  
+                                >
+                                    <span>Actualizar tasa</span>
+                                </x-button>
+                            </div>
+                        @endif
                     </div>
+
+                    @if ($bill->MontoPagado !== '0.00' || config("constants.BILL_PAYABLE_STATUS." . $bill->Estatus) === config("constants.BILL_PAYABLE_STATUS.PAID"))
+                        <p class="font-semibold">
+                            {{ config("constants.BILL_PAYABLE_STATUS." . $bill->Estatus) === config("constants.BILL_PAYABLE_STATUS.PAID")
+                                ? 'No puede cambiar la tasa, ya la factura ha sido pagada.'
+                                : ( $bill->MontoPagado !== '0.00' 
+                                    ? 'No puede cambiar la tasa, ya la factura tiene pagos.'
+                                    : '')
+                            }}
+                        </p>
+                    @endif
                     
                     @if ($errors->first('bill_tasa'))
                         <div>

@@ -10,7 +10,9 @@ export default {
     },
     initEventLister(){
         this.billTasa = document.querySelector('#billTasa')
-        decimalInputs['bs'].mask(this.billTasa)
+        if (this.billTasa) {
+            decimalInputs['bs'].mask(this.billTasa)
+        }
 
         this.DOMElements.toggleFormBtn.addEventListener('click', this.toggleFormWrapper())
     },

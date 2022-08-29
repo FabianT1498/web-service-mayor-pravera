@@ -215,7 +215,7 @@ class BillsPayableController extends Controller
         $today_date = Carbon::now()->format('d-m-Y');
         
         $bill = $repo->getBillPayable($request->numero_d, $request->cod_prov);
-      
+
         $bill->Tasa = $this->formatAmount($bill->Tasa);
 
         $bill_payments_bs = $repo->getBillPayablePaymentsBs($request->numero_d, $request->cod_prov)->get();

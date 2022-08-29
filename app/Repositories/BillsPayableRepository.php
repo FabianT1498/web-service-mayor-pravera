@@ -81,14 +81,14 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
         return DB
             ::connection('web_services_db')
             ->table('bills_payable')
-            ->selectRaw("bills_payable.nro_doc as NumeroD, bills_payable.cod_prov as CodProv, bills_payable.bill_type as TipoCom, CAST(ROUND(bills_payable.amount, 2) AS decimal(28, 4)) as MontoTotal,
-                bills_payable.is_dollar as esDolar, bills_payable.status as Status, bills_payable.cod_prov as CodProv, bills_payable.descrip_prov as DescripProv, bills_payable.tasa as Tasa, 
+            ->selectRaw("bills_payable.nro_doc as NumeroD, bills_payable.cod_prov as CodProv, bills_payable.bill_type as TipoCom, CAST(ROUND(bills_payable.amount, 2) AS decimal(28, 2)) as MontoTotal,
+                bills_payable.is_dollar as esDolar, bills_payable.status as Estatus, bills_payable.cod_prov as CodProv, bills_payable.descrip_prov as DescripProv, bills_payable.tasa as Tasa, 
                 bills_payable.bill_payable_schedules_id as ScheduleID, bill_payable_schedules.start_date as ScheduleStartDate,
                 bill_payable_schedules.end_date as ScheduleEndDate,
                 CASE WHEN bills_payable.is_dollar = 1 
-                    THEN CAST(ROUND(bills_payable.amount - (COALESCE(bill_payments_bs_div.total_paid, 0) + COALESCE(bill_payments_dollar.total_paid, 0)), 2) AS decimal(28, 4))
-                ELSE CAST(ROUND((bills_payable.amount / COALESCE(bills_payable.tasa, 1)) - (COALESCE(bill_payments_bs_div.total_paid, 0) + COALESCE(bill_payments_dollar.total_paid, 0)), 2) AS decimal(28, 4))
-                END AS MontoPagar")
+                    THEN CAST(ROUND(bills_payable.amount - (COALESCE(bill_payments_bs_div.total_paid, 0) + COALESCE(bill_payments_dollar.total_paid, 0)), 2) AS decimal(28, 2))
+                ELSE CAST(ROUND((bills_payable.amount / COALESCE(bills_payable.tasa, 1)) - (COALESCE(bill_payments_bs_div.total_paid, 0) + COALESCE(bill_payments_dollar.total_paid, 0)), 2) AS decimal(28, 2))
+                END AS MontoPagar, CAST(ROUND(COALESCE(bill_payments_bs_div.total_paid, 0) + COALESCE(bill_payments_dollar.total_paid, 0), 2) AS decimal(28, 2)) AS MontoPagado")
             ->leftJoin("bill_payable_schedules", "bill_payable_schedules.id", "=", "bills_payable.bill_payable_schedules_id")
             ->leftJoin(DB::raw("(SELECT bill_payments.nro_doc, bill_payments.cod_prov, SUM(bill_payments.amount / bill_payments_bs.tasa) as total_paid FROM bill_payments 
                     INNER JOIN bill_payments_bs ON bill_payments_bs.bill_payments_id = bill_payments.id

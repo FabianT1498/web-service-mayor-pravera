@@ -11,7 +11,6 @@ use App\Rules\BillPayableExists;
 
 use App\Repositories\BillsPayableRepository;
 
-
 class UpdateBillPayableTasaRequest extends FormRequest
 {
     use AmountCurrencyTrait;
@@ -21,9 +20,11 @@ class UpdateBillPayableTasaRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(BillsPayableRepository $repo)
     {
-        return true;
+        $bill_payment_count = $repo->getBillPayablePaymentsCount($this->nro_doc, $this->cod_prov);
+        $count = isset($bill_payment_count->count) ? $bill_payment_count->count : 0;
+        return $count === 0;
     }
 
     /**
@@ -39,8 +40,8 @@ class UpdateBillPayableTasaRequest extends FormRequest
         $bill_payable_exists_validation =  (new BillPayableExists($repo))->setData(['nro_doc' => $this->nro_doc, 'cod_prov' => $this->cod_prov]);
         
         $rules = [
-            'nro_doc' => ['required', $bill_payable_exists_validation],
             'cod_prov' => ['required'],
+            'nro_doc' => ['required', $bill_payable_exists_validation],
             'bill_tasa' => $total_rules,
         ];
 
