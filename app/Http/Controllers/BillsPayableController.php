@@ -218,6 +218,8 @@ class BillsPayableController extends Controller
 
         $bill->Tasa = $this->formatAmount($bill->Tasa);
 
+        // return print_r($bill);
+
         $bill_payments_bs = $repo->getBillPayablePaymentsBs($request->numero_d, $request->cod_prov)->get();
         $bill_payments_dollar = $repo->getBillPayablePaymentsDollar($request->numero_d, $request->cod_prov)->get();
 
@@ -285,11 +287,12 @@ class BillsPayableController extends Controller
 
             $bill = $repo->getBillPayable($validated['nro_doc'], $validated['cod_prov']);
 
-            $bill_amount_to_pay_ref = $bill->MontoPagar;
+            $bill_amount_to_pay_ref = floatval($bill->MontoPagar . 'El');
+
             $payment_amount_ref = 0;
 
             if ($validated['is_dollar'] === '0'){
-                $payment_amount_ref = $validated['amount'] / $validated['tasa'];
+                $payment_amount_ref = floor(($validated['amount'] / $validated['tasa']) * 100) / 100;
                 $bill_payment_child = BillPayablePaymentBs::create($validated);
                
             } else if ($validated['is_dollar'] === '1') {
@@ -299,8 +302,8 @@ class BillsPayableController extends Controller
                 $bill_payment_child = BillPayablePaymentDollar::create($validated);
             }
 
-            $diff = $bill_amount_to_pay_ref - $payment_amount_ref;
-
+            $diff = floor(($bill_amount_to_pay_ref - $payment_amount_ref) * 100) / 100;
+            
             $bill_status_change = false;
 
             if ($diff <= 0){

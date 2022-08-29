@@ -9,6 +9,7 @@ use Carbon\CarbonImmutable;
 
 use Flasher\SweetAlert\Prime\SweetAlertFactory;
 
+use App\Repositories\BillsPayableRepository;
 use App\Repositories\BillSchedulesRepository;
 
 use App\Models\BillPayableSchedule;
@@ -130,20 +131,60 @@ class SchedulePayableController extends Controller
         return redirect()->route('schedule.index');
     }
 
-    public function show(Request $request, $id)
+    public function show(Request $request, $id, BillsPayableRepository $repo)
     {
 
         $this->setSession($request, 'current_module', 'bill_payable');
 
-        $bills = BillPayableSchedule::find($id)->bills_payable;
+        $bill_payable_schedule = BillPayableSchedule::find($id);
+
+        $dollar_bill_payable = $bs_bill_payable = null;
+
+        if ($bill_payable_schedule){
+            $dollar_bill_payable = $repo->getBillsPayableByScheduleId(1, $id)->get();
+
+            $bs_bill_payable = $repo->getBillsPayableByScheduleId(0, $id)->get();
+
+            $are_all_bills_paid = true;
+
+            // Verificar si todas las facturas han sido pagadas, solo si la programación está en proceso
+            if (config("constants.BILL_PAYABLE_SCHEDULE_STATUS." . $bill_payable_schedule->status) === config("constants.BILL_PAYABLE_SCHEDULE_STATUS.PROCESSING")){
+                $dollar_bill_payable->each(function($item) use (&$are_all_bills_paid) {
+                    if (config("constants.BILL_PAYABLE_STATUS." . $item->Status) === config("constants.BILL_PAYABLE_STATUS.NOTPAID")){
+                        $are_all_bills_paid = false;
+                        return false;
+                    }
+                });
+    
+                if ($are_all_bills_paid){
+                    $bs_bill_payable->each(function($item) use (&$are_all_bills_paid) {
+                        if (config("constants.BILL_PAYABLE_STATUS." . $item->Status) === config("constants.BILL_PAYABLE_STATUS.NOTPAID")){
+                            $are_all_bills_paid = false;
+                            return false;
+                        }
+                    });
+                }
+            }
+        }
+
+        // return print_r($are_all_bills_paid ? "Todas las facturas han sido pagadas" : "Hay facturas sin pagar");
 
         $columns = [
             "Numero Documento",
             "Proveedor",
-            "Monto total"
+            "Monto total",
+            "Tasa",
+            "Monto pagar",
+            "Monto pagado",
+            "Estatus"
         ];
 
-        return view('pages.bill-payable-schedules.show', compact('columns', 'bills'));
+        return view('pages.bill-payable-schedules.show', compact(
+            'columns',
+            'bill_payable_schedule',
+            'dollar_bill_payable',
+            'bs_bill_payable'
+        ));
     }
 
     // Function to get processing schedules
