@@ -21,10 +21,13 @@ class CreateBillPaymentsTable extends Migration
             $table->date('date');
             $table->boolean('is_dollar');
 
+            $table->bigInteger('bill_payable_groups_id', false, true)->nullable(true);
+
+
             $table->foreign(['nro_doc', 'cod_prov'])
                 ->references(['nro_doc', 'cod_prov'])->on('bills_payable');
 
-          
+            $table->foreign('bill_payable_groups_id')->references('id')->on('bill_payable_groups');          
         });
     }
 
