@@ -11,16 +11,36 @@
             @include('pages.bills-payable.components.filter-form')
         </div>
 
-        <div class="mx-auto w-11/12">
+        <div class="mx-auto w-11/12 mb-8">
             <x-alert 
                 :alertID="__('bill-payable-alert')"
                 :message="__('Debe ingresar una tasa mayor que cero')"
             />
         </div>
+
+        <div id="linkBillsPayableContainer" class="hidden mx-auto w-11/12 mb-8">
+            <x-button 
+                :variation="__('rounded')"
+                :type="__('button')"
+            >
+                    {{ __('Agrupar facturas') }}
+            </x-button>
+        </div>
        
-        <table class="table table-bordered table-hover mx-auto w-11/12 text-center">
+        <table id="billsTable" class="table table-bordered table-hover mx-auto w-11/12 text-center">
             <thead class="bg-blue-300">
                 <tr>
+                    <th scope="col text-center align-middle">
+                        <input
+                            class="form-checkbox w-4 h-4 text-blue-600 rounded  focus:ring-blue-500 focus:ring-2 {{ count($data) === 0 ? "bg-gray-100 border-gray-300" : ""}}"
+                            type="checkbox"
+                            id="checkBoxSelectAll"              
+                            {{ count($data) === 0 ? 'disabled' : '' }}
+                            @if (count($data) === 0) 
+                                onclick= "return false;" 
+                            @endif
+                        />
+                    </th>
                     @foreach ($columns as $colum)
                         <th scope="col text-center align-middle">{{ $colum }}</th>
                     @endforeach
@@ -29,6 +49,18 @@
             <tbody id="billsPayableTBody">
                 @foreach ($data as $key => $value)
                     <tr data-numeroD="{{ $value->NumeroD }}" data-prov="{{ $value->CodProv }}" data-descripProv="{{ $value->Descrip }}">
+                        <td>
+                            <input
+                                class="form-checkbox w-4 h-4 text-blue-600 rounded  focus:ring-blue-500 focus:ring-2 {{ $value->MontoPagado > 0.00 || !is_null($value->BillPayableSchedulesID) ? "bg-gray-100 border-gray-300" : ""}}"
+                                type="checkbox"
+                                value="0"
+                                data-bill="select"              
+                                {{ $value->MontoPagado === 0.00 && is_null($value->BillPayableSchedulesID) ? '' : 'disabled' }}
+                                @if ($value->MontoPagado > 0.00 || !is_null($value->BillPayableSchedulesID)) 
+                                    onclick= "return false;" 
+                                @endif
+                            />
+                        </td>
                         <td class="text-center">
                             <a class="block relative" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">
                                 @if ($value->BillPayableSchedulesID)

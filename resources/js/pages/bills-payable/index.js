@@ -12,6 +12,9 @@ import { storeBillPayable, getProviders } from '_services/bill-payable';
 
 import { SIGN } from '_constants/currencies';
 
+import BillPayableCollection from '_collections/BillPayableCollection'
+import BillPayable from '_models/BillPayable'
+
 import BillPayableScheduleView from '_views/BillPayableScheduleView'
 import BillPayableSchedulePresenter from '_presenters/BillPayableSchedulePresenter'
 
@@ -26,7 +29,8 @@ export default {
         pageInput: document.querySelector('#page'),
         billsPayableTBody: document.querySelector('#billsPayableTBody'),
         billPayableAlert: document.querySelector('#bill-payable-alert'),
-        cleanFormBtn: document.querySelector('#cleanFormBtn')
+        cleanFormBtn: document.querySelector('#cleanFormBtn'),
+        linkBillsPayableContainer: document.querySelector('#linkBillsPayableContainer')
     },
     keypressOnAvailableDaysRange(event, form){
         let targetDays = parseInt(event.target.value);
@@ -116,6 +120,15 @@ export default {
             this.submitBillPayable(data);
         }
     },
+    handleClickLinkBillsPayable: function(){
+        return (event) => {
+            if (this.checkIfAreSameProviders()){
+
+            } else {
+                
+            }
+        }
+    },
     handleClick: function(){
         return (event) => {
 
@@ -131,10 +144,25 @@ export default {
             if (dataBill){
                 if (dataBill === 'isDollar'){
                     this.handleDollarCheckClicked(event)
+                } else if (dataBill === 'select'){
+                    let data = this.getBillPayableData(event)
+
+                    event.target.value = event.target.value === '0' ? '1' : '0'
+
+                    if (event.target.value === '1'){
+                        this.addBillPayable(data);
+                    } else {
+                        this.removeBillPayable(data);
+                    }
+
+                    if (this.selectedBills.getLength() > 0){
+                        this.showLinkBillsBtn();
+                    } else {
+                        this.hideLinkBillsBtn();
+                    }
+
                 } else if (dataBill === 'modalBtn'){
                     let data = this.getBillPayableData(event);
-
-                    console.log(data)
 
                     this.billPayableSchedulePresenter.setBillPayable(data)
                 }
@@ -191,11 +219,35 @@ export default {
         console.log(innerHtml);
         targetEl.innerHTML = innerHtml
     },
-    initEventListener(){
+    addBillPayable(data){
+        let billPayable = new BillPayable(data.numeroD, data.codProv);
+        this.selectedBills.pushElement(billPayable)
+        console.log(this.selectedBills.getAll())
+    },
+    removeBillPayable(data){
+        this.selectedBills.removeElementByBillPayableData(data.numeroD, data.codProv)
+        console.log(this.selectedBills.getAll())
+    },
+    showLinkBillsBtn(){
+        this.DOMElements.linkBillsPayableContainer.classList.remove('hidden')
+    },
+    hideLinkBillsBtn(){
+        this.DOMElements.linkBillsPayableContainer.classList.add('hidden')
+    },
+    checkIfAreSameProviders(){
+        let firstBill = this.selectedBills.getFirst()
+        let areSame = true;
 
-        // Apply mask to inputs
-        // numericInput.mask(this.DOMElements.formFilter.querySelector('#maxAvailableDays'))
-        // numericInput.mask(this.DOMElements.formFilter.querySelector('#minAvailableDays'))
+        this.selectedBills.getAll().forEach((item) => {
+            if (item.codProv !== firstBill.codProv){
+                areSame = false
+                return false;
+            }
+        })
+
+        return areSame;
+    },
+    initEventListener(){
 
         // Initialize date range picker
         Object.assign(Datepicker.locales, es);
@@ -209,9 +261,6 @@ export default {
         this.DOMElements.formFilter.addEventListener('keypress', this.keypressWrapper());
         this.DOMElements.formFilter.addEventListener('keydown', this.keydownWrapper());
 
-        // this.DOMElements.formFilter.querySelector('#isDollar').addEventListener('click', this.handleCheck);
-        // this.DOMElements.formFilter.querySelector('#scheduledBill').addEventListener('click', this.handleCheck);
-
         const tasaInputs = this.DOMElements.billsPayableTBody.querySelectorAll('input[data-bill=tasa]')
 
         tasaInputs.forEach((el) => {
@@ -223,6 +272,8 @@ export default {
         this.DOMElements.billsPayableTBody.addEventListener('keydown', this.keyEventsOnTBodyHandlerWrapper())
 
         this.DOMElements.cleanFormBtn.addEventListener('click', this.handleClickWrapperCleanFormBtn())
+
+        this.DOMElements.linkBillsPayableContainer.addEventListener('click', this.handleClickLinkBillsPayable());
 
         if (this.DOMElements.pagesLinksContainer){
             this.DOMElements.pagesLinksContainer.addEventListener('click', function(pageInput, form){
@@ -253,7 +304,7 @@ export default {
     },
     initData(){
         this.submitBillPayableCb = timerDelay(this.submitBillPayable, 3000)
-        
+        this.selectedBills = new BillPayableCollection();  
     },
     init(){
         this.initEventListener()
