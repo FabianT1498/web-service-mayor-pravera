@@ -28,9 +28,9 @@ export default {
         formFilter: document.querySelector('#form_filter'),
         pageInput: document.querySelector('#page'),
         billsPayableTBody: document.querySelector('#billsPayableTBody'),
-        billPayableAlert: document.querySelector('#bill-payable-alert'),
         cleanFormBtn: document.querySelector('#cleanFormBtn'),
-        linkBillsPayableContainer: document.querySelector('#linkBillsPayableContainer')
+        linkBillsPayableContainer: document.querySelector('#linkBillsPayableContainer'),
+        billPayableAlert: document.querySelector('#bill-payable-alert')
     },
     keypressOnAvailableDaysRange(event, form){
         let targetDays = parseInt(event.target.value);
@@ -91,8 +91,12 @@ export default {
     },
     showTasaMessage(){
         this.DOMElements.billPayableAlert.classList.remove('hidden', 'opacity-0')
+        
+        this.DOMElements.billPayableAlert
+            .querySelector('#' + this.DOMElements.billPayableAlert.getAttribute('id') + '-message').innerHTML = 'La tasa no puede ser cero'
+        
         setTimeout(() => {
-            this.DOMElements.billPayableAlert.classList.add('hidden', 'opacity-0')
+            this.dismissableAlert.hide()
         }, 5000)
     },
     getBillPayableData(event){
@@ -126,6 +130,14 @@ export default {
 
             } else {
                 
+                this.DOMElements.billPayableAlert.classList.remove('hidden', 'opacity-0')
+                
+                this.DOMElements.billPayableAlert
+                .querySelector('#' + this.DOMElements.billPayableAlert.getAttribute('id') + '-message').innerHTML = 'Las facturas no pertenecen al mismo proveedor.'
+    
+                setTimeout(() => {
+                    this.dismissableAlert.hide()
+                }, 5000)
             }
         }
     },
@@ -248,6 +260,15 @@ export default {
         return areSame;
     },
     initEventListener(){
+
+        // options object
+        const dissmisableAlertOptions = {
+            transition: 'transition-opacity',
+            duration: 1000,
+            timing: 'ease-out',
+        };
+
+        this.dismissableAlert = new Dismiss(this.DOMElements.billPayableAlert, dissmisableAlertOptions);
 
         // Initialize date range picker
         Object.assign(Datepicker.locales, es);

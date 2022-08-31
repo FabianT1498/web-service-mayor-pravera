@@ -5,16 +5,17 @@
 @endsection
 
 @section('main')
-    <div>
+    <div class="relative">
+
         <h2 class="h2">Facturas por pagar</h2>
         <div class="mb-8 p-4 rounded bg-gray-200 mx-auto w-11/12">
             @include('pages.bills-payable.components.filter-form')
         </div>
 
-        <div class="mx-auto w-11/12 mb-8">
-            <x-alert 
+        <div class="mx-auto w-1/3 top-3 right-3 mb-8 absolute">
+            <x-alert-flash
                 :alertID="__('bill-payable-alert')"
-                :message="__('Debe ingresar una tasa mayor que cero')"
+                :message="__('Las facturas que esta agrupando tienen distintos proveedores')"
             />
         </div>
 
