@@ -161,4 +161,7 @@
         :modalID="__('bill_payable_schedules')"
         :schedules="$schedules"
     />
+    <x-modal-bill-payable-group
+        :modalID="__('billPayableGroupModal')"
+    />
 @endsection

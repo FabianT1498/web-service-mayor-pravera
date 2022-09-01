@@ -30,7 +30,9 @@ export default {
         billsPayableTBody: document.querySelector('#billsPayableTBody'),
         cleanFormBtn: document.querySelector('#cleanFormBtn'),
         linkBillsPayableContainer: document.querySelector('#linkBillsPayableContainer'),
-        billPayableAlert: document.querySelector('#bill-payable-alert')
+        billPayableAlert: document.querySelector('#bill-payable-alert'),
+        billPayableGroupModal: document.querySelector('#billPayableGroupModal'),
+        billPayableGroupModalCloseBtn: document.querySelector('#billPayableGroupModalCloseBtn')
     },
     keypressOnAvailableDaysRange(event, form){
         let targetDays = parseInt(event.target.value);
@@ -127,11 +129,11 @@ export default {
     handleClickLinkBillsPayable: function(){
         return (event) => {
             if (this.checkIfAreSameProviders()){
-
+                this.billPayableGroupModal.show();
             } else {
                 
                 this.DOMElements.billPayableAlert.classList.remove('hidden', 'opacity-0')
-                
+
                 this.DOMElements.billPayableAlert
                 .querySelector('#' + this.DOMElements.billPayableAlert.getAttribute('id') + '-message').innerHTML = 'Las facturas no pertenecen al mismo proveedor.'
     
@@ -190,6 +192,11 @@ export default {
             this.DOMElements.formFilter.querySelector('#isDollar').value = '0'
             this.DOMElements.formFilter.querySelector('#billType').value = ''
             this.DOMElements.formFilter.submit()
+        }
+    },
+    handleClickCloseBillPayableGroup: function(){
+        return (event) => {
+            this.billPayableGroupModal.hide();
         }
     },
     keyEventsOnTBodyHandlerWrapper: function(){
@@ -295,6 +302,10 @@ export default {
         this.DOMElements.cleanFormBtn.addEventListener('click', this.handleClickWrapperCleanFormBtn())
 
         this.DOMElements.linkBillsPayableContainer.addEventListener('click', this.handleClickLinkBillsPayable());
+
+        this.billPayableGroupModal = new Modal(this.DOMElements.billPayableGroupModal);
+
+        this.DOMElements.billPayableGroupModalCloseBtn.addEventListener('click', this.handleClickCloseBillPayableGroup())
 
         if (this.DOMElements.pagesLinksContainer){
             this.DOMElements.pagesLinksContainer.addEventListener('click', function(pageInput, form){
