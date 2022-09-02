@@ -28,7 +28,8 @@ Route::group(['middleware' => ['auth', 'jsonify']], function() {
     Route::get('bill_payable/{cod_prov}/{numero_d}', [BillsPayableController::class, 'getBillPayable']);
     Route::post('bill_payable/', [BillsPayableController::class, 'storeBillPayable']);
     Route::post('bill_payable/{schedule_id}', [BillsPayableController::class, 'linkBillPayableToSchedule']);
-    
+    Route::get('bill_payable/group/{cod_prov}', [BillsPayableController::class, 'getBillPayableGroup']);
+  
     // ----- Schedules -----
     Route::get('schedule/{id}', [SchedulePayableController::class, 'getSchedule']);
 

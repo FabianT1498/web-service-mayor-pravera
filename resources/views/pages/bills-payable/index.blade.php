@@ -102,7 +102,13 @@
                                     data-bill="tasa"
                                 >
                             @else
-                                <a class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ $value->Tasa . ' ' . config("constants.CURRENCY_SIGNS.bolivar") }}</a>
+                                <a 
+                                    data-bill="tasa" 
+                                    class="block" 
+                                    href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}"
+                                >
+                                    {{ $value->Tasa . ' ' . config("constants.CURRENCY_SIGNS.bolivar") }}
+                                </a>
                             @endif
                         </td>
                         <td class="text-center">

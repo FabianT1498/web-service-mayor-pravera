@@ -380,6 +380,15 @@ class BillsPayableController extends Controller
         return $this->jsonResponse($bill ? [$bill] : [], 200);
     }
 
+    public function getBillPayableGroups(Request $request, BillsPayableRepository $repo){
+
+        // $has_payments = $request->query('has_payments');
+
+        $bill_payable_groups = $repo->getBillPayableGroups($request->cod_prov);
+
+        return $this->jsonResponse($bill_payable_groups ? [$bill_payable_groups] : [], 200);
+    }
+
     public function linkBillPayableToSchedule(LinkBillPayableToScheduleRequest $request){
 
         $validated = $request->validated();
