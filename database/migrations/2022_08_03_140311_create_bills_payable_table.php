@@ -22,11 +22,11 @@ class CreateBillsPayableTable extends Migration
             $table->decimal('tasa', 28, 2);
             $table->boolean('is_dollar');
             $table->enum('status', array_keys(config('constants.BILL_PAYABLE_STATUS')));
+            $table->date('emission_date');
             $table->bigInteger('bill_payable_schedules_id', false, true)->nullable(true);
             $table->bigInteger('bill_payable_groups_id', false, true)->nullable(true);
-            $table->date('emission_date');
+            
             $table->primary(['nro_doc', 'cod_prov']);
-
             $table->foreign('bill_payable_schedules_id')->references('id')->on('bill_payable_schedules');
             $table->foreign('bill_payable_groups_id')->references('id')->on('bill_payable_groups');
         });

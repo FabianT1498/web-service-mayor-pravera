@@ -15,19 +15,13 @@ class CreateBillPaymentsTable extends Migration
     {
         Schema::create('bill_payments', function (Blueprint $table) {
             $table->id();
-            $table->string('nro_doc', 50);
-            $table->string('cod_prov', 50);
             $table->decimal('amount', 28, 2);
             $table->date('date');
             $table->boolean('is_dollar');
+            $table->boolean('is_group_payment');
 
-            $table->bigInteger('bill_payable_groups_id', false, true)->nullable(true);
-
-
-            $table->foreign(['nro_doc', 'cod_prov'])
-                ->references(['nro_doc', 'cod_prov'])->on('bills_payable');
-
-            $table->foreign('bill_payable_groups_id')->references('id')->on('bill_payable_groups');          
+            // $table->foreign(['nro_doc', 'cod_prov'])
+            //     ->references(['nro_doc', 'cod_prov'])->on('bills_payable');  
         });
     }
 
