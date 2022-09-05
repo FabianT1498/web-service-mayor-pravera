@@ -19,9 +19,6 @@ class CreateBillPaymentsTable extends Migration
             $table->date('date');
             $table->boolean('is_dollar');
             $table->boolean('is_group_payment');
-
-            // $table->foreign(['nro_doc', 'cod_prov'])
-            //     ->references(['nro_doc', 'cod_prov'])->on('bills_payable');  
         });
     }
 

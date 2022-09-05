@@ -20,6 +20,7 @@ use App\Http\Requests\UpsertBillPayableRequest;
 
 use App\Models\BillPayable;
 use App\Models\BillPayablePayment;
+use App\Models\BillsPayablePayments;
 use App\Models\BillPayablePaymentBs;
 use App\Models\BillPayablePaymentDollar;
 
@@ -280,9 +281,9 @@ class BillsPayableController extends Controller
 
         if ($bill_payment){
 
-            $bill_payment_child = null;
-
             $validated['bill_payments_id'] = $bill_payment->id;
+            
+            $bill_payment_child = null;
 
             $bill = $repo->getBillPayable($validated['nro_doc'], $validated['cod_prov']);
 
@@ -301,22 +302,31 @@ class BillsPayableController extends Controller
                 $bill_payment_child = BillPayablePaymentDollar::create($validated);
             }
 
-            $diff = floor(($bill_amount_to_pay_ref - $payment_amount_ref) * 100) / 100;
-            
-            $bill_status_change = false;
-
-            if ($diff <= 0){
-                $bill_model = BillPayable::whereRaw("nro_doc = ? AND cod_prov = ?", [$validated['nro_doc'], $validated['cod_prov']])->first();
-                $bill_model->status = array_keys(config("constants.BILL_PAYABLE_STATUS"))[1];
-                $bill_status_change = $bill_model->save();
-            }
-
             if ($bill_payment_child){
-                $this->flasher->addSuccess("El pago fue creado exitosamente " . ($bill_status_change ? "y la factura fue pagada completamente !" : "!"));
+                
+                $diff = floor(($bill_amount_to_pay_ref - $payment_amount_ref) * 100) / 100;
+                
+                $bill_status_change = false;
+    
+                if ($diff <= 0){
+                    $bill_model = BillPayable::whereRaw("nro_doc = ? AND cod_prov = ?", [$validated['nro_doc'], $validated['cod_prov']])->first();
+                    $bill_model->status = array_keys(config("constants.BILL_PAYABLE_STATUS"))[1];
+                    $bill_status_change = $bill_model->save();
+                }
+
+                $bill_payment_record = BillsPayablePayments::create($validated);
+
+                if ($bill_payment_record){
+                    $this->flasher->addSuccess("El pago fue creado exitosamente " . ($bill_status_change ? "y la factura fue pagada completamente !" : "!"));
+                } else {
+                    $this->flasher->addError('No se pudo crear el pago para la factura');
+                }
+                
             } else {
                 $bill_payment->delete();
                 $this->flasher->addError('No se pudo crear el pago para la factura');
             }
+
         } else {
             $this->flasher->addError('No se pudo crear el pago para la factura');
         }
