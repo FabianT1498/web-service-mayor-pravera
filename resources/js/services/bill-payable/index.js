@@ -24,7 +24,11 @@ const getBillPayableGroup = function({codProv}){
     return asyncFunction(axiosClient.get(`/bill_payable/group/${codProv}`))
 }
 
+const storeBillPayableGroup = function(data){
+    return asyncFunction(axiosClient.post('/bill_payable/group', data))
+};
+
 const asyncFunction = (promise) => promise.then(res => res).catch(err => err)
 
 
-export { getBillPayableGroup, getBillPayable, storeBillPayable, getBillPayableSchedule, linkBillPayableToSchedule, getProviders};
+export { getBillPayableGroup, getBillPayable, storeBillPayable, getBillPayableSchedule, linkBillPayableToSchedule, getProviders, storeBillPayableGroup };

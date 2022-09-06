@@ -171,7 +171,7 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
             ->join('bill_payments', function($join){
                 $join->on('bill_payments.id', '=', 'bills_payable_payments.bill_payments_id');
             })
-            ->whereRaw("bills_payable_payments.nro_doc.nro_doc = ? AND bills_payable_payments.nro_doc.cod_prov = ?", [$n_doc, $cod_prov])
+            ->whereRaw("bills_payable_payments.nro_doc = ? AND bills_payable_payments.cod_prov = ?", [$n_doc, $cod_prov])
             ->groupByRaw("bills_payable_payments.cod_prov, bills_payable_payments.nro_doc")
             ->first();
     }
@@ -190,7 +190,7 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
             ->join('bill_payments_bs', function($join){
                 $join->on('bill_payments.id', '=', 'bill_payments_bs.bill_payments_id');
             })
-            ->whereRaw("bills_payable_payments.nro_doc.nro_doc = ? AND bills_payable_payments.nro_doc.cod_prov = ? AND bill_payments.is_dollar = 0", [$n_doc, $cod_prov]);
+            ->whereRaw("bills_payable_payments.nro_doc = ? AND bills_payable_payments.cod_prov = ? AND bill_payments.is_dollar = 0", [$n_doc, $cod_prov]);
     }
 
     public function getBillPayablePaymentsDollar($n_doc, $cod_prov){
@@ -207,7 +207,7 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
             ->join('bill_payments_dollar', function($join){
                 $join->on('bill_payments.id', '=', 'bill_payments_dollar.bill_payments_id');
             })
-            ->whereRaw("bills_payable_payments.nro_doc.nro_doc = ? AND bills_payable_payments.nro_doc.cod_prov = ? AND bill_payments.is_dollar = 1", [$n_doc, $cod_prov]);
+            ->whereRaw("bills_payable_payments.nro_doc = ? AND bills_payable_payments.cod_prov = ? AND bill_payments.is_dollar = 1", [$n_doc, $cod_prov]);
     }
 
     public function getBillsPayable($is_dolar, $before_emission_date, $bill_type, $nro_doc, $cod_prov, $is_scheduled_bill = 0){
@@ -277,8 +277,7 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
     }
 
     public function getBillsPayableByIds($ids = ''){
-        
-        
+          
         $query = DB
             ::connection('web_services_db')
             ->table('bills_payable')

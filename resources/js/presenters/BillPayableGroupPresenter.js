@@ -45,6 +45,15 @@ const BillPayableGroupPresenterPrototype = {
 	},
 	handleClickAddGroup(){
 		if (this.data.billsPayable.length > 0){
+			console.log(this.data.billsPayable)
+			storeBillPayableGroup({bills: this.data.billsPayable})
+				.then(res => {
+					console.log(res)
+				})
+				.catch(err => {
+
+				})
+		} else {
 
 		}
 	},

@@ -17,15 +17,18 @@ use App\Http\Requests\LinkBillPayableToScheduleRequest;
 use App\Http\Requests\StoreBillPayablePaymentRequest;
 use App\Http\Requests\UpdateBillPayableTasaRequest;
 use App\Http\Requests\UpsertBillPayableRequest;
+use App\Http\Requests\StoreBillPayableGroupRequest;
 
 use App\Models\BillPayable;
 use App\Models\BillPayablePayment;
 use App\Models\BillsPayablePayments;
 use App\Models\BillPayablePaymentBs;
 use App\Models\BillPayablePaymentDollar;
+use App\Models\BillPayableGroup;
 
 use App\Http\Traits\SessionTrait;
 use App\Http\Traits\AmountCurrencyTrait;
+use App\Http\Traits\StringTrait;
 
 class BillsPayableController extends Controller
 {
@@ -33,6 +36,7 @@ class BillsPayableController extends Controller
 
     use SessionTrait;
     use AmountCurrencyTrait;
+    use StringTrait;
 
     public function __construct(SweetAlertFactory $flasher)
     {
@@ -319,6 +323,8 @@ class BillsPayableController extends Controller
                 if ($bill_payment_record){
                     $this->flasher->addSuccess("El pago fue creado exitosamente " . ($bill_status_change ? "y la factura fue pagada completamente !" : "!"));
                 } else {
+                    $bill_payment->delete();
+                    $bill_payment_child->delete();
                     $this->flasher->addError('No se pudo crear el pago para la factura');
                 }
                 
@@ -333,6 +339,44 @@ class BillsPayableController extends Controller
         
         return redirect()->route('bill_payable.showBillPayable', 
             ['numero_d' => $validated['nro_doc'], 'cod_prov' => $validated['cod_prov']]);
+    }
+
+    public function storeBillPayableGroup(StoreBillPayableGroupRequest $request){
+        
+        $validated = $request->validated();
+
+        // Verificar cuales facturas no tienen
+
+        $bills = array_map(function($item){
+            $bill_record = BillPayable::whereRaw("nro_doc = ? AND cod_prov = ?", [$item['nro_doc'], $item['cod_prov']])->first();
+        
+            if (is_null($bill_record)){
+                
+                // Recuperar informacion de la base de datos de SAINT
+                $bill_record = BillPayable::create($item);
+            }
+            
+            return $bill_record;
+
+        }, $validated['bills']);
+
+        $group = BillPayableGroup::create($validated['bills'][0]);
+
+        if ($group){
+            foreach($bills as $bill){
+                $bill->bill_payable_groups_id = $group->id;
+                $bill->save();
+            }
+        }
+
+        return $this->jsonResponse([
+            'status' => 200,
+            'data' => [
+                'bills' => $bills,
+                'groupID' => $group->id
+            ]
+        ], 200);
+
     }
 
     public function updateBillPayableTasa(UpdateBillPayableTasaRequest $request){
@@ -385,7 +429,15 @@ class BillsPayableController extends Controller
     }
 
     public function getBillPayable(Request $request, BillsPayableRepository $repo){
-        $bill = $repo->getBillPayable($request->numero_d, $request->cod_prov);
+
+        $numero_d = '';
+        $is_a_date = $this->isADateFormatDDMMYYYY($request->numero_d);
+
+        if ($this->isADateFormatDDMMYYYY($request->numero_d)){
+            $numero_d = $this->charReplace($request->numero_d);
+        }
+
+        $bill = $repo->getBillPayable($numero_d, $request->cod_prov);
 
         return $this->jsonResponse($bill ? [$bill] : [], 200);
     }

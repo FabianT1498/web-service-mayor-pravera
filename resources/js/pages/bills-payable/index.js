@@ -5,6 +5,7 @@ import es from '@themesberg/tailwind-datepicker/locales/es';
 import { decimalInputs } from '_utilities/decimalInput';
 
 import { formatAmount, roundNumber } from '_utilities/mathUtilities'
+import { charReplace, isADateFormatDDMMYYYY} from '_utilities/stringUtilities'
 
 import { timerDelay } from '_utilities/timerDelay'
 
@@ -85,6 +86,9 @@ export default {
                 });
 
                 this.billPayableGroupPresenter.setBillsPayable(this.selectedBills.getAll())
+
+                console.log(this.selectedBills.getAll())
+                
             } else {
 
                 this.showBillPayableMessage('Las facturas no pertenecen al mismo proveedor.')
@@ -108,42 +112,53 @@ export default {
                 if (dataBill === 'isDollar'){
                     this.handleDollarCheckClicked(event)
                 } else if (dataBill === 'select'){
-                    let data = this.getBillPayableData(event)
-
-                    let row = event.target.closest('tr')
-                    let numeroD = row.getAttribute('data-numeroD')
-                    let codProv = row.getAttribute('data-prov')
                     
-                    getBillPayable({numeroD, codProv})
-                        .then(res => {
-                            if (res.data.length > 0){
-                                let bill = res.data[0];
-                                
-                                if (bill.ScheduleID !== null || roundNumber(bill.MontoPagado) > 0){
-                                    
-                                    return false;
-                                } 
-                            }
-                            
-                            event.target.value = event.target.value === '0' ? '1' : '0'
-    
-                            if (event.target.value === '1'){
-                                this.addBillPayable(data);
-                            } else {
-                                this.removeBillPayable(data);
-                            }
-        
-                            if (this.selectedBills.getLength() > 0){
-                                this.showLinkBillsBtn();
-                            } else {
-                                this.hideLinkBillsBtn();
-                            }
-                            
-                        })
-                        .catch(err => {
-                            console.log(err)
-                        })
+                    if (event.target.value === '0'){
+                        let data = this.getBillPayableData(event)
 
+                        let row = event.target.closest('tr')
+                        let numeroD = row.getAttribute('data-numeroD')
+                        let codProv = row.getAttribute('data-prov')
+
+                        let formattedNumeroD = charReplace(numeroD)
+                        let isADate = isADateFormatDDMMYYYY(formattedNumeroD)
+
+                        if (isADate){
+                            numeroD = formattedNumeroD;
+                        }
+
+                        getBillPayable({numeroD, codProv})
+                            .then(res => {
+
+                                if (res.data.length > 0){
+                                    let bill = res.data[0];
+
+                                    if (bill.ScheduleID !== null || roundNumber(bill.MontoPagado) > 0){
+                                        return false;
+                                    } 
+                                }
+                                
+                                event.target.value = '1'
+        
+                                if (event.target.value === '1'){
+                                    this.addBillPayable(data);
+                                } else {
+                                    this.removeBillPayable(data);
+                                }
+            
+                                if (this.selectedBills.getLength() > 0){
+                                    this.showLinkBillsBtn();
+                                } else {
+                                    this.hideLinkBillsBtn();
+                                }
+                                
+                            })
+                            .catch(err => {
+                                console.log(err)
+                            })
+                    } else {
+                        event.target.value = '0'
+                    }
                 } else if (dataBill === 'modalBtn'){
                     let data = this.getBillPayableData(event);
 
@@ -203,7 +218,17 @@ export default {
         targetEl.innerHTML = innerHtml
     },
     addBillPayable(data){
-        let billPayable = new BillPayable(data.numeroD, data.codProv, data.provDescrip);
+        let billPayable = new BillPayable(
+            data.numeroD,
+            data.codProv, 
+            data.provDescrip,
+            data.billType,
+            data.tasa, 
+            data.amount,
+            data.isDollar,
+            data.fechaE
+        );
+        
         this.selectedBills.pushElement(billPayable)
     },
     removeBillPayable(data){

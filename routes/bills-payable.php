@@ -23,6 +23,9 @@ Route::group(['middleware' => ['auth']], function () {
 });
 
 Route::group(['middleware' => ['auth', 'jsonify']], function() {
+    
+    // ----- Bill Payable Group -----
+    Route::post('bill_payable/group', [BillsPayableController::class, 'storeBillPayableGroup']);   
 
     // ----- Bills Payable -----
     Route::get('bill_payable/{cod_prov}/{numero_d}', [BillsPayableController::class, 'getBillPayable']);
@@ -35,6 +38,5 @@ Route::group(['middleware' => ['auth', 'jsonify']], function() {
 
     
     // ----- Providers -----
-    Route::get('provider', [BillsPayableController::class, 'getProviders']);
-    
+    Route::get('provider', [BillsPayableController::class, 'getProviders']); 
 });
