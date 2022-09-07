@@ -86,9 +86,7 @@ export default {
                 });
 
                 this.billPayableGroupPresenter.setBillsPayable(this.selectedBills.getAll())
-
-                console.log(this.selectedBills.getAll())
-                
+  
             } else {
 
                 this.showBillPayableMessage('Las facturas no pertenecen al mismo proveedor.')

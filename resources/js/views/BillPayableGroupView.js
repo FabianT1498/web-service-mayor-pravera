@@ -1,3 +1,5 @@
+import { SIGN as CURRENCY_SYMBOLS_MAP} from '_constants/currencies';
+
 const BillPayableGroupViewPrototype = {
     init(container){
         if (!container){
@@ -13,6 +15,8 @@ const BillPayableGroupViewPrototype = {
         this.billPayableGroupSelect = document.querySelector(`#${id}Select`)
 
         this.infoProvider = document.querySelector(`#${id}InfoProvider`);
+
+        this.billInfoContainer = document.querySelector(`#${id}BillInfoContainer`);
  
         this.billPayableGroupModalSelect = document.querySelector(`#${id}Select`)
         this.billPayableGroupModalAddGroupBtn = document.querySelector(`#${id}AddGroupBtn`)
@@ -20,9 +24,13 @@ const BillPayableGroupViewPrototype = {
         this.billPayableGroupModalCloseBtn.addEventListener('click', this.handleClickCloseBillPayableGroup())
 
         this.billPayableGroupModalAddGroupBtn.addEventListener('click', this.handleClickAddGroup())
+
+        this.billPayableGroupModalSelect.addEventListener('change', this.changeEventHandlerWrapper())
     },
     handleClickCloseBillPayableGroup: function(){
         return (event) => {
+            this.billInfoContainer.querySelector('span[data-group="totalAmount"]').innerHTML = ''
+            this.billInfoContainer.querySelector('span[data-group="paidAmount"]').innerHTML = ''
             this.billPayableGroupModal.hide();
         }
     },
@@ -54,39 +62,20 @@ const BillPayableGroupViewPrototype = {
     },
     getSelectItemTemplate: function(option){
         return `
-            <option value="${option.key}" selected>${option.value}</option>
+            <option value="${option.key}">${option.value}</option>
         `
+    },
+    changeEventHandlerWrapper(){
+        return (event) => {
+            this.presenter.changeOnModal({
+                target: event.target,
+            })
+        }
+    },
+    showBillGroupDetails(data){
+        this.billInfoContainer.querySelector('span[data-group="totalAmount"]').innerHTML = data.totalAmount + ' ' +  CURRENCY_SYMBOLS_MAP['dollar']
+        this.billInfoContainer.querySelector('span[data-group="paidAmount"]').innerHTML = data.paidAmount + ' ' +  CURRENCY_SYMBOLS_MAP['dollar']
     }
-    // closeModalHandlerWrapper(){
-    //     return (event) => {
-    //         this.scheduleInfoContainer.querySelector('#scheduleSelect').value = "";
-    //         this.scheduleInfoContainer.querySelector('#startDateSchedule').innerHTML = "";
-    //         this.scheduleInfoContainer.querySelector('#endDateSchedule').innerHTML = "";
-    //         this.cleanScheduleData();
-    //     }
-    // },
-    // changeEventHandlerWrapper(presenter){
-    //     return (event) => {
-    //         presenter.changeOnModal({
-    //             target: event.target,
-    //         })
-    //     }
-    // },
-    // showScheduleData(data){
-    //     this.scheduleInfoContainer.querySelector('#startDateSchedule').innerHTML = data.StartDate ? data.StartDate : "";
-    //     this.scheduleInfoContainer.querySelector('#endDateSchedule').innerHTML = data.EndDate ? data.EndDate : "";
-    // },
-    // cleanScheduleData(){
-    //     this.scheduleInfoContainer.querySelector('#startDateSchedule').innerHTML = "";
-    //     this.scheduleInfoContainer.querySelector('#endDateSchedule').innerHTML = "";
-    // },
-    // showBillPayableData({numeroD, provDescrip}){
-    //     this.payableBillInfoContainer.querySelector('#numeroDInfoModal').innerHTML = numeroD
-    //     this.payableBillInfoContainer.querySelector('#proveedorInfoModal').innerHTML = provDescrip
-    // },
-    // setSelectedSchedule(scheduleID){
-    //     this.scheduleInfoContainer.querySelector('#scheduleSelect').value = scheduleID ? scheduleID : "";
-    // }
 }
 
 const  BillPayableGroupView = function (presenter = null){

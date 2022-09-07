@@ -129,7 +129,7 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
             ->first();
     }
 
-    public function getBillPayableGroups($cod_prov){
+    public function getBillPayableGroups($cod_prov, $group_id = null){
         $query = DB
             ::connection('web_services_db')
             ->table('bill_payable_groups')
@@ -159,7 +159,7 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
                     $join->on('bills_payable.nro_doc', '=', 'bill_payments_dollar.nro_doc')
                         ->on('bills_payable.cod_prov', '=', 'bill_payments_dollar.cod_prov');
                 })
-            ->whereRaw("bill_payable_groups.cod_prov = '" . $cod_prov . "'")
+            ->whereRaw("bill_payable_groups.cod_prov = '" . $cod_prov . "'" . (is_null($group_id) ? '' : (" AND bill_payable_groups.id = " . $group_id)))
             ->groupByRaw("bill_payable_groups.id");
 
         return $query;
@@ -262,19 +262,21 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
                 bills_payable.bill_payable_schedules_id as BillPayableSchedulesID, bills_payable.descrip_prov as Descrip")
             ->leftJoin(DB::raw("(SELECT bills_payable_payments.nro_doc, bills_payable_payments.cod_prov, SUM(bill_payments.amount / bill_payments_bs.tasa) as total_paid FROM bills_payable_payments 
                     INNER JOIN bill_payments ON bills_payable_payments.bill_payments_id = bill_payments.id
-                    INNER JOIN bill_payments_bs ON bill_payments_bs.bill_payments_id = bill_payments.id) AS bill_payments_bs_div"),
+                    INNER JOIN bill_payments_bs ON bill_payments_bs.bill_payments_id = bill_payments.id
+                    GROUP BY bills_payable_payments.nro_doc, bills_payable_payments.cod_prov) AS bill_payments_bs_div"),
                 function($join){
                     $join->on('bills_payable.nro_doc', '=', 'bill_payments_bs_div.nro_doc')
                         ->on('bills_payable.cod_prov', '=', 'bill_payments_bs_div.cod_prov');
                 })
             ->leftJoin(DB::raw("(SELECT bills_payable_payments.nro_doc, bills_payable_payments.cod_prov, SUM(bill_payments.amount) as total_paid FROM bills_payable_payments 
                     INNER JOIN bill_payments ON bills_payable_payments.bill_payments_id = bill_payments.id
-                    INNER JOIN bill_payments_dollar ON bill_payments_dollar.bill_payments_id = bill_payments.id) AS bill_payments_dollar"),
+                    INNER JOIN bill_payments_dollar ON bill_payments_dollar.bill_payments_id = bill_payments.id
+                    GROUP BY bills_payable_payments.nro_doc, bills_payable_payments.cod_prov) AS bill_payments_dollar"),
                 function($join){
                     $join->on('bills_payable.nro_doc', '=', 'bill_payments_dollar.nro_doc')
                         ->on('bills_payable.cod_prov', '=', 'bill_payments_dollar.cod_prov');
                 })
-            ->whereRaw("bills_payable.bill_payable_schedules_id = " . $bill_payable_schedules_id . " AND bills_payable.is_dollar =" . $is_dollar);
+            ->whereRaw("bills_payable.bill_payable_schedules_id = " . $bill_payable_schedules_id . " AND bills_payable.is_dollar = " . $is_dollar);
 
         return $query;
     }

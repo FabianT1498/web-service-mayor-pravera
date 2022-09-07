@@ -28,7 +28,11 @@ const storeBillPayableGroup = function(data){
     return asyncFunction(axiosClient.post('/bill_payable/group', data))
 };
 
+const updateBillPayableGroup = function(id, data){
+    return asyncFunction(axiosClient.put(`/bill_payable/group/${id}`, data))
+};
+
 const asyncFunction = (promise) => promise.then(res => res).catch(err => err)
 
 
-export { getBillPayableGroup, getBillPayable, storeBillPayable, getBillPayableSchedule, linkBillPayableToSchedule, getProviders, storeBillPayableGroup };
+export { getBillPayableGroup, getBillPayable, storeBillPayable, getBillPayableSchedule, linkBillPayableToSchedule, getProviders, storeBillPayableGroup, updateBillPayableGroup };

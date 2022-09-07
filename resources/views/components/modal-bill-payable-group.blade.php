@@ -27,12 +27,10 @@
                         <div class="mb-4 flex">
                             <h4 class="h4">Datos del grupo de facturas</h4>
                         </div>
-                        <div id="{{ $modalID . 'InfoContainer'}}">
-                            <p><span class="font-semibold">Proveedor:</span>&nbsp;<span id="{{ $modalID . 'InfoProvider'}}"></span></p>
-                        </div>
+                        <p><span class="font-semibold">Proveedor:</span>&nbsp;<span id="{{ $modalID . 'InfoProvider'}}"></span></p>
                     </div>
                     <div class="p-4 bg-gray-100 flex items-start justify-center">
-                        <div id="{{ $modalID . 'InfoContainer' }}" class=" bg-white p-4 rounded-md shadow-md">
+                        <div id="{{ $modalID . 'BillInfoContainer' }}" class=" bg-white p-4 rounded-md shadow-md">
                             <div class="mb-2">
                                 <div class="mb-4 flex">
                                     <h4 class="h4">Datos del grupo de factura</h4>
@@ -43,8 +41,8 @@
                                     id="{{ $modalID . 'Select' }}"
                                 />
                             </div>
-                            <p class="mb-2"><span class="font-semibold">Monto total:</span>&nbsp;<span id="{{ $modalID . 'TotalAmount' }}"></span></p>
-                            <p class="mb-2"><span class="font-semibold">Monto pagado:</span>&nbsp;<span id="{{ $modalID . 'AmountPaid' }}"></span></p>
+                            <p class="mb-2"><span class="font-semibold">Monto total:</span>&nbsp;<span data-group="totalAmount"></span></p>
+                            <p class="mb-2"><span class="font-semibold">Monto pagado:</span>&nbsp;<span data-group="paidAmount"></span></p>
                         </div>
                        
                         <div class="bg-white w-5/12 p-4 rounded-md ml-8 flex flex-col items-center shadow-md">

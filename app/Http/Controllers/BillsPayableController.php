@@ -18,6 +18,7 @@ use App\Http\Requests\StoreBillPayablePaymentRequest;
 use App\Http\Requests\UpdateBillPayableTasaRequest;
 use App\Http\Requests\UpsertBillPayableRequest;
 use App\Http\Requests\StoreBillPayableGroupRequest;
+use App\Http\Requests\UpdateBillPayableGroupRequest;
 
 use App\Models\BillPayable;
 use App\Models\BillPayablePayment;
@@ -377,6 +378,47 @@ class BillsPayableController extends Controller
             ]
         ], 200);
 
+    }
+
+    public function updateBillPayableGroup(UpdateBillPayableGroupRequest $request, BillsPayableRepository $repo){
+        
+        $validated = $request->validated();
+
+        // Verificar cuales facturas no tienen registros
+        $bills = array_map(function($item){
+            $bill_record = BillPayable::whereRaw("nro_doc = ? AND cod_prov = ?", [$item['nro_doc'], $item['cod_prov']])->first();
+        
+            if (is_null($bill_record)){
+                
+                // Recuperar informacion de la base de datos de SAINT
+                $bill_record = BillPayable::create($item);
+            }
+            
+            return $bill_record;
+
+        }, $validated['bills']);
+
+        $group = BillPayableGroup::whereRaw("id = " . $request->id)->first();
+
+        if ($group){
+            foreach($bills as $bill){
+                if ($bill->bill_payable_groups_id !== $group->id){
+                    $bill->bill_payable_groups_id = $group->id;
+                    $bill->save();
+                }
+            }
+
+            $group = $repo->getBillPayableGroups($group->cod_prov, $group->id)->first();
+    
+        }
+
+        return $this->jsonResponse([
+            'status' => 200,
+            'data' => [
+                'bills' => $bills,
+                'group' => $group
+            ]
+        ], 200);
     }
 
     public function updateBillPayableTasa(UpdateBillPayableTasaRequest $request){
