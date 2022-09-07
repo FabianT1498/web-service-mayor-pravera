@@ -446,9 +446,9 @@ class BillsPayableController extends Controller
 
         // $has_payments = $request->query('has_payments');
 
-        $bill_payable_groups = $repo->getBillPayableGroups($request->cod_prov);
+        $bill_payable_groups = $repo->getBillPayableGroups($request->cod_prov)->get();
 
-        return $this->jsonResponse($bill_payable_groups ? [$bill_payable_groups] : [], 200);
+        return $this->jsonResponse($bill_payable_groups ? $bill_payable_groups : [], 200);
     }
 
     public function linkBillPayableToSchedule(LinkBillPayableToScheduleRequest $request){

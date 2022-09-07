@@ -31,6 +31,10 @@ const BillPayableGroupViewPrototype = {
             this.presenter.handleClickAddGroup();
         }
     },
+    setNewGroupInSelect(groupID){
+        let newOption = this.getSelectItemTemplate({key: groupID, value: `Grupo ${groupID}`})
+        this.billPayableGroupModalSelect.insertAdjacentHTML('beforeend', newOption);
+    },
     showModal: function(){
         this.billPayableGroupModal.show();
     },

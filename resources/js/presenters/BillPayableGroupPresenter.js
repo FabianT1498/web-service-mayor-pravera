@@ -48,7 +48,12 @@ const BillPayableGroupPresenterPrototype = {
 			console.log(this.data.billsPayable)
 			storeBillPayableGroup({bills: this.data.billsPayable})
 				.then(res => {
-					console.log(res)
+					if (res.status === 200){
+						let data = res.data.data;
+						this.view.setNewGroupInSelect(data.groupID);
+					} else {
+						console.log('ha ocurrido un error')
+					}
 				})
 				.catch(err => {
 
