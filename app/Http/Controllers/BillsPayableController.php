@@ -444,8 +444,6 @@ class BillsPayableController extends Controller
 
     public function getBillPayableGroups(Request $request, BillsPayableRepository $repo){
 
-        // $has_payments = $request->query('has_payments');
-
         $bill_payable_groups = $repo->getBillPayableGroups($request->cod_prov)->get();
 
         return $this->jsonResponse($bill_payable_groups ? $bill_payable_groups : [], 200);

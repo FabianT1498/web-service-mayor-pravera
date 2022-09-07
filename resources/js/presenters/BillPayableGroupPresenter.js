@@ -29,8 +29,10 @@ const BillPayableGroupPresenterPrototype = {
 			.then(res => {
 				this.data.billPayableGroups = res.data;
 
+				console.log(res.data)
+
 				let billPayableGroupOptions = res.data.map((item) => {
-					return { key: item.id, value: 'Grupo ' + item.id }
+					return { key: item.ID, value: 'Grupo ' + item.ID }
 				})
 
 				this.view.setAvailableGroups(billPayableGroupOptions)
