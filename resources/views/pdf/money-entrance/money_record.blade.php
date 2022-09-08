@@ -331,6 +331,7 @@
                                 <th>I.V.A Bs</th>
                                 <th>I.V.A Bs ($)</th>
                                 <th>%</th>
+                                <th>Cant. Facturas</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -342,6 +343,7 @@
                                 <td class="text-center">{{ number_format($totals_iva[0][0]->iva, 2) }}</td>
                                 <td class="text-center">{{ number_format($totals_iva[0][0]->ivaDolares, 2) }}</td>
                                 <td class="text-center">{{ number_format($totals_iva[0][0]->ivaDolares/$total_iva_dollar, 2) * 100 }}&nbsp;%</td>
+                                <td class="text-center">{{ $type_bill_quantity->has(0) ? $type_bill_quantity[0]->first()->CantidadRegistros : 0 }}</td>
                             </tr>
                             <tr>
                                 <td>N.E.</td>
@@ -351,6 +353,7 @@
                                 <td class="text-center">{{ number_format($totals_iva[1][0]->iva, 2) }}</td>
                                 <td class="text-center">{{ number_format($totals_iva[1][0]->ivaDolares, 2) }}</td>
                                 <td class="text-center">{{ number_format($totals_iva[1][0]->ivaDolares/$total_iva_dollar, 2) * 100 }}&nbsp;%</td>
+                                <td class="text-center">{{ $type_bill_quantity->has(1) ? $type_bill_quantity[1]->first()->CantidadRegistros : 0 }}</td>
                             </tr>
                             <tr class="bg-grey-600">
                                 <td class="font-semibold">Total</td>
@@ -360,6 +363,8 @@
                                 <td class="text-center">{{ number_format($total_iva_bs, 2) }}</td>
                                 <td class="text-center">{{ number_format($total_iva_dollar, 2) }}</td>
                                 <td class="text-center">100%</td>
+                                <td class="text-center">{{ ($type_bill_quantity->has(0) ? $type_bill_quantity[0]->first()->CantidadRegistros : 0) 
+                                    + ($type_bill_quantity->has(1) ? $type_bill_quantity[1]->first()->CantidadRegistros : 0) }}</td>
                             </tr>
                         </tbody>
                     </table>

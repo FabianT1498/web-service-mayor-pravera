@@ -73,7 +73,7 @@ class MoneyEntranceController extends Controller
         return DB
             ::connection('saint_db')
             ->table('SAFACT')
-            ->selectRaw("COUNT(SAFACT.NumeroD) as CantidadRegistros")  
+            ->selectRaw("SAFACT.EsNF AS EsNF, COUNT(SAFACT.NumeroD) as CantidadRegistros")  
             ->whereRaw("SAFACT.TipoFac IN ('A', 'B') AND SAFACT.CodUsua IN ('CAJA1', 'CAJA2', 'CAJA3', 'CAJA4', 'CAJA5',
                 'CAJA6' , 'CAJA7', 'DELIVERY') AND " . $interval_query, $queryParams)
             ->groupByRaw("SAFACT.EsNF")
@@ -300,7 +300,7 @@ class MoneyEntranceController extends Controller
 
             $totals_iva = $this->getTotalIvaFromSafact($new_start_date, $new_finish_date);
 
-            return print_r($this->getCountTypeBills($new_start_date, $new_finish_date));
+            $type_bill_quantity = $this->getCountTypeBills($new_start_date, $new_finish_date);
 
             $total_iva_dollar = $totals_iva[0][0]->ivaDolares + $totals_iva[1][0]->ivaDolares;
 
@@ -311,8 +311,6 @@ class MoneyEntranceController extends Controller
             $total_base_imponible_dollar =  $totals_iva[0][0]->baseImponibleADolares + $totals_iva[1][0]->baseImponibleADolares;
 
             $total_by_date = $this->getTotalByDate($totals_from_safact, $totals_e_payment);
-
-            // return print_r($totals_from_safact);
 
            // Resumen de entrada de dinero
             $total_dollars = $totals_e_payment_by_interval['07']['dollar'] 
@@ -334,6 +332,7 @@ class MoneyEntranceController extends Controller
             $view_name = 'pdf.money-entrance.money_record';
         
             $pdf = $pdf->loadView($view_name, compact(
+                    'type_bill_quantity',
                     'totals_e_payment',
                     'totals_from_safact',
                     'totals_e_payment_by_user',
