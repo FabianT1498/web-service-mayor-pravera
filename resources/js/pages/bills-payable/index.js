@@ -4,16 +4,23 @@ import es from '@themesberg/tailwind-datepicker/locales/es';
 
 import { decimalInputs } from '_utilities/decimalInput';
 
-import { formatAmount } from '_utilities/mathUtilities'
+import { formatAmount, roundNumber } from '_utilities/mathUtilities'
+import { charReplace, isADateFormatDDMMYYYY} from '_utilities/stringUtilities'
 
 import { timerDelay } from '_utilities/timerDelay'
 
-import { storeBillPayable, getProviders } from '_services/bill-payable';
+import { storeBillPayable, getProviders, getBillPayable } from '_services/bill-payable';
 
 import { SIGN } from '_constants/currencies';
 
+import BillPayableCollection from '_collections/BillPayableCollection'
+import BillPayable from '_models/BillPayable'
+
 import BillPayableScheduleView from '_views/BillPayableScheduleView'
 import BillPayableSchedulePresenter from '_presenters/BillPayableSchedulePresenter'
+
+import BillPayableGroupView from '_views/BillPayableGroupView'
+import BillPayableGroupPresenter from '_presenters/BillPayableGroupPresenter'
 
 import AutocompletePresenter from '_components/autocomplete/presenter'
 import AutocompleteView from '_components/autocomplete/view'
@@ -25,70 +32,21 @@ export default {
         formFilter: document.querySelector('#form_filter'),
         pageInput: document.querySelector('#page'),
         billsPayableTBody: document.querySelector('#billsPayableTBody'),
+        cleanFormBtn: document.querySelector('#cleanFormBtn'),
+        linkBillsPayableContainer: document.querySelector('#linkBillsPayableContainer'),
         billPayableAlert: document.querySelector('#bill-payable-alert'),
-        cleanFormBtn: document.querySelector('#cleanFormBtn')
-    },
-    keypressOnAvailableDaysRange(event, form){
-        let targetDays = parseInt(event.target.value);
-        let targetID = event.target.getAttribute('id')
-
-        if (isNaN(targetDays)){
-            targetDays = event.target.value = 0
-        }
-
-        if (targetID === 'minAvailableDays'){
-            let maxAvailableDaysEl = form.querySelector('#maxAvailableDays')
-
-            if (targetDays > parseInt(maxAvailableDaysEl.value)){
-                maxAvailableDaysEl.value = targetDays
-
-                console.log('Maximos dias' + maxAvailableDaysEl.value);
-            }
-        } else {
-
-            let minAvailableDaysEl = form.querySelector('#minAvailableDays')
-
-            if (targetDays < parseInt(minAvailableDaysEl.value)){
-                minAvailableDaysEl.value = targetDays
-            }
-        }
-    },
-    keypressWrapper(){
-        let self = this;
-        return (event) => {
-            let id = event.target.getAttribute('id')
-            let key = event.key || event.keyCode
-
-            if (isFinite(key)){
-                if ( id === "maxAvailableDays" || id === 'minAvailableDays'){
-                    let form = self.DOMElements.formFilter
-                    self.keypressOnAvailableDaysRange(event, form)
-                }
-            }
-        }
-    },
-    keydownWrapper(){
-        let self = this;
-        return (event) => {
-            let key = event.key || event.keyCode
-            if (key === 8 || key === 'Backspace'){
-
-                let id = event.target.getAttribute('id')
-
-                if (id === "maxAvailableDays" || id === 'minAvailableDays'){
-                    let form = self.DOMElements.formFilter
-                    self.keypressOnAvailableDaysRange(event, form)
-                }
-            }
-        }
     },
     handleCheck: function(event){
         event.target.value = event.target.value === '1' ? '0' : '1';
     },
-    showTasaMessage(){
+    showBillPayableMessage(message){
         this.DOMElements.billPayableAlert.classList.remove('hidden', 'opacity-0')
+        
+        this.DOMElements.billPayableAlert
+            .querySelector('#' + this.DOMElements.billPayableAlert.getAttribute('id') + '-message').innerHTML = message
+        
         setTimeout(() => {
-            this.DOMElements.billPayableAlert.classList.add('hidden', 'opacity-0')
+            this.dismissableAlert.hide()
         }, 5000)
     },
     getBillPayableData(event){
@@ -96,23 +54,44 @@ export default {
         let numeroD = row.getAttribute('data-numeroD')
         let codProv = row.getAttribute('data-prov');
         let billType = this.DOMElements.formFilter.querySelector('#billType').value;
-        let tasa = formatAmount(row.querySelector('input[data-bill=tasa]').value);
-        let amount = formatAmount(row.querySelector('td[data-bill=montoTotal]').innerHTML);
+        let tasa = formatAmount(row.querySelector('input[data-bill=tasa]') ? row.querySelector('input[data-bill=tasa]').value : row.querySelector('a[data-bill=tasa]').innerHTML);
+        let amount = formatAmount(row.querySelector('a[data-bill=montoTotal]').innerHTML);
         let isDollar = row.querySelector('input[data-bill=isDollar]').value;
         let provDescrip = row.getAttribute('data-descripProv')
-       
-        return {numeroD, codProv, billType, tasa, amount, isDollar, provDescrip}
+        let fechaE = row.querySelector('a[data-bill=fechaE]').innerHTML
+
+        return {numeroD, codProv, billType, tasa, amount, isDollar, provDescrip, fechaE}
     },
     handleDollarCheckClicked: function(event){
         let data = this.getBillPayableData(event);
 
         if (data.tasa === 0){
-            this.showTasaMessage()
+            this.showBillPayableMessage('La tasa no puede ser igual a cero')
         } else {
             event.target.value = event.target.value === '0' ? '1' : '0'
             data.isDollar = event.target.value;
 
             this.submitBillPayable(data);
+        }
+    },
+    handleClickLinkBillsPayable: function(){
+        return (event) => {
+            if (this.checkIfAreSameProviders()){
+                this.billPayableGroupView.showModal();
+                const bill = this.selectedBills.getFirst();
+            
+                this.billPayableGroupPresenter.setBillPayableProvider({
+                    codProv: bill.codProv,
+                    provDescrip: bill.provDescrip
+                });
+
+                this.billPayableGroupPresenter.setBillsPayable(this.selectedBills.getAll())
+  
+            } else {
+
+                this.showBillPayableMessage('Las facturas no pertenecen al mismo proveedor.')
+                
+            }
         }
     },
     handleClick: function(){
@@ -130,9 +109,57 @@ export default {
             if (dataBill){
                 if (dataBill === 'isDollar'){
                     this.handleDollarCheckClicked(event)
+                } else if (dataBill === 'select'){
+                    
+                    if (event.target.value === '0'){
+                        let data = this.getBillPayableData(event)
+
+                        let row = event.target.closest('tr')
+                        let numeroD = row.getAttribute('data-numeroD')
+                        let codProv = row.getAttribute('data-prov')
+
+                        let formattedNumeroD = charReplace(numeroD)
+                        let isADate = isADateFormatDDMMYYYY(formattedNumeroD)
+
+                        if (isADate){
+                            numeroD = formattedNumeroD;
+                        }
+
+                        getBillPayable({numeroD, codProv})
+                            .then(res => {
+
+                                if (res.data.length > 0){
+                                    let bill = res.data[0];
+
+                                    if (bill.ScheduleID !== null || roundNumber(bill.MontoPagado) > 0){
+                                        return false;
+                                    } 
+                                }
+                                
+                                event.target.value = '1'
+        
+                                if (event.target.value === '1'){
+                                    this.addBillPayable(data);
+                                } else {
+                                    this.removeBillPayable(data);
+                                }
+            
+                                if (this.selectedBills.getLength() > 0){
+                                    this.showLinkBillsBtn();
+                                } else {
+                                    this.hideLinkBillsBtn();
+                                }
+                                
+                            })
+                            .catch(err => {
+                                console.log(err)
+                            })
+                    } else {
+                        event.target.value = '0'
+                    }
                 } else if (dataBill === 'modalBtn'){
                     let data = this.getBillPayableData(event);
-                    
+
                     this.billPayableSchedulePresenter.setBillPayable(data)
                 }
             }
@@ -188,11 +215,52 @@ export default {
         console.log(innerHtml);
         targetEl.innerHTML = innerHtml
     },
+    addBillPayable(data){
+        let billPayable = new BillPayable(
+            data.numeroD,
+            data.codProv, 
+            data.provDescrip,
+            data.billType,
+            data.tasa, 
+            data.amount,
+            data.isDollar,
+            data.fechaE
+        );
+        
+        this.selectedBills.pushElement(billPayable)
+    },
+    removeBillPayable(data){
+        this.selectedBills.removeElementByBillPayableData(data.numeroD, data.codProv)
+    },
+    showLinkBillsBtn(){
+        this.DOMElements.linkBillsPayableContainer.classList.remove('hidden')
+    },
+    hideLinkBillsBtn(){
+        this.DOMElements.linkBillsPayableContainer.classList.add('hidden')
+    },
+    checkIfAreSameProviders(){
+        let firstBill = this.selectedBills.getFirst()
+        let areSame = true;
+
+        this.selectedBills.getAll().forEach((item) => {
+            if (item.codProv !== firstBill.codProv){
+                areSame = false
+                return false;
+            }
+        })
+
+        return areSame;
+    },
     initEventListener(){
 
-        // Apply mask to inputs
-        // numericInput.mask(this.DOMElements.formFilter.querySelector('#maxAvailableDays'))
-        // numericInput.mask(this.DOMElements.formFilter.querySelector('#minAvailableDays'))
+        // options object
+        const dissmisableAlertOptions = {
+            transition: 'transition-opacity',
+            duration: 1000,
+            timing: 'ease-out',
+        };
+
+        this.dismissableAlert = new Dismiss(this.DOMElements.billPayableAlert, dissmisableAlertOptions);
 
         // Initialize date range picker
         Object.assign(Datepicker.locales, es);
@@ -201,12 +269,6 @@ export default {
             format: 'dd-mm-yyyy',
             language: 'es',
         });
-
-        // Attach event listener to containers
-        this.DOMElements.formFilter.addEventListener('keypress', this.keypressWrapper());
-        this.DOMElements.formFilter.addEventListener('keydown', this.keydownWrapper());
-
-        this.DOMElements.formFilter.querySelector('#isDollar').addEventListener('click', this.handleCheck);
 
         const tasaInputs = this.DOMElements.billsPayableTBody.querySelectorAll('input[data-bill=tasa]')
 
@@ -219,6 +281,12 @@ export default {
         this.DOMElements.billsPayableTBody.addEventListener('keydown', this.keyEventsOnTBodyHandlerWrapper())
 
         this.DOMElements.cleanFormBtn.addEventListener('click', this.handleClickWrapperCleanFormBtn())
+
+        this.DOMElements.linkBillsPayableContainer.addEventListener('click', this.handleClickLinkBillsPayable());
+
+        // this.billPayableGroupModal = new Modal(this.DOMElements.billPayableGroupModal);
+
+        // this.DOMElements.billPayableGroupModalCloseBtn.addEventListener('click', this.handleClickCloseBillPayableGroup())
 
         if (this.DOMElements.pagesLinksContainer){
             this.DOMElements.pagesLinksContainer.addEventListener('click', function(pageInput, form){
@@ -240,15 +308,16 @@ export default {
         storeBillPayable(data).then((res) => {
             let el = this.DOMElements.billsPayableTBody.querySelector(`tr[data-numeroD="${res.data.nro_doc}"][data-prov="${res.data.cod_prov}"]`)
 
-            this.changeAmountSign(el, 'td[data-bill=montoTotal]', res.data.is_dollar)
-            this.changeAmountSign(el, 'td[data-bill=montoPagar]', res.data.is_dollar)
+            this.changeAmountSign(el, 'a[data-bill=montoTotal]', res.data.is_dollar)
+            // this.changeAmountSign(el, 'a[data-bill=montoPagar]', res.data.is_dollar)
+            
         }).catch(err => {
             console.log(err);
         })
     },
     initData(){
         this.submitBillPayableCb = timerDelay(this.submitBillPayable, 3000)
-        
+        this.selectedBills = new BillPayableCollection();  
     },
     init(){
         this.initEventListener()
@@ -258,6 +327,10 @@ export default {
         this.billPayableSchedulePresenter = new BillPayableSchedulePresenter();
         this.billPayableScheduleView = new BillPayableScheduleView(this.billPayableSchedulePresenter);
         this.billPayableScheduleView.init(billPayableScheduleContainer)
+
+        this.billPayableGroupPresenter = new BillPayableGroupPresenter()
+        this.billPayableGroupView = new BillPayableGroupView(this.billPayableGroupPresenter);
+        this.billPayableGroupView.init(document.querySelector('#billPayableGroupModal'))
 
         let providerSearchBoxElement =  document.querySelector('#provider_search');
         let providerSearchBoxPresenter = new AutocompletePresenter(getProviders);

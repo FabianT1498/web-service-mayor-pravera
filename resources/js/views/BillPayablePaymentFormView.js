@@ -11,7 +11,7 @@ const BillPayablePaymentFormViewPrototype = {
             return false;
         }
 
-        let id = formContainer.getAttribute('id')
+        this.formContainer = formContainer;
 
         this.localCurrencyContainer = formContainer.querySelector('#localCurrencyContainer')
         this.foreignCurrencyContainer = formContainer.querySelector('#foreignCurrencyContainer')
@@ -34,7 +34,10 @@ const BillPayablePaymentFormViewPrototype = {
     initEventListener(){
         
         this.isDollar.addEventListener('click', this.handleClickIsDollarWrapper());
-        this.amount.addEventListener('keyup', this.handleKeyupWrapper())
+
+        this.amount.addEventListener('keyup', this.handleKeyupEventAmountWrapper())
+
+        this.localCurrencyContainer.addEventListener('keyup', this.handleKeyupEventLocalCurrencyWrapper())
 
         Object.assign(Datepicker.locales, es);
       
@@ -62,14 +65,17 @@ const BillPayablePaymentFormViewPrototype = {
         decimalInputs['bs'].mask(this.tasaInput)
         decimalInputs['dollar'].mask(this.dollarAmount)
     },
-    handleKeyupWrapper(){
+    handleKeyupEventLocalCurrencyWrapper(){
         return (event) => {
-
             let key = event.key || event.keyCode;
-            if (key === 13 || key === 'Enter'){
-                event.preventDefault()
-            }
-            
+            this.presenter.onKeyupEventLocalCurrency(event.target, event.target.value, key);
+        }
+    },
+    handleKeyupEventAmountWrapper(){
+        return (event) => {
+            event.preventDefault()
+            let key = event.key || event.keyCode;
+
             this.presenter.onKeyupEventAmount(event.target.value, key);
         }
     },
@@ -107,11 +113,36 @@ const BillPayablePaymentFormViewPrototype = {
         this.foreignCurrencyContainer.classList.toggle('hidden')
     },
     showCalculatedRate(tasa){
-        this.tasa.value = tasa
-        this.tasaInput.value = tasa
+        this.setTasa(tasa)
+        this.setTasaInput(tasa)
     },
     showCalculatedDollarAmount(dollarAmount){
         this.dollarAmount.value = dollarAmount
+    },
+    getTasaInput(){
+        return this.tasaInput.value
+    },
+    getDollarAmount(){
+        return this.dollarAmount.value
+    },
+    setTasa(value){
+        this.tasa.value = value
+    },
+    setTasaInput(value){
+        this.tasaInput.value = value
+    },
+    setBsAmount(value){
+        this.amount.value = value
+    },
+    attachFormSubmissionHandler(cb){
+        this.formContainer.addEventListener('submit', cb)
+    },
+    disableAllFormInputs(){
+        this.formContainer.querySelectorAll('input').forEach(el => {
+            el.setAttribute('disabled', true)
+        })
+
+        this.formContainer.querySelector('select').setAttribute('disabled', true)
     }
 }
 

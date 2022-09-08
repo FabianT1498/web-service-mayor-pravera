@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateBillPaymentsTable extends Migration
+class CreateBillPayableGroupsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,10 @@ class CreateBillPaymentsTable extends Migration
      */
     public function up()
     {
-        Schema::create('bill_payments', function (Blueprint $table) {
+        Schema::create('bill_payable_groups', function (Blueprint $table) {
             $table->id();
-            $table->decimal('amount', 28, 2);
-            $table->date('date');
-            $table->boolean('is_dollar');
-            $table->boolean('is_group_payment');
+            $table->string('cod_prov', 50);
+            $table->enum('status', array_keys(config('constants.BILL_PAYABLE_STATUS')));
         });
     }
 
@@ -29,6 +27,6 @@ class CreateBillPaymentsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('bill_payments');
+        Schema::dropIfExists('bill_payable_groups');
     }
 }

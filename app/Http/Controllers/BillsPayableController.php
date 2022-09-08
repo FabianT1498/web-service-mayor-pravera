@@ -15,17 +15,29 @@ use App\Repositories\ProviderRepository;
 
 use App\Http\Requests\LinkBillPayableToScheduleRequest;
 use App\Http\Requests\StoreBillPayablePaymentRequest;
+use App\Http\Requests\UpdateBillPayableTasaRequest;
+use App\Http\Requests\UpsertBillPayableRequest;
+use App\Http\Requests\StoreBillPayableGroupRequest;
+use App\Http\Requests\UpdateBillPayableGroupRequest;
 
 use App\Models\BillPayable;
 use App\Models\BillPayablePayment;
+use App\Models\BillsPayablePayments;
+use App\Models\BillPayablePaymentBs;
+use App\Models\BillPayablePaymentDollar;
+use App\Models\BillPayableGroup;
 
 use App\Http\Traits\SessionTrait;
+use App\Http\Traits\AmountCurrencyTrait;
+use App\Http\Traits\StringTrait;
 
 class BillsPayableController extends Controller
 {
     private $flasher = null;
 
     use SessionTrait;
+    use AmountCurrencyTrait;
+    use StringTrait;
 
     public function __construct(SweetAlertFactory $flasher)
     {
@@ -36,17 +48,17 @@ class BillsPayableController extends Controller
 
         $this->setSession($request, 'current_module', 'bill_payable');
 
-        $is_dollar = $request->query('is_dollar', 0);
+        // Filter params
+        $is_group_bill = $request->query('is_group_bill', 'no');
+
+        $is_scheduled_bill = $request->query('is_scheduled_bill', 'yes');
+
         $nro_doc = $request->query('nro_doc', '');
         $end_emission_date = $request->query('end_emission_date', Carbon::now()->format('d-m-Y'));
         $cod_prov = $request->query('cod_prov', '');
         $descrip_prov =  $request->query('cod_prov_value', '');
       
-        $min_available_days = $request->query('min_available_days', 0);
-        $max_available_days = $request->query('max_available_days', 0);
-
-        $is_caduced = $request->query('is_caduced', 1);
-
+        // Current page
         $page = $request->query('page', '');
 
         $new_end_emission_date = '';
@@ -57,6 +69,14 @@ class BillsPayableController extends Controller
 
         $bill_type = $request->query('bill_type', $bill_types[0]->key);
 
+        $bill_currencies =  array_map(function($val){
+            return (object) array("key" => $val, "value" => $val);
+        }, array_keys(config('constants.CURRENCIES')));
+
+        $bill_currency = $request->query('bill_currency', $bill_currencies[0]->key);
+
+        $is_dollar = config('constants.CURRENCIES.' . $bill_currency) === config('constants.CURRENCIES.BOLIVAR') ? 0 : 1;
+
         if(is_null($end_emission_date) || $end_emission_date === ''){
             $now = Carbon::now();
             $end_emission_date =  $now->format('d-m-Y');
@@ -65,44 +85,90 @@ class BillsPayableController extends Controller
             $new_end_emission_date = date('Y-m-d', strtotime($end_emission_date));
         }
 
-        $paginator = $repo->getBillsPayableFromSaint($is_dollar, $new_end_emission_date, $bill_type, $nro_doc, $cod_prov)->paginate(5);
+        $paginator = null;
 
-        if ($paginator->lastPage() < $page){
-            $paginator = $repo->getBillsPayableFromSaint($is_dollar, $new_end_emission_date, $bill_type, $nro_doc, $cod_prov)->paginate(5, ['*'], 'page', 1);
+        $is_group_bill_val = $is_group_bill === 'yes' ? 1 : 0;
+        $is_scheduled_bill_val = $is_scheduled_bill === 'yes' ? 1 : 0;
+
+        if ($is_group_bill_val === 0){
+            if ($is_scheduled_bill_val === 1){
+    
+                $paginator = $repo->getBillsPayable($is_dollar, $new_end_emission_date, $bill_type, $nro_doc, $cod_prov, $is_scheduled_bill_val)->paginate(5);
+    
+                if ($paginator->lastPage() < $page){
+                    $paginator = $repo->getBillsPayable($is_dollar, $new_end_emission_date, $bill_type, $nro_doc, $cod_prov, $is_scheduled_bill_val)->paginate(5, ['*'], 'page', 1);
+                }
+    
+                $data = array_map(function($item) {
+                    $datetime1 = new \DateTime();
+                    $datetime2 = new \DateTime($item->FechaE);
+                    $interval = $datetime1->diff($datetime2);
+                    $days = $interval->format('%a'); //now do whatever you like with $days
+    
+                    return (object) [
+                        'NumeroD' => $item->NumeroD,
+                        'CodProv' => $item->CodProv,
+                        'Descrip' => $item->Descrip,
+                        'FechaE' => $item->FechaE,
+                        'FechaPosteo' => $item->FechaE,
+                        'esDolar' => $item->esDolar,
+                        'MontoTotal' => number_format($item->MontoTotal, 2) . " " . config("constants.CURRENCY_SIGNS." . ($item->esDolar ? "dollar" : "bolivar")),
+                        'MontoPagar' => number_format($item->MontoPagar, 2) . " " . config("constants.CURRENCY_SIGNS.dollar"),
+                        'MontoPagado' => isset($item->MontoPagado) ? $this->formatAmount($item->MontoPagado) : 0.00,
+                        'Tasa' => $this->formatAmount($item->Tasa),
+                        'Estatus' => isset($item->Status)  ? config("constants.BILL_PAYABLE_STATUS." . $item->Status) : config("constants.BILL_PAYABLE_STATUS.NOTPAID"),
+                        'DiasTranscurridos' => $days,
+                        'BillPayableSchedulesID' => isset($item->BillPayableSchedulesID) ? $item->BillPayableSchedulesID : null,
+                    ];
+                }, $paginator->items());
+                
+            } else {
+                
+                $paginator = $repo->getBillsPayableFromSaint($is_dollar, $new_end_emission_date, $bill_type, $nro_doc, $cod_prov)->paginate(5);
+    
+                if ($paginator->lastPage() < $page){
+                    $paginator = $repo->getBillsPayableFromSaint($is_dollar, $new_end_emission_date, $bill_type, $nro_doc, $cod_prov)->paginate(5, ['*'], 'page', 1);
+                }
+    
+                $bills_payable_keys = implode(" OR ", array_map(function($item){
+                    return "(bills_payable.cod_prov = '" . $item->CodProv . "' AND bills_payable.nro_doc = '" . $item->NumeroD . "')";
+                }, $paginator->items()));
+    
+                $bills_payable_records = $repo->getBillsPayableByIds($bills_payable_keys, $is_scheduled_bill_val)->take(5)->get()->groupBy(['CodProv', 'NumeroD']);
+
+                $data = array_map(function($item) use ($bills_payable_records){
+                    
+                    $record = $bills_payable_records->has($item->CodProv) && $bills_payable_records[$item->CodProv]->has($item->NumeroD)
+                        ? $bills_payable_records[$item->CodProv][$item->NumeroD]->first()
+                        : $item;
+    
+                    $datetime1 = new \DateTime();
+                    $datetime2 = new \DateTime($item->FechaPosteo);
+                    $interval = $datetime1->diff($datetime2);
+                    $days = $interval->format('%a');//now do whatever you like with $days
+
+                    return (object) [
+                        'NumeroD' => $record->NumeroD,
+                        'CodProv' => $record->CodProv,
+                        'Descrip' => $item->Descrip,
+                        'FechaE' => $item->FechaE,
+                        'FechaPosteo' => $item->FechaPosteo,
+                        'esDolar' => $record->esDolar,
+                        'MontoTotal' => number_format($record->MontoTotal, 2) . " " . config("constants.CURRENCY_SIGNS." . ($record->esDolar ? "dollar" : "bolivar")),
+                        'MontoPagar' => number_format($record->MontoPagar, 2) . " " . config("constants.CURRENCY_SIGNS." . ($record->esDolar ? "dollar" : "bolivar")),
+                        'MontoPagado' => isset($item->MontoPagado) ? $this->formatAmount($item->MontoPagado) : 0.00,
+                        'Tasa' => floatval($record->Tasa),
+                        'Estatus' => isset($record->Status)  ? config("constants.BILL_PAYABLE_STATUS." . $record->Status) : config("constants.BILL_PAYABLE_STATUS.NOTPAID"),
+                        'DiasTranscurridos' => $days,
+                        'BillPayableSchedulesID' => isset($record->BillPayableSchedulesID) ? $record->BillPayableSchedulesID : null,
+                        'BillPayableGroupsID' => isset($record->BillPayableGroupsID) ? $record->BillPayableGroupsID : null
+                    ];
+                }, $paginator->items());
+
+              
+            }
         }
-
-        $bills_payable_keys = implode(" OR ", array_map(function($item){
-            return "(bills_payable.cod_prov = '" . $item->CodProv . "' AND bills_payable.nro_doc = '" . $item->NumeroD . "')";
-        }, $paginator->items()));
-
-        $bills_payable_records = $repo->getBillsPayable($bills_payable_keys)->take(5)->get()->groupBy(['CodProv', 'NumeroD']);
-
-        $data = array_map(function($item) use ($bills_payable_records){
-            
-            $record = $bills_payable_records->has($item->CodProv) && $bills_payable_records[$item->CodProv]->has($item->NumeroD)
-                ? $bills_payable_records[$item->CodProv][$item->NumeroD]->first()
-                : $item;
-
-            $datetime1 = new \DateTime();
-            $datetime2 = new \DateTime($item->FechaPosteo);
-            $interval = $datetime1->diff($datetime2);
-            $days = $interval->format('%a');//now do whatever you like with $days
-
-            return (object) [
-                'NumeroD' => $record->NumeroD,
-                'CodProv' => $record->CodProv,
-                'Descrip' => $item->Descrip,
-                'FechaE' => $item->FechaE,
-                'FechaPosteo' => $item->FechaPosteo,
-                'esDolar' => $record->esDolar,
-                'MontoTotal' => number_format($record->MontoTotal, 2) . " " . config("constants.CURRENCY_SIGNS." . ($record->esDolar ? "dollar" : "bolivar")),
-                'MontoPagar' => number_format($record->MontoPagar, 2) . " " . config("constants.CURRENCY_SIGNS." . ($record->esDolar ? "dollar" : "bolivar")),
-                'Tasa' => number_format($record->Tasa, 2),
-                'Estatus' => isset($record->Status)  ? config("constants.BILL_PAYABLE_STATUS." . $record->Status) : config("constants.BILL_PAYABLE_STATUS.NOTPAID"),
-                'DiasTranscurridos' => $days
-            ];
-        }, $paginator->items());
-
+        
         $schedules = $repo_schedule->getBillSchedules()->get()->map(function($item){
             return (object) array("key" => $item->WeekNumber, "value" => "Semana " . $item->WeekNumber);
         });
@@ -114,7 +180,7 @@ class BillsPayableController extends Controller
             "F. Emision.",
             "F. Posteo",
             'Monto Factura',
-            'Monto Pagar',
+            'Monto Pagar ($)',
             'Tasa',
             'Es dolar',
             'Estatus',
@@ -126,18 +192,18 @@ class BillsPayableController extends Controller
             'columns',
             'paginator',
             'data',
-            'is_dollar',
+            'is_scheduled_bill',
             'nro_doc',
             'bill_type',
             'bill_types',
             'cod_prov',
             'descrip_prov',
             'end_emission_date',
-            'min_available_days',
-            'max_available_days',
-            'is_caduced',
             'page',
-            'schedules'
+            'schedules',
+            'bill_currencies',
+            'bill_currency',
+            'is_group_bill'
         ));
     }
 
@@ -156,12 +222,16 @@ class BillsPayableController extends Controller
             'Banco',
             'Nro. referencia',
             'Tasa',
-            "Monto"
+            "Monto",
+            "Monto ($)"
         ];
 
         $today_date = Carbon::now()->format('d-m-Y');
         
         $bill = $repo->getBillPayable($request->numero_d, $request->cod_prov);
+
+        $bill->Tasa = $this->formatAmount($bill->Tasa);
+        $bill->MontoPagado = $this->formatAmount($bill->MontoPagado);
 
         $bill_payments_bs = $repo->getBillPayablePaymentsBs($request->numero_d, $request->cod_prov)->get();
         $bill_payments_dollar = $repo->getBillPayablePaymentsDollar($request->numero_d, $request->cod_prov)->get();
@@ -171,6 +241,7 @@ class BillsPayableController extends Controller
                 'NumeroD' => $record->NumeroD,
                 'CodProv' => $record->CodProv,
                 'Amount' => number_format($record->Amount, 2) . " " . config("constants.CURRENCY_SIGNS." . ($record->esDolar ? "dollar" : "bolivar")),
+                'DollarAmount' => number_format($record->Amount / $record->Tasa, 2) . " " . config("constants.CURRENCY_SIGNS.dollar"),
                 'Tasa' => number_format($record->Tasa, 2) . " " . config("constants.CURRENCY_SIGNS.bolivar"),
                 'BankName' => $record->BankName,
                 'RefNumber' => $record->RefNumber,
@@ -213,36 +284,181 @@ class BillsPayableController extends Controller
         ));
     }
 
-    public function storePayment(StoreBillPayablePaymentRequest $request){
+    public function storePayment(StoreBillPayablePaymentRequest $request, BillsPayableRepository $repo){
 
         $validated = $request->validated();
 
-        $validated['is_dollar'] = key_exists('is_dollar', $validated) ? $validated['is_dollar'] : '0';
+        $validated['is_dollar'] = key_exists('is_dollar', $request->all()) ? $request->all()['is_dollar'] : '0';
 
-        $result = BillPayablePayment::upsert($validated,
-            ['nro_doc', 'cod_prov'],
-            ['amount', 'is_dollar', 'date']);
+        $bill_payment = BillPayablePayment::create($validated);
 
-        if ($result > 0){
-            $this->flasher->addSuccess('El pago fue creado exitosamente!');
+        if ($bill_payment){
+
+            $validated['bill_payments_id'] = $bill_payment->id;
+            
+            $bill_payment_child = null;
+
+            $bill = $repo->getBillPayable($validated['nro_doc'], $validated['cod_prov']);
+
+            $bill_amount_to_pay_ref = floatval($bill->MontoPagar . 'El');
+
+            $payment_amount_ref = 0;
+
+            if ($validated['is_dollar'] === '0'){
+                $payment_amount_ref = floor(($validated['amount'] / $validated['tasa']) * 100) / 100;
+                $bill_payment_child = BillPayablePaymentBs::create($validated);
+               
+            } else if ($validated['is_dollar'] === '1') {
+                $payment_amount_ref = $validated['amount'];
+                $validated['payment_method'] = $validated['foreign_currency_payment_method'];
+                unset($validated['foreign_currency_payment_method']);
+                $bill_payment_child = BillPayablePaymentDollar::create($validated);
+            }
+
+            if ($bill_payment_child){
+                
+                $diff = floor(($bill_amount_to_pay_ref - $payment_amount_ref) * 100) / 100;
+                
+                $bill_status_change = false;
+    
+                if ($diff <= 0){
+                    $bill_model = BillPayable::whereRaw("nro_doc = ? AND cod_prov = ?", [$validated['nro_doc'], $validated['cod_prov']])->first();
+                    $bill_model->status = array_keys(config("constants.BILL_PAYABLE_STATUS"))[1];
+                    $bill_status_change = $bill_model->save();
+                }
+
+                $bill_payment_record = BillsPayablePayments::create($validated);
+
+                if ($bill_payment_record){
+                    $this->flasher->addSuccess("El pago fue creado exitosamente " . ($bill_status_change ? "y la factura fue pagada completamente !" : "!"));
+                } else {
+                    $bill_payment->delete();
+                    $bill_payment_child->delete();
+                    $this->flasher->addError('No se pudo crear el pago para la factura');
+                }
+                
+            } else {
+                $bill_payment->delete();
+                $this->flasher->addError('No se pudo crear el pago para la factura');
+            }
+
         } else {
             $this->flasher->addError('No se pudo crear el pago para la factura');
         }
         
         return redirect()->route('bill_payable.showBillPayable', 
             ['numero_d' => $validated['nro_doc'], 'cod_prov' => $validated['cod_prov']]);
+    }
+
+    public function storeBillPayableGroup(StoreBillPayableGroupRequest $request){
+        
+        $validated = $request->validated();
+
+        // Verificar cuales facturas no tienen
+
+        $bills = array_map(function($item){
+            $bill_record = BillPayable::whereRaw("nro_doc = ? AND cod_prov = ?", [$item['nro_doc'], $item['cod_prov']])->first();
+        
+            if (is_null($bill_record)){
+                
+                // Recuperar informacion de la base de datos de SAINT
+                $bill_record = BillPayable::create($item);
+            }
+            
+            return $bill_record;
+
+        }, $validated['bills']);
+
+        $group = BillPayableGroup::create($validated['bills'][0]);
+
+        if ($group){
+            foreach($bills as $bill){
+                $bill->bill_payable_groups_id = $group->id;
+                $bill->save();
+            }
+        }
+
+        return $this->jsonResponse([
+            'status' => 200,
+            'data' => [
+                'bills' => $bills,
+                'groupID' => $group->id
+            ]
+        ], 200);
 
     }
 
-    public function storeBillPayable(Request $request){
+    public function updateBillPayableGroup(UpdateBillPayableGroupRequest $request, BillsPayableRepository $repo){
+        
+        $validated = $request->validated();
 
-        $nro_doc = $request->numeroD;
-        $cod_prov = $request->codProv;
-        $descrip_prov = $request->provDescrip;
-        $bill_type = $request->billType;
-        $tasa = $request->tasa;
-        $is_dollar = $request->isDollar;
-        $amount = $request->amount;
+        // Verificar cuales facturas no tienen registros
+        $bills = array_map(function($item){
+            $bill_record = BillPayable::whereRaw("nro_doc = ? AND cod_prov = ?", [$item['nro_doc'], $item['cod_prov']])->first();
+        
+            if (is_null($bill_record)){
+                
+                // Recuperar informacion de la base de datos de SAINT
+                $bill_record = BillPayable::create($item);
+            }
+            
+            return $bill_record;
+
+        }, $validated['bills']);
+
+        $group = BillPayableGroup::whereRaw("id = " . $request->id)->first();
+
+        if ($group){
+            foreach($bills as $bill){
+                if ($bill->bill_payable_groups_id !== $group->id){
+                    $bill->bill_payable_groups_id = $group->id;
+                    $bill->save();
+                }
+            }
+
+            $group = $repo->getBillPayableGroups($group->cod_prov, $group->id)->first();
+    
+        }
+
+        return $this->jsonResponse([
+            'status' => 200,
+            'data' => [
+                'bills' => $bills,
+                'group' => $group
+            ]
+        ], 200);
+    }
+
+    public function updateBillPayableTasa(UpdateBillPayableTasaRequest $request){
+
+        $validated = $request->validated();
+ 
+        $bill = BillPayable::whereRaw("nro_doc = ? AND cod_prov = ?", [$validated['nro_doc'], $validated['cod_prov']])->first();
+
+        $bill->tasa = $validated['bill_tasa'];
+
+        if ($bill->save()){
+            $this->flasher->addSuccess('La tasa fue actualizada!');
+        } else {
+            $this->flasher->addError('La tasa no pudo ser actualizada');
+        }
+
+        return redirect()->route('bill_payable.showBillPayable', 
+            ['numero_d' => $validated['nro_doc'], 'cod_prov' => $validated['cod_prov']]);
+    }
+
+    public function storeBillPayable(UpsertBillPayableRequest $request, BillsPayableRepository $repo){
+
+        $validated = $request->validated();
+
+        $nro_doc = $validated['numeroD'];
+        $cod_prov = $validated['codProv'];
+        $descrip_prov = $validated['provDescrip'];
+        $bill_type = $validated['billType'];
+        $tasa = $validated['tasa'];
+        $is_dollar = $validated['isDollar'];
+        $amount = $validated['amount'];
+        $emission_date = $validated['fechaE'];
       
         $data = [
             'nro_doc' => $nro_doc,
@@ -252,8 +468,9 @@ class BillsPayableController extends Controller
             'amount' => $amount,
             'is_dollar' => $is_dollar,
             'tasa' => $tasa,
+            'emission_date' => $emission_date
         ];
-
+        
         BillPayable::upsert($data,
             ['nro_doc', 'cod_prov'],
             ['amount', 'is_dollar', 'tasa', 'bill_type']);
@@ -262,44 +479,56 @@ class BillsPayableController extends Controller
     }
 
     public function getBillPayable(Request $request, BillsPayableRepository $repo){
-        $bill = $repo->getBillPayable($request->numero_d, $request->cod_prov);
+
+        $numero_d = '';
+        $is_a_date = $this->isADateFormatDDMMYYYY($request->numero_d);
+
+        if ($this->isADateFormatDDMMYYYY($request->numero_d)){
+            $numero_d = $this->charReplace($request->numero_d);
+        }
+
+        $bill = $repo->getBillPayable($numero_d, $request->cod_prov);
 
         return $this->jsonResponse($bill ? [$bill] : [], 200);
     }
 
-    public function linkBillPayableToSchedule(LinkBillPayableToScheduleRequest $request, BillsPayableRepository $repo){
+    public function getBillPayableGroups(Request $request, BillsPayableRepository $repo){
 
-        $nro_doc = $request->numeroD;
-        $cod_prov = $request->codProv;
-        $bill_type = $request->billType;
-        $tasa = $request->tasa;
-        $is_dollar = $request->isDollar;
-        $amount = $request->amount;
-        $schedule_id = $request->scheduleID;
-        $descrip_prov = $request->provDescrip;
+        $bill_payable_groups = $repo->getBillPayableGroups($request->cod_prov)->get();
+
+        return $this->jsonResponse($bill_payable_groups ? $bill_payable_groups : [], 200);
+    }
+
+    public function linkBillPayableToSchedule(LinkBillPayableToScheduleRequest $request){
+
+        $validated = $request->validated();
+
+        $nro_doc = $validated['numeroD'];
+        $cod_prov = $validated['codProv'];
+        $descrip_prov = $validated['provDescrip'];
+        $bill_type = $validated['billType'];
+        $tasa = $validated['tasa'];
+        $is_dollar = $validated['isDollar'];
+        $amount = $validated['amount'];
+        $emission_date = $validated['fechaE'];
+        $scheduleID = $validated['scheduleID'];
 
         $data = [
             'nro_doc' => $nro_doc,
             'cod_prov' => $cod_prov,
+            'descrip_prov' => $descrip_prov,
             'bill_type' => $bill_type,
             'amount' => $amount,
             'is_dollar' => $is_dollar,
             'tasa' => $tasa,
-            'descrip_prov' => $descrip_prov,
-            'bill_payable_schedules_id' => $schedule_id
+            'emission_date' => $emission_date,
+            'bill_payable_schedules_id' => $scheduleID
         ];
-
-        $bill = BillPayable::whereRaw("nro_doc = ? AND cod_prov = ?", [$request->numeroD, $request->codProv])->first();
-
-        if ($bill){
-            $bill->bill_payable_schedules_id = $request->scheduleID;
-            BillPayable::upsert($data,
-                ['nro_doc', 'cod_prov'],
-                ['bill_payable_schedules_id']);
-        } else {
-            BillPayable::insert($data);
-        }
-      
+        
+        BillPayable::upsert($data,
+            ['nro_doc', 'cod_prov'],
+            ['bill_payable_schedules_id']);
+       
         return $this->jsonResponse($data, 200);
     }
 
