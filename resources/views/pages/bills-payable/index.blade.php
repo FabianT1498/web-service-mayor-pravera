@@ -49,15 +49,15 @@
             </thead>
             <tbody id="billsPayableTBody">
                 @foreach ($data as $key => $value)
-                    <tr data-numeroD="{{ $value->NumeroD }}" data-prov="{{ $value->CodProv }}" data-descripProv="{{ $value->Descrip }}">
+                    <tr class="{{ $value->BillPayableGroupsID ? "bg-gray-300 hover:!bg-slate-300" : "" }}" data-numeroD="{{ $value->NumeroD }}" data-prov="{{ $value->CodProv }}" data-descripProv="{{ $value->Descrip }}">
                         <td>
                             <input
                                 class="form-checkbox w-4 h-4 text-blue-600 rounded  focus:ring-blue-500 focus:ring-2 {{ $value->MontoPagado > 0.00 ? "bg-gray-100 border-gray-300" : ""}}"
                                 type="checkbox"
                                 value="0"
                                 data-bill="select"              
-                                {{ $value->MontoPagado === 0.00 ? '' : 'disabled' }}
-                                @if ($value->MontoPagado > 0.00) 
+                                {{ ($value->MontoPagado === 0.00 && is_null($value->BillPayableGroupsID)) ? '' : 'disabled' }}
+                                @if ($value->MontoPagado > 0.00 && $value->BillPayableGroupsID) 
                                     onclick= "return false;" 
                                 @endif
                             />

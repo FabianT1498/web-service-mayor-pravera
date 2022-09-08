@@ -213,7 +213,7 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
             ->whereRaw("bills_payable_payments.nro_doc = ? AND bills_payable_payments.cod_prov = ? AND bill_payments.is_dollar = 1", [$n_doc, $cod_prov]);
     }
 
-    public function getBillsPayable($is_dolar, $before_emission_date, $bill_type, $nro_doc, $cod_prov, $is_scheduled_bill = 0){
+    public function getBillsPayable($is_dolar, $before_emission_date, $bill_type, $nro_doc, $cod_prov, $is_scheduled_bill = 0, $is_group_bill = 0){
       
         $query = DB
             ::connection('web_services_db')
@@ -225,7 +225,8 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
                 ELSE CAST(ROUND((bills_payable.amount / COALESCE(bills_payable.tasa, 1)) - (COALESCE(bill_payments_bs_div.total_paid, 0) + COALESCE(bill_payments_dollar.total_paid, 0)), 2) AS decimal(28, 2))
                 END AS MontoPagar,
                 CAST(ROUND(COALESCE(bill_payments_bs_div.total_paid, 0) + COALESCE(bill_payments_dollar.total_paid, 0), 2) AS decimal(28, 2)) AS MontoPagado,
-                bills_payable.bill_payable_schedules_id as BillPayableSchedulesID, bills_payable.descrip_prov as Descrip")
+                bills_payable.bill_payable_schedules_id as BillPayableSchedulesID, bills_payable.descrip_prov as Descrip,
+                bills_payable.bill_payable_groups_id AS BillPayableGroupsID")
             ->leftJoin(DB::raw("(SELECT bills_payable_payments.nro_doc, bills_payable_payments.cod_prov, SUM(bill_payments.amount / bill_payments_bs.tasa) as total_paid FROM bills_payable_payments 
                     INNER JOIN bill_payments ON bills_payable_payments.bill_payments_id = bill_payments.id
                     INNER JOIN bill_payments_bs ON bill_payments_bs.bill_payments_id = bill_payments.id 
@@ -242,7 +243,8 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
                     $join->on('bills_payable.nro_doc', '=', 'bill_payments_dollar.nro_doc')
                         ->on('bills_payable.cod_prov', '=', 'bill_payments_dollar.cod_prov');
                 })
-            ->whereRaw("bills_payable.emission_date <= '" . $before_emission_date . "' AND bills_payable.bill_payable_schedules_id " . ($is_scheduled_bill ? "IS NOT" : "IS" ) . " NULL AND bills_payable.is_dollar = " . $is_dolar . " AND bills_payable.bill_type = '" . $bill_type . "' "  
+            ->whereRaw("bills_payable.emission_date <= '" . $before_emission_date . "' AND bills_payable.bill_payable_schedules_id " . ($is_scheduled_bill ? "IS NOT" : "IS" ) . " NULL AND bills_payable.is_dollar = " . $is_dolar .
+                " AND bills_payable.bill_type = '" . $bill_type . "' AND bills_payable.bill_payable_groups_id " . ($is_group_bill ? "IS NOT" : "IS") . " NULL "  
                 . ($nro_doc && $nro_doc !== '' ? " AND UPPER(bills_payable.nro_doc) = UPPER('" . $nro_doc . "')" : '') . ( $cod_prov && $cod_prov !== '' ? " AND bills_payable.cod_prov = '" . $cod_prov . "'" : ''));
 
         return $query;
@@ -281,8 +283,8 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
         return $query;
     }
 
-    public function getBillsPayableByIds($ids = ''){
-          
+    public function getBillsPayableByIds($ids = '', $is_scheduled_bill = 0, $is_group_bill = 0){
+     
         $query = DB
             ::connection('web_services_db')
             ->table('bills_payable')
@@ -292,7 +294,7 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
                     ELSE CAST(ROUND((bills_payable.amount / COALESCE(bills_payable.tasa, 1)) - (COALESCE(bill_payments_bs_div.total_paid, 0) + COALESCE(bill_payments_dollar.total_paid, 0)), 2) AS decimal(28, 2))
                 END AS MontoPagar, bills_payable.is_dollar as esDolar, bills_payable.tasa as Tasa,
                 CAST(ROUND(COALESCE(bill_payments_bs_div.total_paid, 0) + COALESCE(bill_payments_dollar.total_paid, 0), 2) AS decimal(28, 2)) AS MontoPagado,
-                bills_payable.bill_payable_schedules_id as BillPayableSchedulesID")
+                bills_payable.bill_payable_schedules_id as BillPayableSchedulesID, bills_payable.bill_payable_groups_id AS BillPayableGroupsID")
             ->leftJoin(DB::raw("(SELECT bills_payable_payments.nro_doc, bills_payable_payments.cod_prov, SUM(bill_payments.amount / bill_payments_bs.tasa) as total_paid FROM bills_payable_payments 
                     INNER JOIN bill_payments ON bills_payable_payments.bill_payments_id = bill_payments.id
                     INNER JOIN bill_payments_bs ON bill_payments_bs.bill_payments_id = bill_payments.id
@@ -309,12 +311,9 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
                 function($join){
                     $join->on('bills_payable.nro_doc', '=', 'bill_payments_dollar.nro_doc')
                         ->on('bills_payable.cod_prov', '=', 'bill_payments_dollar.cod_prov');
-                });
-
-            if ($ids !== ''){
-                $query = $query->whereRaw($ids);
-            }
-
+                })
+            ->whereRaw("bills_payable.bill_payable_schedules_id " . ($is_scheduled_bill ? "IS NOT" : "IS") . " NULL " . ($ids === '' ? '' : (" AND (" . $ids . ")")));
+            
         return $query;
     } 
 }

@@ -61,6 +61,26 @@ class MoneyEntranceController extends Controller
             ->groupBy(['EsNF']);
     }
 
+    private function getCountTypeBills($start_date, $end_date){
+
+        /* Consulta para obtener la cantidad de facturas */
+        $queryParams = ($start_date === $end_date) ? [$start_date] : [$start_date, $end_date];
+
+        $interval_query = ($start_date === $end_date) 
+            ? "CAST(SAFACT.FechaE as date) = ?"
+            : "CAST(SAFACT.FechaE as date) BETWEEN CAST(? as date) AND CAST(? as date)";
+
+        return DB
+            ::connection('saint_db')
+            ->table('SAFACT')
+            ->selectRaw("COUNT(SAFACT.NumeroD) as CantidadRegistros")  
+            ->whereRaw("SAFACT.TipoFac IN ('A', 'B') AND SAFACT.CodUsua IN ('CAJA1', 'CAJA2', 'CAJA3', 'CAJA4', 'CAJA5',
+                'CAJA6' , 'CAJA7', 'DELIVERY') AND " . $interval_query, $queryParams)
+            ->groupByRaw("SAFACT.EsNF")
+            ->get()
+            ->groupBy(['EsNF']);
+    }
+
     private function getPaymentMethods(){
         return DB::table('payment_methods')->orderByRaw("CodPago asc")->get()->groupBy(['CodPago']);
     }
@@ -279,6 +299,8 @@ class MoneyEntranceController extends Controller
             $totals_e_payment_by_interval = $this->getTotalEPaymentByInterval($totals_e_payment_by_user);
 
             $totals_iva = $this->getTotalIvaFromSafact($new_start_date, $new_finish_date);
+
+            return print_r($this->getCountTypeBills($new_start_date, $new_finish_date));
 
             $total_iva_dollar = $totals_iva[0][0]->ivaDolares + $totals_iva[1][0]->ivaDolares;
 

@@ -99,15 +99,30 @@
                                 value="no">No
                         </div>
                     </div>
-                    <!-- <input
-                        data-form="filter"
-                        id="scheduledBill"
-                        type="checkbox"
-                        name={{__('is_scheduled_bill') }} 
-                        value={{ $is_scheduled_bill ? "1" : "0" }} 
-                        {{ $is_scheduled_bill ? "checked" : "" }}
-                    /> -->
                 </div>
+
+                <div class="ml-4">
+                    <span class="text-gray-500 font-semibold inline-block">Facturas por lotes:</span>
+                    <div class="flex items-center">
+                        <div>
+                            <input 
+                                class="inline-block mr-2"
+                                type="radio"
+                                name="{{__('is_group_bill') }}"
+                                {{ $is_group_bill === 'yes' ? 'checked' : ''}}
+                                value="yes">Si
+                        </div>
+                        <div class="ml-4">
+                            <input
+                                class="inline-block mr-2" 
+                                type="radio"
+                                name="{{__('is_group_bill') }}" 
+                                {{ $is_group_bill === 'no' ? 'checked' : ''}}
+                                value="no">No
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
         
