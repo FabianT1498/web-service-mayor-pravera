@@ -284,6 +284,10 @@ class BillsPayableController extends Controller
         ));
     }
 
+    public function showBillPayableGroup(Request $request){
+
+    }
+
     public function storePayment(StoreBillPayablePaymentRequest $request, BillsPayableRepository $repo){
 
         $validated = $request->validated();

@@ -20,6 +20,9 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::post('schedule', [SchedulePayableController::class, 'store'])->name('schedule.store');
 
+    // ----- Bills Payable Group -----
+    Route::get('bill_payable_group/detail/{id}', [BillsPayableController::class, 'showBillPayableGroup'])->name('bill_payable.showBillPayableGroup');
+
 });
 
 Route::group(['middleware' => ['auth', 'jsonify']], function() {
