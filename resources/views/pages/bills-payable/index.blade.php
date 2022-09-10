@@ -63,8 +63,8 @@
                                 type="checkbox"
                                 value="0"
                                 data-bill="select"              
-                                {{ $value->MontoPagado > 0.00 ? 'disabled' : '' }}
-                                @if ($value->MontoPagado > 0.00) 
+                                {{ ($value->MontoPagado > 0.00 || (is_null($value->BillPayableGroupsID) && !is_null($value->BillPayableSchedulesID))) ? 'disabled' : '' }}
+                                @if ($value->MontoPagado > 0.00 || (is_null($value->BillPayableGroupsID) && !is_null($value->BillPayableSchedulesID))) 
                                     onclick= "return false;" 
                                 @endif
                             />

@@ -40,7 +40,7 @@ const BillPayableGroupViewPrototype = {
         }
     },
     setNewGroupInSelect(groupID){
-        let newOption = this.getSelectItemTemplate({key: groupID, value: `Grupo ${groupID}`})
+        let newOption = this.getSelectItemTemplate({key: groupID, value: `Grupo ${groupID}`}, true)
         this.billPayableGroupModalSelect.insertAdjacentHTML('beforeend', newOption);
     },
     showModal: function(){
@@ -60,9 +60,9 @@ const BillPayableGroupViewPrototype = {
 
         this.billPayableGroupModalSelect.insertAdjacentHTML('beforeend', optionsHTML)
     },
-    getSelectItemTemplate: function(option){
+    getSelectItemTemplate: function(option, isSelected = false){
         return `
-            <option value="${option.key}">${option.value}</option>
+            <option value="${option.key}" ${isSelected ? 'selected' : ''}>${option.value}</option>
         `
     },
     changeEventHandlerWrapper(){

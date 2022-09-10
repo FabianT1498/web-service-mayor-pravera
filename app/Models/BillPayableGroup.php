@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 
+use App\Models\BillPayable;
+
 class BillPayableGroup extends Model
 {
    
@@ -23,5 +25,10 @@ class BillPayableGroup extends Model
 
         $this->cod_prov = key_exists('cod_prov', $attributes) ? $attributes['cod_prov'] : '';
         $this->status = key_exists('status', $attributes) ? $attributes['status'] : array_keys(config('constants.BILL_PAYABLE_STATUS'))[0];
+    }
+
+    public function bills_payable()
+    {
+        return $this->hasMany(BillPayable::class, 'bill_payable_groups_id');
     }
 }

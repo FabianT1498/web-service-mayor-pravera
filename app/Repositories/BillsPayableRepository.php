@@ -129,18 +129,18 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
             ->first();
     }
 
-    public function getBillPayableGroups($cod_prov, $group_id = null){
+    public function getBillPayableGroups($cod_prov = null){
         $query = DB
             ::connection('web_services_db')
             ->table('bill_payable_groups')
-            ->selectRaw("bill_payable_groups.id as ID, MAX(bill_payable_groups.cod_prov) as CodProv,
+            ->selectRaw("bill_payable_groups.id as ID, MAX(bills_payable.cod_prov) as CodProv, MAX(bills_payable.descrip_prov) as DescripProv,
                 MAX(bill_payable_groups.status) as Estatus, CAST(ROUND(SUM(COALESCE(bills_payable.amount, 0)), 2) AS decimal(28, 2)) AS MontoTotal,
                 CAST(ROUND(COALESCE(MAX(bill_payments_bs_div.total_paid), 0) + COALESCE(MAX(bill_payments_dollar.total_paid), 0), 2) AS decimal(28, 2)) AS MontoPagado")
-            ->leftJoin(DB::raw("(SELECT bills_payable.bill_payable_groups_id, bills_payable.nro_doc, bills_payable.cod_prov,
+            ->leftJoin(DB::raw("(SELECT bills_payable.descrip_prov, bills_payable.bill_payable_groups_id, bills_payable.nro_doc, bills_payable.cod_prov,
                     CASE WHEN bills_payable.is_dollar = 1 
                         THEN bills_payable.amount
                         ELSE bills_payable.amount / COALESCE(bills_payable.tasa, 1)
-                        END AS amount FROM bills_payable WHERE bills_payable.cod_prov = '" . $cod_prov . "') AS bills_payable"), function($join){
+                        END AS amount FROM bills_payable) AS bills_payable"), function($join){
                     $join->on('bills_payable.bill_payable_groups_id', '=', 'bill_payable_groups.id');
             })
             ->leftJoin(DB::raw("(SELECT MAX(bills_payable_payments.nro_doc) AS nro_doc, MAX(bills_payable_payments.cod_prov) as cod_prov, SUM(bill_payments.amount / bill_payments_bs.tasa) as total_paid FROM bills_payable_payments 
@@ -158,11 +158,65 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
                 function($join){
                     $join->on('bills_payable.nro_doc', '=', 'bill_payments_dollar.nro_doc')
                         ->on('bills_payable.cod_prov', '=', 'bill_payments_dollar.cod_prov');
-                })
-            ->whereRaw("bill_payable_groups.cod_prov = '" . $cod_prov . "'" . (is_null($group_id) ? '' : (" AND bill_payable_groups.id = " . $group_id)))
-            ->groupByRaw("bill_payable_groups.id");
+                });
+            
+        $where = '';
 
+        if (!is_null($cod_prov)){
+            $where = "bill_payable_groups.cod_prov = '" . $cod_prov . "'";
+        }
+
+        if ($where !== ''){
+            $query = $query->whereRaw($where);
+        }
+
+        $query = $query->groupByRaw("bill_payable_groups.id");
         return $query;
+    }
+
+    public function getBillPayableGroupByID($group_id = null){
+        $query = DB
+            ::connection('web_services_db')
+            ->table('bill_payable_groups')
+            ->selectRaw("bill_payable_groups.id as ID, MAX(bill_payable_groups.cod_prov) as CodProv, MAX(bills_payable.descrip_prov) as DescripProv,
+                MAX(bills_payable.bill_payable_schedules_id) as ScheduleID, MAX(bill_payable_schedules.start_date) as ScheduleStartDate,
+                MAX(bill_payable_schedules.end_date) as ScheduleEndDate,
+                MAX(bill_payable_groups.status) as Estatus, CAST(ROUND(SUM(bills_payable.amount), 2) AS decimal(28, 2)) AS MontoTotal,
+                CAST(ROUND(COALESCE(MAX(bill_payments_bs_div.total_paid), 0) + COALESCE(MAX(bill_payments_dollar.total_paid), 0), 2) AS decimal(28, 2)) AS MontoPagado")
+            ->leftJoin(DB::raw("(SELECT bills_payable.descrip_prov, bills_payable.bill_payable_groups_id, bills_payable.nro_doc, bills_payable.cod_prov,
+                    CASE WHEN bills_payable.is_dollar = 1 
+                        THEN bills_payable.amount
+                        ELSE bills_payable.amount / COALESCE(bills_payable.tasa, 1)
+                        END AS amount, bills_payable.bill_payable_schedules_id FROM bills_payable) AS bills_payable"), function($join){
+                    $join->on('bills_payable.bill_payable_groups_id', '=', 'bill_payable_groups.id');
+            })
+            ->leftJoin("bill_payable_schedules", "bill_payable_schedules.id", "=", "bills_payable.bill_payable_schedules_id")
+            ->leftJoin(DB::raw("(SELECT MAX(bills_payable_payments.nro_doc) AS nro_doc, MAX(bills_payable_payments.cod_prov) as cod_prov, SUM(bill_payments.amount / bill_payments_bs.tasa) as total_paid FROM bills_payable_payments 
+                    INNER JOIN bill_payments ON bills_payable_payments.bill_payments_id = bill_payments.id
+                    INNER JOIN bill_payments_bs ON bill_payments_bs.bill_payments_id = bill_payments.id
+                    GROUP BY bills_payable_payments.bill_payments_id) AS bill_payments_bs_div"),
+                function($join){
+                    $join->on('bills_payable.nro_doc', '=', 'bill_payments_bs_div.nro_doc')
+                        ->on('bills_payable.cod_prov', '=', 'bill_payments_bs_div.cod_prov');
+                })
+            ->leftJoin(DB::raw("(SELECT MAX(bills_payable_payments.nro_doc) AS nro_doc, MAX(bills_payable_payments.cod_prov) AS cod_prov, SUM(bill_payments.amount) as total_paid FROM bills_payable_payments 
+                    INNER JOIN bill_payments ON bills_payable_payments.bill_payments_id = bill_payments.id
+                    INNER JOIN bill_payments_dollar ON bill_payments_dollar.bill_payments_id = bill_payments.id
+                    GROUP BY bills_payable_payments.bill_payments_id) AS bill_payments_dollar"),
+                function($join){
+                    $join->on('bills_payable.nro_doc', '=', 'bill_payments_dollar.nro_doc')
+                        ->on('bills_payable.cod_prov', '=', 'bill_payments_dollar.cod_prov');
+                });
+            
+        $where = '';
+
+        if (!is_null($group_id)){
+            $where = "bill_payable_groups.id = '" . $group_id . "'";
+        }
+   
+        $query = $query->whereRaw($where)->groupByRaw("bill_payable_groups.id");
+
+        return $query->first();
     }
 
     public function getBillPayablePaymentsCount($n_doc, $cod_prov){
@@ -283,7 +337,7 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
         return $query;
     }
 
-    public function getBillsPayableByIds($ids = '', $is_scheduled_bill = 0, $is_group_bill = 0){
+    public function getBillsPayableByIds($ids = ''){
      
         $query = DB
             ::connection('web_services_db')
@@ -312,7 +366,7 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
                     $join->on('bills_payable.nro_doc', '=', 'bill_payments_dollar.nro_doc')
                         ->on('bills_payable.cod_prov', '=', 'bill_payments_dollar.cod_prov');
                 })
-            ->whereRaw("bills_payable.bill_payable_schedules_id " . ($is_scheduled_bill ? "IS NOT" : "IS") . " NULL " . ($ids === '' ? '' : (" AND (" . $ids . ")")));
+            ->whereRaw($ids);
             
         return $query;
     } 
