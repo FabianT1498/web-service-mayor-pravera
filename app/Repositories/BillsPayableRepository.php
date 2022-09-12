@@ -181,7 +181,7 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
             ->selectRaw("bill_payable_groups.id as ID, MAX(bill_payable_groups.cod_prov) as CodProv, MAX(bills_payable.descrip_prov) as DescripProv,
                 MAX(bills_payable.bill_payable_schedules_id) as ScheduleID, MAX(bill_payable_schedules.start_date) as ScheduleStartDate,
                 MAX(bill_payable_schedules.end_date) as ScheduleEndDate,
-                MAX(bill_payable_groups.status) as Estatus, CAST(ROUND(SUM(bills_payable.amount), 2) AS decimal(28, 2)) AS MontoTotal,
+                MAX(bill_payable_groups.status) as Estatus, CAST(ROUND(SUM(COALESCE(bills_payable.amount, 0)), 2) AS decimal(28, 2)) AS MontoTotal,
                 CAST(ROUND(COALESCE(MAX(bill_payments_bs_div.total_paid), 0) + COALESCE(MAX(bill_payments_dollar.total_paid), 0), 2) AS decimal(28, 2)) AS MontoPagado")
             ->leftJoin(DB::raw("(SELECT bills_payable.descrip_prov, bills_payable.bill_payable_groups_id, bills_payable.nro_doc, bills_payable.cod_prov,
                     CASE WHEN bills_payable.is_dollar = 1 

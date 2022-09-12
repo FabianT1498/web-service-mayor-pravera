@@ -32,9 +32,6 @@ class StoreBillPayableGroupRequest extends FormRequest
          * 
          * 2. Validar que cada una de las facturas no esten pagadas
          */
-
-        // $exists_empty_group = $repo->getBillPayable($bills_payable_keys)->get();
-
         if (count($this->bills) > 0){
 
             $bills_payable_keys = implode(" OR ", array_map(function($item){

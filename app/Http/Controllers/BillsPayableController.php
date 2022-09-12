@@ -358,7 +358,6 @@ class BillsPayableController extends Controller
         
             if (is_null($bill_record)){
                 
-                // Recuperar informacion de la base de datos de SAINT
                 $bill_record = BillPayable::create($item);
             }
             
@@ -378,8 +377,6 @@ class BillsPayableController extends Controller
 
             $group_record = $repo->getBillPayableGroupByID($group->id);
         }
-
-        
 
         return $this->jsonResponse([
             'status' => 200,
@@ -409,19 +406,19 @@ class BillsPayableController extends Controller
 
         }, $validated['bills']);
 
-        $group = BillPayableGroup::whereRaw("id = " . $request->id)->first();
+        $group = $repo->getBillPayableGroupByID($request->id);
 
         if ($group){
             foreach($bills as $bill){
-                if ($bill->bill_payable_groups_id !== $group->id){
-                    $bill->bill_payable_groups_id = $group->id;
+                if ($bill->bill_payable_groups_id !== $group->ID){
+                    $bill->bill_payable_groups_id = $group->ID;
+                    $bill->bill_payable_schedules_id = $group->ScheduleID;
                     $bill->save();
                 }
             }
-
-            $group = $repo->getBillPayableGroupByID($group->id);
-    
         }
+
+        $group = $repo->getBillPayableGroupByID($request->id);
 
         return $this->jsonResponse([
             'status' => 200,

@@ -229,8 +229,9 @@ export default {
                     if (res.data.length > 0){
                         let bill = res.data[0];
 
-                        if (bill.ScheduleID !== null || roundNumber(bill.MontoPagado) > 0){
-                            return false;
+                        if ((bill.GroupID === null && bill.ScheduleID !== null) || roundNumber(bill.MontoPagado) > 0){
+                            this.toggleSelectBillCheckboxes()
+                            return false
                         } 
                     }
 
