@@ -110,53 +110,8 @@ export default {
                 if (dataBill === 'isDollar'){
                     this.handleDollarCheckClicked(event)
                 } else if (dataBill === 'select'){
-                    
-                    if (event.target.value === '0'){
-                        let data = this.getBillPayableData(event)
+                    this.handleSelectBill(event)
 
-                        let row = event.target.closest('tr')
-                        let numeroD = row.getAttribute('data-numeroD')
-                        let codProv = row.getAttribute('data-prov')
-
-                        let formattedNumeroD = charReplace(numeroD)
-                        let isADate = isADateFormatDDMMYYYY(formattedNumeroD)
-
-                        if (isADate){
-                            numeroD = formattedNumeroD;
-                        }
-
-                        getBillPayable({numeroD, codProv})
-                            .then(res => {
-
-                                if (res.data.length > 0){
-                                    let bill = res.data[0];
-
-                                    if (bill.ScheduleID !== null || roundNumber(bill.MontoPagado) > 0){
-                                        return false;
-                                    } 
-                                }
-                                
-                                event.target.value = '1'
-        
-                                if (event.target.value === '1'){
-                                    this.addBillPayable(data);
-                                } else {
-                                    this.removeBillPayable(data);
-                                }
-            
-                                if (this.selectedBills.getLength() > 0){
-                                    this.showLinkBillsBtn();
-                                } else {
-                                    this.hideLinkBillsBtn();
-                                }
-                                
-                            })
-                            .catch(err => {
-                                console.log(err)
-                            })
-                    } else {
-                        event.target.value = '0'
-                    }
                 } else if (dataBill === 'modalBtn'){
                     let data = this.getBillPayableData(event);
 
@@ -250,6 +205,57 @@ export default {
         })
 
         return areSame;
+    },
+    handleSelectBill(event){
+        let data = this.getBillPayableData(event)
+
+        if (event.target.value === '0'){
+            let row = event.target.closest('tr')
+            let numeroD = row.getAttribute('data-numeroD')
+            let codProv = row.getAttribute('data-prov')
+
+            let formattedNumeroD = charReplace(numeroD)
+            let isADate = isADateFormatDDMMYYYY(formattedNumeroD)
+
+            if (isADate){
+                numeroD = formattedNumeroD;
+            }
+
+            this.toggleSelectBillCheckboxes()
+            
+            getBillPayable({numeroD, codProv})
+                .then(res => {
+                    
+                    if (res.data.length > 0){
+                        let bill = res.data[0];
+
+                        if (bill.ScheduleID !== null || roundNumber(bill.MontoPagado) > 0){
+                            return false;
+                        } 
+                    }
+
+                    event.target.value = '1'
+                    this.addBillPayable(data);
+                    this.toggleSelectBillCheckboxes()
+                    this.showLinkBillsBtn();
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        } else {
+            event.target.value = '0'
+            this.removeBillPayable(data);
+            if (this.selectedBills.getLength() === 0){
+                this.hideLinkBillsBtn();
+            }
+        }
+    },
+    toggleSelectBillCheckboxes(){
+        this.DOMElements.billsPayableTBody
+            .querySelectorAll('input[data-bill="select"]')
+            .forEach(el => {
+                el.disabled = !el.disabled
+            })
     },
     initEventListener(){
 
