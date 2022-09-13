@@ -25,6 +25,7 @@ class BillPayableGroup extends Model
 
         $this->cod_prov = key_exists('cod_prov', $attributes) ? $attributes['cod_prov'] : '';
         $this->status = key_exists('status', $attributes) ? $attributes['status'] : array_keys(config('constants.BILL_PAYABLE_STATUS'))[0];
+        $this->descrip_prov = key_exists('descrip_prov', $attributes) ? $attributes['descrip_prov'] : '';
     }
 
     public function bills_payable()
