@@ -304,11 +304,14 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
         return $query;
     }
 
-    public function getBillsPayableByScheduleId($is_dollar, $bill_payable_schedules_id){
+    public function getBillsPayableByScheduleId($bill_payable_schedules_id, $is_dollar = 0, $is_grouped = false){
+        
+        $where_raw = '';
+
         $query = DB
             ::connection('web_services_db')
             ->table('bills_payable')
-            ->selectRaw("bills_payable.nro_doc as NumeroD, bills_payable.cod_prov as CodProv, bills_payable.emission_date as FechaE,  bills_payable.bill_type as TipoCom, bills_payable.amount as MontoTotal,
+            ->selectRaw("bills_payable.nro_doc as NumeroD, bills_payable.cod_prov as CodProv, bills_payable.emission_date as FechaE, bills_payable.bill_type as TipoCom, bills_payable.amount as MontoTotal,
                 bills_payable.is_dollar as esDolar, bills_payable.status as Status, bills_payable.tasa as Tasa,
                 CASE WHEN bills_payable.is_dollar = 1 
                     THEN CAST(ROUND(bills_payable.amount - (COALESCE(bill_payments_bs_div.total_paid, 0) + COALESCE(bill_payments_dollar.total_paid, 0)), 2) AS decimal(28, 2))
@@ -331,8 +334,16 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
                 function($join){
                     $join->on('bills_payable.nro_doc', '=', 'bill_payments_dollar.nro_doc')
                         ->on('bills_payable.cod_prov', '=', 'bill_payments_dollar.cod_prov');
-                })
-            ->whereRaw("bills_payable.bill_payable_schedules_id = " . $bill_payable_schedules_id . " AND bills_payable.is_dollar = " . $is_dollar);
+                });
+           
+        $where_raw = "bills_payable.bill_payable_schedules_id = " . $bill_payable_schedules_id;
+
+        
+        $where_raw = $where_raw . " AND bills_payable.is_dollar = " . $is_dollar;
+        
+        $where_raw = $where_raw . " AND bills_payable.bill_payable_groups_id IS " . ($is_grouped ? "NOT " : "") .  "NULL";
+        
+        $query = $query->whereRaw($where_raw);
 
         return $query;
     }

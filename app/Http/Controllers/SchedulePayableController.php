@@ -141,9 +141,9 @@ class SchedulePayableController extends Controller
         $dollar_bill_payable = $bs_bill_payable = null;
 
         if ($bill_payable_schedule){
-            $dollar_bill_payable = $repo->getBillsPayableByScheduleId(1, $id)->get();
+            $dollar_bill_payable = $repo->getBillsPayableByScheduleId($id, 1)->get();
 
-            $bs_bill_payable = $repo->getBillsPayableByScheduleId(0, $id)->get();
+            $bs_bill_payable = $repo->getBillsPayableByScheduleId($id, 0)->get();
 
             $are_all_bills_paid = true;
 
