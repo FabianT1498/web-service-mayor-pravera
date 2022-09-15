@@ -1069,9 +1069,16 @@ class CashRegisterController extends Controller
 
     public function getTotalsFromSaint(CashRegisterRepository $cash_register_repo, $user, $start_date, $end_date){
 
-        $totals_from_safact = $cash_register_repo->getTotalsFromSafact($start_date, $end_date, $user);
+        $station = DB::table('cash_register_users')
+            ->select([
+                'cash_register_users.station as station',
+            ])
+            ->where('cash_register_users.name', '=', $user)
+            ->first();
 
-        $totals_e_payments = $cash_register_repo->getTotalsEPaymentMethods($start_date, $end_date, $user);
+        $totals_from_safact = $cash_register_repo->getTotalsFromSafact($start_date, $end_date, $station->station);
+
+        $totals_e_payments = $cash_register_repo->getTotalsEPaymentMethods($start_date, $end_date, $station->station);
 
         return $this->jsonResponse(['data' => [
           'totals_from_safact' => $totals_from_safact,

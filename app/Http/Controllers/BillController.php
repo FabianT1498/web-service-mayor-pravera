@@ -148,8 +148,16 @@ class BillController extends Controller
     }
 
     public function getMoneyBackByCashRegisterUserSaint(BillRepository $bill_repo, $user, $start_date, $end_date){
+        
+        $station = DB::table('cash_register_users')
+            ->select([
+                'cash_register_users.station as station',
+            ])
+            ->where('cash_register_users.name', '=', $user)
+            ->first();
+
         $money_back_by_user = $bill_repo
-            ->getVueltosByUser($start_date, $end_date, $user);
+            ->getVueltosByUser($start_date, $end_date, $station->station);
 
         return $this->jsonResponse(['data' =>  $money_back_by_user ], 200);
     }

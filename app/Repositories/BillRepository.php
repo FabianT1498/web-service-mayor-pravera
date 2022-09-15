@@ -42,8 +42,7 @@ class BillRepository implements BillRepositoryInterface
 
         $user_params = $user
           ? " = '" . $user . "'"
-          : "IN ('CAJA1', 'CAJA2', 'CAJA3', 'CAJA4', 'CAJA5',
-                'CAJA6' , 'CAJA7', 'DELIVERY')";
+          : "IN ('CAJA-1', 'CAJA2', 'CAJA-3', 'CAJA4', 'CAJA5', 'CAJA6' , 'DELIVERYPB')";
 
         $interval_query = ($start_date === $end_date) 
             ? "CAST(SAFACT.FechaE as date) = ?"
@@ -54,7 +53,7 @@ class BillRepository implements BillRepositoryInterface
         return DB
             ::connection('saint_db')
             ->table('SAFACT')
-            ->selectRaw("MAX(SAFACT.CodUsua) as CodUsua, CAST(SAFACT.FechaE as date) as FechaE, 
+            ->selectRaw("MAX(SAFACT.CodEsta) as CodEsta, CAST(SAFACT.FechaE as date) as FechaE, 
                 CAST(ROUND(SUM(COALESCE(EGIVALES.MontoDiv, 0) * SAFACT.Signo), 2) AS decimal(10, 2)) as MontoDivEfect,
                 CAST(ROUND(SUM(COALESCE(EGIVALES.MontoDiv, 0) * SAFACT.FactorV * SAFACT.Signo), 2) AS decimal(10, 2)) as MontoBsEfect,
                 CAST(ROUND(SUM(COALESCE(TBL_REG_PagoM.MontoD, 0) * SAFACT.Signo), 2) AS decimal(10, 2)) as MontoDivPM,
@@ -62,10 +61,10 @@ class BillRepository implements BillRepositoryInterface
             ")
             ->leftJoin(DB::raw($egivales_sub_query), 'EGIVALES.FactEmi', '=', 'SAFACT.NumeroD')
             ->leftJoin('TBL_REG_PagoM', 'TBL_REG_PagoM.NumeroD', '=', 'SAFACT.NumeroD')
-            ->whereRaw("SAFACT.TipoFac IN ('A', 'B') AND SAFACT.CodUsua " . $user_params . " AND " .
+            ->whereRaw("SAFACT.TipoFac IN ('A', 'B') AND SAFACT.CodEsta " . $user_params . " AND " .
                 "(EGIVALES.FactEmi IS NOT NULL OR TBL_REG_PagoM.NumeroD IS NOT NULL) AND " . $interval_query, $queryParams)
-            ->orderByRaw("SAFACT.CodUsua asc, CAST(SAFACT.FechaE as date) asc")
-            ->groupByRaw("SAFACT.CodUsua,  CAST(SAFACT.FechaE as date)")
+            ->orderByRaw("SAFACT.CodEsta asc, CAST(SAFACT.FechaE as date) asc")
+            ->groupByRaw("SAFACT.CodEsta,  CAST(SAFACT.FechaE as date)")
             ->get();
     }
 }
