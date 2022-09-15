@@ -27,7 +27,7 @@ class PaymentMethodSeeder extends Seeder
             return ['CodPago' => $item->CodPago,'Descrip' => $item->Descrip];
         }, $arr);
         
-        DB::connection('caja_mayorista')
+        DB::connection('web_services_db')
             ->table('payment_methods')
             ->upsert($arr, ['CodPago'], ['CodPago', 'Descrip']);
     }

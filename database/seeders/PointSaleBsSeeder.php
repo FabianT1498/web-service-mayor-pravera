@@ -18,7 +18,7 @@ class PointSaleBsSeeder extends Seeder
      */
     public function run()
     {
-        $old_point_sale_bs_records =  DB::connection('caja_mayorista')->table('point_sale_bs_records')
+        $old_point_sale_bs_records =  DB::connection('web_services_db')->table('point_sale_bs_records')
             ->select('*')
             ->get()
             ->groupBy(['cash_register_data_id', 'bank_name']);
