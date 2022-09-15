@@ -9,13 +9,13 @@ use Carbon\Carbon;
 use App\Http\Traits\AmountCurrencyTrait;
 
 use App\Rules\BadFormattedAmount;
-use App\Rules\BillPayableExists;
+
 use App\Rules\BillPayableHasTasa;
 use App\Rules\BillPayablePaymentBsIsUnique;
 
 use App\Repositories\BillsPayableRepository;
 
-class StoreBillPayablePaymentRequest extends FormRequest
+class StoreBillPayableGroupPaymentRequest extends FormRequest
 {
     use AmountCurrencyTrait;
 
@@ -34,17 +34,12 @@ class StoreBillPayablePaymentRequest extends FormRequest
      *
      * @return array
      */
-    public function rules(BillsPayableRepository $repo)
+    public function rules()
     {
 
         $total_rules = ['required', new BadFormattedAmount, 'gt:0'];
 
-        $bill_payable_exists_validation =  (new BillPayableExists($repo))->setData(['nro_doc' => $this->nro_doc, 'cod_prov' => $this->cod_prov]);
-        $bill_payable_has_tasa = (new BillPayableHasTasa())->setData(['nro_doc' => $this->nro_doc, 'cod_prov' => $this->cod_prov]);
-
         $rules = [
-            'cod_prov' => ['required'],
-            'nro_doc' => ['required', $bill_payable_exists_validation],
             'amount' => $total_rules,
             'date' => ['required', 'date_format:Y-m-d', 'before_or_equal:' . Carbon::now()->format('Y-m-d')],
         ];
@@ -58,7 +53,6 @@ class StoreBillPayablePaymentRequest extends FormRequest
             $rules['tasa'] = $total_rules;
             $rules['ref_number'] = ['required'];
             $rules['bank_name'] = ['required'];
-            array_push($rules['nro_doc'], $bill_payable_has_tasa);
             array_push($rules['bank_name'], $bill_payable_payment_bs_is_unique); 
         }
 

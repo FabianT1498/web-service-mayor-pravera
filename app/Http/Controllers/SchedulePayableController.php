@@ -145,6 +145,11 @@ class SchedulePayableController extends Controller
 
             $bs_bill_payable = $repo->getBillsPayableByScheduleId($id, 0)->get();
 
+            $groups = $repo->getBillPayableGroupsByScheduleID($id);
+
+            $dollar_bill_payable_grouped = $repo->getBillsPayableByScheduleId($id, 1, true)->get()->groupBy(['BillPayableGroupsID']);
+            $bs_bill_payable_grouped = $repo->getBillsPayableByScheduleId($id, 0, true)->get()->groupBy(['BillPayableGroupsID']);
+
             $are_all_bills_paid = true;
 
             // Verificar si todas las facturas han sido pagadas, solo si la programación está en proceso
@@ -183,7 +188,10 @@ class SchedulePayableController extends Controller
             'columns',
             'bill_payable_schedule',
             'dollar_bill_payable',
-            'bs_bill_payable'
+            'bs_bill_payable',
+            'groups',
+            'dollar_bill_payable_grouped',
+            'bs_bill_payable_grouped'
         ));
     }
 
