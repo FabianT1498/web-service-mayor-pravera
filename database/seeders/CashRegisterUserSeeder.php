@@ -24,12 +24,15 @@ class CashRegisterUserSeeder extends Seeder
             ->get()
             ->all();
         
-        $arr = array_map(function($item){
-            return ['name' => $item->name];
+        $stations = ['CAJA1' => 'CAJA-1', 'CAJA2' => 'CAJA2', 'CAJA3' => 'CAJA-3', 'CAJA4' => 'CAJA4', 'CAJA5' => 'CAJA5', 'CAJA6' => 'CAJA6', 'CAJA7' => 'CAJA7', 'DELIVERY' => 'DELIVERYPB'];
+        
+        $arr = array_map(function($item) use ($stations){
+            return ['name' => $item->name, 'station' => $stations[$item->name]];
         }, $arr);
+
         
         DB::connection('web_services_db')
             ->table('cash_register_users')
-            ->upsert($arr, ['name'], ['name']);
+            ->upsert($arr, ['name'], ['name', 'station']);
     }
 }
