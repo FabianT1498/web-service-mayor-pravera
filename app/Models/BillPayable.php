@@ -38,6 +38,7 @@ class BillPayable extends Model
         $this->tasa = key_exists('tasa', $attributes) ? $attributes['tasa'] : 0;
         $this->emission_date = key_exists('emission_date', $attributes) ? $attributes['emission_date'] : '';
         $this->bill_payable_schedules_id = key_exists('bill_payable_schedules_id', $attributes) ? $attributes['bill_payable_schedules_id'] : null;
+        $this->bill_payable_groups_id = key_exists('bill_payable_groups_id', $attributes) ? $attributes['bill_payable_groups_id'] : null;
     }
 
     protected function getKeyForSaveQuery()

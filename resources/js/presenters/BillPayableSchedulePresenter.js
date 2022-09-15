@@ -21,8 +21,10 @@ const BillPayableSchedulePresenterPrototype = {
 		this.view.showBillPayableData(data)
 
 		getBillPayable(this.data).then(res => {
+			console.log(data)
 			if (res.data.length > 0){
 				let data = res.data[0];
+				
 				this.view.showScheduleData({StartDate: data.ScheduleStartDate, EndDate: data.ScheduleEndDate});
 				this.view.setSelectedSchedule(data.ScheduleID)
 			}

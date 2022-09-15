@@ -21,10 +21,8 @@ class BillPayableHasTasa implements Rule
     public function passes($attribute, $value)
     {
         $bill = BillPayable::whereRaw("nro_doc = ? AND cod_prov = ?", [$this->data['nro_doc'], $this->data['cod_prov']])->first();
-        
-        $bill->Tasa = $this->formatAmount($bill->Tasa);
-
-        return $bill->Tasa > 0.00;
+    
+        return $bill->tasa > 0;
     }
 
     /**

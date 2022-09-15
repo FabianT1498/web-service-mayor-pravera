@@ -6,8 +6,12 @@ interface BillsPayableRepositoryInterface {
 
 	public function getBillPayable($cod_prov, $n_doc);
 	public function getBillsPayableByIds($ids);
-	public function getBillsPayable($is_dolar, $before_emission_date, $bill_type, $nro_doc, $cod_prov);
+	public function getBillsPayable($is_dolar, $before_emission_date, $bill_type, $nro_doc, $cod_prov, $is_scheduled_bill, $is_group_bill);
+	public function getBillsPayableByScheduleId($is_dollar, $bill_payable_schedules_id);
+	public function getBillPayableGroups($cod_prov);
+	public function getBillPayableGroupByID($group_id);
 
+	public function getBillPayablePaymentsCount($n_doc, $cod_prov);
 	public function getBillPayablePaymentsBs($cod_prov, $n_doc);
 	public function getBillPayablePaymentsDollar($n_doc, $cod_prov);
 	

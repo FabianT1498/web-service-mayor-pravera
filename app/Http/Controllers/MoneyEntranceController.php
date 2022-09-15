@@ -37,25 +37,34 @@ class MoneyEntranceController extends Controller
             ? "CAST(SAFACT.FechaE as date) = ?"
             : "CAST(SAFACT.FechaE as date) BETWEEN CAST(? as date) AND CAST(? as date)";
 
-        $factors = DB::connection('saint_db')
-            ->table('SAFACT')
-            ->selectRaw("ROUND(MAX(SAFACT.Factor), 2) as MaxFactor, CAST(SAFACT.FechaE as date) as FechaE")
-            ->whereRaw($interval_query, $queryParams)
-            ->groupByRaw("CAST(SAFACT.FechaE as date)");
-
         return DB
             ::connection('saint_db')
             ->table('SAFACT')
             ->selectRaw("MAX(SAFACT.EsNF) as EsNF,
                 CAST(ROUND(SUM(SAFACT.MtoTax * SAFACT.Signo), 2) AS decimal(18, 2))  AS iva,
-                CAST(ROUND(SUM(SAFACT.MtoTax * SAFACT.Signo)/MAX(FactorHist.MaxFactor), 2) AS decimal(18, 2))  AS ivaDolares,
+                CAST(ROUND(SUM((SAFACT.MtoTax * SAFACT.Signo)/SAFACT.FactorV), 2) AS decimal(18, 2))  AS ivaDolares,
                 CAST(ROUND(SUM((SAFACT.TGravable + SAFACT.TExento) * SAFACT.Signo), 2) AS decimal(18, 2))  AS baseImponible,
-                CAST(ROUND((SUM((SAFACT.TGravable + SAFACT.TExento) * SAFACT.Signo)/MAX(FactorHist.MaxFactor)), 2) AS decimal(18, 2))  AS baseImponibleADolares")  
-            ->joinSub($factors, 'FactorHist', function($query){
-                $query->on(DB::raw("CAST(SAFACT.FechaE AS date)"), '=', "FactorHist.FechaE");
-            })
-            ->whereRaw("SAFACT.TipoFac IN ('A', 'B') AND SAFACT.CodUsua IN ('CAJA1', 'CAJA2', 'CAJA3', 'CAJA4', 'CAJA5',
-                'CAJA6' , 'CAJA7', 'DELIVERY') AND " . $interval_query, $queryParams)
+                CAST(ROUND((SUM(((SAFACT.TGravable + SAFACT.TExento) * SAFACT.Signo)/SAFACT.FactorV)), 2) AS decimal(18, 2))  AS baseImponibleADolares")  
+            ->whereRaw("SAFACT.TipoFac IN ('A', 'B') AND SAFACT.CodEsta IN ('CAJA-1', 'CAJA2', 'CAJA-3', 'CAJA4', 'CAJA5', 'CAJA6' , 'DELIVERYPB') AND " . $interval_query, $queryParams)
+            ->groupByRaw("SAFACT.EsNF")
+            ->get()
+            ->groupBy(['EsNF']);
+    }
+
+    private function getCountTypeBills($start_date, $end_date){
+
+        /* Consulta para obtener la cantidad de facturas */
+        $queryParams = ($start_date === $end_date) ? [$start_date] : [$start_date, $end_date];
+
+        $interval_query = ($start_date === $end_date) 
+            ? "CAST(SAFACT.FechaE as date) = ?"
+            : "CAST(SAFACT.FechaE as date) BETWEEN CAST(? as date) AND CAST(? as date)";
+
+        return DB
+            ::connection('saint_db')
+            ->table('SAFACT')
+            ->selectRaw("SAFACT.EsNF AS EsNF, COUNT(SAFACT.NumeroD) as CantidadRegistros")  
+            ->whereRaw("SAFACT.TipoFac IN ('A', 'B') AND SAFACT.CodEsta IN ('CAJA-1', 'CAJA2', 'CAJA-3', 'CAJA4', 'CAJA5', 'CAJA6' , 'DELIVERYPB') AND " . $interval_query, $queryParams)
             ->groupByRaw("SAFACT.EsNF")
             ->get()
             ->groupBy(['EsNF']);
@@ -254,14 +263,14 @@ class MoneyEntranceController extends Controller
 
             $totals_from_safact = $cash_register_repo
                 ->getTotalsFromSafact($start_date, $end_date)
-                ->groupBy(['CodUsua', 'FechaE']);
+                ->groupBy(['CodEsta', 'FechaE']);
 
           
             $payment_methods = $this->getPaymentMethods();
 
             $totals_e_payment = $cash_register_repo
                 ->getTotalsEPaymentMethods($start_date, $end_date)
-                ->groupBy(['CodUsua', 'FechaE']);
+                ->groupBy(['CodEsta', 'FechaE']);
 
             // Completar los metodos de pagos que no tuvieron registros en cada caja
             $totals_e_payment  = $this
@@ -280,6 +289,8 @@ class MoneyEntranceController extends Controller
 
             $totals_iva = $this->getTotalIvaFromSafact($new_start_date, $new_finish_date);
 
+            $type_bill_quantity = $this->getCountTypeBills($new_start_date, $new_finish_date);
+
             $total_iva_dollar = $totals_iva[0][0]->ivaDolares + $totals_iva[1][0]->ivaDolares;
 
             $total_iva_bs = $totals_iva[0][0]->iva + $totals_iva[1][0]->iva;
@@ -289,8 +300,6 @@ class MoneyEntranceController extends Controller
             $total_base_imponible_dollar =  $totals_iva[0][0]->baseImponibleADolares + $totals_iva[1][0]->baseImponibleADolares;
 
             $total_by_date = $this->getTotalByDate($totals_from_safact, $totals_e_payment);
-
-            // return print_r($totals_from_safact);
 
            // Resumen de entrada de dinero
             $total_dollars = $totals_e_payment_by_interval['07']['dollar'] 
@@ -312,6 +321,7 @@ class MoneyEntranceController extends Controller
             $view_name = 'pdf.money-entrance.money_record';
         
             $pdf = $pdf->loadView($view_name, compact(
+                    'type_bill_quantity',
                     'totals_e_payment',
                     'totals_from_safact',
                     'totals_e_payment_by_user',
