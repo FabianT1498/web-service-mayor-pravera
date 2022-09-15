@@ -16,6 +16,7 @@ class CashRegisterUserMigration extends Migration
         //
         Schema::connection('web_services_db')->create('cash_register_users', function (Blueprint $table) {
             $table->string('name', 50);
+            $table->string('station', 50);
             $table->primary('name');
         });
     }
