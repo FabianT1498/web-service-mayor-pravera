@@ -1,4 +1,5 @@
 @props([
+    'isGroup' => false,
     'modalID' => '',
     'schedules' => [],
 ])
@@ -8,7 +9,7 @@
          <!-- Modal header -->
          <div class="flex justify-between items-start py-5 px-10 rounded-t border-b dark:border-gray-600 bg-gray-200">
             <h3 class="text-xl font-semibold text-gray-900 lg:text-3xl dark:text-white">
-                {{ "Asignar factura a programación" }}
+                {{ $isGroup ? "Asignar lote a programación" : "Asignar factura a programación" }}
             </h3>
             <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle={{ $modalID }}>
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" 
@@ -23,10 +24,10 @@
                     <div class="p-8 bg-gray-100 flex justify-between">
                         <div class="mb-8 bg-white w-5/12 p-4 rounded-md">
                             <div class="mb-4 flex">
-                                <h4 class="h4">Datos de la factura</h4>
+                                <h4 class="h4">{{ $isGroup ? "Datos del lote de facturas" : "Datos de la factura" }}</h4>
                             </div>
                             <div id="billPayableContainer">
-                                <p class="mb-2"><span class="font-semibold">Número de Documento:</span>&nbsp;<span id="numeroDInfoModal"></span></p>
+                                <p class="mb-2"><span class="font-semibold">{{ "Número de " .  ($isGroup ? "Lote" : "Documento") . ":" }}</span>&nbsp;<span id="numeroDInfoModal"></span></p>
                                 <p><span class="font-semibold">Proveedor:</span>&nbsp;<span id="proveedorInfoModal"></span></p>
                             </div>
                         </div>

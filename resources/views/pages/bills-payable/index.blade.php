@@ -31,7 +31,7 @@
         <table id="billsTable" class="table table-bordered table-hover mx-auto w-11/12 text-center">
             <thead class="bg-blue-300">
                 <tr>
-                    <th scope="col text-center align-middle">
+                    <th scope="col" class="text-center align-middle">
                         <input
                             class="form-checkbox w-4 h-4 text-blue-600 rounded  focus:ring-blue-500 focus:ring-2 {{ count($data) === 0 ? "bg-gray-100 border-gray-300" : ""}}"
                             type="checkbox"
@@ -43,27 +43,47 @@
                         />
                     </th>
                     @foreach ($columns as $colum)
-                        <th scope="col text-center align-middle">{{ $colum }}</th>
+                        <th scope="col" class="text-center align-middle">{{ $colum }}</th>
                     @endforeach
                 </tr>
             </thead>
             <tbody id="billsPayableTBody">
                 @foreach ($data as $key => $value)
-                    <tr class="{{ $value->BillPayableGroupsID ? "bg-gray-300 hover:!bg-slate-300" : "" }}" data-numeroD="{{ $value->NumeroD }}" data-prov="{{ $value->CodProv }}" data-descripProv="{{ $value->Descrip }}">
+                    <tr 
+                        class="{{ $value->BillPayableGroupsID ? "bg-gray-300 hover:!bg-slate-300" : "" }}"
+                        data-numeroD="{{ $value->NumeroD }}" data-prov="{{ $value->CodProv }}" 
+                        data-descripProv="{{ $value->Descrip }}"
+                        @if ($value->BillPayableGroupsID)
+                            data-tooltip-target="grouped-bill"
+                        @endif
+                    >
                         <td>
                             <input
                                 class="form-checkbox w-4 h-4 text-blue-600 rounded  focus:ring-blue-500 focus:ring-2 {{ $value->MontoPagado > 0.00 ? "bg-gray-100 border-gray-300" : ""}}"
                                 type="checkbox"
                                 value="0"
                                 data-bill="select"              
-                                {{ ($value->MontoPagado === 0.00 && is_null($value->BillPayableGroupsID)) ? '' : 'disabled' }}
-                                @if ($value->MontoPagado > 0.00 && $value->BillPayableGroupsID) 
+                                {{ ($value->MontoPagado > 0.00 || (is_null($value->BillPayableGroupsID) && !is_null($value->BillPayableSchedulesID))) ? 'disabled' : '' }}
+                                @if ($value->MontoPagado > 0.00 || (is_null($value->BillPayableGroupsID) && !is_null($value->BillPayableSchedulesID))) 
                                     onclick= "return false;" 
                                 @endif
                             />
+                            @if ($value->BillPayableGroupsID)
+                                <div 
+                                    id="grouped-bill"
+                                    role="tooltip" 
+                                    class="inline-block absolute invisible z-10 py-2 px-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 transition-opacity duration-300 tooltip dark:bg-gray-700"
+                                >
+                                    Factura agrupada en lote
+                                    <div class="tooltip-arrow" data-popper-arrow></div>
+                                </div>
+                            @endif
                         </td>
-                        <td class="text-center">
-                            <a class="block relative" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">
+                        <th scope="row" class="text-center">
+                            <a class="block relative" href="{{ 
+                                $value->BillPayableGroupsID ? route('bill_payable.showBillPayableGroup', ['id' => $value->BillPayableGroupsID]) 
+                                : ($value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#') }}"
+                            >
                                 @if ($value->BillPayableSchedulesID)
                                     <div class="absolute top-0 right-2">
                                         <span
@@ -83,13 +103,25 @@
                                 @endif
                                 {{ $value->NumeroD }}
                             </a>
-                        </td>
-                        <td class="text-center"><a class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ $value->CodProv }}</a></td>
-                        <td class="text-center"><a class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ $value->Descrip }}</a></td>
-                        <td class="text-center"><a data-bill="fechaE" class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ date('d-m-Y', strtotime($value->FechaE)) }}</a></td>
-                        <td class="text-center"><a class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ date('d-m-Y', strtotime($value->FechaPosteo)) }}</a></td>
-                        <td class="text-center"><a data-bill="montoTotal" class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ $value->MontoTotal }}</a></td>
-                        <td class="text-center"><a data-bill="montoPagar" class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ $value->MontoPagar }}</a></td>
+                        </th>
+                        <td class="text-center"><a class="block" href="{{ 
+                                $value->BillPayableGroupsID ? route('bill_payable.showBillPayableGroup', ['id' => $value->BillPayableGroupsID]) 
+                                : ($value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#') }}">{{ $value->CodProv }}</a></td>
+                        <td class="text-center"><a class="block" href="{{ 
+                                $value->BillPayableGroupsID ? route('bill_payable.showBillPayableGroup', ['id' => $value->BillPayableGroupsID]) 
+                                : ($value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#') }}">{{ $value->Descrip }}</a></td>
+                        <td class="text-center"><a data-bill="fechaE" class="block" href="{{ 
+                                $value->BillPayableGroupsID ? route('bill_payable.showBillPayableGroup', ['id' => $value->BillPayableGroupsID]) 
+                                : ($value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#') }}">{{ date('d-m-Y', strtotime($value->FechaE)) }}</a></td>
+                        <td class="text-center"><a class="block" href="{{ 
+                                $value->BillPayableGroupsID ? route('bill_payable.showBillPayableGroup', ['id' => $value->BillPayableGroupsID]) 
+                                : ($value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#') }}">{{ date('d-m-Y', strtotime($value->FechaPosteo)) }}</a></td>
+                        <td class="text-center"><a data-bill="montoTotal" class="block" href="{{ 
+                                $value->BillPayableGroupsID ? route('bill_payable.showBillPayableGroup', ['id' => $value->BillPayableGroupsID]) 
+                                : ($value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#') }}">{{ $value->MontoTotal }}</a></td>
+                        <td class="text-center"><a data-bill="montoPagar" class="block" href="{{ 
+                                $value->BillPayableGroupsID ? route('bill_payable.showBillPayableGroup', ['id' => $value->BillPayableGroupsID]) 
+                                : ($value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#') }}">{{ $value->MontoPagar }}</a></td>
                         <td class="text-center">
                             @if ($value->Estatus === config("constants.BILL_PAYABLE_STATUS.NOTPAID") && $value->MontoPagado === 0.00)
                                 <input 
@@ -105,7 +137,9 @@
                                 <a 
                                     data-bill="tasa" 
                                     class="block" 
-                                    href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}"
+                                    href="{{ 
+                                $value->BillPayableGroupsID ? route('bill_payable.showBillPayableGroup', ['id' => $value->BillPayableGroupsID]) 
+                                : ($value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#') }}"
                                 >
                                     {{ $value->Tasa . ' ' . config("constants.CURRENCY_SIGNS.bolivar") }}
                                 </a>
@@ -124,10 +158,14 @@
                                 @endif
                             />
                         </td>
-                        <td class="text-center" ><a class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ $value->Estatus }}</a></td>
-                        <td class="text-center" ><a class="block" href="{{ $value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#' }}">{{ $value->DiasTranscurridos }}</a></td>
+                        <td class="text-center" ><a class="block" href="{{ 
+                                $value->BillPayableGroupsID ? route('bill_payable.showBillPayableGroup', ['id' => $value->BillPayableGroupsID]) 
+                                : ($value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#') }}">{{ $value->Estatus }}</a></td>
+                        <td class="text-center" ><a class="block" href="{{ 
+                                $value->BillPayableGroupsID ? route('bill_payable.showBillPayableGroup', ['id' => $value->BillPayableGroupsID]) 
+                                : ($value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#') }}">{{ $value->DiasTranscurridos }}</a></td>
                         <td>
-                            @if ($value->Estatus === config("constants.BILL_PAYABLE_STATUS.NOTPAID") && $value->MontoPagado === 0.00)
+                            @if ($value->Estatus === config("constants.BILL_PAYABLE_STATUS.NOTPAID") && $value->MontoPagado === 0.00 && is_null($value->BillPayableGroupsID))
                                 <button
                                     type="button"
                                     data-tooltip-target="suggestion-tooltip"

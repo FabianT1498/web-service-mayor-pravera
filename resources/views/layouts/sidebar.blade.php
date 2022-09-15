@@ -87,6 +87,12 @@
         </a>
         <!-- end link -->
 
+        <!-- link -->
+        <a href="{{ route('bill_payable_groups.index') }}" class="mb-2 capitalize font-medium  hover:text-teal-600 transition ease-in-out duration-500">
+          Listado de lotes de facturas por pagar
+        </a>
+        <!-- end link -->
+
         <p class="text-base font-bold text-gray-600 mb-2">Programaciones de facturas por pagar</p>
 
         <!-- link -->

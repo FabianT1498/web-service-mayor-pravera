@@ -28,7 +28,7 @@ class CashRegisterUserSeeder extends Seeder
             return ['name' => $item->name];
         }, $arr);
         
-        DB::connection('caja_mayorista')
+        DB::connection('web_services_db')
             ->table('cash_register_users')
             ->upsert($arr, ['name'], ['name']);
     }

@@ -32,22 +32,32 @@ class StoreBillPayableGroupRequest extends FormRequest
          * 
          * 2. Validar que cada una de las facturas no esten pagadas
          */
-        $bills_payable_keys = implode(" OR ", array_map(function($item){
-            return "(bills_payable.cod_prov = '" . $item['cod_prov'] . "' AND bills_payable.nro_doc = '" . $item['nro_doc'] . "')";
-        }, $this->bills));
+        if (count($this->bills) > 0){
 
-        $bills = $repo->getBillsPayableByIds($bills_payable_keys)->get();
-
-        $are_valid_bills = true;
-
-        foreach($bills as $bill){
-            if ((floor(floatval($bill->MontoPagado . 'El') * 100) / 100) > 0.00){
-                $are_valid_bills = false;
-                return false;
+            $bills_payable_keys = implode(" OR ", array_map(function($item){
+                return "(bills_payable.cod_prov = '" . $item['cod_prov'] . "' AND bills_payable.nro_doc = '" . $item['nro_doc'] . "')";
+            }, $this->bills));
+    
+            $bills = $repo->getBillsPayableByIds($bills_payable_keys)->get();
+    
+            // Verifica si existe un lote de facturas sin facturas asociadas para este proveedor.
+            $empty_bill_group = $repo->getBillPayableGroups($this->cod_prov)
+                ->havingRaw("SUM(COALESCE(bills_payable.amount, 0)) = 0.00")
+                ->first();
+    
+            $are_valid_bills = true;
+    
+            foreach($bills as $bill){
+                if ((floor(floatval($bill->MontoPagado . 'El') * 100) / 100) > 0.00){
+                    $are_valid_bills = false;
+                    return false;
+                }
             }
+
+            return empty($empty_bill_group) && $are_valid_bills;
         }
 
-        return $are_valid_bills;
+        return false;
     }
 
     /**
@@ -61,6 +71,7 @@ class StoreBillPayableGroupRequest extends FormRequest
         $total_rules = ['required', new BadFormattedAmount, 'gt:0'];
 
         $rules = [
+            'cod_prov' => ['required'],
             'bills.*.cod_prov' => ['required'],
             'bills.*.nro_doc' => ['required'],
             'bills.*.bill_type' => ['required'],
@@ -95,7 +106,7 @@ class StoreBillPayableGroupRequest extends FormRequest
         }, $this->bills);
 
         $inputs = [
-            'bills' => $bills
+            'bills' => $bills,
         ];
  
         $this->merge($inputs);
@@ -105,7 +116,7 @@ class StoreBillPayableGroupRequest extends FormRequest
     {
         return [
             'numeroD' => 'Número de documento',
-            'codProv' => 'Codigo de proveedor',
+            'cod_prov' => 'Codigo de proveedor',
             'billType' => 'Tipo de factura',
             'tasa' => 'Tasa',
             'amount' => 'Monto total de la factura',

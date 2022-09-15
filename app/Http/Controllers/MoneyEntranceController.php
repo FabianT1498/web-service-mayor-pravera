@@ -37,25 +37,15 @@ class MoneyEntranceController extends Controller
             ? "CAST(SAFACT.FechaE as date) = ?"
             : "CAST(SAFACT.FechaE as date) BETWEEN CAST(? as date) AND CAST(? as date)";
 
-        $factors = DB::connection('saint_db')
-            ->table('SAFACT')
-            ->selectRaw("ROUND(MAX(SAFACT.Factor), 2) as MaxFactor, CAST(SAFACT.FechaE as date) as FechaE")
-            ->whereRaw($interval_query, $queryParams)
-            ->groupByRaw("CAST(SAFACT.FechaE as date)");
-
         return DB
             ::connection('saint_db')
             ->table('SAFACT')
             ->selectRaw("MAX(SAFACT.EsNF) as EsNF,
                 CAST(ROUND(SUM(SAFACT.MtoTax * SAFACT.Signo), 2) AS decimal(18, 2))  AS iva,
-                CAST(ROUND(SUM(SAFACT.MtoTax * SAFACT.Signo)/MAX(FactorHist.MaxFactor), 2) AS decimal(18, 2))  AS ivaDolares,
+                CAST(ROUND(SUM((SAFACT.MtoTax * SAFACT.Signo)/SAFACT.FactorV), 2) AS decimal(18, 2))  AS ivaDolares,
                 CAST(ROUND(SUM((SAFACT.TGravable + SAFACT.TExento) * SAFACT.Signo), 2) AS decimal(18, 2))  AS baseImponible,
-                CAST(ROUND((SUM((SAFACT.TGravable + SAFACT.TExento) * SAFACT.Signo)/MAX(FactorHist.MaxFactor)), 2) AS decimal(18, 2))  AS baseImponibleADolares")  
-            ->joinSub($factors, 'FactorHist', function($query){
-                $query->on(DB::raw("CAST(SAFACT.FechaE AS date)"), '=', "FactorHist.FechaE");
-            })
-            ->whereRaw("SAFACT.TipoFac IN ('A', 'B') AND SAFACT.CodUsua IN ('CAJA1', 'CAJA2', 'CAJA3', 'CAJA4', 'CAJA5',
-                'CAJA6' , 'CAJA7', 'DELIVERY') AND " . $interval_query, $queryParams)
+                CAST(ROUND((SUM(((SAFACT.TGravable + SAFACT.TExento) * SAFACT.Signo)/SAFACT.FactorV)), 2) AS decimal(18, 2))  AS baseImponibleADolares")  
+            ->whereRaw("SAFACT.TipoFac IN ('A', 'B') AND SAFACT.CodEsta IN ('CAJA-1', 'CAJA2', 'CAJA-3', 'CAJA4', 'CAJA5', 'CAJA6' , 'DELIVERYPB') AND " . $interval_query, $queryParams)
             ->groupByRaw("SAFACT.EsNF")
             ->get()
             ->groupBy(['EsNF']);
@@ -74,8 +64,7 @@ class MoneyEntranceController extends Controller
             ::connection('saint_db')
             ->table('SAFACT')
             ->selectRaw("SAFACT.EsNF AS EsNF, COUNT(SAFACT.NumeroD) as CantidadRegistros")  
-            ->whereRaw("SAFACT.TipoFac IN ('A', 'B') AND SAFACT.CodUsua IN ('CAJA1', 'CAJA2', 'CAJA3', 'CAJA4', 'CAJA5',
-                'CAJA6' , 'CAJA7', 'DELIVERY') AND " . $interval_query, $queryParams)
+            ->whereRaw("SAFACT.TipoFac IN ('A', 'B') AND SAFACT.CodEsta IN ('CAJA-1', 'CAJA2', 'CAJA-3', 'CAJA4', 'CAJA5', 'CAJA6' , 'DELIVERYPB') AND " . $interval_query, $queryParams)
             ->groupByRaw("SAFACT.EsNF")
             ->get()
             ->groupBy(['EsNF']);
@@ -274,14 +263,14 @@ class MoneyEntranceController extends Controller
 
             $totals_from_safact = $cash_register_repo
                 ->getTotalsFromSafact($start_date, $end_date)
-                ->groupBy(['CodUsua', 'FechaE']);
+                ->groupBy(['CodEsta', 'FechaE']);
 
           
             $payment_methods = $this->getPaymentMethods();
 
             $totals_e_payment = $cash_register_repo
                 ->getTotalsEPaymentMethods($start_date, $end_date)
-                ->groupBy(['CodUsua', 'FechaE']);
+                ->groupBy(['CodEsta', 'FechaE']);
 
             // Completar los metodos de pagos que no tuvieron registros en cada caja
             $totals_e_payment  = $this

@@ -100,29 +100,6 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="ml-4">
-                    <span class="text-gray-500 font-semibold inline-block">Facturas por lotes:</span>
-                    <div class="flex items-center">
-                        <div>
-                            <input 
-                                class="inline-block mr-2"
-                                type="radio"
-                                name="{{__('is_group_bill') }}"
-                                {{ $is_group_bill === 'yes' ? 'checked' : ''}}
-                                value="yes">Si
-                        </div>
-                        <div class="ml-4">
-                            <input
-                                class="inline-block mr-2" 
-                                type="radio"
-                                name="{{__('is_group_bill') }}" 
-                                {{ $is_group_bill === 'no' ? 'checked' : ''}}
-                                value="no">No
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
         

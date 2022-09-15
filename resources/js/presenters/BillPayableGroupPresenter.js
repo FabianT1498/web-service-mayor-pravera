@@ -81,18 +81,33 @@ const BillPayableGroupPresenterPrototype = {
 	},
 	handleClickAddGroup(){
 		if (this.data.billsPayable.length > 0){
+
+			console.log(this.data.codProv)
 			
-			storeBillPayableGroup({bills: this.data.billsPayable})
+			storeBillPayableGroup({bills: this.data.billsPayable, cod_prov: this.data.codProv})
 				.then(res => {
 					if (res.status === 200){
 						let data = res.data.data;
-						this.view.setNewGroupInSelect(data.groupID);
+						
+						
+						let newGroup = new BillPayableGroup(
+							data.group.ID,
+							data.group.Estatus,
+							data.group.CodProv,
+							data.group.MontoTotal,
+							data.group.MontoPagado
+						)
+						
+						this.billPayableGroups.pushElement(newGroup)
+						this.view.showBillGroupDetails(newGroup)
+						this.view.setNewGroupInSelect(newGroup.id);
+						console.log(this.billPayableGroups.getAll())
 					} else {
 						console.log('ha ocurrido un error')
 					}
 				})
 				.catch(err => {
-
+					console.log(err)
 				})
 		} else {
 
