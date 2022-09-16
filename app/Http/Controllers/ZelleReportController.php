@@ -127,6 +127,8 @@ class ZelleReportController extends Controller
             $zelle_records = $cash_register_repo
                 ->getZelleRecords($new_start_date, $new_finish_date)
                 ->groupBy(['cash_register_user', 'date']);
+
+            return print_r($zelle_records);
  
             $total_zelle_amount_by_user = $this->getTotalZelleAmountByUser($zelle_records, $factors);
 

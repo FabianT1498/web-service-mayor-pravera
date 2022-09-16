@@ -47,8 +47,10 @@ Route::group(['middleware' => ['auth']], function () {
 
     // Zelle report route
     Route::get('entradas_zelle', [ZelleReportController::class, 'index'])->name('entradas_zelle.index');
-    Route::get('entradas_zelle/report/pdf', [ZelleReportController::class, 'generateExcel'])->name('entradas_zelle.generate-excel');
+    Route::get('entradas_zelle/report/excel', [ZelleReportController::class, 'generateExcel'])->name('entradas_zelle.generate-excel');
+    Route::get('entradas_zelle/report/pdf', [ZelleReportController::class, 'generatePDF'])->name('entradas_zelle.generate-pdf');
 
+    // Vueltos report
     Route::get('vales_vueltos_facturas', [BillController::class, 'index'])->name('vales_vueltos_facturas.index');
     Route::get('vales_vueltos_facturas/report/pdf', [BillController::class, 'generatePDF'])->name('vales_vueltos_facturas.generate-pdf');
     Route::get('vales_vueltos_facturas/report/excel', [BillController::class, 'generateExcel'])->name('vales_vueltos_facturas.generate-excel');

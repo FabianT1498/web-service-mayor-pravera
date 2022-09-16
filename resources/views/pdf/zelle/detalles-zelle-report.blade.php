@@ -277,7 +277,7 @@
                 </div>
             </div>
 
-            <h1 class="text-center text-lg">Entradas de dinero del sistema</h1>
+            <h1 class="text-center text-lg">Registros de Zelle</h1>
             @if ($zelle_records->count() > 0)
                 @foreach($zelle_records as $key_codusua => $dates)
                     <table>
