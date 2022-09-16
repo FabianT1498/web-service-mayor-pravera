@@ -1072,12 +1072,7 @@ class CashRegisterController extends Controller
 
         $totals_from_safact = $cash_register_repo->getTotalsFromSafact($start_date, $end_date, $user_data->station);
 
-
-        $totals_e_payments = $cash_register_repo->getTotalsEPaymentMethods($start_date, $end_date, $station->station);
-      
-
         $totals_e_payments = $cash_register_repo->getTotalsEPaymentMethods($start_date, $end_date, $user_data->station);
-
 
         return $this->jsonResponse(['data' => [
           'totals_from_safact' => $totals_from_safact,
