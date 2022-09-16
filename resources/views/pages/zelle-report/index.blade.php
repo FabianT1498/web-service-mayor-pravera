@@ -10,7 +10,6 @@
         <div class="mb-8">
             <h3 class="h3 mb-8 text-center">Reporte de entrada de zelle</h3>
 
-            <form class="mb-4" id="form_filter" method="GET" action="{{ route('entradas_zelle.generate-excel') }}">
                 <div 
                     id="date_range_picker" 
                     date-rangepicker 
@@ -59,7 +58,10 @@
                             autocomplete="off"
                         >
                     </div>
-                    <x-button>Generar reporte</x-button>
+                    <p class="text-center">
+                        <x-nav-link-button href="{{ route('vales_vueltos_facturas.generate-pdf') . '?start_date=' . $start_date . '&end_date=' . $end_date }}" id="link_report_pdf">Reporte en PDF</x-nav-link-button>
+                        <x-nav-link-button href="{{ route('vales_vueltos_facturas.generate-excel') . '?start_date=' . $start_date . '&end_date=' . $end_date }}" id="link_report_excel">Reporte en Excel</x-nav-link-button>.
+                    </p>
                 </div>
           </form>
       </div>
