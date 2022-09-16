@@ -1,5 +1,6 @@
 /public/css/
 /public/js/
+/public/mix-manifest.json
 /storage/framework/sessions/
 /node_modules
 /public/hot
