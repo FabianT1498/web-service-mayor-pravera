@@ -163,6 +163,7 @@ class ZelleReportController extends Controller
                 'zelle_records_from_saint',
                 'total_zelle_amount_by_user_from_saint',
                 'total_zelle_amount_from_saint',
+                'factors'
             );
 
             $pdf = $pdf->loadView($view_name, $data)
