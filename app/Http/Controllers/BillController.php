@@ -64,11 +64,11 @@ class BillController extends Controller
     private function getBillData($new_start_date, $new_finish_date, BillRepository $bill_repo){
         $bill_vueltos = $bill_repo
             ->getVueltos($new_start_date, $new_finish_date)
-            ->groupBy(['CodUsua', 'FechaE', 'NumeroD']);
+            ->groupBy(['CodEsta', 'FechaE', 'NumeroD']);
 
         $bill_vueltos_by_user_date = $bill_repo
             ->getVueltosByUser($new_start_date, $new_finish_date)
-            ->groupBy(['CodUsua', 'FechaE']);
+            ->groupBy(['CodEsta', 'FechaE']);
 
         $total_vuelto_by_user = $this->getTotalVueltosByUser($bill_vueltos_by_user_date);
         $total_vuelto = $this->getTotalVueltos($total_vuelto_by_user);
@@ -98,8 +98,8 @@ class BillController extends Controller
 
             $data = $this->getBillData($new_start_date, $new_finish_date, $bill_repo);
 
-            
-            
+            return print_r($data);
+
             $data['start_date'] = $start_date;
             $data['end_date'] = $end_date;
 
@@ -149,18 +149,20 @@ class BillController extends Controller
 
     public function getMoneyBackByCashRegisterUserSaint(BillRepository $bill_repo, $user, $start_date, $end_date){
         
-        $station = DB::table('cash_register_users')
-            ->select([
-                'cash_register_users.station as station',
-            ])
-            ->where('cash_register_users.name', '=', $user)
-            ->first();
+        $user_data = $this->getUserStation($user);
 
         $money_back_by_user = $bill_repo
-            ->getVueltosByUser($start_date, $end_date, $station->station);
+            ->getVueltosByUser($start_date, $end_date, $user_data->station);
 
         return $this->jsonResponse(['data' =>  $money_back_by_user ], 200);
     }
 
-
+    private function getUserStation($cod_usua){
+        return DB::table('cash_register_users')
+            ->select([
+            'cash_register_users.station as station',
+            ])
+            ->where('cash_register_users.name', '=', $cod_usua)
+            ->first();
+    }
 }
