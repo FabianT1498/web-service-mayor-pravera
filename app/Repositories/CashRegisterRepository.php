@@ -76,6 +76,7 @@ class CashRegisterRepository implements CashRegisterRepositoryInterface
             'cash_register_data.id as id,
             cash_register_data.date as date,
             cash_register_users.station as cash_register_user,
+            cash_register_data.cash_register_user as cod_usua,
             workers.name as worker_name,
             cash_register_data.user_id as user_name,
             CAST(ROUND(COALESCE(dol_c_join.total, 0), 2) AS decimal(18, 2)) as total_dollar_cash,

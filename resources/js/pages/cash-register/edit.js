@@ -374,7 +374,7 @@ export default {
                     this.setTotalZelleDollar(roundNumber(parseFloat(data.total_zelle)));
                  
                     date = data.date;
-                    user = data.cash_register_user
+                    user = data.cod_usua
                
                     const params = {
                         date,
