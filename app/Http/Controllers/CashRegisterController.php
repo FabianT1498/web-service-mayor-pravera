@@ -759,37 +759,42 @@ class CashRegisterController extends Controller
        
         $cash_register_totals = $cash_register_repo->getTotals($id);
         $user =  $cash_register_totals->cash_register_user;
+
+        $user_data = $this->getUserStation($user);
+
+        $user_station = $user_data->station;
+
         $date = date('Y-m-d', strtotime( $cash_register_totals->date));
         
         $totals_from_safact = $cash_register_repo->getTotalsFromSafact($cash_register_totals->date,
-            $cash_register_totals->date, $cash_register_totals->cash_register_user)->first();
+            $cash_register_totals->date, $user_station)->first();
 
         $payment_methods = $this->getPaymentMethods();
 
         $totals_e_payment =  $cash_register_repo
             ->getTotalsEPaymentMethods($cash_register_totals->date, $cash_register_totals->date,
-                $cash_register_totals->cash_register_user)
-            ->groupBy(['CodUsua', 'FechaE']);
+                $user_station)
+            ->groupBy(['CodEsta', 'FechaE']);
         
         $totals_e_payment  = $this
             ->mapEPaymentMethods($totals_e_payment, $payment_methods);
 
         $vuelto_by_user = $bill_repo
-            ->getVueltosByUser($date, $date, $user);
+            ->getVueltosByUser($date, $date, $user_station);
 
         // Completar las cajas con sus respectivos metodos de pago que no tuvieron operacion con pagos electronicos
-        $totals_e_payment = $this->completeEpaymentMethodsToCashUserForRecord($user, $date, $totals_e_payment, $payment_methods);
+        $totals_e_payment = $this->completeEpaymentMethodsToCashUserForRecord($user_station, $date, $totals_e_payment, $payment_methods);
         
         $differences = [
             'dollar_cash' => round($cash_register_totals->total_dollar_cash - $totals_from_safact->dolares, 2),
             'bs_cash' => round($cash_register_totals->total_bs_denominations - 
                 ($totals_from_safact->bolivares - ($vuelto_by_user->count() > 0 ? $vuelto_by_user->first()->MontoBsEfect : 0)), 2),
-            'pago_movil_bs' => round($cash_register_totals->total_pago_movil_bs - $totals_e_payment[$user][$date]['05']['bs'], 2),
-            'point_sale_bs' => round(($cash_register_totals->total_point_sale_bs - ($totals_e_payment[$user][$date]['01']['bs'] 
-                    + $totals_e_payment[$user][$date]['02']['bs'] + $totals_e_payment[$user][$date]['03']['bs']
-                    + $totals_e_payment[$user][$date]['04']['bs'])), 2),
-            'point_sale_dollar' => round($cash_register_totals->total_point_sale_dollar - $totals_e_payment[$user][$date]['08']['dollar'], 2),
-            'zelle' => round($cash_register_totals->total_zelle - $totals_e_payment[$user][$date]['07']['dollar'], 2),
+            'pago_movil_bs' => round($cash_register_totals->total_pago_movil_bs - $totals_e_payment[$user_station][$date]['05']['bs'], 2),
+            'point_sale_bs' => round(($cash_register_totals->total_point_sale_bs - ($totals_e_payment[$user_station][$date]['01']['bs'] 
+                    + $totals_e_payment[$user_station][$date]['02']['bs'] + $totals_e_payment[$user_station][$date]['03']['bs']
+                    + $totals_e_payment[$user_station][$date]['04']['bs'])), 2),
+            'point_sale_dollar' => round($cash_register_totals->total_point_sale_dollar - $totals_e_payment[$user_station][$date]['08']['dollar'], 2),
+            'zelle' => round($cash_register_totals->total_zelle - $totals_e_payment[$user_station][$date]['07']['dollar'], 2),
             'bs_denominations' => round($cash_register_totals->total_bs_denominations - 
                 ($totals_from_safact->bolivares - ($vuelto_by_user->count() > 0 ? $vuelto_by_user->first()->MontoBsEfect : 0)), 2),
             'dollar_denominations' => round(($cash_register_totals->total_dollar_denominations - $totals_from_safact->dolares) - 
@@ -841,24 +846,17 @@ class CashRegisterController extends Controller
         // Get Saint data
         $totals_from_safact = $cash_register_repo
             ->getTotalsFromSafact($start_date, $end_date)
-            ->groupBy(['CodUsua', 'FechaE']);
+            ->groupBy(['CodEsta', 'FechaE']);
 
         $payment_methods = $this->getPaymentMethods();
 
         $totals_e_payment =  $cash_register_repo
             ->getTotalsEPaymentMethods($start_date, $end_date)
-            ->groupBy(['CodUsua', 'FechaE', 'CodPago']);
-
-        // Completar los metodos de pagos que no tuvieron registros en cada caja
-        // $totals_e_payment  = $this
-        //     ->mapEPaymentMethods($totals_e_payment, $payment_methods);
-
-        // Completar las cajas con sus respectivos metodos de pago que no tuvieron operacion con pagos electronicos
-        // $totals_e_payment = $this->completeEpaymentMethodsToCashUserForInteval($totals_from_safact, $totals_e_payment, $payment_methods);
+            ->groupBy(['CodEsta', 'FechaE', 'CodPago']);
 
         $vuelto_by_users = $bill_repo
             ->getVueltosByUser($start_date, $end_date)
-            ->groupBy(['CodUsua', 'FechaE']);
+            ->groupBy(['CodEsta', 'FechaE']);
 
         $differences = $this->calculateDiffToSaint($totals_from_safact, $totals_e_payment, $cash_registers_totals, $vuelto_by_users);
     
@@ -1069,16 +1067,11 @@ class CashRegisterController extends Controller
 
     public function getTotalsFromSaint(CashRegisterRepository $cash_register_repo, $user, $start_date, $end_date){
 
-        $station = DB::table('cash_register_users')
-            ->select([
-                'cash_register_users.station as station',
-            ])
-            ->where('cash_register_users.name', '=', $user)
-            ->first();
+        $user_data = $this->getUserStation($user);
 
-        $totals_from_safact = $cash_register_repo->getTotalsFromSafact($start_date, $end_date, $station->station);
+        $totals_from_safact = $cash_register_repo->getTotalsFromSafact($start_date, $end_date, $user_data->station);
 
-        $totals_e_payments = $cash_register_repo->getTotalsEPaymentMethods($start_date, $end_date, $station->station);
+        $totals_e_payments = $cash_register_repo->getTotalsEPaymentMethods($start_date, $end_date, $user_data->station);
 
         return $this->jsonResponse(['data' => [
           'totals_from_safact' => $totals_from_safact,
@@ -1128,5 +1121,14 @@ class CashRegisterController extends Controller
             'description' => $new_record[0]['description'],
             'cash_register_data_id' => $parent_id
         ];
+    }
+
+    private function getUserStation($cod_usua){
+        return DB::table('cash_register_users')
+            ->select([
+            'cash_register_users.station as station',
+            ])
+            ->where('cash_register_users.name', '=', $cod_usua)
+            ->first();
     }
 }
