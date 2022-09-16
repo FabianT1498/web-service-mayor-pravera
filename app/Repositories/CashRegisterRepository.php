@@ -230,14 +230,15 @@ class CashRegisterRepository implements CashRegisterRepositoryInterface
             ::table('cash_register_data')
             ->selectRaw('
                 cash_register_data.date as date,
-                cash_register_data.cash_register_user as cash_register_user,
+                cash_register_users.station as cash_register_user,
                 CAST(ROUND(zelle_records.amount, 2) AS decimal(10, 2)) as amount
             ')
             ->join("zelle_records", function($join) {
                 $join->on('zelle_records.cash_register_data_id', '=', 'cash_register_data.id');
             })
+            ->join('cash_register_users', 'cash_register_users.name', '=', 'cash_register_data.cash_register_user')
             ->whereRaw($interval_query, $date_params)
-            ->orderByRaw("cash_register_data.cash_register_user asc, cash_register_data.date asc, amount asc")
+            ->orderByRaw("cash_register_users.station asc, cash_register_data.date asc, amount asc")
             ->get();
     }
 

@@ -79,11 +79,11 @@ class ZelleReportController extends Controller
             // Zelle total from SAINT
             $zelle_records_from_saint = $cash_register_repo
                 ->getZelleRecordsFromSaint($new_start_date, $new_finish_date)
-                ->groupBy(['CodUsua', 'FechaE']);
+                ->groupBy(['CodEsta', 'FechaE']);
 
             $total_zelle_amount_by_user_from_saint = $cash_register_repo
                 ->getZelleTotalByUserFromSaint($new_start_date, $new_finish_date)
-                ->groupBy(['CodUsua']);
+                ->groupBy(['CodEsta']);
 
             $total_zelle_amount_from_saint = $cash_register_repo
                 ->getZelleTotalFromSaint($new_start_date, $new_finish_date);
