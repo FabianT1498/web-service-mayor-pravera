@@ -75,7 +75,7 @@ class CashRegisterRepository implements CashRegisterRepositoryInterface
         $query = CashRegisterData::selectRaw(
             'cash_register_data.id as id,
             cash_register_data.date as date,
-            cash_register_data.cash_register_user as cash_register_user,
+            cash_register_users.station as cash_register_user,
             workers.name as worker_name,
             cash_register_data.user_id as user_name,
             CAST(ROUND(COALESCE(dol_c_join.total, 0), 2) AS decimal(18, 2)) as total_dollar_cash,
@@ -88,6 +88,7 @@ class CashRegisterRepository implements CashRegisterRepositoryInterface
             '
         )
         ->join('workers', 'cash_register_data.worker_id', '=', 'workers.id')
+        ->join('cash_register_users', 'cash_register_users.name', '=', 'cash_register_data.cash_register_user')
         ->leftJoin(
             DB::raw("(SELECT SUM(`dollar_cash_records`.`amount`) as `total`, `dollar_cash_records`.`cash_register_data_id` FROM `dollar_cash_records` GROUP BY `dollar_cash_records`.`cash_register_data_id`) `dol_c_join`"),
             function($join) use ($id) {
@@ -151,7 +152,7 @@ class CashRegisterRepository implements CashRegisterRepositoryInterface
         $query = DB
             ::table('cash_register_data')
             ->selectRaw(
-                'cash_register_data.cash_register_user as cash_register_user,
+                'cash_register_users.station as cash_register_user,
                 cash_register_data.date as date,
                 CAST(ROUND(COALESCE(MAX(dol_c_join.total), 0), 2) AS decimal(18, 2)) as total_dollar_cash,
                 CAST(ROUND(COALESCE(MAX(pago_movil_bs_join.total), 0), 2) AS decimal(18, 2)) as total_pago_movil_bs,
@@ -163,6 +164,7 @@ class CashRegisterRepository implements CashRegisterRepositoryInterface
                 '
             )
             ->join('workers', 'cash_register_data.worker_id', '=', 'workers.id')
+            ->join('cash_register_users', 'cash_register_users.name', '=', 'cash_register_data.cash_register_user')
             ->leftJoin(
                 DB::raw("(SELECT SUM(`dollar_cash_records`.`amount`) as `total`, `dollar_cash_records`.`cash_register_data_id` FROM `dollar_cash_records` GROUP BY `dollar_cash_records`.`cash_register_data_id`) `dol_c_join`"),
                 function($join)  {
@@ -213,8 +215,8 @@ class CashRegisterRepository implements CashRegisterRepositoryInterface
                 }
             )
             ->whereRaw($interval_query, $date_params)
-            ->groupByRaw("cash_register_user, date")
-            ->orderByRaw("cash_register_user asc, date asc");
+            ->groupByRaw("cash_register_users.station, cash_register_data.date")
+            ->orderByRaw("cash_register_users.station asc, cash_register_data.date asc");
 
         return $query->get();
     }

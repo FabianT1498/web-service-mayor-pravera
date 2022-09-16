@@ -760,41 +760,37 @@ class CashRegisterController extends Controller
         $cash_register_totals = $cash_register_repo->getTotals($id);
         $user =  $cash_register_totals->cash_register_user;
 
-        $user_data = $this->getUserStation($user);
-
-        $user_station = $user_data->station;
-
         $date = date('Y-m-d', strtotime( $cash_register_totals->date));
         
         $totals_from_safact = $cash_register_repo->getTotalsFromSafact($cash_register_totals->date,
-            $cash_register_totals->date, $user_station)->first();
+            $cash_register_totals->date, $user)->first();
 
         $payment_methods = $this->getPaymentMethods();
 
         $totals_e_payment =  $cash_register_repo
             ->getTotalsEPaymentMethods($cash_register_totals->date, $cash_register_totals->date,
-                $user_station)
+                $user)
             ->groupBy(['CodEsta', 'FechaE']);
         
         $totals_e_payment  = $this
             ->mapEPaymentMethods($totals_e_payment, $payment_methods);
 
         $vuelto_by_user = $bill_repo
-            ->getVueltosByUser($date, $date, $user_station);
+            ->getVueltosByUser($date, $date, $user);
 
         // Completar las cajas con sus respectivos metodos de pago que no tuvieron operacion con pagos electronicos
-        $totals_e_payment = $this->completeEpaymentMethodsToCashUserForRecord($user_station, $date, $totals_e_payment, $payment_methods);
+        $totals_e_payment = $this->completeEpaymentMethodsToCashUserForRecord($user, $date, $totals_e_payment, $payment_methods);
         
         $differences = [
             'dollar_cash' => round($cash_register_totals->total_dollar_cash - $totals_from_safact->dolares, 2),
             'bs_cash' => round($cash_register_totals->total_bs_denominations - 
                 ($totals_from_safact->bolivares - ($vuelto_by_user->count() > 0 ? $vuelto_by_user->first()->MontoBsEfect : 0)), 2),
-            'pago_movil_bs' => round($cash_register_totals->total_pago_movil_bs - $totals_e_payment[$user_station][$date]['05']['bs'], 2),
-            'point_sale_bs' => round(($cash_register_totals->total_point_sale_bs - ($totals_e_payment[$user_station][$date]['01']['bs'] 
-                    + $totals_e_payment[$user_station][$date]['02']['bs'] + $totals_e_payment[$user_station][$date]['03']['bs']
-                    + $totals_e_payment[$user_station][$date]['04']['bs'])), 2),
-            'point_sale_dollar' => round($cash_register_totals->total_point_sale_dollar - $totals_e_payment[$user_station][$date]['08']['dollar'], 2),
-            'zelle' => round($cash_register_totals->total_zelle - $totals_e_payment[$user_station][$date]['07']['dollar'], 2),
+            'pago_movil_bs' => round($cash_register_totals->total_pago_movil_bs - $totals_e_payment[$user][$date]['05']['bs'], 2),
+            'point_sale_bs' => round(($cash_register_totals->total_point_sale_bs - ($totals_e_payment[$user][$date]['01']['bs'] 
+                    + $totals_e_payment[$user][$date]['02']['bs'] + $totals_e_payment[$user][$date]['03']['bs']
+                    + $totals_e_payment[$user][$date]['04']['bs'])), 2),
+            'point_sale_dollar' => round($cash_register_totals->total_point_sale_dollar - $totals_e_payment[$user][$date]['08']['dollar'], 2),
+            'zelle' => round($cash_register_totals->total_zelle - $totals_e_payment[$user][$date]['07']['dollar'], 2),
             'bs_denominations' => round($cash_register_totals->total_bs_denominations - 
                 ($totals_from_safact->bolivares - ($vuelto_by_user->count() > 0 ? $vuelto_by_user->first()->MontoBsEfect : 0)), 2),
             'dollar_denominations' => round(($cash_register_totals->total_dollar_denominations - $totals_from_safact->dolares) - 
@@ -862,24 +858,29 @@ class CashRegisterController extends Controller
     
         $dollar_denominations = DB::table('cash_register_data')
             ->join('dollar_denomination_records', 'cash_register_data.id', '=', 'dollar_denomination_records.cash_register_data_id')
+            ->join('cash_register_users', 'cash_register_users.name', '=', 'cash_register_data.cash_register_user')
             ->whereRaw("cash_register_data.date BETWEEN ? AND ?", [$start_date, $end_date])
             ->orderByRaw("cash_register_data.cash_register_user asc, cash_register_data.date asc, dollar_denomination_records.denomination asc")
             ->get()
-            ->groupBy(['cash_register_user', 'date']);
+            ->groupBy(['station', 'date']);
+
+        
 
         $bs_denominations = DB::table('cash_register_data')
             ->join('bs_denomination_records', 'cash_register_data.id', '=', 'bs_denomination_records.cash_register_data_id')
+            ->join('cash_register_users', 'cash_register_users.name', '=', 'cash_register_data.cash_register_user')
             ->whereRaw("cash_register_data.date BETWEEN ? AND ?", [$start_date, $end_date])
             ->orderByRaw("cash_register_data.cash_register_user asc, cash_register_data.date asc, bs_denomination_records.denomination asc")
             ->get()
-            ->groupBy(['cash_register_user', 'date']);
+            ->groupBy(['station', 'date']);
 
         $notes = DB::table('cash_register_data')
             ->join('notes', 'cash_register_data.id', '=', 'notes.cash_register_data_id')
+            ->join('cash_register_users', 'cash_register_users.name', '=', 'cash_register_data.cash_register_user')
             ->whereRaw("cash_register_data.date BETWEEN ? AND ?", [$start_date, $end_date])
             ->orderByRaw("cash_register_data.cash_register_user asc, cash_register_data.date asc")
             ->get()
-            ->groupBy(['cash_register_user', 'date']);
+            ->groupBy(['station', 'date']);
 
         $totals_bs_denominations = $this->sumSubTotalDenomination($bs_denominations);
         $total_dollar_denominations = $this->sumSubTotalDenomination($dollar_denominations);
