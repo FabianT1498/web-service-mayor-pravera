@@ -9,12 +9,10 @@
     <div class="w-10/12 mx-auto">
         <div class="mb-8">
             <h3 class="h3 mb-8 text-center">Reporte de entrada de zelle</h3>
-
-            <form class="mb-4" id="form_filter" method="GET" action="{{ route('entradas_zelle.generate-excel') }}">
                 <div 
                     id="date_range_picker" 
                     date-rangepicker 
-                    class="grid gap-4 grid-cols-[150px_50px_150px_100px] grid-rows-4 mb-8 mx-auto items-center justify-center"
+                    class="flex gap-4 mb-8 mx-auto items-center justify-center"
                 >
                     <div class="relative">
                         <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
@@ -59,8 +57,11 @@
                             autocomplete="off"
                         >
                     </div>
-                    <x-button>Generar reporte</x-button>
                 </div>
+                <p class="text-center">
+                    <x-nav-link-button href="{{ route('entradas_zelle.generate-pdf') . '?start_date=' . $start_date . '&end_date=' . $end_date }}" id="link_report_pdf">Reporte en PDF</x-nav-link-button>
+                    <x-nav-link-button href="{{ route('entradas_zelle.generate-excel') . '?start_date=' . $start_date . '&end_date=' . $end_date }}" id="link_report_excel">Reporte en Excel</x-nav-link-button>.
+                </p>
           </form>
       </div>
     </div>
