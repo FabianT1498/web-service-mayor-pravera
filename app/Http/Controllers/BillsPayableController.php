@@ -317,6 +317,7 @@ class BillsPayableController extends Controller
         ];
  
         $group = $repo->getBillPayableGroupByID($request->id);
+
         $group->MontoPagado =  floor($group->MontoPagado * 100) / 100;
 
         // Obtiene la tasa de la ultima factura
