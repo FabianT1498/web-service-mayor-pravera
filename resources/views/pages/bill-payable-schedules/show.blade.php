@@ -91,6 +91,55 @@
                     @endforeach
                 </tbody>
             </table>
+
+            <div class="flex mb-4">
+                <h4 class="h4">Lotes de facturas</h4>
+            </div>
+
+            @foreach($groups as $group)
+                <div class="mb-4">
+                    <div class="bg-slate-200 rounded-tl-md round-tr-md text-center py-1">{{ "Lote " . $group->ID }}</div>
+                    <table class="table table-bordered table-hover mx-auto text-center p-0">
+                        <thead class="bg-blue-300">
+                            <tr>
+                                @foreach ($columns as $colum)
+                                    <th scope="col text-center align-middle">{{ $colum }}</th>
+                                @endforeach
+                            </tr>
+                        </thead>
+                        <tbody id="billPayableScheduleTBody">
+                            @if($bs_bill_payable_grouped->has($group->ID))
+                                <tr class="text-center"><th colspan="{{ count($columns) }}">Facturas en Bolivares</th></tr>
+                                @foreach($bs_bill_payable_grouped->get($group->ID) as $bill)
+                                    <tr>
+                                        <td class="text-center p-0"><a class="block" href="{{ route('bill_payable.showBillPayable', ['numero_d' => $bill->NumeroD, 'cod_prov' => $bill->CodProv]) }}">{{ $bill->NumeroD }}</a></td>
+                                        <td class="text-center p-0"><a class="block" href="{{ route('bill_payable.showBillPayable', ['numero_d' => $bill->NumeroD, 'cod_prov' => $bill->CodProv]) }}">{{ $bill->Descrip }}</a></td>
+                                        <td class="text-center p-0"><a class="block" href="{{ route('bill_payable.showBillPayable', ['numero_d' => $bill->NumeroD, 'cod_prov' => $bill->CodProv]) }}">{{ number_format($bill->MontoTotal, 2) . " " . config("constants.CURRENCY_SIGNS.bolivar") }}</a></td>
+                                        <td class="text-center p-0"><a class="block" href="{{ route('bill_payable.showBillPayable', ['numero_d' => $bill->NumeroD, 'cod_prov' => $bill->CodProv]) }}">{{ number_format($bill->Tasa, 2) . " " . config("constants.CURRENCY_SIGNS.bolivar") }}</a></td>
+                                        <td class="text-center p-0"><a class="block" href="{{ route('bill_payable.showBillPayable', ['numero_d' => $bill->NumeroD, 'cod_prov' => $bill->CodProv]) }}">{{ number_format($bill->MontoPagar, 2) . " " . config("constants.CURRENCY_SIGNS.dollar") }}</a></td>
+                                        <td class="text-center p-0"><a class="block" href="{{ route('bill_payable.showBillPayable', ['numero_d' => $bill->NumeroD, 'cod_prov' => $bill->CodProv]) }}">{{ number_format($bill->MontoPagado, 2) . " " . config("constants.CURRENCY_SIGNS.dollar") }}</a></td>
+                                        <td class="text-center p-0"><a class="block" href="{{ route('bill_payable.showBillPayable', ['numero_d' => $bill->NumeroD, 'cod_prov' => $bill->CodProv]) }}">{{ config("constants.BILL_PAYABLE_STATUS." . $bill->Status) }}</a></td>
+                                    </tr>
+                                @endforeach
+                            @endif
+                            @if ($dollar_bill_payable_grouped->has($group->ID))
+                                <tr class="text-center"><th colspan="{{ count($columns) }}">Facturas en Dolares</th></tr>
+                                @foreach($dollar_bill_payable_grouped->get($group->ID) as $bill)
+                                    <tr>
+                                        <td class="text-center p-0"><a class="block" href="{{ route('bill_payable.showBillPayable', ['numero_d' => $bill->NumeroD, 'cod_prov' => $bill->CodProv]) }}">{{ $bill->NumeroD }}</a></td>
+                                        <td class="text-center p-0"><a class="block" href="{{ route('bill_payable.showBillPayable', ['numero_d' => $bill->NumeroD, 'cod_prov' => $bill->CodProv]) }}">{{ $bill->Descrip }}</a></td>
+                                        <td class="text-center p-0"><a class="block" href="{{ route('bill_payable.showBillPayable', ['numero_d' => $bill->NumeroD, 'cod_prov' => $bill->CodProv]) }}">{{ number_format($bill->MontoTotal, 2) . " " . config("constants.CURRENCY_SIGNS.dollar") }}</a></td>
+                                        <td class="text-center p-0"><a class="block" href="{{ route('bill_payable.showBillPayable', ['numero_d' => $bill->NumeroD, 'cod_prov' => $bill->CodProv]) }}">{{ number_format($bill->Tasa, 2) . " " . config("constants.CURRENCY_SIGNS.bolivar") }}</a></td>
+                                        <td class="text-center p-0"><a class="block" href="{{ route('bill_payable.showBillPayable', ['numero_d' => $bill->NumeroD, 'cod_prov' => $bill->CodProv]) }}">{{ number_format($bill->MontoPagar, 2) . " " . config("constants.CURRENCY_SIGNS.dollar") }}</a></td>
+                                        <td class="text-center p-0"><a class="block" href="{{ route('bill_payable.showBillPayable', ['numero_d' => $bill->NumeroD, 'cod_prov' => $bill->CodProv]) }}">{{ number_format($bill->MontoPagado, 2) . " " . config("constants.CURRENCY_SIGNS.dollar") }}</a></td>
+                                        <td class="text-center p-0"><a class="block" href="{{ route('bill_payable.showBillPayable', ['numero_d' => $bill->NumeroD, 'cod_prov' => $bill->CodProv]) }}">{{ config("constants.BILL_PAYABLE_STATUS." . $bill->Status) }}</a></td>
+                                    </tr>
+                                @endforeach
+                            @endif
+                        </tbody>
+                    </table>
+                </div>
+            @endforeach
         </div>
     </div>
 @endsection

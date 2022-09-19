@@ -16,6 +16,11 @@ import("./pages/bill-payable-groups/index" /* webpackChunkName: "/js/bill_payabl
    billsPayableIndex.init()
 });
 
+import("./pages/bill-payable-groups/show" /* webpackChunkName: "/js/bill_payable_group_show" */).then(({default: billPayableGroupShow}) => {
+   billPayableGroupShow.init()
+});
+
+
 /** ---- BILLS PAYABLE SCRIPTS --- */
 import("./pages/bills-payable/index" /* webpackChunkName: "/js/bills_payable_index" */).then(({default: billsPayableIndex}) => {
    billsPayableIndex.init()

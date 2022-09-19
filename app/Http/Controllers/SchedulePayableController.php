@@ -141,9 +141,14 @@ class SchedulePayableController extends Controller
         $dollar_bill_payable = $bs_bill_payable = null;
 
         if ($bill_payable_schedule){
-            $dollar_bill_payable = $repo->getBillsPayableByScheduleId(1, $id)->get();
+            $dollar_bill_payable = $repo->getBillsPayableByScheduleId($id, 1)->get();
 
-            $bs_bill_payable = $repo->getBillsPayableByScheduleId(0, $id)->get();
+            $bs_bill_payable = $repo->getBillsPayableByScheduleId($id, 0)->get();
+
+            $groups = $repo->getBillPayableGroupsByScheduleID($id);
+
+            $dollar_bill_payable_grouped = $repo->getBillsPayableByScheduleId($id, 1, true)->get()->groupBy(['BillPayableGroupsID']);
+            $bs_bill_payable_grouped = $repo->getBillsPayableByScheduleId($id, 0, true)->get()->groupBy(['BillPayableGroupsID']);
 
             $are_all_bills_paid = true;
 
@@ -183,7 +188,10 @@ class SchedulePayableController extends Controller
             'columns',
             'bill_payable_schedule',
             'dollar_bill_payable',
-            'bs_bill_payable'
+            'bs_bill_payable',
+            'groups',
+            'dollar_bill_payable_grouped',
+            'bs_bill_payable_grouped'
         ));
     }
 

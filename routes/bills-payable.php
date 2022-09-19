@@ -21,8 +21,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('schedule', [SchedulePayableController::class, 'store'])->name('schedule.store');
 
     // ----- Bills Payable Group -----
+    Route::post('bill_payable_group/payment', [BillsPayableController::class, 'storeBillPayableGroupPayment'])->name('bill_payable_groups.store-payment');
     Route::get('bill_payable_group', [BillsPayableController::class, 'billPayableGroupsIndex'])->name('bill_payable_groups.index');
     Route::get('bill_payable_group/detail/{id}', [BillsPayableController::class, 'showBillPayableGroup'])->name('bill_payable.showBillPayableGroup');
+    Route::put('bill_payable_group/tasa', [BillsPayableController::class, 'updateBillPayableGroupTasa'])->name('bill_payable_groups.update-tasa');
 
 });
 

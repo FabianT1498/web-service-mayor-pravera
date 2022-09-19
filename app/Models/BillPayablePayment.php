@@ -25,6 +25,6 @@ class BillPayablePayment extends Model
         $this->amount = key_exists('amount', $attributes) ? $attributes['amount'] : '';
         $this->date = key_exists('date', $attributes) ? $attributes['date'] : Carbon::now()->format('Y-m-d');
         $this->is_dollar = key_exists('is_dollar', $attributes) ? $attributes['is_dollar'] : '';
-        $this->is_group_payment = key_exists('is_group_payment', $attributes) ? $attributes['is_group_payment'] : '';
+        $this->is_group_payment = key_exists('is_group_payment', $attributes) ? $attributes['is_group_payment'] : 0;
     }
 }

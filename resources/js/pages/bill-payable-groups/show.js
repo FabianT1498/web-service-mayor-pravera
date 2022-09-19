@@ -1,5 +1,5 @@
-import BillPayablePaymentFormView from '_views/BillPayablePaymentFormView'
-import BillPayablePaymentFormPresenter from '_presenters/BillPayablePaymentFormPresenter'
+import BillPayableGroupPaymentFormView from '_views/BillPayablePaymentFormView'
+import BillPayableGroupPaymentFormPresenter from '_presenters/BillPayablePaymentFormPresenter'
 
 import { decimalInputs } from '_utilities/decimalInput';
 
@@ -9,9 +9,9 @@ export default {
         toggleFormBtn: document.querySelector('#toggleFormBtn')
     },
     initEventLister(){
-        this.billTasa = document.querySelector('#billTasa')
-        if (this.billTasa) {
-            decimalInputs['bs'].mask(this.billTasa)
+        this.groupTasa = document.querySelector('#groupTasa')
+        if (this.groupTasa) {
+            decimalInputs['bs'].mask(this.groupTasa)
         }
 
         this.DOMElements.toggleFormBtn.addEventListener('click', this.toggleFormWrapper())
@@ -25,11 +25,10 @@ export default {
     init(){
         this.initEventLister()
 
-        let nroDoc = document.querySelector('#nroDoc')
-        let codProv = document.querySelector('#codProv')
-
-        this.billPayablePaymentFormPresenter = new BillPayablePaymentFormPresenter(nroDoc ? nroDoc.value : '', codProv ? codProv.value : '')
-        this.billPayablePaymentFormView = new BillPayablePaymentFormView(this.billPayablePaymentFormPresenter);
-        this.billPayablePaymentFormView.init(this.DOMElements.billPayablePaymentForm)
+        let groupID = document.querySelector('#group_id')
+        
+        this.billPayableGroupPaymentFormPresenter = new BillPayableGroupPaymentFormPresenter(groupID ? groupID.value : '')
+        this.billPayableGroupPaymentFormView = new BillPayableGroupPaymentFormView(this.billPayableGroupPaymentFormPresenter);
+        this.billPayableGroupPaymentFormView.init(this.DOMElements.billPayablePaymentForm)
     }
 }

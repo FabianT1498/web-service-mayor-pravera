@@ -20,6 +20,8 @@ use App\Http\Requests\UpdateBillPayableTasaRequest;
 use App\Http\Requests\UpsertBillPayableRequest;
 use App\Http\Requests\StoreBillPayableGroupRequest;
 use App\Http\Requests\UpdateBillPayableGroupRequest;
+use App\Http\Requests\StoreBillPayableGroupPaymentRequest;
+use App\Http\Requests\UpdateBillPayableGroupTasaRequest;
 
 use App\Models\BillPayable;
 use App\Models\BillPayablePayment;
@@ -132,11 +134,15 @@ class BillsPayableController extends Controller
                 return "(bills_payable.cod_prov = '" . $item->CodProv . "' AND bills_payable.nro_doc = '" . $item->NumeroD . "')";
             }, $paginator->items()));
 
-            $bills_payable_records = $repo->getBillsPayableByIds($bills_payable_keys)->take(5)->get()->groupBy(['CodProv', 'NumeroD']);
+            $bills_payable_records = null;
+
+            if ($bills_payable_keys !== ''){
+                $bills_payable_records = $repo->getBillsPayableByIds($bills_payable_keys)->take(5)->get()->groupBy(['CodProv', 'NumeroD']);
+            }
 
             $data = array_map(function($item) use ($bills_payable_records){
                 
-                $record = $bills_payable_records->has($item->CodProv) && $bills_payable_records[$item->CodProv]->has($item->NumeroD)
+                $record = !is_null($bills_payable_records) && $bills_payable_records->has($item->CodProv) && $bills_payable_records[$item->CodProv]->has($item->NumeroD)
                     ? $bills_payable_records[$item->CodProv][$item->NumeroD]->first()
                     : $item;
 
@@ -203,7 +209,6 @@ class BillsPayableController extends Controller
     }
 
     public function show(Request $request, BillsPayableRepository $repo){
-
 
         $payment_dollar_table_cols = [
             "Fecha pago",
@@ -279,8 +284,98 @@ class BillsPayableController extends Controller
         ));
     }
 
-    public function showBillPayableGroup(Request $request){
+    public function showBillPayableGroup(Request $request, BillsPayableRepository $repo){
 
+        $is_group_payment = 1;
+
+        $today_date = Carbon::now()->format('d-m-Y');
+
+        $bills_payable_columns = [
+            "Numero Documento",
+            "Proveedor",
+            "Monto total",
+            "Tasa",
+        ];
+
+        $payment_dollar_table_cols = [
+            "Fecha pago",
+            'Método pago',
+            'Fecha retiro',
+            'Monto'
+        ];
+
+        $payment_bs_table_cols = [
+            "Fecha pago",
+            'Banco',
+            'Nro. referencia',
+            'Tasa',
+            "Monto",
+            "Monto ($)"
+        ];
+ 
+        $group = $repo->getBillPayableGroupByID($request->id);
+
+        $group->MontoPagado =  floor($group->MontoPagado * 100) / 100;
+
+        // Obtiene la tasa de la ultima factura
+        $last_tasa = $repo->getLastBillPayableTasaByGroupID($request->id);
+        
+        // Facturas del grupo
+        $bs_bills_payable = $repo->getBillsPayableByGroupID($request->id);
+
+        $dollar_bills_payable = $repo->getBillsPayableByGroupID($request->id, 1);
+
+        // Pagos del lote de facturas
+        $group_payments_dollar = $repo->getBillPayablePaymentsByGroupID($request->id, 1);
+        $group_payments_bs = $repo->getBillPayablePaymentsByGroupID($request->id, 0);
+
+        $group_payments_bs = $group_payments_bs->map(function($record){
+            return (object) [
+                'Amount' => number_format($record->Amount, 2) . " " . config("constants.CURRENCY_SIGNS.bolivar"),
+                'DollarAmount' => number_format($record->DollarAmount, 2) . " " . config("constants.CURRENCY_SIGNS.dollar"),
+                'Tasa' => number_format($record->Tasa, 2) . " " . config("constants.CURRENCY_SIGNS.bolivar"),
+                'BankName' => $record->BankName,
+                'RefNumber' => $record->RefNumber,
+                'Date' => date('d-m-Y', strtotime($record->Date))
+            ];
+        });
+
+        $group_payments_dollar = $group_payments_dollar->map(function($record){
+            return (object) [
+                'Amount' => number_format($record->Amount, 2) . " " . config("constants.CURRENCY_SIGNS.dollar"),
+                'Date' => date('d-m-Y', strtotime($record->Date)),
+                'PaymentMethod' => $record->PaymentMethod,
+                'RetirementDate' => date('d-m-Y', strtotime($record->RetirementDate)),
+            ];
+        });
+
+        $banks = DB::connection('web_services_db')
+            ->table('banks')
+            ->select('name')
+            ->get()
+            ->map(function($item){
+                return (object) array('key' => $item->name, 'value' => $item->name);
+            });
+
+        $foreign_currency_payment_methods = array_map(function($val, $key){
+            return (object) array("key" => $key, "value" => $val);
+        }, config('constants.FOREIGN_CURRENCY_BILL_PAYMENT_METHODS'), array_keys(config('constants.FOREIGN_CURRENCY_BILL_PAYMENT_METHODS')));
+
+        return view('pages.bill-payable-groups.show', compact(
+            'group',
+            'foreign_currency_payment_methods',
+            'group_payments_bs',
+            'group_payments_dollar',
+            'payment_dollar_table_cols',
+            'payment_bs_table_cols',
+            'banks',
+            'is_group_payment',
+            'bs_bills_payable',
+            'dollar_bills_payable',
+            'last_tasa',
+            'today_date',
+            'bills_payable_columns'
+        ));
     }
 
     public function storePayment(StoreBillPayablePaymentRequest $request, BillsPayableRepository $repo){
@@ -347,6 +442,123 @@ class BillsPayableController extends Controller
         
         return redirect()->route('bill_payable.showBillPayable', 
             ['numero_d' => $validated['nro_doc'], 'cod_prov' => $validated['cod_prov']]);
+
+    }
+
+    public function storeBillPayableGroupPayment(StoreBillPayableGroupPaymentRequest $request, BillsPayableRepository $repo){
+        
+        $validated = $request->validated();
+
+        $validated['is_dollar'] = key_exists('is_dollar', $request->all()) ? $request->all()['is_dollar'] : '0';
+
+        $validated['is_group_payment'] = 1;
+
+        $bill_payment = BillPayablePayment::create($validated);
+
+        if ($bill_payment){
+
+            $validated['bill_payments_id'] = $bill_payment->id;
+            
+            $bill_payment_child = null;
+
+            $payment_amount_ref = 0;
+
+            if ($validated['is_dollar'] === '0'){
+                $payment_amount_ref = floor(($validated['amount'] / $validated['tasa']) * 100) / 100;
+                $bill_payment_child = BillPayablePaymentBs::create($validated);
+               
+            } else if ($validated['is_dollar'] === '1') {
+                $payment_amount_ref = $validated['amount'];
+                $validated['payment_method'] = $validated['foreign_currency_payment_method'];
+                unset($validated['foreign_currency_payment_method']);
+                $bill_payment_child = BillPayablePaymentDollar::create($validated);
+            }
+
+            // Agregar validación para determinar que exista grupo
+            $group_id = key_exists('group_id', $request->all()) ? $request->all()['group_id'] : null;
+
+            $group = $repo->getBillPayableGroupByID($group_id);
+
+            $bills_payable_dollar = $repo->getBillsPayableByGroupID($group_id, 1);
+
+            $bills_payable_bs = $repo->getBillsPayableByGroupID($group_id);
+
+            $group_amount_to_pay = floatval($group->MontoPagar . 'El');
+
+            if ($bill_payment_child){
+                
+                $diff = floor(($group_amount_to_pay - $payment_amount_ref) * 100) / 100;
+                
+                $bill_group_status_change = false;
+                $bill_payable_status_change = true;
+    
+                if ($diff <= 0){
+                    $group_model = BillPayableGroup::whereRaw("id = ?", [$group_id])->first();
+                    $group_model->status = array_keys(config("constants.BILL_PAYABLE_STATUS"))[1];
+                    $bill_group_status_change = $group_model->save();
+
+                    $bills_payable = BillPayable::whereRaw("bill_payable_groups_id = " . $group_id)->get();
+                    foreach($bills_payable as $bill_payable){
+                        $bill_payable->status = array_keys(config("constants.BILL_PAYABLE_STATUS"))[1];
+                        $bill_payable_status_change = $bill_payable->save();
+
+                        if (!$bill_payable_status_change){
+                            $bill_payable_status_change = false;
+                            return false;
+                        }
+                    }
+                }
+
+                $payment_saved_successfully = true;
+
+                foreach($bills_payable_dollar as $bill){
+
+                    $data = [
+                        'nro_doc' => $bill->NumeroD,
+                        'cod_prov' => $bill->CodProv,
+                        'bill_payments_id' => $validated['bill_payments_id']
+                    ];
+
+                    if(!BillsPayablePayments::create($data)){
+                        $payment_saved_successfully = false;
+                        return false;
+                    }
+                }
+
+                if ($payment_saved_successfully){
+                    foreach($bills_payable_bs as $bill){
+    
+                        $data = [
+                            'nro_doc' => $bill->NumeroD,
+                            'cod_prov' => $bill->CodProv,
+                            'bill_payments_id' => $validated['bill_payments_id']
+                        ];
+    
+                        if(!BillsPayablePayments::create($data)){
+                            $payment_saved_successfully = false;
+                            return false;
+                        }
+                    }
+
+                    if ($payment_saved_successfully){
+                        $this->flasher->addSuccess("El pago fue creado exitosamente " . ($bill_group_status_change ? "y el lote de facturas fue pagado completamente !" : "!"));
+                    } else {
+                        $this->flasher->addError('No se pudo crear el pago para el lote de factura');
+                    }
+                    
+                } else {
+                    $this->flasher->addError('No se pudo crear el pago para el lote de factura');
+                }
+                
+            } else {
+                $this->flasher->addError('No se pudo crear el pago para el lote de factura');
+            }
+        } else {
+            $this->flasher->addError('No se pudo crear el pago para el lote de factura');
+        }
+        
+        return redirect()->route('bill_payable.showBillPayableGroup', 
+            ['id' => $group_id]);
     }
 
     public function storeBillPayableGroup(StoreBillPayableGroupRequest $request, BillsPayableRepository $repo){
@@ -502,13 +714,43 @@ class BillsPayableController extends Controller
 
         $id = $request->id;
         $group = $repo->getBillPayableGroupByID($id);
+        $last_tasa = $repo->getLastBillPayableTasaByGroupID($id);
 
         return $this->jsonResponse([
             'status' => 200,
             'data' => [
-                'group' => $group
+                'group' => $group,
+                'last_tasa' => $last_tasa
             ]
         ], 200);
+    }
+
+    public function updateBillPayableGroupTasa(UpdateBillPayableGroupTasaRequest $request){
+
+        $validated = $request->validated();
+
+        $group_id = $request->all()['group_id'];
+ 
+        $bills = BillPayable::whereRaw("bill_payable_groups_id = ?", [$group_id])->get();
+
+        $saved_succesfully = true;
+
+        foreach($bills as $bill){
+            $bill->tasa = $validated['group_tasa'];
+            if(!$bill->save()){
+                $saved_succesfully = false;
+                return false;
+            }
+        }
+
+        if (!$saved_succesfully){
+            $this->flasher->addError('La tasa no pudo ser actualizada');
+        }
+
+        $this->flasher->addSuccess('La tasa fue actualizada!');
+        
+        return redirect()->route('bill_payable.showBillPayableGroup', 
+            ['id' => $group_id]);
     }
 
     public function linkBillPayableToSchedule(LinkBillPayableToScheduleRequest $request){
@@ -551,7 +793,6 @@ class BillsPayableController extends Controller
 
 
         return $this->jsonResponse($data, 200);
-
     }
 
     public function billPayableGroupsIndex(Request $request, BillsPayableRepository $repo,  BillSchedulesRepository $repo_schedule){
