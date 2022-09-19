@@ -34,7 +34,10 @@ const BillPayableGroupPresenterPrototype = {
 						
 						if (this.formFilter){
 							document.querySelector('#groupedBills').value = 1;
-							this.formFilter.submit()
+
+							setTimeout(() => {
+								this.formFilter.submit()
+							}, 2000)
 						}
 					
 					} else {
@@ -109,7 +112,15 @@ const BillPayableGroupPresenterPrototype = {
 						this.billPayableGroups.pushElement(newGroup)
 						this.view.showBillGroupDetails(newGroup)
 						this.view.setNewGroupInSelect(newGroup.id);
-						console.log(this.billPayableGroups.getAll())
+					
+						if (this.formFilter){
+							document.querySelector('#groupedBills').value = 1;
+
+							setTimeout(() => {
+								this.formFilter.submit()
+							}, 2000)
+						}
+
 					} else {
 						console.log('ha ocurrido un error')
 					}
