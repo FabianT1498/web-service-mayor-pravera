@@ -31,6 +31,11 @@ const BillPayableGroupPresenterPrototype = {
 
 						let group = this.billPayableGroups.getElementByIndex(index)
 						this.view.showBillGroupDetails(group)
+						
+						if (this.formFilter){
+							document.querySelector('#groupedBills').value = 1;
+							this.formFilter.submit()
+						}
 					
 					} else {
 						console.log('ha ocurrido un error')
@@ -78,6 +83,9 @@ const BillPayableGroupPresenterPrototype = {
 	},
 	setBillsPayable(data){
 		this.data.billsPayable = data;
+	},
+	setFormFilter(form){
+		this.formFilter = form;
 	},
 	handleClickAddGroup(){
 		if (this.data.billsPayable.length > 0){

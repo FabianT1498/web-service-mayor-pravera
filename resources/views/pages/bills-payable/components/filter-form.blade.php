@@ -1,5 +1,6 @@
 <form class=" border-slate-600" id="form_filter" method="GET" action="{{ route('bill_payable.index') }}">
     <input id="page" name="page" type="hidden" value="1">
+    <input id="groupedBills" name="grouped_bills" type="hidden" value="0">
     <div class="flex items-center justify-between w-full">
         <div class="w-10/12">
 

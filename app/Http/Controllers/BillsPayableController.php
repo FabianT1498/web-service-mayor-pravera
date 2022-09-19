@@ -51,6 +51,12 @@ class BillsPayableController extends Controller
 
         $this->setSession($request, 'current_module', 'bill_payable');
 
+        $bills_were_grouped = $request->query('grouped_bills', 0);
+        
+        if ($bills_were_grouped){
+            $this->flasher->addSuccess('Fueron agrupadas las facturas!');
+        }
+
         // Filter params
         $is_scheduled_bill = $request->query('is_scheduled_bill', 'yes');
 

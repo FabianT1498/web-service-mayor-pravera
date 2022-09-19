@@ -363,6 +363,7 @@ export default {
         this.billPayableScheduleView.init(billPayableScheduleContainer)
 
         this.billPayableGroupPresenter = new BillPayableGroupPresenter()
+        this.billPayableGroupPresenter.setFormFilter(this.DOMElements.formFilter)
         this.billPayableGroupView = new BillPayableGroupView(this.billPayableGroupPresenter);
         this.billPayableGroupView.init(document.querySelector('#billPayableGroupModal'))
 
