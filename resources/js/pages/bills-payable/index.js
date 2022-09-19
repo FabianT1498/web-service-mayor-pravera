@@ -1,5 +1,7 @@
 import Datepicker from '@themesberg/tailwind-datepicker/Datepicker';
 
+import swal from 'sweetalert';
+
 import es from '@themesberg/tailwind-datepicker/locales/es';
 
 import { decimalInputs } from '_utilities/decimalInput';
@@ -312,18 +314,29 @@ export default {
         }
     },
     submitBillPayable(data){
+        
         storeBillPayable(data).then((res) => {
             let el = this.DOMElements.billsPayableTBody.querySelector(`tr[data-numeroD="${res.data.nro_doc}"][data-prov="${res.data.cod_prov}"]`)
 
             this.changeAmountSign(el, 'a[data-bill=montoTotal]', res.data.is_dollar)
-            // this.changeAmountSign(el, 'a[data-bill=montoPagar]', res.data.is_dollar)
+            
+            swal({
+                title: "Se ha actualizado la factura!",
+                icon: "success",
+            });
+
             
         }).catch(err => {
             console.log(err);
+            
+            swal({
+                title: "No se ha actualizado la factura!",
+                icon: "error",
+            });
         })
     },
     initData(){
-        this.submitBillPayableCb = timerDelay(this.submitBillPayable, 3000)
+        this.submitBillPayableCb = timerDelay(this.submitBillPayable, 1000)
         this.selectedBills = new BillPayableCollection();  
     },
     init(){

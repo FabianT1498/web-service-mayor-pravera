@@ -1,11 +1,12 @@
 @props([
     'title' => '',
+    'transparent' => false
 ])
 
 <!-- Modal para cerrar arqueo de caja -->
 <div id="modal-loading" tabindex="-1" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 w-full md:inset-0 h-modal md:h-full">
     <div class="flex flex-col items-center justify-center p-4 w-full max-w-md h-full md:h-auto">
-        <div class="w-full max-h-64 h-full p-4 flex flex-col justify-around items-center bg-white rounded-lg shadow dark:bg-gray-700">
+        <div class="{{ 'w-full max-h-64 h-full p-4 flex flex-col justify-around items-center rounded-lg shadow dark:bg-gray-700 ' .  ( !$transparent ? 'bg-white' : 'bg-transparent') }}">
             <div class="text-center">
                 <svg role="status" class="inline w-14 h-14 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>

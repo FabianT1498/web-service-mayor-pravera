@@ -200,12 +200,13 @@
             </div>
         </div>
     </div>
-    <x-modal-loading :title="__('Espere mientras se genera el documento PDF')"/>
+    <x-modal-loading/>
     <x-modal-bill-payable-schedules
         :modalID="__('bill_payable_schedules')"
         :schedules="$schedules"
     />
     <x-modal-bill-payable-group
         :modalID="__('billPayableGroupModal')"
+        :transparent="true"
     />
 @endsection
