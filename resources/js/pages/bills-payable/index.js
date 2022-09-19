@@ -11,7 +11,7 @@ import { timerDelay } from '_utilities/timerDelay'
 
 import { storeBillPayable, getProviders, getBillPayable } from '_services/bill-payable';
 
-import { SIGN } from '_constants/currencies';
+import { SIGN, CURRENCIES } from '_constants/currencies';
 
 import BillPayableCollection from '_collections/BillPayableCollection'
 import BillPayable from '_models/BillPayable'
@@ -126,7 +126,7 @@ export default {
             this.DOMElements.formFilter.querySelector('#nroDoc').value = ''
             this.DOMElements.formFilter.querySelector('#provider_search_hidden').value = ''
             this.DOMElements.formFilter.querySelector('#provider_search_input').value = ''
-            this.DOMElements.formFilter.querySelector('#isDollar').value = '0'
+            this.DOMElements.formFilter.querySelector('#billCurrency').value = Object.keys(CURRENCIES)[0]
             this.DOMElements.formFilter.querySelector('#billType').value = ''
             this.DOMElements.formFilter.submit()
         }
