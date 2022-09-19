@@ -231,10 +231,24 @@ export default {
                     if (res.data.length > 0){
                         let bill = res.data[0];
 
-                        if ((bill.GroupID === null && bill.ScheduleID !== null) || roundNumber(bill.MontoPagado) > 0){
+                        let errorMessage = (bill.GroupID === null && bill.ScheduleID !== null)
+                            ? "La factura no puede ser agrupada, ya ha sido programada individualmente"
+                            : (roundNumber(bill.MontoPagado) > 0 ? "La factura no puede ser agrupada, ya tiene pagos" :
+                                (roundNumber(bill.Tasa) === 0 && bill.esDolar === 0 ? "La factura no puede ser agrupada, su tasa debe ser mayor a cero" : '')
+                            )
+
+                        if (errorMessage !== ''){
+                            this.showBillPayableMessage(errorMessage);
                             this.toggleSelectBillCheckboxes()
+                            event.target.checked = false;
                             return false
                         } 
+                    } else if (data.tasa === 0){
+                        let errorMessage =  "La factura no puede ser agrupada, su tasa debe ser mayor a cero"
+                        this.showBillPayableMessage(errorMessage);
+                        this.toggleSelectBillCheckboxes()
+                        event.target.checked = false;
+                        return false
                     }
 
                     event.target.value = '1'
