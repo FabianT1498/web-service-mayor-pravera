@@ -148,7 +148,7 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
             ->leftJoin(DB::raw("(SELECT MAX(bills_payable_payments.nro_doc) AS nro_doc, MAX(bills_payable_payments.cod_prov) as cod_prov, SUM(bill_payments.amount / bill_payments_bs.tasa) as total_paid FROM bills_payable_payments 
                     INNER JOIN bill_payments ON bills_payable_payments.bill_payments_id = bill_payments.id
                     INNER JOIN bill_payments_bs ON bill_payments_bs.bill_payments_id = bill_payments.id
-                    GROUP BY bills_payable_payments.bill_payments_id) AS bill_payments_bs_div"),
+                    GROUP BY bills_payable_payments.bill_payments_id, bills_payable_payments.cod_prov, bills_payable_payments.nro_doc) AS bill_payments_bs_div"),
                 function($join){
                     $join->on('bills_payable.nro_doc', '=', 'bill_payments_bs_div.nro_doc')
                         ->on('bills_payable.cod_prov', '=', 'bill_payments_bs_div.cod_prov');
@@ -156,7 +156,7 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
             ->leftJoin(DB::raw("(SELECT MAX(bills_payable_payments.nro_doc) AS nro_doc, MAX(bills_payable_payments.cod_prov) AS cod_prov, SUM(bill_payments.amount) as total_paid FROM bills_payable_payments 
                     INNER JOIN bill_payments ON bills_payable_payments.bill_payments_id = bill_payments.id
                     INNER JOIN bill_payments_dollar ON bill_payments_dollar.bill_payments_id = bill_payments.id
-                    GROUP BY bills_payable_payments.bill_payments_id) AS bill_payments_dollar"),
+                    GROUP BY bills_payable_payments.bill_payments_id, bills_payable_payments.cod_prov, bills_payable_payments.nro_doc) AS bill_payments_dollar"),
                 function($join){
                     $join->on('bills_payable.nro_doc', '=', 'bill_payments_dollar.nro_doc')
                         ->on('bills_payable.cod_prov', '=', 'bill_payments_dollar.cod_prov');
@@ -246,8 +246,6 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
 
         return $query->first();
     }
-
-    
 
     public function getBillPayablePaymentsByGroupID($group_id, $is_dollar_payment = 0){
         $query = DB

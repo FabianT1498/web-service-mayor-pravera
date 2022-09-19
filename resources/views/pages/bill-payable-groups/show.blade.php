@@ -122,9 +122,6 @@
                                 <td class="text-center p-0">{{ $bill->Descrip }}</td>
                                 <td class="text-center p-0">{{ number_format($bill->MontoTotal, 2) . " " . config("constants.CURRENCY_SIGNS.bolivar") }}</td>
                                 <td class="text-center p-0">{{ number_format($bill->Tasa, 2) . " " . config("constants.CURRENCY_SIGNS.bolivar") }}</td>
-                                <td class="text-center p-0">{{ number_format($bill->MontoPagar, 2) . " " . config("constants.CURRENCY_SIGNS.dollar") }}</td>
-                                <td class="text-center p-0">{{ number_format($bill->MontoPagado, 2) . " " . config("constants.CURRENCY_SIGNS.dollar") }}</td>
-                                <td class="text-center p-0">{{ config("constants.BILL_PAYABLE_STATUS." . $bill->Status) }}</td>
                             </tr>
                         @endforeach
                     @endif
@@ -136,9 +133,6 @@
                                 <td class="text-center p-0">{{ $bill->Descrip }}</td>
                                 <td class="text-center p-0">{{ number_format($bill->MontoTotal, 2) . " " . config("constants.CURRENCY_SIGNS.dollar") }}</td>
                                 <td class="text-center p-0">{{ number_format($bill->Tasa, 2) . " " . config("constants.CURRENCY_SIGNS.bolivar") }}</td>
-                                <td class="text-center p-0">{{ number_format($bill->MontoPagar, 2) . " " . config("constants.CURRENCY_SIGNS.dollar") }}</td>
-                                <td class="text-center p-0">{{ number_format($bill->MontoPagado, 2) . " " . config("constants.CURRENCY_SIGNS.dollar") }}</td>
-                                <td class="text-center p-0">{{ config("constants.BILL_PAYABLE_STATUS." . $bill->Status) }}</td>
                             </tr>
                         @endforeach
                     @endif

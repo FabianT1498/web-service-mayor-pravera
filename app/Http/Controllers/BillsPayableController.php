@@ -295,9 +295,6 @@ class BillsPayableController extends Controller
             "Proveedor",
             "Monto total",
             "Tasa",
-            "Monto pagar",
-            "Monto pagado",
-            "Estatus"
         ];
 
         $payment_dollar_table_cols = [
@@ -449,6 +446,7 @@ class BillsPayableController extends Controller
     }
 
     public function storeBillPayableGroupPayment(StoreBillPayableGroupPaymentRequest $request, BillsPayableRepository $repo){
+        
         $validated = $request->validated();
 
         $validated['is_dollar'] = key_exists('is_dollar', $request->all()) ? $request->all()['is_dollar'] : '0';
@@ -491,12 +489,24 @@ class BillsPayableController extends Controller
                 
                 $diff = floor(($group_amount_to_pay - $payment_amount_ref) * 100) / 100;
                 
-                $bill_status_change = false;
+                $bill_group_status_change = false;
+                $bill_payable_status_change = true;
     
                 if ($diff <= 0){
                     $group_model = BillPayableGroup::whereRaw("id = ?", [$group_id])->first();
                     $group_model->status = array_keys(config("constants.BILL_PAYABLE_STATUS"))[1];
-                    $bill_status_change = $group_model->save();
+                    $bill_group_status_change = $group_model->save();
+
+                    $bills_payable = BillPayable::whereRaw("bill_payable_groups_id = " . $group_id)->get();
+                    foreach($bills_payable as $bill_payable){
+                        $bill_payable->status = array_keys(config("constants.BILL_PAYABLE_STATUS"))[1];
+                        $bill_payable_status_change = $bill_payable->save();
+
+                        if (!$bill_payable_status_change){
+                            $bill_payable_status_change = false;
+                            return false;
+                        }
+                    }
                 }
 
                 $payment_saved_successfully = true;
@@ -531,7 +541,7 @@ class BillsPayableController extends Controller
                     }
 
                     if ($payment_saved_successfully){
-                        $this->flasher->addSuccess("El pago fue creado exitosamente " . ($bill_status_change ? "y el lote de facturas fue pagado completamente !" : "!"));
+                        $this->flasher->addSuccess("El pago fue creado exitosamente " . ($bill_group_status_change ? "y el lote de facturas fue pagado completamente !" : "!"));
                     } else {
                         $this->flasher->addError('No se pudo crear el pago para el lote de factura');
                     }
@@ -783,7 +793,6 @@ class BillsPayableController extends Controller
 
 
         return $this->jsonResponse($data, 200);
-
     }
 
     public function billPayableGroupsIndex(Request $request, BillsPayableRepository $repo,  BillSchedulesRepository $repo_schedule){
