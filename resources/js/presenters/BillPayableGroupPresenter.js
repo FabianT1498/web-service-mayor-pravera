@@ -33,15 +33,16 @@ const BillPayableGroupPresenterPrototype = {
 						this.view.showBillGroupDetails(group)
 						
 						if (this.formFilter){
-							document.querySelector('#groupedBills').value = 1;
+							document.querySelector('#billAction').value = "GROUPED";
 
 							setTimeout(() => {
 								this.formFilter.submit()
-							}, 2000)
+							}, 1000)
 						}
 					
 					} else {
 						console.log('ha ocurrido un error')
+						document.querySelector('#billAction').value = "FAILED_GROUPING";
 					}
 				})
 				.catch(err => {
@@ -114,15 +115,16 @@ const BillPayableGroupPresenterPrototype = {
 						this.view.setNewGroupInSelect(newGroup.id);
 					
 						if (this.formFilter){
-							document.querySelector('#groupedBills').value = 1;
+							document.querySelector('#billAction').value = 1;
 
 							setTimeout(() => {
 								this.formFilter.submit()
-							}, 2000)
+							}, 1000)
 						}
 
 					} else {
 						console.log('ha ocurrido un error')
+						document.querySelector('#billAction').value = "FAILED_GROUPING";
 					}
 				})
 				.catch(err => {

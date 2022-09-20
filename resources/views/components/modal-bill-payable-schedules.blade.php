@@ -4,7 +4,7 @@
     'schedules' => [],
 ])
 <!-- Main modal -->
-<div id={{ $modalID }} aria-hidden="true" class="hidden fixed h-132 right-0 left-0 top-4 z-50 justify-center items-center md:h-full md:inset-0">
+<div id={{ $modalID }} data-modal-placement="center-center" aria-hidden="true" class="hidden fixed h-132 right-0 left-0 top-4 z-50 justify-center items-center md:h-full md:inset-0">
     <div class="flex flex-col relative w-full max-w-3xl h-full">
          <!-- Modal header -->
          <div class="flex justify-between items-start py-5 px-10 rounded-t border-b dark:border-gray-600 bg-gray-200">

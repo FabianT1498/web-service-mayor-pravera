@@ -359,6 +359,7 @@ export default {
 
         let billPayableScheduleContainer = document.querySelector('#bill_payable_schedules')
         this.billPayableSchedulePresenter = new BillPayableSchedulePresenter();
+        this.billPayableSchedulePresenter.setFormFilter(this.DOMElements.formFilter)
         this.billPayableScheduleView = new BillPayableScheduleView(this.billPayableSchedulePresenter);
         this.billPayableScheduleView.init(billPayableScheduleContainer)
 

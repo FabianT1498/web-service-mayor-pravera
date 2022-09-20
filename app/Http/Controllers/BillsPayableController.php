@@ -51,10 +51,19 @@ class BillsPayableController extends Controller
 
         $this->setSession($request, 'current_module', 'bill_payable');
 
-        $bills_were_grouped = $request->query('grouped_bills', 0);
+        $bill_action = $request->query('bill_action', '');
+
+        $bill_action_val = config('constants.BILL_PAYABLE_ACTION.' . $bill_action);
+
+        $bill_action_mess = config('constants.BILL_PAYABLE_ACTION_MESS.' . $bill_action_val);
         
-        if ($bills_were_grouped){
-            $this->flasher->addSuccess('Fueron agrupadas las facturas!');
+        if (isset($bill_action_mess) && $bill_action_mess !== ''){
+
+            if ($bill_action_val === 2 || $bill_action_val === 3){
+                $this->flasher->addError($bill_action_mess);
+            } else {
+                $this->flasher->addSuccess($bill_action_mess);
+            }
         }
 
         // Filter params
@@ -64,7 +73,7 @@ class BillsPayableController extends Controller
         $end_emission_date = $request->query('end_emission_date', Carbon::now()->format('d-m-Y'));
         $cod_prov = $request->query('cod_prov', '');
         $descrip_prov =  $request->query('cod_prov_value', '');
-      
+        
         // Current page
         $page = $request->query('page', '');
 

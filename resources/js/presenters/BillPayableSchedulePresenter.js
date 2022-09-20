@@ -12,7 +12,18 @@ const BillPayableSchedulePresenterPrototype = {
 			this.view.showScheduleData(res.data);
 
 			res = await linkBillPayableToSchedule(this.data)
+
+			if (this.formFilter){
+				document.querySelector('#billAction').value = "SCHEDULED";
+
+				setTimeout(() => {
+					this.formFilter.submit()
+				}, 1000)
+			}
+
 		} catch(e){
+			document.querySelector('#billAction').value = "FAILED_SCHEDULING";
+			this.formFilter.submit()
 			console.error(e)
 		}
     },
@@ -32,6 +43,9 @@ const BillPayableSchedulePresenterPrototype = {
 			console.log(e)
 		});
 
+	},
+	setFormFilter(form){
+		this.formFilter = form;
 	},
 	setView(view){
 		this.view = view;
