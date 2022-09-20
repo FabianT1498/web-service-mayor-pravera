@@ -19,6 +19,7 @@ use App\Http\Requests\StoreBillPayablePaymentRequest;
 use App\Http\Requests\UpdateBillPayableTasaRequest;
 use App\Http\Requests\UpsertBillPayableRequest;
 use App\Http\Requests\ShowBillPayableRequest;
+use App\Http\Requests\ShowBillPayableGroupRequest;
 use App\Http\Requests\StoreBillPayableGroupRequest;
 use App\Http\Requests\UpdateBillPayableGroupRequest;
 use App\Http\Requests\StoreBillPayableGroupPaymentRequest;
@@ -300,7 +301,7 @@ class BillsPayableController extends Controller
         ));
     }
 
-    public function showBillPayableGroup(Request $request, BillsPayableRepository $repo){
+    public function showBillPayableGroup(ShowBillPayableGroupRequest $request, BillsPayableRepository $repo){
 
         $is_group_payment = 1;
 
@@ -490,9 +491,7 @@ class BillsPayableController extends Controller
                 $bill_payment_child = BillPayablePaymentDollar::create($validated);
             }
 
-            // Agregar validación para determinar que exista grupo
-            $group_id = key_exists('group_id', $request->all()) ? $request->all()['group_id'] : null;
-
+            $group_id = $validated['group_id'];
             $group = $repo->getBillPayableGroupByID($group_id);
 
             $bills_payable_dollar = $repo->getBillsPayableByGroupID($group_id, 1);
