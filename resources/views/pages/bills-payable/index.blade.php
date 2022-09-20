@@ -123,7 +123,7 @@
                                 $value->BillPayableGroupsID ? route('bill_payable.showBillPayableGroup', ['id' => $value->BillPayableGroupsID]) 
                                 : ($value->BillPayableSchedulesID ? route('bill_payable.showBillPayable', ['numero_d' => $value->NumeroD, 'cod_prov' => $value->CodProv]) : '#') }}">{{ $value->MontoPagar }}</a></td>
                         <td class="text-center">
-                            @if ($value->Estatus === config("constants.BILL_PAYABLE_STATUS.NOTPAID") && $value->MontoPagado === 0.00)
+                            @if ($value->MontoPagado === 0.00)
                                 <input 
                                     class="{{ 'w-32 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700' . 
                                         ' dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 bg-gray-50'
@@ -152,8 +152,8 @@
                                 value="{{ $value->esDolar }}"               
                                 {{ $value->esDolar ? "checked" : "" }}
                                 data-bill="isDollar"
-                                {{  $value->Estatus === config("constants.BILL_PAYABLE_STATUS.NOTPAID") && $value->MontoPagado === 0.00 ? '' : 'disabled' }}
-                                @if ($value->Tasa === 0.00) 
+                                {{ $value->MontoPagado === 0.00 ? '' : 'disabled' }}
+                                @if ($value->Tasa === 0.00 || $value->MontoPagado > 0.00) 
                                     onclick= "return false;" 
                                 @endif
                             />

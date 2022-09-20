@@ -18,6 +18,7 @@ use App\Http\Requests\LinkBillPayableGroupToScheduleRequest;
 use App\Http\Requests\StoreBillPayablePaymentRequest;
 use App\Http\Requests\UpdateBillPayableTasaRequest;
 use App\Http\Requests\UpsertBillPayableRequest;
+use App\Http\Requests\ShowBillPayableRequest;
 use App\Http\Requests\StoreBillPayableGroupRequest;
 use App\Http\Requests\UpdateBillPayableGroupRequest;
 use App\Http\Requests\StoreBillPayableGroupPaymentRequest;
@@ -223,7 +224,7 @@ class BillsPayableController extends Controller
         ));
     }
 
-    public function show(Request $request, BillsPayableRepository $repo){
+    public function show(ShowBillPayableRequest $request, BillsPayableRepository $repo){
 
         $payment_dollar_table_cols = [
             "Fecha pago",

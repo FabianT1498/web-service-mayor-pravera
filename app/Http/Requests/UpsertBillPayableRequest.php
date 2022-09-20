@@ -43,7 +43,7 @@ class UpsertBillPayableRequest extends FormRequest
             'codProv' => ['required'],
             'numeroD' => ['required'],
             'billType' => ['required'],
-            'tasa' => ['required', new BadFormattedAmount, 'gte:0'],
+            'tasa' => $total_rules,
             'isDollar' => ['required'],
             'amount' => $total_rules,
             'provDescrip' => ['required'],

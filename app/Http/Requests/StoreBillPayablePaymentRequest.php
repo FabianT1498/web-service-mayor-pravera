@@ -13,6 +13,9 @@ use App\Rules\BillPayableExists;
 use App\Rules\BillPayableHasTasa;
 use App\Rules\BillPayablePaymentBsIsUnique;
 
+use App\Rules\BillPayableIsNotGrouped;
+use App\Rules\BillPayableIsScheduled;
+
 use App\Repositories\BillsPayableRepository;
 
 class StoreBillPayablePaymentRequest extends FormRequest
@@ -41,10 +44,12 @@ class StoreBillPayablePaymentRequest extends FormRequest
 
         $bill_payable_exists_validation =  (new BillPayableExists($repo))->setData(['nro_doc' => $this->nro_doc, 'cod_prov' => $this->cod_prov]);
         $bill_payable_has_tasa = (new BillPayableHasTasa())->setData(['nro_doc' => $this->nro_doc, 'cod_prov' => $this->cod_prov]);
+        $bill_payable_is_not_grouped =  (new BillPayableIsNotGrouped())->setData(['nro_doc' => $this->nro_doc, 'cod_prov' => $this->cod_prov]);
+        $bill_payable_is_scheduled =  (new BillPayableIsScheduled())->setData(['nro_doc' => $this->nro_doc, 'cod_prov' => $this->cod_prov]);
 
         $rules = [
             'cod_prov' => ['required'],
-            'nro_doc' => ['required', $bill_payable_exists_validation],
+            'nro_doc' => ['required', $bill_payable_exists_validation, $bill_payable_is_not_grouped, $bill_payable_is_scheduled],
             'amount' => $total_rules,
             'date' => ['required', 'date_format:Y-m-d', 'before_or_equal:' . Carbon::now()->format('Y-m-d')],
         ];
