@@ -4,6 +4,8 @@ import Datepicker from '@themesberg/tailwind-datepicker/Datepicker';
 
 import es from '@themesberg/tailwind-datepicker/locales/es';
 
+import { CURRENCIES } from '_constants/currencies';
+
 const BillPayablePaymentFormViewPrototype = {
     init(formContainer){
         
@@ -16,7 +18,8 @@ const BillPayablePaymentFormViewPrototype = {
         this.localCurrencyContainer = formContainer.querySelector('#localCurrencyContainer')
         this.foreignCurrencyContainer = formContainer.querySelector('#foreignCurrencyContainer')
 
-        this.isDollar = formContainer.querySelector('#is_dollar')
+        this.paymentCurrency = formContainer.querySelector('#paymentCurrency')
+
         this.amount = formContainer.querySelector('#amount')
         this.date = formContainer.querySelector('#date')
 
@@ -33,7 +36,7 @@ const BillPayablePaymentFormViewPrototype = {
     },
     initEventListener(){
         
-        this.isDollar.addEventListener('click', this.handleClickIsDollarWrapper());
+        this.paymentCurrency.addEventListener('change', this.handleChangeCurrencyWrapper());
 
         this.amount.addEventListener('keyup', this.handleKeyupEventAmountWrapper())
 
@@ -79,9 +82,10 @@ const BillPayablePaymentFormViewPrototype = {
             this.presenter.onKeyupEventAmount(event.target.value, key);
         }
     },
-    handleClickIsDollarWrapper(){
+    handleChangeCurrencyWrapper(){
         return event => {
-            this.isDollar.value = (event.target.value === '0') ? '1' : '0';
+
+            let currencies = Object.keys(CURRENCIES);
 
             this.toggleForeignCurrencyForm();
             this.toggleLocalCurrencyForm();
@@ -90,7 +94,7 @@ const BillPayablePaymentFormViewPrototype = {
 
             this.amount.inputmask.remove()
 
-            if(this.isDollar.value === '0'){
+            if(this.paymentCurrency.value === currencies[0]){
                 decimalInputs['bs'].mask(this.amount)
             } else {
                 decimalInputs['dollar'].mask(this.amount)

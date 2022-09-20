@@ -52,9 +52,10 @@ class StoreBillPayablePaymentRequest extends FormRequest
             'nro_doc' => ['required', $bill_payable_exists_validation, $bill_payable_is_not_grouped, $bill_payable_is_scheduled],
             'amount' => $total_rules,
             'date' => ['required', 'date_format:Y-m-d', 'before_or_equal:' . Carbon::now()->format('Y-m-d')],
+            'payment_currency' => ['required']
         ];
 
-        if (isset($this->is_dollar) && $this->is_dollar === '1'){
+        if (isset($this->payment_currency) && $this->payment_currency === array_keys(config('constants.CURRENCIES'))[1]){
             $rules['foreign_currency_payment_method'] = ['required'];
             $rules['retirement_date'] = ['required', 'date_format:Y-m-d', 'after_or_equal:' . $this->date,
                 'before_or_equal:' . Carbon::now()->format('Y-m-d')];

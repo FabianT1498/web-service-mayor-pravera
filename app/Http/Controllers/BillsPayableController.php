@@ -243,6 +243,12 @@ class BillsPayableController extends Controller
             "Monto ($)"
         ];
 
+        $payment_currencies =  array_map(function($val){
+            return (object) array("key" => $val, "value" => $val);
+        }, array_keys(config('constants.CURRENCIES')));
+
+        $payment_currency = $request->query('payment_currency', $payment_currencies[0]->key);
+
         $today_date = Carbon::now()->format('d-m-Y');
         
         $bill = $repo->getBillPayable($request->numero_d, $request->cod_prov);
@@ -298,6 +304,8 @@ class BillsPayableController extends Controller
             'payment_bs_table_cols',
             'banks',
             'today_date',
+            'payment_currencies',
+            'payment_currency'
         ));
     }
 
@@ -399,7 +407,7 @@ class BillsPayableController extends Controller
 
         $validated = $request->validated();
 
-        $validated['is_dollar'] = key_exists('is_dollar', $request->all()) ? $request->all()['is_dollar'] : '0';
+        $validated['is_dollar'] = $validated['payment_currency'] === array_keys(config('constants.CURRENCIES'))[1] ? '1' : '0';
 
         $bill_payment = BillPayablePayment::create($validated);
 
