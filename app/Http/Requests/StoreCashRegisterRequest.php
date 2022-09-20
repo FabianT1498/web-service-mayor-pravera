@@ -48,6 +48,10 @@ class StoreCashRegisterRequest extends FormRequest
         if (count($this->dollar_cash_record) > 0){
             $rules['dollar_cash_record.*'] = $total_rules;
         }
+
+        if (count($this->point_sale_dollar_record) > 0){
+            $rules['point_sale_dollar_record.*'] = $total_rules;
+        }
         
         if (count($this->pago_movil_record) > 0){
             $rules['pago_movil_record.*'] = $total_rules;
@@ -77,11 +81,7 @@ class StoreCashRegisterRequest extends FormRequest
         if (count($this->zelle_record) > 0){
             $rules['zelle_record.*'] = $total_rules;
         }
-
-        if ($this->total_point_sale_dollar > 0){
-            $rules['total_point_sale_dollar'] = $total_rules;
-        }
-        
+ 
         return $rules;
     }
 
@@ -108,6 +108,14 @@ class StoreCashRegisterRequest extends FormRequest
         }
         // }
 
+        if ($this->has('point_sale_dollar_record')){
+            $inputs['point_sale_dollar_record'] = array_map(function($record){
+                return $this->formatAmount($record);
+            }, $this->point_sale_dollar_record);
+        } else {
+            $inputs['point_sale_dollar_record'] = [];
+        }
+        
         // if (!is_null($inputs['total_dollar_cash']) && $inputs['total_dollar_cash'] > 0){
         if ($this->has('pago_movil_record')){
             $inputs['pago_movil_record'] = array_map(function($record){
@@ -151,43 +159,10 @@ class StoreCashRegisterRequest extends FormRequest
             }, $this->point_sale_bs_bank, $this->point_sale_bs_debit, $this->point_sale_bs_credit,
                     $this->point_sale_bs_amex, $this->point_sale_bs_todoticket);
 
-            // $inputs['point_sale_bs']['bank'] = $this->point_sale_bs_bank;
-
-            // if ($this->has('point_sale_bs_debit')){
-            //     $inputs['point_sale_bs']['debit'] = array_map(function($value){
-            //         return $this->formatAmount($value);
-            //     }, $this->point_sale_bs_debit);
-            // }
-    
-            // if ($this->has('point_sale_bs_credit')){
-            //     $inputs['point_sale_bs']['credit'] = array_map(function($value){
-            //         return $this->formatAmount($value);
-            //     }, $this->point_sale_bs_credit);
-            // }
-
-            // if ($this->has('point_sale_bs_amex')){
-            //     $inputs['point_sale_bs']['amex'] = array_map(function($value){
-            //         return $this->formatAmount($value);
-            //     }, $this->point_sale_bs_amex);
-            // }
-
-            // if ($this->has('point_sale_bs_todoticket')){
-            //     $inputs['point_sale_bs']['todoticket'] = array_map(function($value){
-            //         return $this->formatAmount($value);
-            //     }, $this->point_sale_bs_todoticket);
-            // }
-
         } else {
             $inputs['point_sale_bs'] = [];
         }
-
-        
-        if ($this->has('total_point_sale_dollar')){
-            $inputs['total_point_sale_dollar'] = $this->formatAmount($this->total_point_sale_dollar);
-        }
-
-        // }
-        
+    
         // if(!is_null($inputs['total_zelle']) && $inputs['total_zelle'] > 0){
         if ($this->has('zelle_record')){
             $inputs['zelle_record'] = array_map(function($record){
@@ -222,6 +197,7 @@ class StoreCashRegisterRequest extends FormRequest
             'worker_id' => 'nombre del trabajador',
             'new_cash_register_worker' => 'nombre del nuevo trabajador',
             'dollar_cash_record' => 'entrada de dolar',
+            'point_sale_dollar_record' => 'entrada de punto de venta internacional',
             'pago_movil_record' => 'entrada de pago movil',
             'dollar_denominations_record' => 'denominación de dolar',
             'bs_denominations_record' => 'denominación de bolivar',

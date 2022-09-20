@@ -244,6 +244,17 @@ class CashRegisterController extends Controller
                 PointSaleBsRecord::insert($validated['point_sale_bs']);
             }
 
+            if (array_key_exists('point_sale_dollar_record', $validated)){
+                $data = array_reduce($validated['point_sale_dollar_record'], function($acc, $value) use ($cash_register_data){
+                    if ($value > 0){
+                        $acc[] = array('amount' => $value, 'cash_register_data_id' => $cash_register_data->id);
+                    }
+
+                    return $acc;
+                }, []);
+                PointSaleDollarRecord::insert($data);
+            }
+
             if (array_key_exists('notes', $validated)){
                 
                 $data = array_reduce($validated['notes'], function($acc, $note) use ($cash_register_data){
@@ -259,15 +270,6 @@ class CashRegisterController extends Controller
                 }, []);
                 
                 Note::insert($data);
-            }
-
-            if (array_key_exists('total_point_sale_dollar', $validated) 
-                && $validated['total_point_sale_dollar'] > 0){
-                $data = [
-                    'amount' => $validated['total_point_sale_dollar'],
-                    'cash_register_data_id' => $cash_register_data->id
-                ];
-                PointSaleDollarRecord::insert($data);
             }
 
             if (array_key_exists('zelle_record', $validated)){
@@ -307,16 +309,13 @@ class CashRegisterController extends Controller
         }
 
         $dollar_cash_records = $cash_register_data->dollar_cash_records;
+        $point_sale_dollar_records = $cash_register_data->point_sale_dollar_records;
         $pago_movil_bs_records = $cash_register_data->pago_movil_bs_records;
         $bs_denomination_records = $cash_register_data->bs_denomination_records;
         $dollar_denomination_records = $cash_register_data->dollar_denomination_records;
         $zelle_records = $cash_register_data->zelle_records;
         $notes = $cash_register_data->notes;
         
-        $point_sale_dollar_record = $cash_register_data
-            ->point_sale_dollar_records()
-            ->first();
-
         $cash_registers_workers_id_arr = $this->getWorkers();
 
         $cash_registers_id_arr = $this
@@ -359,6 +358,10 @@ class CashRegisterController extends Controller
             return $carry + $el->cancel_debit + $el->cancel_credit + $el->cancel_amex + $el->cancel_todoticket;
         }, 0);
 
+        $total_point_sale_dollar = $point_sale_dollar_records->reduce(function($carry, $el){
+            return $carry + $el->amount;
+        }, 0);
+
         $total_dollar_denominations = $dollar_denomination_records->reduce(function($carry, $el){
             return $carry + ($el->quantity * $el->denomination);
         }, 0);
@@ -379,10 +382,11 @@ class CashRegisterController extends Controller
             'total_dollar_denominations',
             'total_bs_denominations',
             'total_zelle',
+            'total_point_sale_dollar',
             'dollar_cash_records',
             'pago_movil_bs_records',
-            'point_sale_dollar_record',
             'point_sale_bs_records',
+            'point_sale_dollar_records',
             'banks',
             'bs_denomination_records',
             'dollar_denomination_records',
@@ -507,23 +511,31 @@ class CashRegisterController extends Controller
         }
 
         // Update Point Sale $ Records
-        $total_point_sale_dollar = $cash_register_data->point_sale_dollar_records()->first();
-        if(!key_exists('total_point_sale_dollar', $validated) && $total_point_sale_dollar){
-            $total_point_sale_dollar->delete();
-        } else if (key_exists('total_point_sale_dollar', $validated)) {
+        $point_sale_dollar_records_coll = $cash_register_data->point_sale_dollar_records;
 
-            if ($validated['total_point_sale_dollar'] === 0){
-                if ($total_point_sale_dollar){
-                    $total_point_sale_dollar->delete();
-                }
-            } else {
-                $data = [
-                    'id' => $total_point_sale_dollar ? $total_point_sale_dollar->id : null,
-                    'amount' => $validated['total_point_sale_dollar'],
-                    'cash_register_data_id' => $cash_register_data_id
-                ];
-                $cash_register_data->point_sale_dollar_records()->upsert($data, ['id'], ['amount']);
+        if (!key_exists('point_sale_dollar_record', $validated) && $point_sale_dollar_records_coll->count() > 0){
+            $point_sale_dollar_records_coll
+                ->each(function($item, $key){
+                    $item->delete();
+                });
+        } else if(key_exists('point_sale_dollar_record', $validated)){
+            $diff = $point_sale_dollar_records_coll->count() - count($validated['point_sale_dollar_record']);
+
+            if ($diff > 0){
+                $to_delete = $point_sale_dollar_records_coll->splice(0, $diff);
+                $to_delete->each(function($item, $key){
+                    $item->delete();
+                });
             }
+
+            $data = $this->mergeOldAndNewValues(
+                $cash_register_data_id,
+                'totalRecordsColsToUpdate',
+                $point_sale_dollar_records_coll->toArray(),
+                $validated['point_sale_dollar_record'],
+            );
+
+            $cash_register_data->point_sale_dollar_records()->upsert($data, ['id'], ['amount']);
         }
 
         // Update Point Sale Bs Records

@@ -128,10 +128,6 @@ export default {
         this.proxy.pointSaleDollar = total
         this.setTotalPointSaleDollarDiff();
     },
-    handlePointSaleDollar(event){
-        let total = event.target.value ? formatAmount(event.target.value) : 0
-        this.setTotalPointSaleDollar(total)
-    },
     setTotalSaintDOMS(totals = null){
         if (!totals){
             Object.keys(this.proxyTotalSaint).forEach(el => {
@@ -351,9 +347,6 @@ export default {
                 elements[i].readOnly = true;
             }
         })
-
-        // Point Sale Dollar Event Handler
-        this.totalInputDOMS.pointSaleDollar.addEventListener('change', this.setPropWrapper(this.handlePointSaleDollar)) 
     },
     fetchInitialData(){
         let id = document.querySelector('#id').value;
@@ -599,5 +592,26 @@ export default {
         let zelleRecordMoneyView = new ForeignMoneyRecordModalView(zelleRecordMoneyPresenter);
         let zelleRecordTable = new ForeignMoneyRecordTable()
         zelleRecordMoneyView.init(zelleRecordModal, 'zelle_record', zelleRecordTable)
+        
+        // Point of sale dollar records
+        let pointSaleDollarModal = document.querySelector('#point_sale_dollar_record');
+        let pointSaleDollarRecordsElements = pointSaleDollarModal.querySelector('tbody').children;
+        let pointSaleDollarRecords = Array.prototype.map.call(pointSaleDollarRecordsElements, function(el, key){
+            let input = el.querySelector('input[id^="point_sale_dollar_record_"]');
+            let amount = roundNumber(parseFloat(input.value));
+            decimalInputs[CURRENCIES.DOLLAR].mask(input);
+            return new MoneyRecord(amount,  CURRENCIES.DOLLAR, PAYMENT_METHODS.CASH, key);
+        });
+        let pointSaleDollarPresenter = new ForeignMoneyRecordModalPresenter(
+            CURRENCIES.DOLLAR,
+            PAYMENT_METHODS.CASH,
+            this.setPropWrapper(this.setTotalPointSaleDollar),
+            pointSaleDollarRecords
+        );
+        
+        let pointSaleDollarView = new ForeignMoneyRecordModalView(pointSaleDollarPresenter);
+        let pointSaleDollarRecordTable = new ForeignMoneyRecordTable()
+        pointSaleDollarView.init(pointSaleDollarModal, 'point_sale_dollar_record', pointSaleDollarRecordTable)
+
     }
 }

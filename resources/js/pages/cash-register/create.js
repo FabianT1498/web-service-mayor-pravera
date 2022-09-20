@@ -99,6 +99,10 @@ export default {
         this.proxy.pagoMovilBs = total
         this.setTotalPagoMovilBsDiff();
     },
+    setTotalPointSaleDollar(total){
+        this.proxy.pointSaleDollar = total
+        this.setTotalPointSaleDollarDiff();
+    },
     setTotalDenominationBs(total){
         this.proxy.denominationsBs = total
         this.setTotalBsCashDiff();
@@ -118,10 +122,6 @@ export default {
     setTotalPointSaleDollar(total){
         this.proxy.pointSaleDollar = total
         this.setTotalPointSaleDollarDiff();
-    },
-    handlePointSaleDollar(event){
-        let total = event.target.value ? formatAmount(event.target.value) : 0
-        this.setTotalPointSaleDollar(total)
     },
     setTotalSaintDOMS(totals = null){
         if (!totals){
@@ -330,9 +330,6 @@ export default {
         decimalInputs[CURRENCIES.DOLLAR].mask(this.totalInputDOMS.pointSaleDollar);
         decimalInputs[CURRENCIES.BOLIVAR].mask(this.totalInputDOMS.pointSaleBs);
 
-        // Point Sale Dollar Event Handler
-        this.totalInputDOMS.pointSaleDollar.addEventListener('change', this.setPropWrapper(this.handlePointSaleDollar)) 
-
         let form = document.querySelector('#form')
         
         form.addEventListener('submit', (e) => {
@@ -378,6 +375,12 @@ export default {
         let pagoMovilBsView = new MoneyRecordModalView(pagoMovilBsPresenter);
         let pagoMovilBsRecordTable = new MoneyRecordTable()
         pagoMovilBsView.init(pagoMovilBsModal, 'pago_movil_record', pagoMovilBsRecordTable)
+
+        let pointSaleDollarModal = document.querySelector('#point_sale_dollar_record');
+        let pointSaleDollarPresenter = new ForeignMoneyRecordModalPresenter(CURRENCIES.DOLLAR, PAYMENT_METHODS.CASH, this.setPropWrapper(this.setTotalPointSaleDollar));
+        let pointSaleDollarView = new ForeignMoneyRecordModalView(pointSaleDollarPresenter);
+        let pointSaleDollarRecordTable = new ForeignMoneyRecordTable()
+        pointSaleDollarView.init(pointSaleDollarModal, 'point_sale_dollar_record', pointSaleDollarRecordTable)
 
         let bsDenominationsModal = document.querySelector('#bs_denominations_record');
         let bolivarDenominationModalPresenter = new DenominationModalPresenter(CURRENCIES.BOLIVAR, PAYMENT_METHODS.CASH, this.setPropWrapper(this.setTotalDenominationBs))

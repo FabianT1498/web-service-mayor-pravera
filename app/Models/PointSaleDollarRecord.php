@@ -15,9 +15,7 @@ class PointSaleDollarRecord extends Model
 
     protected $fillable = [
         'amount',
-        'point_sale_user',
         'cash_register_data_id',
-        'bank_name'
     ];
 
     public function __construct(array $attributes = array())

@@ -351,15 +351,15 @@
 
             <div class="flex mb-8 items-center">
                 <x-label class="w-1/5" for="point_sale_dollar" :value="__('Entrada en punto de venta internacional ($):')" />
-                <x-input
-                    class="w-1/4 ml-4"
-                    placeholder="{{'0.00 ' . config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR'))}}"
-                    id="total_point_sale_dollar_input"
+                <x-input-with-button
+                    :inputID="__('total_point_sale_dollar_input')"
+                    :modalID="__('point_sale_dollar_record')"
+                    :currency="__(config('constants.CURRENCY_SIGNS.' . config('constants.CURRENCIES.DOLLAR')))"
+                    :name="__('total_point_sale_dollar')"
+                    :value="old('total_point_sale_dollar') ? old('total_point_sale_dollar') : $total_point_sale_dollar"
                     type="text"
-                    name="total_point_sale_dollar"
-                    :value="old('point_sale_dollar') ? old('point_sale_dollar') : ($point_sale_dollar_record ? $point_sale_dollar_record->amount : 0)"
+                    class="w-1/4 ml-4"
                 />
-        
             </div>
 
             <div class="mb-8">
@@ -546,6 +546,13 @@
             :modalID="__('point_sale_bs')"
             :records="$point_sale_bs_records"
             :banks="$banks"
+        />
+
+        <x-modal-input-list
+            :modalID="__('point_sale_dollar_record')"
+            :title="__('Entradas del punto de venta internacional')"
+            :currency="config('constants.CURRENCIES.DOLLAR')"
+            :records="$point_sale_dollar_records"
         />
 
         <x-modal-input-list
