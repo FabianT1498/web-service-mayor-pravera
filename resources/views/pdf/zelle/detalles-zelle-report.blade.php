@@ -386,6 +386,111 @@
                 @endif
             </div>
 
+            <div class="w-80p">
+                <h1 class="text-center text-lg">Registros de punto de venta internacional</h1>
+                @if ($point_sale_dollar_records->count() > 0)
+                    @foreach($point_sale_dollar_records as $key_codusua => $dates)
+                        <table class="w-full">
+                            <thead>
+                                <tr>
+                                    <th>Monto ($)</th>
+                                    <th>Tasa de cambio (Bs)</th>
+                                    <th>Bolivares</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th colspan="3" class="text-center bg-grey-800">{{ $key_codusua }}</th>
+                                </tr>
+                                @foreach($dates as $key_date => $records)
+                                    <tr>
+                                        <td colspan="3" class="text-center bg-grey-600">{{ date('d-m-Y', strtotime($key_date)) }}</td>
+                                    </tr>
+                                    @foreach($records as $record)
+                                        <tr>
+                                            <td class="text-center">{{ number_format($record->amount, 2) . " " . config("constants.CURRENCY_SIGNS.dollar") }}</td>
+                                            <td class="text-center">{{ number_format($factors[$key_date]->first()->MaxFactor, 2) . " " . config("constants.CURRENCY_SIGNS.bolivar") }}</td>
+                                            <td class="text-center">{{ number_format($record->amount * $factors[$key_date]->first()->MaxFactor, 2) . " " . config("constants.CURRENCY_SIGNS.bolivar") }}</td> 
+                                        </tr>
+                                    @endforeach
+                                @endforeach
+                                <tr class="bg-grey-800">
+                                    <th class="text-center">{{ number_format($total_point_sale_dollar_amount_by_user[$key_codusua]['dollar'], 2) . " " . config("constants.CURRENCY_SIGNS.dollar") }}</th>
+                                    <th>&nbsp;</th>
+                                    <th class="text-center">{{ number_format($total_point_sale_dollar_amount_by_user[$key_codusua]['bs'], 2) . " " . config("constants.CURRENCY_SIGNS.bolivar") }}</th>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="page-break"></div>      
+                    @endforeach
+                @else
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>No hay Zelle's disponibles para este día</td>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                @endif
+            </div>
+
+            <div class="w-80p">
+                <h1 class="text-center text-lg">Registros de Punto de venta internacional de SAINT</h1>
+                @if ($point_sale_dollar_records_saint->count() > 0)
+                    @foreach($point_sale_dollar_records_saint as $key_codusua => $dates)
+                        <table class="w-full">
+                            <thead>
+                                <tr>
+                                    <th>Monto ($)</th>
+                                    <th>Tasa de cambio</th>
+                                    <th>Bolivares</th>
+                                    <th>Nombre</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th colspan="4" class="text-center bg-grey-800">{{ $key_codusua }}</th>
+                                </tr>
+                                @foreach($dates as $key_date => $records)
+                                    <tr>
+                                        <td colspan="4" class="text-center bg-grey-600">{{ date('d-m-Y', strtotime($key_date)) }}</td>
+                                    </tr>
+                                    @foreach($records as $record)
+                                        <tr>
+                                            <td  class="text-center">{{ number_format($record->MontoDiv, 2) . " " . config("constants.CURRENCY_SIGNS.dollar") }}</td>
+                                            <td  class="text-center">{{ number_format($record->FactorV, 2) . " " . config("constants.CURRENCY_SIGNS.bolivar") }}</td>
+                                            <td  class="text-center">{{ number_format($record->Monto, 2) . " " . config("constants.CURRENCY_SIGNS.bolivar") }}</td>
+                                            <td  class="text-center">{{ $record->TitularCta }}</td>   
+                                        </tr>
+                                    @endforeach
+                                @endforeach
+                                <tr class="bg-grey-800">
+                                    <th class="text-center">{{ $total_point_sale_dollar_amount_by_user_saint[$key_codusua]->first()->MontoDiv . " " . config("constants.CURRENCY_SIGNS.dollar") }}</th>
+                                    <th class="text-center">&nbsp;</th>
+                                    <th class="text-center">{{ $total_point_sale_dollar_amount_by_user_saint[$key_codusua]->first()->Monto . " " . config("constants.CURRENCY_SIGNS.bolivar") }}</th>
+                                    <th class="text-center">&nbsp;</th>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="page-break"></div>        
+                    @endforeach
+                @else
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>No hay Zelle's disponibles para este día</td>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                @endif
+            </div>
+
         </div>
         <script type="text/php">
             if (isset($pdf)) {

@@ -329,6 +329,113 @@ class CashRegisterRepository implements CashRegisterRepositoryInterface
         ->first();
     }
 
+    public function getPointSaleDollarRecords($start_date, $end_date){
+        $date_params = [$start_date, $end_date];
+
+        $interval_query = "cash_register_data.date BETWEEN ? AND ?";
+
+        return DB
+            ::table('cash_register_data')
+            ->selectRaw('
+                cash_register_data.date as date,
+                cash_register_users.station as cash_register_user,
+                CAST(ROUND(point_sale_dollar_records.amount, 2) AS decimal(10, 2)) as amount
+            ')
+            ->join("point_sale_dollar_records", function($join) {
+                $join->on('point_sale_dollar_records.cash_register_data_id', '=', 'cash_register_data.id');
+            })
+            ->join('cash_register_users', 'cash_register_users.name', '=', 'cash_register_data.cash_register_user')
+            ->whereRaw($interval_query, $date_params)
+            ->orderByRaw("cash_register_users.station asc, cash_register_data.date asc, amount asc")
+            ->get();
+    }
+
+    public function getPointSaleDollarRecordsFromSaint($start_date, $end_date, $user = null){
+        /* Consulta para obtener los totales de las facturas*/
+        $date_params = ($start_date === $end_date) ? [$start_date] : [$start_date, $end_date];
+
+        $interval_query = ($start_date === $end_date)
+            ? "CAST(SAFACT.FechaE as date) = ?"
+            : "CAST(SAFACT.FechaE as date) BETWEEN CAST(? as date) AND CAST(? as date)";
+
+        $user_params = $user
+          ? " = '" . $user . "'"
+          : "IN ('CAJA-1', 'CAJA2', 'CAJA-3', 'CAJA4', 'CAJA5', 'CAJA6' , 'DELIVERYPB')";
+
+        return DB
+        ::connection('saint_db')
+        ->table('SAIPAVTA')
+        ->selectRaw("SAFACT.CodEsta as CodEsta, SAFACT.FactorV as FactorV, CAST(SAFACT.FechaE as date) as FechaE,
+            CAST(ROUND(SAIPAVTA.Monto * SAFACT.Signo, 2) AS decimal(18, 2)) as Monto,
+            CAST(ROUND((SAIPAVTA.Monto / SAFACT.FactorV) * SAFACT.Signo, 2) AS decimal(18, 2)) as MontoDiv,
+            SAFACT.Notas2 as TitularCta"
+        )
+        ->join('SAFACT', function($query){
+            $query->on("SAFACT.NumeroD", '=', "SAIPAVTA.NumeroD");
+        })
+        ->whereRaw("SAFACT.TipoFac = 'A' AND SAIPAVTA.CodPago = '08' AND SAFACT.CodEsta " . $user_params . " AND " . $interval_query,
+            $date_params)
+        ->orderByRaw("SAFACT.CodEsta asc, SAFACT.FechaE ASC")
+        ->get();
+    }
+
+    public function getPointSaleDollarTotalByUserFromSaint($start_date, $end_date, $user = null){
+        /* Consulta para obtener los totales de las facturas*/
+        $date_params = ($start_date === $end_date) ? [$start_date] : [$start_date, $end_date];
+
+        $interval_query = ($start_date === $end_date)
+            ? "CAST(SAFACT.FechaE as date) = ?"
+            : "CAST(SAFACT.FechaE as date) BETWEEN CAST(? as date) AND CAST(? as date)";
+
+        $user_params = $user
+          ? " = '" . $user . "'"
+          : "IN ('CAJA-1', 'CAJA2', 'CAJA-3', 'CAJA4', 'CAJA5', 'CAJA6' , 'DELIVERYPB')";
+
+        return DB
+        ::connection('saint_db')
+        ->table('SAIPAVTA')
+        ->selectRaw("SAFACT.CodEsta as CodEsta, CAST(ROUND(SUM(SAIPAVTA.Monto * SAFACT.Signo), 2) AS decimal(18, 2)) as Monto,
+            CAST(ROUND(SUM((SAIPAVTA.Monto / SAFACT.FactorV) * SAFACT.Signo), 2) AS decimal(18, 2)) as MontoDiv"
+        )
+        ->join('SAFACT', function($query){
+            $query->on("SAFACT.NumeroD", '=', "SAIPAVTA.NumeroD");
+        })
+        ->leftJoin(DB::raw("(SELECT SAFACT.NumeroR FROM SAFACT WHERE SAFACT.TipoFac = 'B' AND SAFACT.CodEsta " . $user_params
+            . ") SAFACT_DEV"), function($join){
+            $join->on('SAFACT.NumeroD', '=', 'SAFACT_DEV.NumeroR');
+        })
+        ->whereRaw("SAFACT.TipoFac = 'A' AND SAFACT_DEV.NumeroR IS NULL AND SAIPAVTA.CodPago = '08' AND SAFACT.CodEsta " . $user_params . " AND " . $interval_query,
+            $date_params)
+        ->groupByRaw("SAFACT.CodEsta")
+        ->orderByRaw("SAFACT.CodEsta asc")
+        ->get();
+    }
+
+    public function getPointSaleDollarTotalFromSaint($start_date, $end_date){
+        /* Consulta para obtener los totales de las facturas*/
+        $date_params = ($start_date === $end_date) ? [$start_date] : [$start_date, $end_date];
+
+        $interval_query = ($start_date === $end_date)
+            ? "CAST(SAFACT.FechaE as date) = ?"
+            : "CAST(SAFACT.FechaE as date) BETWEEN CAST(? as date) AND CAST(? as date)";
+
+        return DB
+        ::connection('saint_db')
+        ->table('SAIPAVTA')
+        ->selectRaw("CAST(ROUND(SUM(SAIPAVTA.Monto * SAFACT.Signo), 2) AS decimal(18, 2)) as Monto,
+            CAST(ROUND(SUM((SAIPAVTA.Monto / SAFACT.FactorV) * SAFACT.Signo), 2) AS decimal(18, 2)) as MontoDiv"
+        )
+        ->join('SAFACT', function($query){
+            $query->on("SAFACT.NumeroD", '=', "SAIPAVTA.NumeroD");
+        })
+        ->leftJoin(DB::raw("(SELECT SAFACT.NumeroR FROM SAFACT WHERE SAFACT.TipoFac = 'B') SAFACT_DEV"), function($join){
+            $join->on('SAFACT.NumeroD', '=', 'SAFACT_DEV.NumeroR');
+        })
+        ->whereRaw("SAFACT.TipoFac = 'A' AND SAFACT_DEV.NumeroR IS NULL AND SAIPAVTA.CodPago = '08' AND " . $interval_query,
+            $date_params)
+        ->first();
+    }
+
     public function getFactorByDate($start_date, $end_date){
         /* Consulta para obtener el valor del factor por cada dia */
         $date_params = ($start_date === $end_date) ? [$start_date] : [$start_date, $end_date];
