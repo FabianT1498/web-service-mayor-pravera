@@ -481,7 +481,7 @@
                     <table>
                         <tbody>
                             <tr>
-                                <td>No hay Zelle's disponibles para este día</td>
+                                <td>No hay entradas de punto de venta internacional disponibles para este día</td>
                                 <td>&nbsp;</td>
                                 <td>&nbsp;</td>
                                 <td>&nbsp;</td>
