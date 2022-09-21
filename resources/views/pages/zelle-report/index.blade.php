@@ -8,7 +8,7 @@
 @section('main')
     <div class="w-10/12 mx-auto">
         <div class="mb-8">
-            <h3 class="h3 mb-8 text-center">Reporte de entrada de zelle</h3>
+            <h3 class="h3 mb-8 text-center">Reporte de entrada de pagos electronicos en divisa</h3>
                 <div 
                     id="date_range_picker" 
                     date-rangepicker 

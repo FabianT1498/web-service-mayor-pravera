@@ -46,7 +46,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('igtf_tax/report/excel', [IGTFController::class, 'generateExcel'])->name('igtf_tax.generate-excel');
 
     // Zelle report route
-    Route::get('entradas_zelle', [ZelleReportController::class, 'index'])->name('entradas_zelle.index');
+    Route::get('entradas_divisas', [ZelleReportController::class, 'index'])->name('entradas_divisas.index');
     Route::get('entradas_zelle/report/excel', [ZelleReportController::class, 'generateExcel'])->name('entradas_zelle.generate-excel');
     Route::get('entradas_zelle/report/pdf', [ZelleReportController::class, 'generatePDF'])->name('entradas_zelle.generate-pdf');
 

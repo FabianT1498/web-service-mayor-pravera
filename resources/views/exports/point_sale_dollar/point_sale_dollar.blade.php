@@ -1,5 +1,5 @@
-@if ($point_sale_dollar_records->count() > 0)
-    @foreach($point_sale_dollar_records as $key_codusua => $dates)
+@if ($zelle_records->count() > 0)
+    @foreach($zelle_records as $key_codusua => $dates)
         <table>
             <thead>
                 <tr>
@@ -33,9 +33,9 @@
                     @endforeach
                 @endforeach
                 <tr>
-                    <td>{{ $total_point_sale_dollar_amount_by_user[$key_codusua]['dollar'] }}</td>
+                    <td>{{ $total_zelle_amount_by_user[$key_codusua]['dollar'] }}</td>
                     <td>&nbsp;</td>
-                    <td>{{ $total_point_sale_dollar_amount_by_user[$key_codusua]['bs'] }}</td>
+                    <td>{{ $total_zelle_amount_by_user[$key_codusua]['bs'] }}</td>
                     <td>&nbsp;</td>
                 </tr>
             </tbody>
@@ -45,7 +45,7 @@
     <table>
         <tbody>
             <tr>
-                <td>No hay registros de punto de venta internacional para este día</td>
+                <td>No hay Zelle's disponibles para este día</td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>

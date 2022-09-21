@@ -1,5 +1,5 @@
-@if ($point_sale_dollar_records->count() > 0)
-    @foreach($point_sale_dollar_records as $key_codusua => $dates)
+@if ($point_sale_dollar_records_saint->count() > 0)
+    @foreach($point_sale_dollar_records_saint as $key_codusua => $dates)
         <table>
             <thead>
                 <tr>
@@ -25,17 +25,17 @@
                     </tr>
                     @foreach($records as $record)
                         <tr>
-                            <td>{{ $record->amount }}</td>
-                            <td>{{ $factors[$key_date]->first()->MaxFactor }}</td>
-                            <td>{{ number_format($record->amount * $factors[$key_date]->first()->MaxFactor, 2) }}</td>
-                            <td>{{ '' }}</td>   
+                            <td>{{ number_format($record->MontoDiv, 2) }}</td>
+                            <td>{{ $record->FactorV }}</td>
+                            <td>{{ number_format($record->Monto, 2) }}</td>
+                            <td>{{ $record->TitularCta }}</td>   
                         </tr>
                     @endforeach
                 @endforeach
                 <tr>
-                    <td>{{ $total_point_sale_dollar_amount_by_user[$key_codusua]['dollar'] }}</td>
+                    <td>{{ $total_point_sale_dollar_amount_by_user_saint[$key_codusua]->first()->MontoDiv }}</td>
                     <td>&nbsp;</td>
-                    <td>{{ $total_point_sale_dollar_amount_by_user[$key_codusua]['bs'] }}</td>
+                    <td>{{ $total_point_sale_dollar_amount_by_user_saint[$key_codusua]->first()->Monto }}</td>
                     <td>&nbsp;</td>
                 </tr>
             </tbody>
@@ -45,7 +45,7 @@
     <table>
         <tbody>
             <tr>
-                <td>No hay registros de punto de venta internacional para este día</td>
+                <td>No hay registros de punto de venta internacional disponibles para este día</td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>

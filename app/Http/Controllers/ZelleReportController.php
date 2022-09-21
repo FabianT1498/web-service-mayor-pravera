@@ -9,7 +9,6 @@ use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Excel;
 
-
 use App\Repositories\CashRegisterRepository;
 use App\Exports\ZelleDataExport;
 
@@ -89,7 +88,28 @@ class ZelleReportController extends Controller
 
             $total_zelle_amount_from_saint = $cash_register_repo
                 ->getZelleTotalFromSaint($new_start_date, $new_finish_date);
-                
+
+             // Point of sale dollar from Local Database
+             $point_sale_dollar_records = $cash_register_repo
+                ->getPointSaleDollarRecords($new_start_date, $new_finish_date)
+                ->groupBy(['cash_register_user', 'date']);
+
+            $total_point_sale_dollar_amount_by_user = $this->getTotalZelleAmountByUser($point_sale_dollar_records, $factors);
+
+            $total_point_sale_dollar_amount =  $this->getTotalZelleAmount($total_point_sale_dollar_amount_by_user);
+            
+            // Point of sale dollar from SAINT
+            $point_sale_dollar_records_saint = $cash_register_repo
+                ->getPointSaleDollarRecordsFromSaint($new_start_date, $new_finish_date)
+                ->groupBy(['CodEsta', 'FechaE']);
+
+            $total_point_sale_dollar_amount_by_user_saint = $cash_register_repo
+                ->getPointSaleDollarTotalByUserFromSaint($new_start_date, $new_finish_date)
+                ->groupBy(['CodEsta']);
+
+            $total_point_sale_dollar_from_saint = $cash_register_repo
+                ->getPointSaleDollarTotalFromSaint($new_start_date, $new_finish_date);
+             
             $file_name = 'Detalles_Zelle_' . ($new_start_date === $new_finish_date 
                 ? $start_date 
                 : 'desde_' . $start_date . '_hasta_' . $end_date
@@ -104,6 +124,12 @@ class ZelleReportController extends Controller
                 'zelle_records_from_saint',
                 'total_zelle_amount_by_user_from_saint',
                 'total_zelle_amount_from_saint',
+                'point_sale_dollar_records',
+                'total_point_sale_dollar_amount_by_user',
+                'total_point_sale_dollar_amount',
+                'point_sale_dollar_records_saint',
+                'total_point_sale_dollar_amount_by_user_saint',
+                'total_point_sale_dollar_from_saint',
                 'start_date',
                 'end_date')
             ), $file_name);

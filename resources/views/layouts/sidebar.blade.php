@@ -65,8 +65,8 @@
         <a href="{{ route('igtf_tax.index') }}" class="mb-2 capitalize font-medium  hover:text-teal-600 transition ease-in-out duration-500">
           Impuesto IGTF
         </a>
-        <a href="{{ route('entradas_zelle.index') }}" class="mb-2 capitalize font-medium  hover:text-teal-600 transition ease-in-out duration-500">
-          Registros de entradas por Zelle
+        <a href="{{ route('entradas_divisas.index') }}" class="mb-2 capitalize font-medium  hover:text-teal-600 transition ease-in-out duration-500">
+          Registros de entradas electronicas en divisas
         </a>
         <a href="{{ route('vales_vueltos_facturas.index') }}" class="mb-2 capitalize font-medium  hover:text-teal-600 transition ease-in-out duration-500">
           Vales y vueltos por factura
