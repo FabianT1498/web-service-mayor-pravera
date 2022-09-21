@@ -108,9 +108,9 @@ class PointSaleDollarRecordExport implements FromView, WithEvents, WithTitle
                     $event->sheet->mergeCells('G5:H5');
                     $event->sheet->setCellValue('I5', 'bolivares');
                     $event->sheet->mergeCells('I5:J5');
-                    $event->sheet->setCellValue('G6', $this->data['total_point_sale_dollar_amount_by_user']['dollar']);
+                    $event->sheet->setCellValue('G6', $this->data['total_point_sale_dollar_amount']['dollar']);
                     $event->sheet->mergeCells('G6:H6');
-                    $event->sheet->setCellValue('I6', $this->data['total_point_sale_dollar_amount_by_user']['bs']);
+                    $event->sheet->setCellValue('I6', $this->data['total_point_sale_dollar_amount']['bs']);
                     $event->sheet->mergeCells('I6:J6');
 
                     $event->sheet->styleCells(
