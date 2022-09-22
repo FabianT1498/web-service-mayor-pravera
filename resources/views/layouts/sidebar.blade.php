@@ -1,6 +1,6 @@
   <!-- start sidebar -->
-  <div id="sideBar" class="h-full bg-white border-r border-gray-300 p-4 md:-ml-64 
-      sticky top-0 md:z-30 md:shadow-xl animate__animated animate__faster basis-1/4">
+  <div id="sideBar" class="h-full bg-white border-r border-gray-300 p-4 md:hidden 
+      sticky top-0 md:z-30 md:shadow-xl animate__animated animate__faster basis-1/5 lg:basis-3/12">
 
       @if (session('current_module') === 'cash_register')
         <div class="mb-6 pb-2 border-b border-slate-400 text-sm">

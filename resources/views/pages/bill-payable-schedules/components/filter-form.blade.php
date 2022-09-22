@@ -1,10 +1,10 @@
 <form class=" border-slate-600" id="form_filter" method="GET" action="{{ route('schedule.index') }}">
     <input id="page" name="page" type="hidden" value="1">
-    <div class="flex items-center">
+    <div class="flex items-center justify-between">
 
-        <div id="date_range_picker" date-rangepicker class="flex items-center justify-between basis-6/12">
+        <div id="date_range_picker" date-rangepicker class="flex items-center">
             <span class="text-gray-500">Fecha inicial:</span>
-            <div class="ml-4 relative basis-1/4">
+            <div class="ml-2 relative">
                 <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
                     <svg 
                         class="w-5 h-5 text-gray-500 dark:text-gray-400" 
@@ -26,8 +26,8 @@
                 >
             </div>
           
-            <span class="text-gray-500 ml-4">Fecha final:</span>
-            <div class="ml-4 relative basis-1/4">
+            <span class="text-gray-500 ml-2">Fecha final:</span>
+            <div class="ml-4 relative">
                 <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
                     <svg 
                         class="w-5 h-5 text-gray-500 dark:text-gray-400" 
@@ -50,19 +50,21 @@
             </div>
         </div>
 
-        <span class="text-gray-500 ml-4">Estatus: </span>
-        <div class="w-1/6 flex-initial ml-4">
-            <x-select-input 
-                :defaultOptTitle="__('Seleccione el estatus')"
-                id="status"
-                :value="$status"
-                :name="__('status')" 
-                :options="$schedule_statuses"
-                class="w-full relative"
-            />
+        <div class="flex items-center  ml-4">
+            <span class="text-gray-500">Estatus: </span>
+            <div class="flex-initial ml-2">
+                <x-select-input 
+                    :defaultOptTitle="__('Seleccione el estatus')"
+                    id="status"
+                    :value="$status"
+                    :name="__('status')" 
+                    :options="$schedule_statuses"
+                    class="w-full relative"
+                />
+            </div>
         </div>
 
-        <div class="basis-1/12 ml-8">
+        <div class="ml-4">
             <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                 <i class="fas fa-search"></i>
             </button>

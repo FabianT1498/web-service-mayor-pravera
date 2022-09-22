@@ -13,7 +13,7 @@
             <form class="mb-4 mx-auto w-11/12" id="form_filter" method="GET" action="{{ route('cash_register.index') }}">
                 <p class="mb-4">Parametros de busqueda</p>
                 <input id="page" name="page" type="hidden" value="1">
-                <div id="date_range_picker" date-rangepicker class="flex justify-between items-center mb-4 w-4/5">
+                <div id="date_range_picker" date-rangepicker class="flex justify-between items-center mb-4 w-4/5 md:mx-auto">
                     <span class="text-gray-500">Desde</span>
                     <div class="relative basis-1/3">
                         <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
@@ -59,7 +59,7 @@
                         >
                     </div>
                 </div>
-                <div class="flex items-center mb-4 w-4/5">
+                <div class="flex items-center mb-4 w-4/5 md:mx-auto">
                     <span class="text-gray-500 mr-8">Estatus</span>
                     <x-select-input 
                         :options="$status_options" 

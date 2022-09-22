@@ -14,11 +14,11 @@ module.exports = {
         screens: {
           'sm': {'max': '639px'},
     
-          'md': {'max': '767px'},
+          'md': {'max': '900px'},
     
-          'lg': {'max': '1023px'},
+          'lg': {'max': '1200px'},
     
-          'xl': {'max': '1279px'},
+          'xl': {'max': '1800px'},
         },
         extend: {
             fontFamily: {

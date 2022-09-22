@@ -4,7 +4,7 @@
     <div class="flex items-center justify-between w-full">
         <div class="w-10/12">
 
-            <div class="flex items-start mb-6">
+            <div class="flex mb-6 justify-between items-center">
                 <div class="w-1/5">
                     <span class="text-gray-500 mb-2 font-semibold inline-block">Fac. emitidas antes del:</span>
                     <div class="basis-2/6 relative">
@@ -30,7 +30,7 @@
                     </div>
                 </div>
         
-                <div class="relative w-1/5 ml-4">
+                <div class="relative w-1/5">
                     <span class="text-gray-500 mb-2 font-semibold inline-block">Número de factura</span>
                     <input 
                         data-form="filter"
@@ -43,7 +43,7 @@
                     >
                 </div>
     
-                <div class="w-1/5 ml-4">
+                <div class="w-1/5">
                     <span class="text-gray-500 mb-2 font-semibold inline-block">Proveedor</span>
                     <div class="relative">
                         <x-autocomplete 
@@ -55,7 +55,7 @@
                     </div>
                 </div>
                 
-                <div class="w-1/5 ml-4">
+                <div class="w-1/5">
                     <span class="text-gray-500 mb-2 font-semibold inline-block">Tipo de factura: </span>   
                     <x-select-input 
                         :defaultOptTitle="__('Seleccione un tipo de factura')"
@@ -68,7 +68,7 @@
                 </div>
             </div>
 
-            <div class="flex items-center">
+            <div class="flex items-start">
                 <div class="w-1/5">
                     <span class="text-gray-500 mb-2 font-semibold inline-block">Divisa de la factura:</span>   
                     <x-select-input 
@@ -80,7 +80,7 @@
                         class="w-full relative"
                     />
                 </div>
-                <div class="ml-4">
+                <div class="ml-8">
                     <span class="text-gray-500 font-semibold inline-block">Facturas programadas:</span>
                     <div class="flex items-center">
                         <div>
@@ -104,8 +104,8 @@
             </div>
         </div>
         
-        <div class="flex items-center w-1/12">
-            <div>
+        <div class="flex items-center w-2/12">
+            <div class="ml-auto">
                 <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                     <i class="fas fa-search"></i>
                 </button>
