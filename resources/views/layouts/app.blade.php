@@ -14,14 +14,14 @@
         <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap"> -->
 
         <!-- Styles -->
-        <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+        <link rel="stylesheet" href="{{ auto_version(asset('css/app.css'))  }}">
 
         <!-- Scripts -->
-        <script src="{{ asset('js/app.js') }}" defer></script>
+        <script src="{{ auto_version(asset('js/app.js')) }}" defer></script>
 
         <!-- Global scripts -->
         @if (session('current_module') === 'cash_register')
-            <script src="{{ asset('js/dollar_exchange_modal_index.js') }}" defer></script>
+            <script src="{{ auto_version(asset('js/dollar_exchange_modal_index.js')) }}" defer></script>
         @endif
         
         @yield('js')
