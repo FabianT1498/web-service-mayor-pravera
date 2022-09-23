@@ -177,7 +177,7 @@ class BillsPayableController extends Controller
                     'esDolar' => $record->esDolar,
                     'MontoTotal' => number_format($record->MontoTotal, 2) . " " . config("constants.CURRENCY_SIGNS." . ($record->esDolar ? "dollar" : "bolivar")),
                     'MontoPagar' => number_format($record->MontoPagar, 2) . " " . config("constants.CURRENCY_SIGNS." . ($record->esDolar ? "dollar" : "bolivar")),
-                    'MontoPagado' => isset($item->MontoPagado) ? $this->formatAmount($item->MontoPagado) : 0.00,
+                    'MontoPagado' => isset($record->MontoPagado) ? $this->formatAmount($record->MontoPagado) : 0.00,
                     'Tasa' => floatval($record->Tasa),
                     'Estatus' => isset($record->Status)  ? config("constants.BILL_PAYABLE_STATUS." . $record->Status) : config("constants.BILL_PAYABLE_STATUS.NOTPAID"),
                     'DiasTranscurridos' => $days,
@@ -186,8 +186,7 @@ class BillsPayableController extends Controller
                 ];
             }, $paginator->items());
         }
-        
-        
+ 
         $schedules = $repo_schedule->getBillSchedules()->get()->map(function($item){
             return (object) array("key" => $item->WeekNumber, "value" => "Semana " . $item->WeekNumber);
         });
