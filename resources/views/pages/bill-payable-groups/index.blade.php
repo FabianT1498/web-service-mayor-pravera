@@ -24,16 +24,29 @@
                 @foreach ($data as $key => $value)
                     <tr 
                         data-id="{{ $value->ID }}"
+                        @if ($value->MontoTotal === 0.00)
+                            data-tooltip-target="no-bills-payable-tooltip"
+                        @endif
                     >
                         <th scope="row" class="text-center">
-                            <a class="block relative" href="{{ route('bill_payable.showBillPayableGroup', ['id' => $value->ID]) }}">
+                            <a class="block relative" href="{{ $value->MontoTotal > 0 ? route('bill_payable.showBillPayableGroup', ['id' => $value->ID]) : '#' }}">
                                 {{ $value->ID }}
                             </a>
+                            @if ($value->MontoTotal === 0.00)
+                                <div 
+                                    id="no-bills-payable-tooltip"
+                                    role="tooltip" 
+                                    class="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 transition-opacity duration-300 tooltip dark:bg-gray-700"
+                                >
+                                    No hay facturas asociadas a este lote
+                                    <div class="tooltip-arrow" data-popper-arrow></div>
+                                </div>
+                            @endif
                         </th>
-                        <td class="text-center"><a class="block" href="{{ route('bill_payable.showBillPayableGroup', ['id' => $value->ID]) }}">{{ $value->DescripProv }}</a></td>
-                        <td class="text-center"><a data-bill="montoTotal" class="block" href="{{ route('bill_payable.showBillPayableGroup', ['id' => $value->ID]) }}">{{ $value->MontoTotal }}</a></td>
-                        <td class="text-center"><a data-bill="montoPagar" class="block" href="{{ route('bill_payable.showBillPayableGroup', ['id' => $value->ID]) }}">{{ $value->MontoPagado . " " . config("constants.CURRENCY_SIGNS.dollar") }}</a></td>
-                        <td class="text-center" ><a class="block" href="{{ route('bill_payable.showBillPayableGroup', ['id' => $value->ID]) }}">{{ $value->Estatus }}</a></td>
+                        <td class="text-center"><a class="block" href="{{ $value->MontoTotal > 0 ? route('bill_payable.showBillPayableGroup', ['id' => $value->ID]) : '#' }}">{{ $value->DescripProv }}</a></td>
+                        <td class="text-center"><a data-bill="montoTotal" class="block" href="{{ $value->MontoTotal > 0 ? route('bill_payable.showBillPayableGroup', ['id' => $value->ID]) : '#' }}">{{ $value->MontoTotal . " " . config("constants.CURRENCY_SIGNS.dollar") }}</a></td>
+                        <td class="text-center"><a data-bill="montoPagar" class="block" href="{{ $value->MontoTotal > 0 ? route('bill_payable.showBillPayableGroup', ['id' => $value->ID]) : '#' }}">{{ $value->MontoPagado . " " . config("constants.CURRENCY_SIGNS.dollar") }}</a></td>
+                        <td class="text-center" ><a class="block" href="{{ $value->MontoTotal > 0 ? route('bill_payable.showBillPayableGroup', ['id' => $value->ID]) : '#' }}">{{ $value->Estatus }}</a></td>
                         <td>
                             @if ( $value->Estatus === config("constants.BILL_PAYABLE_STATUS.NOTPAID") && $value->MontoPagado === 0.00)
                                 <button

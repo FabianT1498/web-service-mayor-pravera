@@ -850,7 +850,7 @@ class BillsPayableController extends Controller
                 'CodProv' => $item->CodProv,
                 'DescripProv' => $item->DescripProv,
                 'Estatus' => config("constants.BILL_PAYABLE_STATUS." . $item->Estatus),
-                'MontoTotal' => number_format($item->MontoTotal, 2) . " " . config("constants.CURRENCY_SIGNS.dollar"),
+                'MontoTotal' => $this->formatAmount($item->MontoTotal, 2),
                 'MontoPagado' =>  $this->formatAmount($item->MontoPagado),
             ];
         }, $paginator->items());
