@@ -6,8 +6,9 @@ import { BILL_STATUSES } from '_constants/billStatuses';
 
 const BillPayablePaymentFormPresenterPrototype = {
     onKeyupEventLocalCurrency(target, value, key){
-        if ((key === 8 || key === 'Backspace') || isFinite(key) && target.getAttribute('data-bill')){
-            const dataBill = target.getAttribute('data-bill');
+        const dataBill = target.getAttribute('data-bill');
+
+        if ((key === 8 || key === 'Backspace') || isFinite(key)){
 
             let amountBs = 0;
 
@@ -16,11 +17,11 @@ const BillPayablePaymentFormPresenterPrototype = {
             if (dataBill === 'tasa'){
                 this.view.setTasa(formattedVal)
                 amountBs = roundNumber(formatAmount(this.view.getDollarAmount()) * formattedVal)
-            } else {
+                this.view.setBsAmount(amountBs)
+            } else if (dataBill === 'dollarAmount'){
                 amountBs = roundNumber(formatAmount(this.view.getTasaInput()) * formatAmount(value)) 
+                this.view.setBsAmount(amountBs)
             }
-
-            this.view.setBsAmount(amountBs)
         }
     },
 	onKeyupEventAmount(value, key){
