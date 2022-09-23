@@ -180,7 +180,7 @@ class BillsPayableController extends Controller
                     'MontoPagar' => number_format($record->MontoPagar, 2) . " " . config("constants.CURRENCY_SIGNS." . ($record->esDolar ? "dollar" : "bolivar")),
                     'MontoPagado' => isset($record->MontoPagado) ? $this->formatAmount($record->MontoPagado) : 0.00,
                     'Tasa' => floatval($record->Tasa),
-                    'Estatus' => isset($record->Status)  ? config("constants.BILL_PAYABLE_STATUS." . $record->Status) : config("constants.BILL_PAYABLE_STATUS.NOTPAID"),
+                    'Estatus' => isset($record->Estatus)  ? config("constants.BILL_PAYABLE_STATUS." . $record->Estatus) : config("constants.BILL_PAYABLE_STATUS.NOTPAID"),
                     'DiasTranscurridos' => $days,
                     'BillPayableSchedulesID' => isset($record->BillPayableSchedulesID) ? $record->BillPayableSchedulesID : null,
                     'BillPayableGroupsID' => isset($record->BillPayableGroupsID) ? $record->BillPayableGroupsID : null
@@ -337,6 +337,12 @@ class BillsPayableController extends Controller
             "Monto",
             "Monto ($)"
         ];
+
+        $payment_currencies =  array_map(function($val){
+            return (object) array("key" => $val, "value" => $val);
+        }, array_keys(config('constants.CURRENCIES')));
+
+        $payment_currency = $request->query('payment_currency', $payment_currencies[0]->key);
  
         $group = $repo->getBillPayableGroupByID($request->id);
 
@@ -399,7 +405,9 @@ class BillsPayableController extends Controller
             'dollar_bills_payable',
             'last_tasa',
             'today_date',
-            'bills_payable_columns'
+            'bills_payable_columns',
+            'payment_currencies',
+            'payment_currency'
         ));
     }
 
@@ -474,7 +482,7 @@ class BillsPayableController extends Controller
         
         $validated = $request->validated();
 
-        $validated['is_dollar'] = key_exists('is_dollar', $request->all()) ? $request->all()['is_dollar'] : '0';
+        $validated['is_dollar'] = $validated['payment_currency'] === array_keys(config('constants.CURRENCIES'))[1] ? '1' : '0';
 
         $validated['is_group_payment'] = 1;
 
@@ -849,6 +857,7 @@ class BillsPayableController extends Controller
                 'ID' => $item->ID,
                 'CodProv' => $item->CodProv,
                 'DescripProv' => $item->DescripProv,
+                'ScheduleID' => $item->ScheduleID,
                 'Estatus' => config("constants.BILL_PAYABLE_STATUS." . $item->Estatus),
                 'MontoTotal' => $this->formatAmount($item->MontoTotal, 2),
                 'MontoPagado' =>  $this->formatAmount($item->MontoPagado),

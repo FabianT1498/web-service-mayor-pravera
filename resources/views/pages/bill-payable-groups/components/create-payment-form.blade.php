@@ -14,15 +14,14 @@
     <div class="flex items-center w-full flex-wrap mb-4">
         
         <div class="flex items-center">
-            <label for="isDollar">Es dolar:</label>
-            <input
-                class="form-checkbox w-4 h-4 ml-2 text-blue-600 rounded  focus:ring-blue-500 focus:ring-2 border-gray-300"
-                type="checkbox"       
-                value="{{ old('is_dollar') === null ?  '0' : '1' }}"               
-                id="is_dollar"
-                name="is_dollar"
-                {{old('is_dollar') === '1' ? 'checked' : '' }}
-                
+            <label class="basis-1/3" for="paymentCurrency">Divisa:</label>
+            <x-select-input 
+                :defaultOptTitle="__('Seleccione la divisa')"
+                id="paymentCurrency"
+                :value="$payment_currency"
+                :name="__('payment_currency')" 
+                :options="$payment_currencies"
+                class="w-full relative ml-4"
             />
         </div>
 

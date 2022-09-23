@@ -23,7 +23,7 @@ class ShowBillPayableGroupRequest extends FormRequest
     {
         $group = $repo->getBillPayableGroupByID($this->id);
 
-        return $group && $this->formatAmount($group->MontoTotal) > 0;
+        return $group && $this->formatAmount($group->MontoTotal) > 0 && !is_null($group->ScheduleID);
     }
 
     /**

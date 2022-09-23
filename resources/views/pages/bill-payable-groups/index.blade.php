@@ -29,7 +29,7 @@
                         @endif
                     >
                         <th scope="row" class="text-center">
-                            <a class="block relative" href="{{ $value->MontoTotal > 0 ? route('bill_payable.showBillPayableGroup', ['id' => $value->ID]) : '#' }}">
+                            <a class="block relative" href="{{ $value->MontoTotal > 0 && !is_null($value->ScheduleID) ? route('bill_payable.showBillPayableGroup', ['id' => $value->ID]) : '#' }}">
                                 {{ $value->ID }}
                             </a>
                             @if ($value->MontoTotal === 0.00)
@@ -43,10 +43,10 @@
                                 </div>
                             @endif
                         </th>
-                        <td class="text-center"><a class="block" href="{{ $value->MontoTotal > 0 ? route('bill_payable.showBillPayableGroup', ['id' => $value->ID]) : '#' }}">{{ $value->DescripProv }}</a></td>
-                        <td class="text-center"><a data-bill="montoTotal" class="block" href="{{ $value->MontoTotal > 0 ? route('bill_payable.showBillPayableGroup', ['id' => $value->ID]) : '#' }}">{{ $value->MontoTotal . " " . config("constants.CURRENCY_SIGNS.dollar") }}</a></td>
-                        <td class="text-center"><a data-bill="montoPagar" class="block" href="{{ $value->MontoTotal > 0 ? route('bill_payable.showBillPayableGroup', ['id' => $value->ID]) : '#' }}">{{ $value->MontoPagado . " " . config("constants.CURRENCY_SIGNS.dollar") }}</a></td>
-                        <td class="text-center" ><a class="block" href="{{ $value->MontoTotal > 0 ? route('bill_payable.showBillPayableGroup', ['id' => $value->ID]) : '#' }}">{{ $value->Estatus }}</a></td>
+                        <td class="text-center"><a class="block" href="{{ $value->MontoTotal > 0 && !is_null($value->ScheduleID) ? route('bill_payable.showBillPayableGroup', ['id' => $value->ID]) : '#' }}">{{ $value->DescripProv }}</a></td>
+                        <td class="text-center"><a data-bill="montoTotal" class="block" href="{{ $value->MontoTotal > 0 && !is_null($value->ScheduleID) ? route('bill_payable.showBillPayableGroup', ['id' => $value->ID]) : '#' }}">{{ $value->MontoTotal . " " . config("constants.CURRENCY_SIGNS.dollar") }}</a></td>
+                        <td class="text-center"><a data-bill="montoPagar" class="block" href="{{ $value->MontoTotal > 0 && !is_null($value->ScheduleID) ? route('bill_payable.showBillPayableGroup', ['id' => $value->ID]) : '#' }}">{{ $value->MontoPagado . " " . config("constants.CURRENCY_SIGNS.dollar") }}</a></td>
+                        <td class="text-center" ><a class="block" href="{{ $value->MontoTotal > 0 && !is_null($value->ScheduleID) ? route('bill_payable.showBillPayableGroup', ['id' => $value->ID]) : '#' }}">{{ $value->Estatus }}</a></td>
                         <td>
                             @if ( $value->Estatus === config("constants.BILL_PAYABLE_STATUS.NOTPAID") && $value->MontoPagado === 0.00)
                                 <button
