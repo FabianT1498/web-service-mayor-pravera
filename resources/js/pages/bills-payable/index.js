@@ -230,11 +230,18 @@ export default {
                     if (res.data.length > 0){
                         let bill = res.data[0];
 
-                        let errorMessage = (bill.GroupID === null && bill.ScheduleID !== null)
-                            ? "La factura no puede ser agrupada, ya ha sido programada individualmente"
-                            : (roundNumber(bill.MontoPagado) > 0 ? "La factura no puede ser agrupada, ya tiene pagos" :
-                                (roundNumber(bill.Tasa) === 0 && bill.esDolar === 0 ? "La factura no puede ser agrupada, su tasa debe ser mayor a cero" : '')
-                            )
+                        console.log(bill)
+
+                        let errorMessage = (roundNumber(bill.MontoPagar) <= 0)
+                            ? "Esta factura ya ha sido pagada"
+                            : (bill.GroupID === null && bill.ScheduleID !== null)
+                                ? "La factura no puede ser agrupada, ya ha sido programada individualmente"
+                                : (roundNumber(bill.MontoPagado) > 0 
+                                    ? "La factura no puede ser agrupada, ya tiene pagos" 
+                                    : (roundNumber(bill.Tasa) === 0 && bill.esDolar === 0 
+                                        ? "La factura no puede ser agrupada, su tasa debe ser mayor a cero" 
+                                        : '')
+                                    )
 
                         if (errorMessage !== ''){
                             this.showBillPayableMessage(errorMessage);
