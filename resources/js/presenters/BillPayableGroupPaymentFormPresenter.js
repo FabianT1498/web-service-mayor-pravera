@@ -16,11 +16,12 @@ const BillPayableGroupPaymentFormPresenterPrototype = {
             if (dataBill === 'tasa'){
                 this.view.setTasa(formattedVal)
                 amountBs = roundNumber(formatAmount(this.view.getDollarAmount()) * formattedVal)
-            } else {
+                this.view.setBsAmount(amountBs)
+            } else if (dataBill === 'dollarAmount'){
                 amountBs = roundNumber(formatAmount(this.view.getTasaInput()) * formatAmount(value)) 
+                this.view.setBsAmount(amountBs)
             }
 
-            this.view.setBsAmount(amountBs)
         }
     },
 	onKeyupEventAmount(value, key){

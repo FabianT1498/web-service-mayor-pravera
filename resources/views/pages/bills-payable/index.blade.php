@@ -12,13 +12,6 @@
             @include('pages.bills-payable.components.filter-form')
         </div>
 
-        <div class="mx-auto w-1/3 top-3 right-3 mb-8 absolute">
-            <x-alert-flash
-                :alertID="__('bill-payable-alert')"
-                :message="__('Las facturas que esta agrupando tienen distintos proveedores')"
-            />
-        </div>
-
         <div id="linkBillsPayableContainer" class="hidden mx-auto w-11/12 mb-8">
             <x-button 
                 :variation="__('rounded')"
@@ -60,14 +53,10 @@
                         >
                             <td>
                                 <input
-                                    class="form-checkbox w-4 h-4 text-blue-600 rounded  focus:ring-blue-500 focus:ring-2 {{ $value->MontoPagado > 0.00 ? "bg-gray-100 border-gray-300" : ""}}"
+                                    class="form-checkbox w-4 h-4 text-blue-600 rounded  focus:ring-blue-500 focus:ring-2 {{ $value->MontoPagado > 0.00 || (is_null($value->BillPayableGroupsID) && !is_null($value->BillPayableSchedulesID)) ? "bg-gray-100 border-gray-300" : ""}}"
                                     type="checkbox"
                                     value="0"
                                     data-bill="select"              
-                                    {{ ($value->MontoPagado > 0.00 || (is_null($value->BillPayableGroupsID) && !is_null($value->BillPayableSchedulesID))) ? 'disabled' : '' }}
-                                    @if ($value->MontoPagado > 0.00 || (is_null($value->BillPayableGroupsID) && !is_null($value->BillPayableSchedulesID))) 
-                                        onclick= "return false;" 
-                                    @endif
                                 />
                                 @if ($value->BillPayableGroupsID)
                                     <div 

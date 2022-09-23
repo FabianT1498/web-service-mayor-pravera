@@ -504,7 +504,7 @@ class BillsPayableRepository implements BillsPayableRepositoryInterface
                 CASE WHEN bills_payable.is_dollar = 1 
                     THEN CAST(ROUND(bills_payable.amount - (COALESCE(bill_payments_bs_div.total_paid, 0) + COALESCE(bill_payments_dollar.total_paid, 0)), 2) AS decimal(28, 2))
                     ELSE CAST(ROUND((bills_payable.amount / COALESCE(bills_payable.tasa, 1)) - (COALESCE(bill_payments_bs_div.total_paid, 0) + COALESCE(bill_payments_dollar.total_paid, 0)), 2) AS decimal(28, 2))
-                END AS MontoPagar, bills_payable.is_dollar as esDolar, bills_payable.tasa as Tasa,
+                END AS MontoPagar, bills_payable.is_dollar as esDolar, bills_payable.tasa as Tasa,  bills_payable.status as Estatus,
                 CAST(ROUND(COALESCE(bill_payments_bs_div.total_paid, 0) + COALESCE(bill_payments_dollar.total_paid, 0), 2) AS decimal(28, 2)) AS MontoPagado,
                 bills_payable.bill_payable_schedules_id as BillPayableSchedulesID, bills_payable.bill_payable_groups_id AS BillPayableGroupsID")
             ->leftJoin(DB::raw("(SELECT bills_payable_payments.nro_doc, bills_payable_payments.cod_prov, SUM(bill_payments.amount / bill_payments_bs.tasa) as total_paid FROM bills_payable_payments 

@@ -42,14 +42,13 @@ export default {
         event.target.value = event.target.value === '1' ? '0' : '1';
     },
     showBillPayableMessage(message){
-        this.DOMElements.billPayableAlert.classList.remove('hidden', 'opacity-0')
         
-        this.DOMElements.billPayableAlert
-            .querySelector('#' + this.DOMElements.billPayableAlert.getAttribute('id') + '-message').innerHTML = message
-        
-        setTimeout(() => {
-            this.dismissableAlert.hide()
-        }, 5000)
+        swal({
+            title: message,
+            icon: "error",
+            button: 'Cerrar',
+            timer: 5000,
+        });
     },
     getBillPayableData(event){
         let row = event.target.closest('tr')
@@ -231,11 +230,18 @@ export default {
                     if (res.data.length > 0){
                         let bill = res.data[0];
 
-                        let errorMessage = (bill.GroupID === null && bill.ScheduleID !== null)
-                            ? "La factura no puede ser agrupada, ya ha sido programada individualmente"
-                            : (roundNumber(bill.MontoPagado) > 0 ? "La factura no puede ser agrupada, ya tiene pagos" :
-                                (roundNumber(bill.Tasa) === 0 && bill.esDolar === 0 ? "La factura no puede ser agrupada, su tasa debe ser mayor a cero" : '')
-                            )
+                        console.log(bill)
+
+                        let errorMessage = (roundNumber(bill.MontoPagar) <= 0)
+                            ? "Esta factura ya ha sido pagada"
+                            : (bill.GroupID === null && bill.ScheduleID !== null)
+                                ? "La factura no puede ser agrupada, ya ha sido programada individualmente"
+                                : (roundNumber(bill.MontoPagado) > 0 
+                                    ? "La factura no puede ser agrupada, ya tiene pagos" 
+                                    : (roundNumber(bill.Tasa) === 0 && bill.esDolar === 0 
+                                        ? "La factura no puede ser agrupada, su tasa debe ser mayor a cero" 
+                                        : '')
+                                    )
 
                         if (errorMessage !== ''){
                             this.showBillPayableMessage(errorMessage);
@@ -275,15 +281,6 @@ export default {
             })
     },
     initEventListener(){
-
-        // options object
-        const dissmisableAlertOptions = {
-            transition: 'transition-opacity',
-            duration: 1000,
-            timing: 'ease-out',
-        };
-
-        this.dismissableAlert = new Dismiss(this.DOMElements.billPayableAlert, dissmisableAlertOptions);
 
         // Initialize date range picker
         Object.assign(Datepicker.locales, es);

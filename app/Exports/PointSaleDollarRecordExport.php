@@ -51,7 +51,7 @@ class PointSaleDollarRecordExport implements FromView, WithEvents, WithTitle
     */
     public function view(): View
     {
-        return view('exports.zelle_record.zelle_report', $this->data);
+        return view('exports.point_sale_dollar.point_sale_dollar', $this->data);
     }
 
     public function registerEvents(): array

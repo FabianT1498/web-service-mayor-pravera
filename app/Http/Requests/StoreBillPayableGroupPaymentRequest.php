@@ -14,6 +14,8 @@ use App\Rules\BillPayablePaymentBsIsUnique;
 
 use App\Rules\BillPayableGroupExists;
 
+use App\Repositories\BillsPayableRepository;
+
 class StoreBillPayableGroupPaymentRequest extends FormRequest
 {
     use AmountCurrencyTrait;
@@ -23,9 +25,11 @@ class StoreBillPayableGroupPaymentRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
-    {
-        return true;
+    public function authorize(BillsPayableRepository $repo)
+    {   
+        $group = $repo->getBillPayableGroupByID($this->id);
+
+        return $group && !is_null($group->ScheduleID);
     }
 
     /**
@@ -44,9 +48,10 @@ class StoreBillPayableGroupPaymentRequest extends FormRequest
             'group_id' => ['required', $bill_payable_group_exists_validation],
             'amount' => $total_rules,
             'date' => ['required', 'date_format:Y-m-d', 'before_or_equal:' . Carbon::now()->format('Y-m-d')],
+            'payment_currency' => ['required']
         ];
 
-        if (isset($this->is_dollar) && $this->is_dollar === '1'){
+        if (isset($this->payment_currency) && $this->payment_currency === array_keys(config('constants.CURRENCIES'))[1]){
             $rules['foreign_currency_payment_method'] = ['required'];
             $rules['retirement_date'] = ['required', 'date_format:Y-m-d', 'after_or_equal:' . $this->date,
                 'before_or_equal:' . Carbon::now()->format('Y-m-d')];
@@ -85,7 +90,9 @@ class StoreBillPayableGroupPaymentRequest extends FormRequest
             'amount' => 'Monto a pagar',
             'tasa' => 'Tasa',
             'date' => 'Fecha de pago',
-            'reference_number' => 'Numero de referencia'
+            'ref_number' => 'Numero de referencia',
+            'retirement_date' => 'Fecha de retiro',
+            'bank' => 'Banco'
         ];
     }
 

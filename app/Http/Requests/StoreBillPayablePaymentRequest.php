@@ -94,7 +94,9 @@ class StoreBillPayablePaymentRequest extends FormRequest
             'amount' => 'Monto a pagar',
             'tasa' => 'Tasa',
             'date' => 'Fecha de pago',
-            'reference_number' => 'Numero de referencia'
+            'reference_number' => 'Numero de referencia',
+            'date' => 'Fecha de pago',
+            'retirement_date' => 'Fecha de retiro'
         ];
     }
 
