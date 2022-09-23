@@ -55,8 +55,9 @@ class BillsPayableController extends Controller
 
         $bill_action = $request->query('bill_action', '');
 
+        
         $bill_action_val = config('constants.BILL_PAYABLE_ACTION.' . $bill_action);
-
+        
         $bill_action_mess = config('constants.BILL_PAYABLE_ACTION_MESS.' . $bill_action_val);
         
         if (isset($bill_action_mess) && $bill_action_mess !== ''){

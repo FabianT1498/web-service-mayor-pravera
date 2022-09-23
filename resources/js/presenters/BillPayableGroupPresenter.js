@@ -1,7 +1,11 @@
+import swal from 'sweetalert';
+
 import { getBillPayableGroup, storeBillPayableGroup, updateBillPayableGroup } from '_services/bill-payable';
 
 import BillPayableGroupCollection from '_collections/BillPayableGroupCollection'
 import BillPayableGroup from '_models/BillPayableGroup'
+
+
 
 const BillPayableGroupPresenterPrototype = {
 	data: {
@@ -42,11 +46,25 @@ const BillPayableGroupPresenterPrototype = {
 					
 					} else {
 						console.log('ha ocurrido un error')
-						document.querySelector('#billAction').value = "FAILED_GROUPING";
+
+						console.log(res)
+
+						swal({
+							title: 'No se ha podido cambiar las facturas a un nuevo grupo',
+							icon: "error",
+							button: 'Cerrar',
+							timer: 5000,
+						});
 					}
 				})
 				.catch(err => {
-					console.log(err)
+					console.log(err);
+					swal({
+						title: 'No se ha podido cambiar las facturas a un nuevo grupo',
+						icon: "error",
+						button: 'Cerrar',
+						timer: 5000,
+					});
 				})
 
 		} catch(e){
@@ -94,8 +112,6 @@ const BillPayableGroupPresenterPrototype = {
 	handleClickAddGroup(){
 		if (this.data.billsPayable.length > 0){
 
-			console.log(this.data.codProv)
-			
 			storeBillPayableGroup({bills: this.data.billsPayable, cod_prov: this.data.codProv})
 				.then(res => {
 					if (res.status === 200){
@@ -113,6 +129,8 @@ const BillPayableGroupPresenterPrototype = {
 						this.billPayableGroups.pushElement(newGroup)
 						this.view.showBillGroupDetails(newGroup)
 						this.view.setNewGroupInSelect(newGroup.id);
+
+						document.querySelector('#billAction').value = "GROUPED";
 					
 						if (this.formFilter){
 							document.querySelector('#billAction').value = 1;
@@ -123,8 +141,14 @@ const BillPayableGroupPresenterPrototype = {
 						}
 
 					} else {
-						console.log('ha ocurrido un error')
-						document.querySelector('#billAction').value = "FAILED_GROUPING";
+						
+						swal({
+							title: 'No se ha podido crear un nuevo grupo',
+							text: 'Ya existe un grupo para este proveedor sin facturas asociadas',
+							icon: "error",
+							button: 'Cerrar',
+							timer: 5000,
+						});
 					}
 				})
 				.catch(err => {
