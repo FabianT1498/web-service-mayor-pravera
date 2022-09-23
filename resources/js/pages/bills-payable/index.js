@@ -42,14 +42,13 @@ export default {
         event.target.value = event.target.value === '1' ? '0' : '1';
     },
     showBillPayableMessage(message){
-        this.DOMElements.billPayableAlert.classList.remove('hidden', 'opacity-0')
         
-        this.DOMElements.billPayableAlert
-            .querySelector('#' + this.DOMElements.billPayableAlert.getAttribute('id') + '-message').innerHTML = message
-        
-        setTimeout(() => {
-            this.dismissableAlert.hide()
-        }, 5000)
+        swal({
+            title: message,
+            icon: "error",
+            button: 'Cerrar',
+            timer: 5000,
+        });
     },
     getBillPayableData(event){
         let row = event.target.closest('tr')
@@ -275,15 +274,6 @@ export default {
             })
     },
     initEventListener(){
-
-        // options object
-        const dissmisableAlertOptions = {
-            transition: 'transition-opacity',
-            duration: 1000,
-            timing: 'ease-out',
-        };
-
-        this.dismissableAlert = new Dismiss(this.DOMElements.billPayableAlert, dissmisableAlertOptions);
 
         // Initialize date range picker
         Object.assign(Datepicker.locales, es);

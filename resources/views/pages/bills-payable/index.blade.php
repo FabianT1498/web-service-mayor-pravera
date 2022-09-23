@@ -12,13 +12,6 @@
             @include('pages.bills-payable.components.filter-form')
         </div>
 
-        <div class="mx-auto w-1/3 top-3 right-3 mb-8 absolute">
-            <x-alert-flash
-                :alertID="__('bill-payable-alert')"
-                :message="__('Las facturas que esta agrupando tienen distintos proveedores')"
-            />
-        </div>
-
         <div id="linkBillsPayableContainer" class="hidden mx-auto w-11/12 mb-8">
             <x-button 
                 :variation="__('rounded')"
